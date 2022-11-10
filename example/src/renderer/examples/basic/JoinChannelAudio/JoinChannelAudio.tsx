@@ -41,7 +41,7 @@ export default class JoinChannelAudio
       uid: Config.uid,
       joinChannelSuccess: false,
       remoteUsers: [],
-      enableLocalAudio: false,
+      enableLocalAudio: true,
       muteLocalAudioStream: false,
       recordingSignalVolume: 100,
       playbackSignalVolume: 100,
@@ -60,6 +60,7 @@ export default class JoinChannelAudio
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
+      logConfig: { filePath: Config.SDKLogPath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });

@@ -3,13 +3,12 @@ import {
   ChannelProfileType,
   ClientRoleType,
   createAgoraRtcEngine,
-  IMetadataObserver,
   IRtcEngineEventHandler,
-  Metadata,
-  MetadataType,
-  VideoSourceType,
 } from 'agora-electron-sdk';
-import { Buffer } from 'buffer';
+import download from 'download';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 
 import Config from '../../../config/agora.config';
 
@@ -17,16 +16,31 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import { AgoraButton, AgoraTextInput } from '../../../components/ui';
+import { AgoraButton } from '../../../components/ui';
+
+const ffi = require('ffi-napi');
+const Pointer = 'uint64';
+
+let pluginName = 'VideoObserverPlugin';
+let postfix = `_${process.arch}`;
+if (process.platform === 'darwin') {
+  postfix += '.dylib';
+} else if (process.platform === 'win32') {
+  postfix += '.dll';
+}
+pluginName += postfix;
 
 interface State extends BaseVideoComponentState {
-  metadataBuffer: string;
+  enablePlugin: boolean;
 }
 
-export default class SendMetadata
+export default class ProcessVideoRawData
   extends BaseComponent<{}, State>
-  implements IRtcEngineEventHandler, IMetadataObserver
+  implements IRtcEngineEventHandler
 {
+  pluginLibrary?: any;
+  plugin?: any;
+
   protected createState(): State {
     return {
       appId: Config.appId,
@@ -37,7 +51,7 @@ export default class SendMetadata
       joinChannelSuccess: false,
       remoteUsers: [],
       startPreview: false,
-      metadataBuffer: '',
+      enablePlugin: false,
     };
   }
 
@@ -63,7 +77,9 @@ export default class SendMetadata
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();
 
-    this.registerMediaMetadataObserver();
+    // Start preview before joinChannel
+    this.engine.startPreview();
+    this.setState({ startPreview: true });
   }
 
   /**
@@ -93,82 +109,69 @@ export default class SendMetadata
   }
 
   /**
-   * Step 3-1: registerMediaMetadataObserver
+   * Step 3: enablePlugin
    */
-  registerMediaMetadataObserver = () => {
-    this.engine?.registerMediaMetadataObserver(
-      this,
-      MetadataType.VideoMetadata
-    );
+  enablePlugin = async () => {
+    const version = '4.1.0-beta.1';
+    const url = `https://github.com/AgoraIO-Extensions/RawDataPluginSample/releases/download/${version}/${pluginName}`;
+    const dllPath = path.resolve(os.tmpdir(), pluginName);
+    if (!fs.existsSync(dllPath)) {
+      console.log(`start downloading plugin ${url} to ${dllPath}`);
+      await download(url, os.tmpdir());
+      console.log(`download success`);
+    }
+
+    this.pluginLibrary ??= ffi.Library(dllPath, {
+      EnablePlugin: ['bool', [Pointer]],
+      DisablePlugin: ['bool', [Pointer]],
+      CreateSamplePlugin: [Pointer, [Pointer]],
+      DestroySamplePlugin: ['void', [Pointer]],
+    });
+
+    const handle = this.engine?.getNativeHandle();
+    this.plugin = this.pluginLibrary.CreateSamplePlugin(handle);
+    this.pluginLibrary.EnablePlugin(this.plugin);
+    this.setState({ enablePlugin: true });
   };
 
   /**
-   * Step 3-2: sendMetaData
+   * Step 4: disablePlugin
    */
-  sendMetaData = () => {
-    const { metadataBuffer } = this.state;
-    if (!metadataBuffer) {
-      this.error('metadataBuffer is invalid');
+  disablePlugin = () => {
+    if (!this.plugin) {
+      this.error('plugin is invalid');
       return;
     }
 
-    const buffer = Buffer.from(metadataBuffer);
-    this.engine?.sendMetaData(
-      {
-        buffer: buffer,
-        size: buffer.length,
-      },
-      VideoSourceType.VideoSourceCamera
-    );
-    this.setState({ metadataBuffer: '' });
+    this.pluginLibrary.DisablePlugin(this.plugin);
+    this.pluginLibrary.DestroySamplePlugin(this.plugin);
+    this.plugin = undefined;
+    this.setState({ enablePlugin: false });
   };
 
   /**
-   * Step 4: leaveChannel
+   * Step 5: leaveChannel
    */
   protected leaveChannel() {
     this.engine?.leaveChannel();
   }
 
   /**
-   * Step 5: releaseRtcEngine
+   * Step 6: releaseRtcEngine
    */
   protected releaseRtcEngine() {
+    this.disablePlugin();
     this.engine?.unregisterEventHandler(this);
     this.engine?.release();
   }
 
-  onMetadataReceived(metadata: Metadata) {
-    this.info('onMetadataReceived', 'metadata', metadata);
-    this.alert(
-      `Receive from uid:${metadata.uid}`,
-      `${metadata.buffer?.toString()}`
-    );
-  }
-
-  protected renderConfiguration(): React.ReactNode {
-    const { metadataBuffer } = this.state;
-    return (
-      <>
-        <AgoraTextInput
-          onChangeText={(text) => {
-            this.setState({ metadataBuffer: text });
-          }}
-          placeholder={`metadataBuffer`}
-          value={metadataBuffer}
-        />
-      </>
-    );
-  }
-
   protected renderAction(): React.ReactNode {
-    const { joinChannelSuccess } = this.state;
+    const { enablePlugin } = this.state;
     return (
       <>
         <AgoraButton
-          disabled={!joinChannelSuccess}
-          title={`send Metadata`}
-          onPress={this.sendMetaData}
+          title={`${enablePlugin ? 'disable' : 'enable'} Plugin`}
+          onPress={enablePlugin ? this.disablePlugin : this.enablePlugin}
         />
       </>
     );

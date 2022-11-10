@@ -210,12 +210,6 @@ export function processIRtcEngineEventHandler(
       }
       break;
 
-    case 'onMediaDeviceChanged':
-      if (handler.onMediaDeviceChanged !== undefined) {
-        handler.onMediaDeviceChanged(jsonParams.deviceType);
-      }
-      break;
-
     case 'onNetworkQuality':
       if (handler.onNetworkQuality !== undefined) {
         handler.onNetworkQuality(
@@ -4150,6 +4144,40 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_setExtensionProviderProperty';
   }
 
+  registerExtension(
+    provider: string,
+    extension: string,
+    type: MediaSourceType = MediaSourceType.UnknownMediaSource
+  ): number {
+    const apiType = this.getApiTypeFromRegisterExtension(
+      provider,
+      extension,
+      type
+    );
+    const jsonParams = {
+      provider: provider,
+      extension: extension,
+      type: type,
+      toJSON: () => {
+        return {
+          provider: provider,
+          extension: extension,
+          type: type,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromRegisterExtension(
+    provider: string,
+    extension: string,
+    type: MediaSourceType = MediaSourceType.UnknownMediaSource
+  ): string {
+    return 'RtcEngine_registerExtension';
+  }
+
   enableExtension(
     provider: string,
     extension: string,
@@ -6647,5 +6675,16 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromSetParameters(parameters: string): string {
     return 'RtcEngine_setParameters';
+  }
+
+  getNativeHandle(): number {
+    const apiType = this.getApiTypeFromGetNativeHandle();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromGetNativeHandle(): string {
+    return 'RtcEngine_getNativeHandle';
   }
 }

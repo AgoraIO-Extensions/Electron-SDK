@@ -54,6 +54,7 @@ export default class Extension
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
+      logConfig: { filePath: Config.SDKLogPath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
@@ -84,7 +85,7 @@ export default class Extension
 
     this.engine?.loadExtensionProvider(path);
 
-    this.engine?.enableExtension(provider, extension, true);
+    this.engine?.enableExtension(provider, extension, {}, true);
     this.setState({ enableExtension: true });
   };
 
@@ -93,7 +94,7 @@ export default class Extension
    */
   disableExtension = () => {
     const { provider, extension } = this.state;
-    this.engine?.enableExtension(provider, extension, false);
+    this.engine?.enableExtension(provider, extension, {}, false);
     this.setState({ enableExtension: false });
   };
 

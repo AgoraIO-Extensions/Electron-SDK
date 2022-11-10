@@ -61,6 +61,7 @@ export default class TakeSnapshot
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
+      logConfig: { filePath: Config.SDKLogPath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
@@ -108,6 +109,7 @@ export default class TakeSnapshot
     }
 
     this.engine?.takeSnapshot(targetUid, `${filePath}/${targetUid}.jpg`);
+    this.setState({ takeSnapshot: false });
   };
 
   /**
@@ -175,7 +177,6 @@ export default class TakeSnapshot
             />
           </>
         ) : undefined}
-        <AgoraDivider />
       </>
     );
   }

@@ -80,6 +80,7 @@ export default class SendMultiVideoStream
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
     this.engine.initialize({
       appId,
+      logConfig: { filePath: Config.SDKLogPath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
@@ -130,8 +131,8 @@ export default class SendMultiVideoStream
     this.player = this.engine?.createMediaPlayer();
     // this.player.registerAudioFrameObserver(this);
     // this.player.registerVideoFrameObserver(this);
-    this.player.registerPlayerSourceObserver(this);
-    this.player.open(url, 0);
+    this.player?.registerPlayerSourceObserver(this);
+    this.player?.open(url, 0);
   };
 
   /**

@@ -1,20 +1,20 @@
-import { EncodedVideoFrameInfo, ErrorCodeType } from '../AgoraBase';
-import { IMediaEngineImpl } from '../impl/IAgoraMediaEngineImpl';
 import {
-  AudioFrame,
-  ExternalVideoFrame,
   IAudioFrameObserver,
   IVideoEncodedFrameObserver,
   IVideoFrameObserver,
-  MediaSourceType,
 } from '../AgoraMediaBase';
+
 import { IMediaEngineEvent } from '../extension/IAgoraMediaEngineExtension';
+
 import {
   processIAudioFrameObserver,
   processIVideoEncodedFrameObserver,
   processIVideoFrameObserver,
 } from '../impl/AgoraMediaBaseImpl';
-import { callIrisApi, DeviceEventEmitter, EVENT_TYPE } from './IrisApiEngine';
+import { IMediaEngineImpl } from '../impl/IAgoraMediaEngineImpl';
+
+import { DeviceEventEmitter, EVENT_TYPE } from './IrisApiEngine';
+import { EmitterSubscription } from './emitter/EventEmitter';
 
 export class MediaEngineInternal extends IMediaEngineImpl {
   static _audio_frame_observers: IAudioFrameObserver[] = [];
@@ -22,8 +22,17 @@ export class MediaEngineInternal extends IMediaEngineImpl {
   static _video_encoded_frame_observers: IVideoEncodedFrameObserver[] = [];
   private _events: Map<
     any,
-    { eventType: string; listener: (...args: any[]) => any }
-  > = new Map<any, { eventType: string; listener: (...args: any[]) => any }>();
+    {
+      eventType: string;
+      subscription: EmitterSubscription;
+    }
+  > = new Map<
+    any,
+    {
+      eventType: string;
+      subscription: EmitterSubscription;
+    }
+  >();
 
   registerAudioFrameObserver(observer: IAudioFrameObserver): number {
     if (
@@ -90,17 +99,14 @@ export class MediaEngineInternal extends IMediaEngineImpl {
     MediaEngineInternal._audio_frame_observers = [];
     MediaEngineInternal._video_frame_observers = [];
     MediaEngineInternal._video_encoded_frame_observers = [];
-    this._events.forEach((value) => {
-      DeviceEventEmitter.removeListener(value.eventType, value.listener);
-    });
-    this._events.clear();
+    this.removeAllListeners();
     super.release();
   }
 
   addListener<EventType extends keyof IMediaEngineEvent>(
     eventType: EventType,
     listener: IMediaEngineEvent[EventType]
-  ): void {
+  ): EmitterSubscription {
     const callback = (...data: any[]) => {
       if (data[0] !== EVENT_TYPE.IMediaEngine) {
         return;
@@ -113,8 +119,9 @@ export class MediaEngineInternal extends IMediaEngineImpl {
         data[1]
       );
     };
-    this._events.set(listener, { eventType, listener: callback });
-    DeviceEventEmitter.addListener(eventType, callback);
+    const subscription = DeviceEventEmitter.addListener(eventType, callback);
+    this._events.set(listener, { eventType, subscription });
+    return subscription;
   }
 
   removeListener<EventType extends keyof IMediaEngineEvent>(
@@ -122,112 +129,27 @@ export class MediaEngineInternal extends IMediaEngineImpl {
     listener: IMediaEngineEvent[EventType]
   ) {
     if (!this._events.has(listener)) return;
-    DeviceEventEmitter.removeListener(
-      eventType,
-      this._events.get(listener)!.listener
+    DeviceEventEmitter.removeSubscription(
+      this._events.get(listener)!.subscription
     );
+    this._events.delete(listener);
   }
 
   removeAllListeners<EventType extends keyof IMediaEngineEvent>(
     eventType?: EventType
   ) {
-    DeviceEventEmitter.removeAllListeners(eventType);
-  }
-
-  pushVideoFrame(frame: ExternalVideoFrame, videoTrackId = 0): number {
-    const apiType = 'MediaEngine_pushVideoFrame';
-    const jsonParams = {
-      frame,
-      videoTrackId,
-      toJSON: () => {
-        return {
-          frame,
-          videoTrackId,
-        };
-      },
-    };
-
-    if (!frame.buffer == null) return ErrorCodeType.ErrInvalidArgument;
-
-    let buffers = [frame.buffer, undefined, undefined];
-    frame.buffer = undefined;
-    const jsonResults = callIrisApi.call(
-      this,
-      apiType,
-      jsonParams,
-      buffers,
-      buffers.length
-    );
-    return jsonResults.result;
-  }
-
-  pushEncodedVideoImage(
-    imageBuffer: Uint8Array,
-    length: number,
-    videoEncodedFrameInfo: EncodedVideoFrameInfo,
-    videoTrackId?: number
-  ): number {
-    const apiType = 'MediaEngine_pushEncodedVideoImage';
-    const jsonParams = {
-      length,
-      videoEncodedFrameInfo,
-      videoTrackId,
-      toJSON: () => {
-        return {
-          length,
-          videoEncodedFrameInfo,
-          videoTrackId,
-        };
-      },
-    };
-
-    if (!imageBuffer) return ErrorCodeType.ErrInvalidArgument;
-
-    let bufferArray = [imageBuffer];
-
-    const jsonResults = callIrisApi.call(
-      this,
-      apiType,
-      jsonParams,
-      bufferArray,
-      bufferArray.length
-    );
-    return jsonResults.result;
-  }
-
-  pushAudioFrame(
-    type: MediaSourceType,
-    frame: AudioFrame,
-    wrap = false,
-    sourceId = 0
-  ): number {
-    const apiType = 'MediaEngine_pushAudioFrame';
-    const jsonParams = {
-      type,
-      frame,
-      wrap,
-      sourceId,
-      toJSON: () => {
-        return {
-          type,
-          frame,
-          wrap,
-          sourceId,
-        };
-      },
-    };
-    if (!frame.buffer) return ErrorCodeType.ErrInvalidArgument;
-
-    let bufferArray = [frame.buffer];
-    frame.buffer = undefined;
-
-    const jsonResults = callIrisApi.call(
-      this,
-      apiType,
-      jsonParams,
-      bufferArray,
-      bufferArray.length
-    );
-    return jsonResults.result;
+    if (eventType === undefined) {
+      this._events.forEach((value) => {
+        DeviceEventEmitter.removeAllListeners(value.eventType);
+      });
+      this._events.clear();
+    } else {
+      DeviceEventEmitter.removeAllListeners(eventType);
+      this._events.forEach((value, key) => {
+        if (value.eventType === eventType) {
+          this._events.delete(key);
+        }
+      });
+    }
   }
 }

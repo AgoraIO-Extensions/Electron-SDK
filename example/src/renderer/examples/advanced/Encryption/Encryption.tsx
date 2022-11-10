@@ -64,6 +64,7 @@ export default class Encryption
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
+      logConfig: { filePath: Config.SDKLogPath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
@@ -181,7 +182,6 @@ export default class Encryption
           value={encryptionKdfSalt.join(' ')}
         />
         <AgoraText>{`encryptionKdfSaltLength: ${encryptionKdfSalt.length}`}</AgoraText>
-        <AgoraDivider />
       </>
     );
   }
