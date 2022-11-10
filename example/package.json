@@ -82,7 +82,7 @@
     "@types/react": "^16.9.44",
     "@types/react-dom": "^18.0.3",
     "@types/react-router-dom": "^5.1.6",
-    "electron": "18.2.3",
+    "electron": "18.3.7",
     "electron-builder": "^23.1.0",
     "electron-webpack": "^2.8.2",
     "electron-webpack-ts": "^4.0.1",
