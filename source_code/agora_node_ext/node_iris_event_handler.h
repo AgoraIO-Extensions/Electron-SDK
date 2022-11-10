@@ -14,8 +14,6 @@
 namespace agora {
 namespace rtc {
 namespace electron {
-enum CallBackModule { RTC = 0, MPK, OBSERVER };
-
 typedef struct NodeEventCallback {
   napi_env env;
   napi_ref call_back_ref;

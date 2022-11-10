@@ -65,14 +65,16 @@
     ]
   },
   "dependencies": {
-    "antd": "^4.20.3",
     "agora-electron-sdk": "latest",
+    "antd": "^4.20.3",
+    "ffi-napi": "^4.0.3",
     "history": "^5.0.0",
     "react": "^18.1.0",
     "react-color": "^2.19.3",
     "react-dom": "^18.1.0",
     "react-router-dom": "^5.2.0",
     "recharts": "^2.1.13",
+    "ref-napi": "^3.0.3",
     "source-map-support": "^0.5.16"
   },
   "devDependencies": {

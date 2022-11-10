@@ -35,6 +35,7 @@ export const logInfo = (msg: string, ...optParams: any[]) => {
   }
   console.log(`${TAG} ${msg}`, ...optParams);
 };
+
 export const logDebug = (msg: string, ...optParams: any[]) => {
   if (!AgoraEnv.enableLogging || !AgoraEnv.enableDebugLogging) {
     return;
@@ -65,9 +66,6 @@ export const objsKeysToLowerCase = (array: Array<any>) => {
     }
   });
 };
-
-export const changeEventNameForOnXX = (eventName: string) =>
-  eventName.slice(2, 3).toLocaleLowerCase() + eventName.slice(3);
 
 export const formatConfigByVideoSourceType = (
   videoSourceType?: VideoSourceType,
@@ -156,11 +154,13 @@ function copyProperties<T>(target: T, source: any) {
   }
 }
 
+const agora = require('../build/Release/agora_node_ext');
+
 export const AgoraEnv: AgoraEnvType = {
   enableLogging: true,
   enableDebugLogging: false,
-  isInitializeEngine: false,
+  AgoraElectronBridge: new agora.AgoraElectronBridge(),
 };
 
-//@ts-ignore
+// @ts-ignore
 (window || global).AgoraEnv = AgoraEnv;

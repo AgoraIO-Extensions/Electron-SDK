@@ -66,6 +66,7 @@ export default class LocalSpatialAudioEngine
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
+      logConfig: { filePath: Config.SDKLogPath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
       // ⚠️ Must use AudioScenarioGameStreaming on this case
@@ -106,6 +107,8 @@ export default class LocalSpatialAudioEngine
     this.engine?.joinChannel(token, channelId, uid, {
       // Make myself as the broadcaster to send stream to remote
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+      // ⚠️ Must set autoSubscribeAudio to false
+      autoSubscribeAudio: false,
     });
   }
 

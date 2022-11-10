@@ -65,6 +65,7 @@ export default class BeautyEffect
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
+      logConfig: { filePath: Config.SDKLogPath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
@@ -73,6 +74,7 @@ export default class BeautyEffect
     this.engine?.enableExtension(
       'agora_video_filters_clear_vision',
       'clear_vision',
+      {},
       true
     );
 
@@ -226,7 +228,6 @@ export default class BeautyEffect
             });
           }}
         />
-        <AgoraDivider />
       </>
     );
   }

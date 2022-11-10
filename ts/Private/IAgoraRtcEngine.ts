@@ -1368,11 +1368,6 @@ export interface IRtcEngineEventHandler {
   ): void;
 
   /**
-   * @ignore
-   */
-  onMediaDeviceChanged?(deviceType: MediaDeviceType): void;
-
-  /**
    * Reports the last mile network quality of each user in the channel.
    * This callback reports the last mile network conditions of each user in the channel. Last mile refers to the connection between the local device and Agora's edge server.The SDK triggers this callback once every two seconds. If a channel includes multiple users, the SDK triggers this callback as many times.txQuality is Unknown when the user is not sending a stream; rxQuality is Unknown when the user is not receiving a stream.
    *
@@ -2575,6 +2570,10 @@ export class RtcEngineContext {
    * @ignore
    */
   useExternalEglContext?: boolean;
+  /**
+   * @ignore
+   */
+  domainLimit?: boolean;
 }
 
 /**
@@ -4452,6 +4451,15 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
+   * @ignore
+   */
+  abstract registerExtension(
+    provider: string,
+    extension: string,
+    type?: MediaSourceType
+  ): number;
+
+  /**
    * Enables/Disables extensions.
    * Ensure that you call this method before joining a channel.If you want to enable multiple extensions, you need to call this method multiple times.The data processing order of different extensions in the SDK is determined by the order in which the extensions are enabled. That is, the extension that is enabled first will process the data first.
    *
@@ -5777,6 +5785,11 @@ export abstract class IRtcEngine {
    * 0: Success.< 0: Failure.
    */
   abstract setParameters(parameters: string): number;
+
+  /**
+   * @ignore
+   */
+  abstract getNativeHandle(): number;
 }
 
 /**

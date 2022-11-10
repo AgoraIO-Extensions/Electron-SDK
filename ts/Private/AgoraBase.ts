@@ -1166,6 +1166,10 @@ export class AdvanceOptions {
    * @ignore
    */
   encodingPreference?: EncodingPreference;
+  /**
+   * @ignore
+   */
+  compressionPreference?: CompressionPreference;
 }
 
 /**
@@ -1222,10 +1226,6 @@ export class VideoEncoderConfiguration {
    * Sets the mirror mode of the published local video stream. It only affects the video that the remote user sees. See VideoMirrorModeType .By default, the video is not mirrored.
    */
   mirrorMode?: VideoMirrorModeType;
-  /**
-   * @ignore
-   */
-  compressionPreference?: CompressionPreference;
   /**
    * @ignore
    */
@@ -2817,6 +2817,10 @@ export class LocalTranscoderConfiguration {
    * The encoding configuration of the mixed video stream after the video mixing on the local client. See VideoEncoderConfiguration .
    */
   videoOutputConfiguration?: VideoEncoderConfiguration;
+  /**
+   * @ignore
+   */
+  syncWithPrimaryCamera?: boolean;
 }
 
 /**
@@ -3130,6 +3134,10 @@ export class VideoCanvas {
    */
   view?: any;
   /**
+   * The user ID.
+   */
+  uid?: number;
+  /**
    * The rendering mode of the video. See RenderModeType .
    */
   renderMode?: RenderModeType;
@@ -3138,21 +3146,9 @@ export class VideoCanvas {
    */
   mirrorMode?: VideoMirrorModeType;
   /**
-   * The user ID.
-   */
-  uid?: number;
-  /**
    * @ignore
    */
-  isScreenView?: boolean;
-  /**
-   * @ignore
-   */
-  priv?: number[];
-  /**
-   * @ignore
-   */
-  priv_size?: number;
+  setupMode?: VideoViewSetupMode;
   /**
    * The type of the video source, see VideoSourceType .
    */
@@ -3160,11 +3156,11 @@ export class VideoCanvas {
   /**
    * @ignore
    */
-  cropArea?: Rectangle;
+  mediaPlayerId?: number;
   /**
    * @ignore
    */
-  setupMode?: VideoViewSetupMode;
+  cropArea?: Rectangle;
 }
 
 /**

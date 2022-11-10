@@ -221,7 +221,7 @@ export class MusicContentCenterConfiguration {
   /**
    * @ignore
    */
-  rtmToken?: string;
+  token?: string;
   /**
    * @ignore
    */
@@ -246,6 +246,11 @@ export abstract class IMusicContentCenter {
    * @ignore
    */
   abstract initialize(configuration: MusicContentCenterConfiguration): number;
+
+  /**
+   * @ignore
+   */
+  abstract renewToken(token: string): number;
 
   /**
    * @ignore

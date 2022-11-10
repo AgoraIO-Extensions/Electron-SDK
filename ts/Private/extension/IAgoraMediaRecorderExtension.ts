@@ -1,4 +1,5 @@
 import { IMediaRecorderObserver } from '../AgoraMediaBase';
+import { EmitterSubscription } from '../internal/emitter/EventEmitter';
 
 export type IMediaRecorderEvent = IMediaRecorderObserver;
 
@@ -18,7 +19,7 @@ declare module '../IAgoraMediaRecorder' {
     addListener<EventType extends keyof IMediaRecorderEvent>(
       eventType: EventType,
       listener: IMediaRecorderEvent[EventType]
-    ): void;
+    ): EmitterSubscription;
 
     /**
      * Removes the specified IMediaRecorderEvent listener.
