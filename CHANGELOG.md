@@ -1,3 +1,11 @@
+## [4.0.1-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.1-rc.1...v4.0.1-rc.2) (2022-11-10)
+
+
+### Bug Fixes
+
+* add memeset _result in the construct function ([#910](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/910)) ([449cd3f](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/449cd3f5df4a9b256c9612468421631173b575e7))
+* add minus system version 10.10 for macOS ([#911](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/911)) ([4178038](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/4178038501ff47eb2efb47d3d495a58e0c1fefdc))
+
 ## [4.0.1-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.0...v4.0.1-rc.1) (2022-10-21)
 
 
