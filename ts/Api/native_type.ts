@@ -1420,12 +1420,6 @@ export enum SCREEN_SCENARIO_TYPE {
   SCREEN_SCENARIO_VIDEO = 3,
   SCREEN_SCENARIO_RDC = 4,
 }
-
-export enum FeatureType {
-  VIDEO_PREPROCESS_VIRTUAL_BACKGROUND = 1,
-  VIDEO_PREPROCESS_BEAUTY = 2,
-};
-
 /**
  * @deprecated This callback is deprecated. Use the remoteVideoStats callback
  * instead.
@@ -4763,9 +4757,6 @@ export interface NodeRtcEngine {
     type: SCREEN_SCENARIO_TYPE
   ): number;
   
-  isFeatureSupported(
-    type: FeatureType
-  ): boolean;
 }
 /**
  * @ignore

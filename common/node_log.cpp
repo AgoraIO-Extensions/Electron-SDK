@@ -14,9 +14,11 @@
 
 using namespace std;
 
-bool startLogService(const char *path) {
+bool startLogService(const char* path) {
   bool res = loguru::add_file(path, loguru::Append, loguru::Verbosity_MAX);
   return res;
 }
 
-void stopLogService() { loguru::shutdown(); }
+void stopLogService() {
+  loguru::shutdown();
+}

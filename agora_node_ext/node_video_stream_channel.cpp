@@ -20,7 +20,7 @@ namespace agora {
 namespace rtc {
 using namespace agora::media;
 
-NodeVideoStreamChannel::NodeVideoStreamChannel(NodeRenderContext *context) {
+NodeVideoStreamChannel::NodeVideoStreamChannel(NodeRenderContext* context) {
   m_context.reset(context);
   LOG_INFO("Create video stream channel for type : %d, uid :%d\n",
            context->m_type, context->m_uid);
@@ -31,8 +31,10 @@ NodeVideoStreamChannel::~NodeVideoStreamChannel() {
 }
 
 int NodeVideoStreamChannel::deliverFrame(
-    const agora::media::IVideoFrame &videoFrame, int rotation, bool mirrored) {
-  auto *pTransporter = getNodeVideoFrameTransporter();
+    const agora::media::IVideoFrame& videoFrame,
+    int rotation,
+    bool mirrored) {
+  auto* pTransporter = getNodeVideoFrameTransporter();
   if (pTransporter) {
     pTransporter->deliverFrame_I420(m_context->m_type, m_context->m_uid,
                                     m_context->m_channelId, videoFrame,
@@ -40,5 +42,5 @@ int NodeVideoStreamChannel::deliverFrame(
   }
   return 0;
 }
-}// namespace rtc
-}// namespace agora
+}  // namespace rtc
+}  // namespace agora

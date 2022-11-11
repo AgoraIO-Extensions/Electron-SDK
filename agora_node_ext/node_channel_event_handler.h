@@ -11,12 +11,12 @@
 #ifndef AGORA_NODE_CHANNEL_EVENT_HANDLER_H
 #define AGORA_NODE_CHANNEL_EVENT_HANDLER_H
 
+#include <uv.h>
+#include <string>
+#include <unordered_map>
 #include "IAgoraRtcChannel.h"
 #include "agora_node_ext.h"
 #include "node_napi_api.h"
-#include <string>
-#include <unordered_map>
-#include <uv.h>
 namespace agora {
 namespace rtc {
 #define RTC_CHANNEL_EVENT_CHANNEL_WARNING "channelWarning"
@@ -42,24 +42,24 @@ namespace rtc {
 #define RTC_CHANNEL_EVENT_REMOTE_VIDEO_STATE_CHANGED "remoteVideoStateChanged"
 #define RTC_CHANNEL_EVENT_STREAM_MESSAGE "streamMessage"
 #define RTC_CHANNEL_EVENT_STREAM_MESSAGE_ERROR "streamMessageError"
-#define RTC_CHANNEL_EVENT_CHANNEL_MEDIA_RELAY_STATE_CHANGED                    \
+#define RTC_CHANNEL_EVENT_CHANNEL_MEDIA_RELAY_STATE_CHANGED \
   "channelMediaRelayStateChanged"
 #define RTC_CHANNEL_EVENT_CHANNEL_MEDIA_RELAY_EVENT "channelMediaRelayEvent"
 #define RTC_CHANNEL_EVENT_FIRST_REMOTE_AUDIO_FRAME "firstRemoteAudioFrame"
-#define RTC_CHANNEL_EVENT_RTMP_STREAMING_STATE_CHANGED                         \
+#define RTC_CHANNEL_EVENT_RTMP_STREAMING_STATE_CHANGED \
   "rtmpStreamingStateChanged"
 #define RTC_CHANNEL_EVENT_STREAM_PUBLISHED "streamPublished"
 #define RTC_CHANNEL_EVENT_STREAM_UNPUBLISHED "streamUnpublished"
 #define RTC_CHANNEL_EVENT_TRANSCODING_UPDATED "transcodingUpdated"
 #define RTC_CHANNEL_EVENT_STREAM_INJECED_STATUS "streamInjectedStatus"
-#define RTC_CHANNEL_EVENT_REMOTE_SUBSCRIBE_FALLBACK_TO_AUDIO_ONLY              \
+#define RTC_CHANNEL_EVENT_REMOTE_SUBSCRIBE_FALLBACK_TO_AUDIO_ONLY \
   "remoteSubscribeFallbackToAudioOnly"
 #define RTC_CHANNEL_EVENT_CONN_STATE_CHANGED "connectionStateChanged"
 #define RTC_CHANNEL_EVENT_AUDIO_PUBLISH_STATE_CHANGED "audioPublishStateChanged"
 #define RTC_CHANNEL_EVENT_VIDEO_PUBLISH_STATE_CHANGED "videoPublishStateChanged"
-#define RTC_CHANNEL_EVENT_AUDIO_SUBSCRIBE_STATE_CHANGED                        \
+#define RTC_CHANNEL_EVENT_AUDIO_SUBSCRIBE_STATE_CHANGED \
   "audioSubscribeStateChanged"
-#define RTC_CHANNEL_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGED                        \
+#define RTC_CHANNEL_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGED \
   "videoSubscribeStateChanged"
 
 class NodeRtcChannel;
@@ -72,129 +72,155 @@ class NodeChannelEventHandler : public IChannelEventHandler {
   };
 
  public:
-  NodeChannelEventHandler(NodeRtcChannel *pChannel);
+  NodeChannelEventHandler(NodeRtcChannel* pChannel);
   ~NodeChannelEventHandler();
-  void fireApiError(const char *funcName);
-  void addEventHandler(const std::string &eventName, Persistent<Object> &obj,
-                       Persistent<Function> &callback);
+  void fireApiError(const char* funcName);
+  void addEventHandler(const std::string& eventName,
+                       Persistent<Object>& obj,
+                       Persistent<Function>& callback);
 
-  virtual void onChannelWarning(IChannel *rtcChannel, int warn,
-                                const char *msg) override;
+  virtual void onChannelWarning(IChannel* rtcChannel,
+                                int warn,
+                                const char* msg) override;
 
-  virtual void onChannelError(IChannel *rtcChannel, int err,
-                              const char *msg) override;
+  virtual void onChannelError(IChannel* rtcChannel,
+                              int err,
+                              const char* msg) override;
 
-  virtual void onJoinChannelSuccess(IChannel *rtcChannel, uid_t uid,
+  virtual void onJoinChannelSuccess(IChannel* rtcChannel,
+                                    uid_t uid,
                                     int elapsed) override;
 
-  virtual void onRejoinChannelSuccess(IChannel *rtcChannel, uid_t uid,
+  virtual void onRejoinChannelSuccess(IChannel* rtcChannel,
+                                      uid_t uid,
                                       int elapsed) override;
 
-  virtual void onLeaveChannel(IChannel *rtcChannel,
-                              const RtcStats &stats) override;
+  virtual void onLeaveChannel(IChannel* rtcChannel,
+                              const RtcStats& stats) override;
 
-  virtual void onClientRoleChanged(IChannel *rtcChannel,
+  virtual void onClientRoleChanged(IChannel* rtcChannel,
                                    CLIENT_ROLE_TYPE oldRole,
                                    CLIENT_ROLE_TYPE newRole) override;
 
-  virtual void onUserJoined(IChannel *rtcChannel, uid_t uid,
+  virtual void onUserJoined(IChannel* rtcChannel,
+                            uid_t uid,
                             int elapsed) override;
 
-  virtual void onUserOffline(IChannel *rtcChannel, uid_t uid,
+  virtual void onUserOffline(IChannel* rtcChannel,
+                             uid_t uid,
                              USER_OFFLINE_REASON_TYPE reason) override;
 
-  virtual void onConnectionLost(IChannel *rtcChannel) override;
+  virtual void onConnectionLost(IChannel* rtcChannel) override;
 
-  virtual void onRequestToken(IChannel *rtcChannel) override;
+  virtual void onRequestToken(IChannel* rtcChannel) override;
 
-  virtual void onTokenPrivilegeWillExpire(IChannel *rtcChannel,
-                                          const char *token) override;
+  virtual void onTokenPrivilegeWillExpire(IChannel* rtcChannel,
+                                          const char* token) override;
 
-  virtual void onRtcStats(IChannel *rtcChannel, const RtcStats &stats) override;
+  virtual void onRtcStats(IChannel* rtcChannel, const RtcStats& stats) override;
 
-  virtual void onNetworkQuality(IChannel *rtcChannel, uid_t uid, int txQuality,
+  virtual void onNetworkQuality(IChannel* rtcChannel,
+                                uid_t uid,
+                                int txQuality,
                                 int rxQuality) override;
 
-  virtual void onRemoteVideoStats(IChannel *rtcChannel,
-                                  const RemoteVideoStats &stats) override;
+  virtual void onRemoteVideoStats(IChannel* rtcChannel,
+                                  const RemoteVideoStats& stats) override;
 
-  virtual void onRemoteAudioStats(IChannel *rtcChannel,
-                                  const RemoteAudioStats &stats) override;
+  virtual void onRemoteAudioStats(IChannel* rtcChannel,
+                                  const RemoteAudioStats& stats) override;
 
-  virtual void onRemoteAudioStateChanged(IChannel *rtcChannel, uid_t uid,
+  virtual void onRemoteAudioStateChanged(IChannel* rtcChannel,
+                                         uid_t uid,
                                          REMOTE_AUDIO_STATE state,
                                          REMOTE_AUDIO_STATE_REASON reason,
                                          int elapsed) override;
 
-  virtual void onActiveSpeaker(IChannel *rtcChannel, uid_t uid) override;
+  virtual void onActiveSpeaker(IChannel* rtcChannel, uid_t uid) override;
 
-  virtual void onVideoSizeChanged(IChannel *rtcChannel, uid_t uid, int width,
-                                  int height, int rotation) override;
+  virtual void onVideoSizeChanged(IChannel* rtcChannel,
+                                  uid_t uid,
+                                  int width,
+                                  int height,
+                                  int rotation) override;
 
-  virtual void onRemoteVideoStateChanged(IChannel *rtcChannel, uid_t uid,
+  virtual void onRemoteVideoStateChanged(IChannel* rtcChannel,
+                                         uid_t uid,
                                          REMOTE_VIDEO_STATE state,
                                          REMOTE_VIDEO_STATE_REASON reason,
                                          int elapsed) override;
 
-  virtual void onStreamMessage(IChannel *rtcChannel, uid_t uid, int streamId,
-                               const char *data, size_t length) override;
+  virtual void onStreamMessage(IChannel* rtcChannel,
+                               uid_t uid,
+                               int streamId,
+                               const char* data,
+                               size_t length) override;
 
-  virtual void onStreamMessageError(IChannel *rtcChannel, uid_t uid,
-                                    int streamId, int code, int missed,
+  virtual void onStreamMessageError(IChannel* rtcChannel,
+                                    uid_t uid,
+                                    int streamId,
+                                    int code,
+                                    int missed,
                                     int cached) override;
 
-  virtual void
-  onChannelMediaRelayStateChanged(IChannel *rtcChannel,
-                                  CHANNEL_MEDIA_RELAY_STATE state,
-                                  CHANNEL_MEDIA_RELAY_ERROR code) override;
+  virtual void onChannelMediaRelayStateChanged(
+      IChannel* rtcChannel,
+      CHANNEL_MEDIA_RELAY_STATE state,
+      CHANNEL_MEDIA_RELAY_ERROR code) override;
 
-  virtual void
-  onChannelMediaRelayEvent(IChannel *rtcChannel,
-                           CHANNEL_MEDIA_RELAY_EVENT code) override;
+  virtual void onChannelMediaRelayEvent(
+      IChannel* rtcChannel,
+      CHANNEL_MEDIA_RELAY_EVENT code) override;
 
   virtual void onRtmpStreamingStateChanged(
       IChannel *rtcChannel, const char *url,
       agora::rtc::RTMP_STREAM_PUBLISH_STATE state,
       agora::rtc::RTMP_STREAM_PUBLISH_ERROR_TYPE errCode) override;
 
-  virtual void onTranscodingUpdated(IChannel *rtcChannel) override;
+  virtual void onTranscodingUpdated(IChannel* rtcChannel) override;
 
-  virtual void onStreamInjectedStatus(IChannel *rtcChannel, const char *url,
-                                      uid_t uid, int status) override;
+  virtual void onStreamInjectedStatus(IChannel* rtcChannel,
+                                      const char* url,
+                                      uid_t uid,
+                                      int status) override;
 
-  virtual void
-  onRemoteSubscribeFallbackToAudioOnly(IChannel *rtcChannel, uid_t uid,
-                                       bool isFallbackOrRecover) override;
+  virtual void onRemoteSubscribeFallbackToAudioOnly(
+      IChannel* rtcChannel,
+      uid_t uid,
+      bool isFallbackOrRecover) override;
 
-  virtual void
-  onConnectionStateChanged(IChannel *rtcChannel, CONNECTION_STATE_TYPE state,
-                           CONNECTION_CHANGED_REASON_TYPE reason) override;
+  virtual void onConnectionStateChanged(
+      IChannel* rtcChannel,
+      CONNECTION_STATE_TYPE state,
+      CONNECTION_CHANGED_REASON_TYPE reason) override;
 
-  virtual void onAudioPublishStateChanged(IChannel *rtcChannel,
+  virtual void onAudioPublishStateChanged(IChannel* rtcChannel,
                                           STREAM_PUBLISH_STATE oldState,
                                           STREAM_PUBLISH_STATE newState,
                                           int elapseSinceLastState) override;
 
-  virtual void onVideoPublishStateChanged(IChannel *rtcChannel,
+  virtual void onVideoPublishStateChanged(IChannel* rtcChannel,
                                           STREAM_PUBLISH_STATE oldState,
                                           STREAM_PUBLISH_STATE newState,
                                           int elapseSinceLastState) override;
 
-  virtual void onAudioSubscribeStateChanged(IChannel *rtcChannel, uid_t uid,
+  virtual void onAudioSubscribeStateChanged(IChannel* rtcChannel,
+                                            uid_t uid,
                                             STREAM_SUBSCRIBE_STATE oldState,
                                             STREAM_SUBSCRIBE_STATE newState,
                                             int elapseSinceLastState) override;
 
-  virtual void onVideoSubscribeStateChanged(IChannel *rtcChannel, uid_t uid,
+  virtual void onVideoSubscribeStateChanged(IChannel* rtcChannel,
+                                            uid_t uid,
                                             STREAM_SUBSCRIBE_STATE oldState,
                                             STREAM_SUBSCRIBE_STATE newState,
                                             int elapseSinceLastState) override;
 
  private:
-  std::unordered_map<std::string, NodeEventCallback *> m_callbacks;
-  NodeRtcChannel *m_channel;
+  std::unordered_map<std::string, NodeEventCallback*> m_callbacks;
+  NodeRtcChannel* m_channel;
 };
-}// namespace rtc
-}// namespace agora
+}  // namespace rtc
+}  // namespace agora
 
 #endif
