@@ -1,9 +1,9 @@
-#include "node_log.h"
-#include "video_source.h"
 #include <chrono>
 #include <thread>
+#include "node_log.h"
+#include "video_source.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   initLogService();
   if (argc < 3) {
     LOG_ERROR("Need at least 3 parameter. Current parameter num : %d\n", argc);

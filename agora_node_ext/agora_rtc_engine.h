@@ -11,6 +11,13 @@
 #ifndef AGORA_NODE_RTC_ENGINE_H
 #define AGORA_NODE_RTC_ENGINE_H
 
+#include <node.h>
+#include <node_object_wrap.h>
+#include <functional>
+#include <list>
+#include <map>
+#include <mutex>
+#include <unordered_set>
 #include "AVPlugin/IAVFramePlugin.h"
 #include "AVPlugin/IAVFramePluginManager.h"
 #include "IAgoraMediaEngine.h"
@@ -22,26 +29,19 @@
 #include "node_log.h"
 #include "node_metadata_observer.h"
 #include "node_napi_api.h"
-#include "video_source_ipc.h"
 #include "windows_system_api.h"
-#include <functional>
-#include <list>
-#include <map>
-#include <mutex>
-#include <node.h>
-#include <node_object_wrap.h>
-#include <unordered_set>
+#include "video_source_ipc.h"
 
 /*
  * Used to declare native interface to nodejs
  */
-#define NAPI_API(m) static void(m)(const Nan::FunctionCallbackInfo<Value> &args)
+#define NAPI_API(m) static void(m)(const Nan::FunctionCallbackInfo<Value>& args)
 
 /*
  * Used to define native interface which is exposed to nodejs
  */
-#define NAPI_API_DEFINE(cls, method)                                           \
-  void cls::method(const Nan::FunctionCallbackInfo<Value> &args)
+#define NAPI_API_DEFINE(cls, method) \
+  void cls::method(const Nan::FunctionCallbackInfo<Value>& args)
 
 namespace agora {
 namespace rtc {
@@ -55,20 +55,20 @@ const int max_bmp_height = 500;
  */
 class NodeRtcEngine : public node::ObjectWrap {
  public:
-  struct NodeEventCallback {
-    Persistent<Function> callback;
-    Persistent<Object> js_this;
-  };
+   struct NodeEventCallback {
+     Persistent<Function> callback;
+     Persistent<Object> js_this;
+   };
   /*
    * Constructor
    */
-  static void createInstance(const FunctionCallbackInfo<Value> &args);
+  static void createInstance(const FunctionCallbackInfo<Value>& args);
 
   /*
    * Helper function, used to declare all supported native interface that are
    * exposed to nodejs.
    */
-  static void Init(Local<Object> &module);
+  static void Init(Local<Object>& module);
 
   /*
    * Wrapper for RtcEngine functions
@@ -396,7 +396,7 @@ class NodeRtcEngine : public node::ObjectWrap {
    */
   NAPI_API(enableVirtualBackground);
   NAPI_API(virtualBackgroundSourceEnabled);
-
+  
   /*
    * 3.5.1
    */
@@ -422,8 +422,8 @@ class NodeRtcEngine : public node::ObjectWrap {
   NAPI_API(getDefaultAudioRecordingDevices);
   NAPI_API(videoSourceDisableAudio);
   /*
-   * 3.5.2 && 3.6.0
-   */
+  * 3.5.2 && 3.6.0
+  */
   NAPI_API(takeSnapshot);
   NAPI_API(startRtmpStreamWithoutTranscoding);
   NAPI_API(startRtmpStreamWithTranscoding);
@@ -434,49 +434,44 @@ class NodeRtcEngine : public node::ObjectWrap {
   NAPI_API(followSystemRecordingDevice);
 
   /**
-   * 3.4.11
-   */
+  * 3.4.11
+  */
   NAPI_API(getScreenCaptureSources);
 
   /*
-   * 3.6.0.2
-   */
+  * 3.6.0.2
+  */
   NAPI_API(setLowlightEnhanceOptions);
   NAPI_API(setColorEnhanceOptions);
   NAPI_API(setVideoDenoiserOptions);
   NAPI_API(startEchoTestWithConfig);
   /*
-   * 3.6.1.4
-   */
+  * 3.6.1.4
+  */
   NAPI_API(setLocalAccessPoint);
   NAPI_API(videoSourceSetLocalAccessPoint);
   NAPI_API(sendStreamMessageWithArrayBuffer);
-  /*
+  /* 
    * 3.6.1.8
    */
   NAPI_API(videoSourceSetCloudProxy);
   NAPI_API(videoSourceMuteLocalVideoStream);
   NAPI_API(videoSourceSetScreenCaptureScenario);
 
-  /**
-   * 3.6.1.12
-   */
-  NAPI_API(isFeatureSupported);
-
  public:
-  Isolate *getIsolate() { return m_isolate; }
-  IRtcEngine *getRtcEngine() { return m_engine; }
+  Isolate* getIsolate() { return m_isolate; }
+  IRtcEngine* getRtcEngine() { return m_engine; }
   std::unique_ptr<NodeEventHandler> m_eventHandler;
   void destroyVideoSource();
 
  protected:
-  NodeRtcEngine(Isolate *isolate);
+  NodeRtcEngine(Isolate* isolate);
   ~NodeRtcEngine();
 
  private:
   DECLARE_CLASS;
-  IRtcEngine *m_engine = nullptr;
-  Isolate *m_isolate = nullptr;
+  IRtcEngine* m_engine = nullptr;
+  Isolate* m_isolate = nullptr;
   std::unique_ptr<IExternalVideoRenderFactory> m_externalVideoRenderFactory;
 
   /**
@@ -485,8 +480,8 @@ class NodeRtcEngine : public node::ObjectWrap {
    */
   std::unique_ptr<AgoraVideoSource> m_videoSourceSink;
 
-  AVideoDeviceManager *m_videoVdm = nullptr;
-  AAudioDeviceManager *m_audioVdm = nullptr;
+  AVideoDeviceManager* m_videoVdm = nullptr;
+  AAudioDeviceManager* m_audioVdm = nullptr;
 
   std::unique_ptr<IAVFramePluginManager> m_avPluginManager;
   std::unique_ptr<NodeMetadataObserver> metadataObserver;
@@ -497,13 +492,13 @@ class NodeRtcChannel : public node::ObjectWrap {
   /*
    * Constructor
    */
-  static void createInstance(const FunctionCallbackInfo<Value> &args);
+  static void createInstance(const FunctionCallbackInfo<Value>& args);
 
   /*
    * Helper function, used to declare all supported native interface that are
    * exposed to nodejs.
    */
-  static Local<Object> Init(Isolate *isolate, IChannel *pChannel);
+  static Local<Object> Init(Isolate* isolate, IChannel* pChannel);
 
   NAPI_API(onEvent);
   NAPI_API(joinChannel);
@@ -564,150 +559,209 @@ class NodeRtcChannel : public node::ObjectWrap {
   NAPI_API(sendStreamMessageWithArrayBuffer);
 
  public:
-  Isolate *getIsolate() { return m_isolate; }
+  Isolate* getIsolate() { return m_isolate; }
   std::unique_ptr<NodeChannelEventHandler> m_eventHandler;
-
  protected:
-  NodeRtcChannel(Isolate *isolate, IChannel *pChannel);
+  NodeRtcChannel(Isolate* isolate, IChannel* pChannel);
   ~NodeRtcChannel();
 
  private:
   DECLARE_CLASS;
-  IChannel *m_channel;
-  Isolate *m_isolate;
-
+  IChannel* m_channel;
+  Isolate* m_isolate;
+  
   std::unique_ptr<NodeMetadataObserver> metadataObserver;
 };
 
 /*
  * Use to extract native this pointer from JS object
  */
-#define napi_get_native_this(args, native)                                     \
+#define napi_get_native_this(args, native) \
   native = ObjectWrap::Unwrap<NodeRtcEngine>(args.Holder());
 
 /*
  * Use to extract native this pointer from JS object
  */
-#define napi_get_native_channel(args, native)                                  \
+#define napi_get_native_channel(args, native) \
   native = ObjectWrap::Unwrap<NodeRtcChannel>(args.Holder());
 
 /*
  * to extract one parameter from JS call parameters.
  */
-#define napi_get_param_1(args, type1, param1)                                  \
-  do {                                                                         \
-    status = napi_get_value_##type1##_(args[0], (param1));                     \
-    if (status != napi_ok) { break; }                                          \
+#define napi_get_param_1(args, type1, param1)              \
+  do {                                                     \
+    status = napi_get_value_##type1##_(args[0], (param1)); \
+    if (status != napi_ok) {                               \
+      break;                                               \
+    }                                                      \
   } while (false);
 
 /*
  * to extract two parameters from JS call parameters.
  */
-#define napi_get_param_2(argv, type1, param1, type2, param2)                   \
-  do {                                                                         \
-    status = napi_get_value_##type1##_(argv[0], (param1));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type2##_(argv[1], (param2));                     \
-    if (status != napi_ok) { break; }                                          \
+#define napi_get_param_2(argv, type1, param1, type2, param2) \
+  do {                                                       \
+    status = napi_get_value_##type1##_(argv[0], (param1));   \
+    if (status != napi_ok) {                                 \
+      break;                                                 \
+    }                                                        \
+    status = napi_get_value_##type2##_(argv[1], (param2));   \
+    if (status != napi_ok) {                                 \
+      break;                                                 \
+    }                                                        \
   } while (false);
 
 /*
  * to extract three parameters from JS call parameters.
  */
-#define napi_get_param_3(argv, type1, param1, type2, param2, type3, param3)    \
-  do {                                                                         \
-    status = napi_get_value_##type1##_(argv[0], (param1));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type2##_(argv[1], (param2));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type3##_(argv[2], (param3));                     \
-    if (status != napi_ok) { break; }                                          \
+#define napi_get_param_3(argv, type1, param1, type2, param2, type3, param3) \
+  do {                                                                      \
+    status = napi_get_value_##type1##_(argv[0], (param1));                  \
+    if (status != napi_ok) {                                                \
+      break;                                                                \
+    }                                                                       \
+    status = napi_get_value_##type2##_(argv[1], (param2));                  \
+    if (status != napi_ok) {                                                \
+      break;                                                                \
+    }                                                                       \
+    status = napi_get_value_##type3##_(argv[2], (param3));                  \
+    if (status != napi_ok) {                                                \
+      break;                                                                \
+    }                                                                       \
   } while (false);
 
 /*
  * to extract four parameters from JS call parameters.
  */
-#define napi_get_param_4(argv, type1, param1, type2, param2, type3, param3,    \
-                         type4, param4)                                        \
-  do {                                                                         \
-    status = napi_get_value_##type1##_(argv[0], (param1));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type2##_(argv[1], (param2));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type3##_(argv[2], (param3));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type4##_(argv[3], (param4));                     \
-    if (status != napi_ok) { break; }                                          \
+#define napi_get_param_4(argv, type1, param1, type2, param2, type3, param3, \
+                         type4, param4)                                     \
+  do {                                                                      \
+    status = napi_get_value_##type1##_(argv[0], (param1));                  \
+    if (status != napi_ok) {                                                \
+      break;                                                                \
+    }                                                                       \
+    status = napi_get_value_##type2##_(argv[1], (param2));                  \
+    if (status != napi_ok) {                                                \
+      break;                                                                \
+    }                                                                       \
+    status = napi_get_value_##type3##_(argv[2], (param3));                  \
+    if (status != napi_ok) {                                                \
+      break;                                                                \
+    }                                                                       \
+    status = napi_get_value_##type4##_(argv[3], (param4));                  \
+    if (status != napi_ok) {                                                \
+      break;                                                                \
+    }                                                                       \
   } while (false);
 
 /*
  * to extract four parameters from JS call parameters.
  */
-#define napi_get_param_5(argv, type1, param1, type2, param2, type3, param3,    \
-                         type4, param4, type5, param5)                         \
-  do {                                                                         \
-    status = napi_get_value_##type1##_(argv[0], (param1));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type2##_(argv[1], (param2));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type3##_(argv[2], (param3));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type4##_(argv[3], (param4));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type5##_(argv[4], (param5));                     \
-    if (status != napi_ok) { break; }                                          \
+#define napi_get_param_5(argv, type1, param1, type2, param2, type3, param3, \
+                         type4, param4, type5, param5)                      \
+  do {                                                                      \
+    status = napi_get_value_##type1##_(argv[0], (param1));                  \
+    if (status != napi_ok) {                                                \
+      break;                                                                \
+    }                                                                       \
+    status = napi_get_value_##type2##_(argv[1], (param2));                  \
+    if (status != napi_ok) {                                                \
+      break;                                                                \
+    }                                                                       \
+    status = napi_get_value_##type3##_(argv[2], (param3));                  \
+    if (status != napi_ok) {                                                \
+      break;                                                                \
+    }                                                                       \
+    status = napi_get_value_##type4##_(argv[3], (param4));                  \
+    if (status != napi_ok) {                                                \
+      break;                                                                \
+    }                                                                       \
+    status = napi_get_value_##type5##_(argv[4], (param5));                  \
+    if (status != napi_ok) {                                                \
+      break;                                                                \
+    }                                                                       \
   } while (false);
 
 /*
  * to extract seven parameters from JS call parameters.
  */
-#define napi_get_param_7(argv, type1, param1, type2, param2, type3, param3,    \
-                         type4, param4, type5, param5, type6, param6, type7,   \
-                         param7)                                               \
-  do {                                                                         \
-    status = napi_get_value_##type1##_(argv[0], (param1));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type2##_(argv[1], (param2));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type3##_(argv[2], (param3));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type4##_(argv[3], (param4));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type5##_(argv[4], (param5));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type6##_(argv[5], (param6));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type7##_(argv[6], (param7));                     \
-    if (status != napi_ok) { break; }                                          \
+#define napi_get_param_7(argv, type1, param1, type2, param2, type3, param3,  \
+                         type4, param4, type5, param5, type6, param6, type7, \
+                         param7)                                             \
+  do {                                                                       \
+    status = napi_get_value_##type1##_(argv[0], (param1));                   \
+    if (status != napi_ok) {                                                 \
+      break;                                                                 \
+    }                                                                        \
+    status = napi_get_value_##type2##_(argv[1], (param2));                   \
+    if (status != napi_ok) {                                                 \
+      break;                                                                 \
+    }                                                                        \
+    status = napi_get_value_##type3##_(argv[2], (param3));                   \
+    if (status != napi_ok) {                                                 \
+      break;                                                                 \
+    }                                                                        \
+    status = napi_get_value_##type4##_(argv[3], (param4));                   \
+    if (status != napi_ok) {                                                 \
+      break;                                                                 \
+    }                                                                        \
+    status = napi_get_value_##type5##_(argv[4], (param5));                   \
+    if (status != napi_ok) {                                                 \
+      break;                                                                 \
+    }                                                                        \
+    status = napi_get_value_##type6##_(argv[5], (param6));                   \
+    if (status != napi_ok) {                                                 \
+      break;                                                                 \
+    }                                                                        \
+    status = napi_get_value_##type7##_(argv[6], (param7));                   \
+    if (status != napi_ok) {                                                 \
+      break;                                                                 \
+    }                                                                        \
   } while (false);
 /*
  * to extract seven parameters from JS call parameters.
  */
-#define napi_get_param_8(argv, type1, param1, type2, param2, type3, param3,    \
-                         type4, param4, type5, param5, type6, param6, type7,   \
-                         param7, type8, param8)                                \
-  do {                                                                         \
-    status = napi_get_value_##type1##_(argv[0], (param1));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type2##_(argv[1], (param2));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type3##_(argv[2], (param3));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type4##_(argv[3], (param4));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type5##_(argv[4], (param5));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type6##_(argv[5], (param6));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type7##_(argv[6], (param7));                     \
-    if (status != napi_ok) { break; }                                          \
-    status = napi_get_value_##type8##_(argv[7], (param8));                     \
-    if (status != napi_ok) { break; }                                          \
+#define napi_get_param_8(argv, type1, param1, type2, param2, type3, param3,  \
+                         type4, param4, type5, param5, type6, param6, type7, \
+                         param7, type8, param8)                              \
+  do {                                                                       \
+    status = napi_get_value_##type1##_(argv[0], (param1));                   \
+    if (status != napi_ok) {                                                 \
+      break;                                                                 \
+    }                                                                        \
+    status = napi_get_value_##type2##_(argv[1], (param2));                   \
+    if (status != napi_ok) {                                                 \
+      break;                                                                 \
+    }                                                                        \
+    status = napi_get_value_##type3##_(argv[2], (param3));                   \
+    if (status != napi_ok) {                                                 \
+      break;                                                                 \
+    }                                                                        \
+    status = napi_get_value_##type4##_(argv[3], (param4));                   \
+    if (status != napi_ok) {                                                 \
+      break;                                                                 \
+    }                                                                        \
+    status = napi_get_value_##type5##_(argv[4], (param5));                   \
+    if (status != napi_ok) {                                                 \
+      break;                                                                 \
+    }                                                                        \
+    status = napi_get_value_##type6##_(argv[5], (param6));                   \
+    if (status != napi_ok) {                                                 \
+      break;                                                                 \
+    }                                                                        \
+    status = napi_get_value_##type7##_(argv[6], (param7));                   \
+    if (status != napi_ok) {                                                 \
+      break;                                                                 \
+    }                                                                        \
+    status = napi_get_value_##type8##_(argv[7], (param8));                   \
+    if (status != napi_ok) {                                                 \
+      break;                                                                 \
+    }                                                                        \
   } while (false);
 /*
  * to return int value for JS call.
  */
-#define napi_set_int_result(args, result)                                      \
+#define napi_set_int_result(args, result) \
   (args).GetReturnValue().Set(Integer::New(args.GetIsolate(), (result)))
 
 /*
@@ -717,90 +771,92 @@ class NodeRtcChannel : public node::ObjectWrap {
 /**
  * to return bool value for JS call
  */
-#define napi_set_bool_result(args, result)                                     \
+#define napi_set_bool_result(args, result) \
   (args).GetReturnValue().Set(v8::Boolean::New(args.GetIsolate(), (result)))
 
 /*
  * to return string value for JS call
  */
-#define napi_set_string_result(args, data)                                     \
-  Local<Value> tmp = String::NewFromUtf8(args.GetIsolate(), data,              \
-                                         NewStringType::kInternalized)         \
-                         .ToLocalChecked();                                    \
+#define napi_set_string_result(args, data)                             \
+  Local<Value> tmp = String::NewFromUtf8(args.GetIsolate(), data,      \
+                                         NewStringType::kInternalized) \
+                         .ToLocalChecked();                            \
   args.GetReturnValue().Set(tmp);
 
 /**
  * Helper MACRO to check whether the last API call return success.
  */
-#define CHECK_NAPI_STATUS(engine, status)                                      \
-  if (status != napi_ok) {                                                     \
-    LOG_ERROR("Error :%s, :%d\n", __FUNCTION__, __LINE__);                     \
-    engine->m_eventHandler->fireApiError(__FUNCTION__);                        \
-    break;                                                                     \
+#define CHECK_NAPI_STATUS(engine, status)                  \
+  if (status != napi_ok) {                                 \
+    LOG_ERROR("Error :%s, :%d\n", __FUNCTION__, __LINE__); \
+    engine->m_eventHandler->fireApiError(__FUNCTION__);    \
+    break;                                                 \
   }
 
-#define CHECK_NAPI_STATUS_PARAM(engine, status, key)                           \
-  if (status != napi_ok) {                                                     \
-    LOG_ERROR("Error :%s, :%d, error key: ***\"%s\"***\n", __FUNCTION__,       \
-              __LINE__, key.c_str());                                          \
-    char errMessage[256];                                                      \
-    sprintf(errMessage, "%s, error key: ******* \"%s\" *******, call",         \
-            __FUNCTION__, key.c_str());                                        \
-    engine->m_eventHandler->fireApiError(errMessage);                          \
-    break;                                                                     \
+#define CHECK_NAPI_STATUS_PARAM(engine, status, key)                     \
+  if (status != napi_ok) {                                               \
+    LOG_ERROR("Error :%s, :%d, error key: ***\"%s\"***\n", __FUNCTION__, \
+              __LINE__, key.c_str());                                    \
+    char errMessage[256];                                                \
+    sprintf(errMessage, "%s, error key: ******* \"%s\" *******, call",   \
+            __FUNCTION__, key.c_str());                                  \
+    engine->m_eventHandler->fireApiError(errMessage);                    \
+    break;                                                               \
   }
 
-#define CHECK_ARG_NUM(engine, args, num)                                       \
-  if (args.Length() < num) { CHECK_NAPI_STATUS(engine, napi_invalid_arg); }
+#define CHECK_ARG_NUM(engine, args, num)         \
+  if (args.Length() < num) {                     \
+    CHECK_NAPI_STATUS(engine, napi_invalid_arg); \
+  }
 
 /**
  * Helper MACRO to check whether the extracted object is emptry;
  */
-#define CHECK_NAPI_OBJECT(obj)                                                 \
-  if (obj.IsEmpty()) {                                                         \
-    LOG_ERROR("Error :%s, :%d\n", __FUNCTION__, __LINE__);                     \
-    break;                                                                     \
+#define CHECK_NAPI_OBJECT(obj)                             \
+  if (obj.IsEmpty()) {                                     \
+    LOG_ERROR("Error :%s, :%d\n", __FUNCTION__, __LINE__); \
+    break;                                                 \
   }
 
 /**
  * Helper MACRO to check whether the extracted native this is valid.
  */
-#define CHECK_NATIVE_THIS(engine)                                              \
-  if (!engine || !engine->m_engine) {                                          \
-    LOG_ERROR("m_engine is null.\n");                                          \
-    break;                                                                     \
+#define CHECK_NATIVE_THIS(engine)     \
+  if (!engine || !engine->m_engine) { \
+    LOG_ERROR("m_engine is null.\n"); \
+    break;                            \
   }
 
-#define CHECK_NATIVE_CHANNEL(channel)                                          \
-  if (!channel || !channel->m_channel) {                                       \
-    LOG_ERROR("m_channel is null.\n");                                         \
-    break;                                                                     \
+#define CHECK_NATIVE_CHANNEL(channel)    \
+  if (!channel || !channel->m_channel) { \
+    LOG_ERROR("m_channel is null.\n");   \
+    break;                               \
   }
 
-#define CHECK_PLUGIN_INFO_EXIST(engine, pluginId)                              \
-  if (!engine->m_avPluginManager->hasPlugin(pluginId)) {                       \
-    LOG_ERROR("Error : plugin %s, not exist\n", pluginId.c_str());             \
-    break;                                                                     \
+#define CHECK_PLUGIN_INFO_EXIST(engine, pluginId)                  \
+  if (!engine->m_avPluginManager->hasPlugin(pluginId)) {           \
+    LOG_ERROR("Error : plugin %s, not exist\n", pluginId.c_str()); \
+    break;                                                         \
   }
 
-#define CHECK_PLUGIN_INFO_NOT_EXIST(engine, pluginId)                          \
-  if (engine->m_avPluginManager->hasPlugin(pluginId)) {                        \
-    LOG_ERROR("Error : plugin %s, has exist\n", pluginId.c_str());             \
-    break;                                                                     \
+#define CHECK_PLUGIN_INFO_NOT_EXIST(engine, pluginId)              \
+  if (engine->m_avPluginManager->hasPlugin(pluginId)) {            \
+    LOG_ERROR("Error : plugin %s, has exist\n", pluginId.c_str()); \
+    break;                                                         \
   }
 
-#define CHECK_PLUGIN_MANAGER_EXIST(engine)                                     \
-  if (!engine->m_avPluginManager.get()) {                                      \
-    LOG_ERROR("Error : plugin manager not exist\n");                           \
-    break;                                                                     \
+#define CHECK_PLUGIN_MANAGER_EXIST(engine)           \
+  if (!engine->m_avPluginManager.get()) {            \
+    LOG_ERROR("Error : plugin manager not exist\n"); \
+    break;                                           \
   }
 
 #ifdef _WIN32
-#define CHECK_PLUGIN_MODULE_EXIST(pluginInfo)                                  \
-  if (pluginInfo.pluginModule == NULL) {                                       \
-    LOG_ERROR("Error :%s, :%d, not unload plugin \"%s\"\n", __FUNCTION__,      \
-              __LINE__, pluginInfo.id);                                        \
-    break;                                                                     \
+#define CHECK_PLUGIN_MODULE_EXIST(pluginInfo)                             \
+  if (pluginInfo.pluginModule == NULL) {                                  \
+    LOG_ERROR("Error :%s, :%d, not unload plugin \"%s\"\n", __FUNCTION__, \
+              __LINE__, pluginInfo.id);                                   \
+    break;                                                                \
   }
 #else
 #define CHECK_PLUGIN_MODULE_EXIST(pluginInfo)                                  \
@@ -811,17 +867,17 @@ class NodeRtcChannel : public node::ObjectWrap {
   }
 #endif
 
-#define CHECK_PLUGIN_INSTANCE_EXIST(pluginInfo)                                \
-  if (pluginInfo.instance == NULL) {                                           \
-    LOG_ERROR("Error :%s, :%d, not release plugin \"%s\"\n", __FUNCTION__,     \
-              __LINE__, pluginInfo.id);                                        \
-    break;                                                                     \
+#define CHECK_PLUGIN_INSTANCE_EXIST(pluginInfo)                            \
+  if (pluginInfo.instance == NULL) {                                       \
+    LOG_ERROR("Error :%s, :%d, not release plugin \"%s\"\n", __FUNCTION__, \
+              __LINE__, pluginInfo.id);                                    \
+    break;                                                                 \
   }
 
-#define READ_PLUGIN_ID(pEngine, status, arg, str)                              \
-  nodestring nodeStr;                                                          \
-  status = napi_get_value_nodestring_(arg, nodeStr);                           \
-  CHECK_NAPI_STATUS(pEngine, status)                                           \
+#define READ_PLUGIN_ID(pEngine, status, arg, str)    \
+  nodestring nodeStr;                                \
+  status = napi_get_value_nodestring_(arg, nodeStr); \
+  CHECK_NAPI_STATUS(pEngine, status)                 \
   str = nodeStr;
 
 typedef int int32;
@@ -830,189 +886,197 @@ typedef unsigned int uint32;
 
 #ifdef _WIN32
 #define CALL_MEM_FUNC_FROM_POINTER(pointer, func) pointer->##func()
-#define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM(pointer, func, param)            \
+#define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM(pointer, func, param) \
   pointer->##func(param)
-#define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM2(pointer, func, param1, param2)  \
+#define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM2(pointer, func, param1, param2) \
   pointer->##func(param1, param2)
-#define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM3(pointer, func, param1, param2,  \
-                                               param3)                         \
+#define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM3(pointer, func, param1, param2, \
+                                               param3)                        \
   pointer->##func(param1, param2, param3)
 
 #define CALL_MEM_FUNC(cls, func) cls.##func()
 #define CALL_MEM_FUNC_WITH_PARAM(cls, func, param) cls.##func(param)
-#define CALL_MEM_FUNC_WITH_PARAM2(cls, func, param1, param2)                   \
+#define CALL_MEM_FUNC_WITH_PARAM2(cls, func, param1, param2) \
   cls.##func(param1, param2)
-#define CALL_MEM_FUNC_WITH_PARAM3(cls, func, param1, param2, param3)           \
+#define CALL_MEM_FUNC_WITH_PARAM3(cls, func, param1, param2, param3) \
   cls.##func(param1, param2, param3)
-#define CALL_MEM_FUNC_WITH_PARAM7(cls, func, param1, param2, param3, param4,   \
-                                  param5, param6, param7)                      \
+#define CALL_MEM_FUNC_WITH_PARAM7(cls, func, param1, param2, param3, param4, \
+                                  param5, param6, param7)                    \
   cls.##func(param1, param2, param3, param4, param5, param6, param7)
 #else
 #define CALL_MEM_FUNC_FROM_POINTER(pointer, func) pointer->func()
-#define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM(pointer, func, param)            \
+#define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM(pointer, func, param) \
   pointer->func(param)
-#define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM2(pointer, func, param1, param2)  \
+#define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM2(pointer, func, param1, param2) \
   pointer->func(param1, param2)
-#define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM3(pointer, func, param1, param2,  \
-                                               param3)                         \
+#define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM3(pointer, func, param1, param2, \
+                                               param3)                        \
   pointer->func(param1, param2, param3)
 
 #define CALL_MEM_FUNC(cls, func) cls.func()
 #define CALL_MEM_FUNC_WITH_PARAM(cls, func, param) cls.func(param)
-#define CALL_MEM_FUNC_WITH_PARAM2(cls, func, param1, param2)                   \
+#define CALL_MEM_FUNC_WITH_PARAM2(cls, func, param1, param2) \
   cls.func(param1, param2)
-#define CALL_MEM_FUNC_WITH_PARAM3(cls, func, param1, param2, param3)           \
+#define CALL_MEM_FUNC_WITH_PARAM3(cls, func, param1, param2, param3) \
   cls.func(param1, param2, param3)
-#define CALL_MEM_FUNC_WITH_PARAM7(cls, func, param1, param2, param3, param4,   \
-                                  param5, param6, param7)                      \
+#define CALL_MEM_FUNC_WITH_PARAM7(cls, func, param1, param2, param3, param4, \
+                                  param5, param6, param7)                    \
   cls.func(param1, param2, param3, param4, param5, param6, param7)
 
 #endif
 /*
  * Helper macro to transfer JS call directly to RtcEngine
  */
-#define NAPI_API_DEFINE_WRAPPER_PARAM_0(method)                                \
-  NAPI_API_DEFINE(NodeRtcEngine, method) {                                     \
-    LOG_ENTER;                                                                 \
-    do {                                                                       \
-      NodeRtcEngine *pEngine = nullptr;                                        \
-      napi_get_native_this(args, pEngine);                                     \
-      CHECK_NATIVE_THIS(pEngine);                                              \
-      int result = CALL_MEM_FUNC_FROM_POINTER(pEngine->m_engine, method);      \
-      args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result));      \
-    } while (false);                                                           \
+#define NAPI_API_DEFINE_WRAPPER_PARAM_0(method)                           \
+  NAPI_API_DEFINE(NodeRtcEngine, method) {                                \
+    LOG_ENTER;                                                            \
+    do {                                                                  \
+      NodeRtcEngine* pEngine = nullptr;                                   \
+      napi_get_native_this(args, pEngine);                                \
+      CHECK_NATIVE_THIS(pEngine);                                         \
+      int result = CALL_MEM_FUNC_FROM_POINTER(pEngine->m_engine, method); \
+      args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result)); \
+    } while (false);                                                      \
+    LOG_LEAVE;                                                            \
   }
-#define NAPI_API_DEFINE_WRAPPER_PARAM_1(method, type)                          \
-  NAPI_API_DEFINE(NodeRtcEngine, method) {                                     \
-    LOG_ENTER;                                                                 \
-    do {                                                                       \
-      NodeRtcEngine *pEngine = nullptr;                                        \
-      napi_get_native_this(args, pEngine);                                     \
-      CHECK_NATIVE_THIS(pEngine);                                              \
-      napi_status status = napi_ok;                                            \
-      type param;                                                              \
-      napi_get_param_1(args, type, param);                                     \
-      CHECK_NAPI_STATUS(pEngine, status);                                      \
-      int result = CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM(pEngine->m_engine,    \
-                                                         method, param);       \
-      args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result));      \
-    } while (false);                                                           \
-  }
-
-#define NAPI_API_DEFINE_WRAPPER_PARAM_2(method, type, type2)                   \
-  NAPI_API_DEFINE(NodeRtcEngine, method) {                                     \
-    LOG_ENTER;                                                                 \
-    do {                                                                       \
-      NodeRtcEngine *pEngine = nullptr;                                        \
-      napi_get_native_this(args, pEngine);                                     \
-      CHECK_NATIVE_THIS(pEngine);                                              \
-      napi_status status = napi_ok;                                            \
-      type param;                                                              \
-      type2 param2;                                                            \
-      napi_get_param_2(args, type, param, type2, param2);                      \
-      CHECK_NAPI_STATUS(pEngine, status);                                      \
-      int result = CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM2(                     \
-          pEngine->m_engine, method, param, param2);                           \
-      args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result));      \
-    } while (false);                                                           \
+#define NAPI_API_DEFINE_WRAPPER_PARAM_1(method, type)                       \
+  NAPI_API_DEFINE(NodeRtcEngine, method) {                                  \
+    LOG_ENTER;                                                              \
+    do {                                                                    \
+      NodeRtcEngine* pEngine = nullptr;                                     \
+      napi_get_native_this(args, pEngine);                                  \
+      CHECK_NATIVE_THIS(pEngine);                                           \
+      napi_status status = napi_ok;                                         \
+      type param;                                                           \
+      napi_get_param_1(args, type, param);                                  \
+      CHECK_NAPI_STATUS(pEngine, status);                                   \
+      int result = CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM(pEngine->m_engine, \
+                                                         method, param);    \
+      args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result));   \
+    } while (false);                                                        \
+    LOG_LEAVE;                                                              \
   }
 
-#define NAPI_API_DEFINE_WRAPPER_PARAM_3(method, type, type2, type3)            \
-  NAPI_API_DEFINE(NodeRtcEngine, method) {                                     \
-    LOG_ENTER;                                                                 \
-    do {                                                                       \
-      NodeRtcEngine *pEngine = nullptr;                                        \
-      napi_get_native_this(args, pEngine);                                     \
-      CHECK_NATIVE_THIS(pEngine);                                              \
-      napi_status status = napi_ok;                                            \
-      type param;                                                              \
-      type2 param2;                                                            \
-      type3 param3;                                                            \
-      napi_get_param_3(args, type, param, type2, param2, type3, param3);       \
-      CHECK_NAPI_STATUS(pEngine, status);                                      \
-      int result = CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM3(                     \
-          pEngine->m_engine, method, param, param2, param3);                   \
-      args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result));      \
-    } while (false);                                                           \
+#define NAPI_API_DEFINE_WRAPPER_PARAM_2(method, type, type2)              \
+  NAPI_API_DEFINE(NodeRtcEngine, method) {                                \
+    LOG_ENTER;                                                            \
+    do {                                                                  \
+      NodeRtcEngine* pEngine = nullptr;                                   \
+      napi_get_native_this(args, pEngine);                                \
+      CHECK_NATIVE_THIS(pEngine);                                         \
+      napi_status status = napi_ok;                                       \
+      type param;                                                         \
+      type2 param2;                                                       \
+      napi_get_param_2(args, type, param, type2, param2);                 \
+      CHECK_NAPI_STATUS(pEngine, status);                                 \
+      int result = CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM2(                \
+          pEngine->m_engine, method, param, param2);                      \
+      args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result)); \
+    } while (false);                                                      \
+    LOG_LEAVE;                                                            \
   }
 
-}// namespace rtc
-}// namespace agora
-
-#define NAPI_API_CHANNEL_DEFINE_WRAPPER(method)                                \
-  NAPI_API_DEFINE(NodeRtcChannel, method) {                                    \
-    LOG_ENTER;                                                                 \
-    int result = -1;                                                           \
-    do {                                                                       \
-      NodeRtcChannel *pChannel = nullptr;                                      \
-      napi_get_native_channel(args, pChannel);                                 \
-      CHECK_NATIVE_CHANNEL(pChannel);                                          \
-      result = CALL_MEM_FUNC_FROM_POINTER(pChannel->m_channel, method);        \
-    } while (false);                                                           \
-    napi_set_int_result(args, result);                                         \
+#define NAPI_API_DEFINE_WRAPPER_PARAM_3(method, type, type2, type3)       \
+  NAPI_API_DEFINE(NodeRtcEngine, method) {                                \
+    LOG_ENTER;                                                            \
+    do {                                                                  \
+      NodeRtcEngine* pEngine = nullptr;                                   \
+      napi_get_native_this(args, pEngine);                                \
+      CHECK_NATIVE_THIS(pEngine);                                         \
+      napi_status status = napi_ok;                                       \
+      type param;                                                         \
+      type2 param2;                                                       \
+      type3 param3;                                                       \
+      napi_get_param_3(args, type, param, type2, param2, type3, param3);  \
+      CHECK_NAPI_STATUS(pEngine, status);                                 \
+      int result = CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM3(                \
+          pEngine->m_engine, method, param, param2, param3);              \
+      args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result)); \
+    } while (false);                                                      \
+    LOG_LEAVE;                                                            \
   }
 
-#define NAPI_API_CHANNEL_DEFINE_WRAPPER_1(method, type)                        \
-  NAPI_API_DEFINE(NodeRtcChannel, method) {                                    \
-    LOG_ENTER;                                                                 \
-    int result = -1;                                                           \
-    do {                                                                       \
-      NodeRtcChannel *pChannel = nullptr;                                      \
-      napi_get_native_channel(args, pChannel);                                 \
-      CHECK_NATIVE_CHANNEL(pChannel);                                          \
-      napi_status status = napi_ok;                                            \
-      type param;                                                              \
-      napi_get_param_1(args, type, param);                                     \
-      CHECK_NAPI_STATUS(pChannel, status);                                     \
-      result = CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM(pChannel->m_channel,      \
-                                                     method, param);           \
-    } while (false);                                                           \
-    napi_set_int_result(args, result);                                         \
+}  // namespace rtc
+}  // namespace agora
+
+#define NAPI_API_CHANNEL_DEFINE_WRAPPER(method)                         \
+  NAPI_API_DEFINE(NodeRtcChannel, method) {                             \
+    LOG_ENTER;                                                          \
+    int result = -1;                                                    \
+    do {                                                                \
+      NodeRtcChannel* pChannel = nullptr;                               \
+      napi_get_native_channel(args, pChannel);                          \
+      CHECK_NATIVE_CHANNEL(pChannel);                                   \
+      result = CALL_MEM_FUNC_FROM_POINTER(pChannel->m_channel, method); \
+    } while (false);                                                    \
+    napi_set_int_result(args, result);                                  \
+    LOG_LEAVE;                                                          \
   }
 
-#define NAPI_API_CHANNEL_DEFINE_WRAPPER_2(method, type, type2)                 \
-  NAPI_API_DEFINE(NodeRtcChannel, method) {                                    \
-    LOG_ENTER;                                                                 \
-    int result = -1;                                                           \
-    do {                                                                       \
-      NodeRtcChannel *pChannel = nullptr;                                      \
-      napi_get_native_channel(args, pChannel);                                 \
-      CHECK_NATIVE_CHANNEL(pChannel);                                          \
-      napi_status status = napi_ok;                                            \
-      type param;                                                              \
-      type2 param2;                                                            \
-      napi_get_param_2(args, type, param, type2, param2);                      \
-      CHECK_NAPI_STATUS(pChannel, status);                                     \
-      result = CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM2(pChannel->m_channel,     \
-                                                      method, param, param2);  \
-    } while (false);                                                           \
-    napi_set_int_result(args, result);                                         \
+#define NAPI_API_CHANNEL_DEFINE_WRAPPER_1(method, type)                   \
+  NAPI_API_DEFINE(NodeRtcChannel, method) {                               \
+    LOG_ENTER;                                                            \
+    int result = -1;                                                      \
+    do {                                                                  \
+      NodeRtcChannel* pChannel = nullptr;                                 \
+      napi_get_native_channel(args, pChannel);                            \
+      CHECK_NATIVE_CHANNEL(pChannel);                                     \
+      napi_status status = napi_ok;                                       \
+      type param;                                                         \
+      napi_get_param_1(args, type, param);                                \
+      CHECK_NAPI_STATUS(pChannel, status);                                \
+      result = CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM(pChannel->m_channel, \
+                                                     method, param);      \
+    } while (false);                                                      \
+    napi_set_int_result(args, result);                                    \
+    LOG_LEAVE;                                                            \
   }
 
-#define NAPI_API_CHANNEL_DEFINE_WRAPPER_3(method, type, type2, type3)          \
-  NAPI_API_DEFINE(NodeRtcChannel, method) {                                    \
-    LOG_ENTER;                                                                 \
-    int result = -1;                                                           \
-    do {                                                                       \
-      NodeRtcChannel *pChannel = nullptr;                                      \
-      napi_get_native_channel(args, pChannel);                                 \
-      CHECK_NATIVE_CHANNEL(pChannel);                                          \
-      napi_status status = napi_ok;                                            \
-      type param;                                                              \
-      type2 param2;                                                            \
-      type3 param3;                                                            \
-      napi_get_param_3(args, type, param, type2, param2, type3, param3);       \
-      CHECK_NAPI_STATUS(pChannel, status);                                     \
-      result = CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM3(                         \
-          pChannel->m_channel, method, param, param2, param3);                 \
-    } while (false);                                                           \
-    napi_set_int_result(args, result);                                         \
+#define NAPI_API_CHANNEL_DEFINE_WRAPPER_2(method, type, type2)                \
+  NAPI_API_DEFINE(NodeRtcChannel, method) {                                   \
+    LOG_ENTER;                                                                \
+    int result = -1;                                                          \
+    do {                                                                      \
+      NodeRtcChannel* pChannel = nullptr;                                     \
+      napi_get_native_channel(args, pChannel);                                \
+      CHECK_NATIVE_CHANNEL(pChannel);                                         \
+      napi_status status = napi_ok;                                           \
+      type param;                                                             \
+      type2 param2;                                                           \
+      napi_get_param_2(args, type, param, type2, param2);                     \
+      CHECK_NAPI_STATUS(pChannel, status);                                    \
+      result = CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM2(pChannel->m_channel,    \
+                                                      method, param, param2); \
+    } while (false);                                                          \
+    napi_set_int_result(args, result);                                        \
+    LOG_LEAVE;                                                                \
+  }
+
+#define NAPI_API_CHANNEL_DEFINE_WRAPPER_3(method, type, type2, type3)    \
+  NAPI_API_DEFINE(NodeRtcChannel, method) {                              \
+    LOG_ENTER;                                                           \
+    int result = -1;                                                     \
+    do {                                                                 \
+      NodeRtcChannel* pChannel = nullptr;                                \
+      napi_get_native_channel(args, pChannel);                           \
+      CHECK_NATIVE_CHANNEL(pChannel);                                    \
+      napi_status status = napi_ok;                                      \
+      type param;                                                        \
+      type2 param2;                                                      \
+      type3 param3;                                                      \
+      napi_get_param_3(args, type, param, type2, param2, type3, param3); \
+      CHECK_NAPI_STATUS(pChannel, status);                               \
+      result = CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM3(                   \
+          pChannel->m_channel, method, param, param2, param3);           \
+    } while (false);                                                     \
+    napi_set_int_result(args, result);                                   \
+    LOG_LEAVE;                                                           \
   }
 
 #if defined(_WIN32)
 size_t                   /* O - Length of string */
-strlcpy(char *dst,       /* O - Destination string */
-        const char *src, /* I - Source string */
+strlcpy(char* dst,       /* O - Destination string */
+        const char* src, /* I - Source string */
         size_t size);    /* I - Size of destination string buffer */
 #endif
 

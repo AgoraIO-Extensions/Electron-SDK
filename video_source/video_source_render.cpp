@@ -12,17 +12,17 @@
 #include "video_source.h"
 
 AgoraVideoSourceRenderFactory::AgoraVideoSourceRenderFactory(
-    AgoraVideoSource &videoSource)
+    AgoraVideoSource& videoSource)
     : m_videoSource(videoSource) {}
 
 AgoraVideoSourceRenderFactory::~AgoraVideoSourceRenderFactory() {}
 
-IExternalVideoRender *AgoraVideoSourceRenderFactory::createRenderInstance(
-    const ExternalVideoRenerContext &context) {
+IExternalVideoRender* AgoraVideoSourceRenderFactory::createRenderInstance(
+    const ExternalVideoRenerContext& context) {
   return new AgoraVideoSourceRender(m_videoSource);
 }
 
-AgoraVideoSourceRender::AgoraVideoSourceRender(AgoraVideoSource &videoSource)
+AgoraVideoSourceRender::AgoraVideoSourceRender(AgoraVideoSource& videoSource)
     : m_videoSource(videoSource) {
   m_transporter.reset(createAgoraVideoSourceTransporter(videoSource));
 }
@@ -35,11 +35,14 @@ void AgoraVideoSourceRender::release() {
 }
 
 int AgoraVideoSourceRender::initialize() {
-  if (m_transporter->initialize()) { return 0; }
+  if (m_transporter->initialize()) {
+    return 0;
+  }
   return -1;
 }
 
-int AgoraVideoSourceRender::deliverFrame(const IVideoFrame &videoFrame,
-                                         int rotation, bool mirrored) {
+int AgoraVideoSourceRender::deliverFrame(const IVideoFrame& videoFrame,
+                                         int rotation,
+                                         bool mirrored) {
   return m_transporter->deliverFrame(videoFrame, rotation, mirrored);
 }

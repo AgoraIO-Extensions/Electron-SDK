@@ -10,8 +10,8 @@
 
 #ifndef AGORA_VIDEO_SOURCE_TRANSPORTER_H
 #define AGORA_VIDEO_SOURCE_TRANSPORTER_H
-#include "IAgoraMediaEngine.h"
 #include <string>
+#include "IAgoraMediaEngine.h"
 
 using agora::media::IVideoFrame;
 
@@ -26,7 +26,8 @@ class IAgoraVideoSourceTransporter {
   virtual bool initialize() = 0;
   virtual void release() = 0;
 
-  virtual int deliverFrame(const IVideoFrame &videoFrame, int rotation,
+  virtual int deliverFrame(const IVideoFrame& videoFrame,
+                           int rotation,
                            bool mirrored) = 0;
 };
 
@@ -53,7 +54,7 @@ struct image_header_type {
 };
 
 class AgoraVideoSource;
-IAgoraVideoSourceTransporter *
-createAgoraVideoSourceTransporter(AgoraVideoSource &videoSource);
+IAgoraVideoSourceTransporter* createAgoraVideoSourceTransporter(
+    AgoraVideoSource& videoSource);
 
 #endif
