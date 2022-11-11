@@ -169,7 +169,7 @@ AgoraVideoSourceSink::AgoraVideoSourceSink()
 AgoraVideoSourceSink::~AgoraVideoSourceSink() {
   LOG_ENTER;
   clear();
-  LOG_LEAVE;
+  
 }
 
 void AgoraVideoSourceSink::clear() {
@@ -185,7 +185,7 @@ void AgoraVideoSourceSink::clear() {
   if (m_msgThread.joinable())
     m_msgThread.join();
 
-  LOG_LEAVE;
+  
 }
 
 node_error AgoraVideoSourceSink::release() {
@@ -195,7 +195,7 @@ node_error AgoraVideoSourceSink::release() {
              m_initialized);
     clear();
   }
-  LOG_LEAVE;
+  
   return node_ok;
 }
 
@@ -540,7 +540,7 @@ node_error AgoraVideoSourceSink::setCloudProxy(agora::rtc::CLOUD_PROXY_TYPE type
     return m_ipcMsg->sendMessage(AGORA_IPC_SET_CLOUD_PROXY, (char*)&type, sizeof(type)) ? node_ok : node_generic_error;
   }
   return node_status_error;
-  LOG_LEAVE;
+  
 }
 
 node_error AgoraVideoSourceSink::muteLocalVideoStream(bool mute)
@@ -550,7 +550,7 @@ node_error AgoraVideoSourceSink::muteLocalVideoStream(bool mute)
     return m_ipcMsg->sendMessage(AGORA_IPC_MUTE_LOCAL_VIDEO_STREAM, (char*)&mute, sizeof(mute)) ? node_ok : node_generic_error;
   }
   return node_status_error;
-  LOG_LEAVE;
+  
 }
 
 node_error AgoraVideoSourceSink::setScreenCaptureScenario(agora::rtc::SCREEN_SCENARIO_TYPE type)
@@ -560,7 +560,7 @@ node_error AgoraVideoSourceSink::setScreenCaptureScenario(agora::rtc::SCREEN_SCE
     return m_ipcMsg->sendMessage(AGORA_IPC_SET_SCREEN_CAPTURE_SCENARIO, (char*)&type, sizeof(type)) ? node_ok : node_generic_error;
   }
   return node_status_error;
-  LOG_LEAVE;
+  
 }
 
 void AgoraVideoSourceSink::onMessage(unsigned int msg,

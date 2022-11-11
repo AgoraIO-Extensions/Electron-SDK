@@ -175,13 +175,13 @@ bool AgoraIpcDataSender::initialize(const std::string& id) {
   LOG_ENTER;
   if (m_ipcData.create(id, 1) != 0) {
     LOG_ERROR("%s, ipc data create fail, errno :%d\n", __FUNCTION__, errno);
-    LOG_LEAVE;
+    
     return false;
   }
   if (m_ipcData.open(id) != 0) {
     LOG_ERROR("%s, ipc data open fail, errno :%d\n", __FUNCTION__, errno);
     m_ipcData.remove(id);
-    LOG_LEAVE;
+    
     return false;
   }
   if (m_ipcData.open_channel(0, CHANNEL_WRITE) != 0) {
@@ -189,12 +189,12 @@ bool AgoraIpcDataSender::initialize(const std::string& id) {
     m_ipcData.remove(id);
     LOG_ERROR("%s, ipc data open channel fail, errno :%d\n", __FUNCTION__,
               errno);
-    LOG_LEAVE;
+    
     return false;
   }
   m_id = id;
   m_initialized = true;
-  LOG_LEAVE;
+  
   return true;
 }
 

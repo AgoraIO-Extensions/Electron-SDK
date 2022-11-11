@@ -942,7 +942,7 @@ typedef unsigned int uint32;
       int result = CALL_MEM_FUNC_FROM_POINTER(pEngine->m_engine, method); \
       args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result)); \
     } while (false);                                                      \
-    LOG_LEAVE;                                                            \
+                                                                \
   }
 #define NAPI_API_DEFINE_WRAPPER_PARAM_1(method, type)                       \
   NAPI_API_DEFINE(NodeRtcEngine, method) {                                  \
@@ -959,7 +959,7 @@ typedef unsigned int uint32;
                                                          method, param);    \
       args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result));   \
     } while (false);                                                        \
-    LOG_LEAVE;                                                              \
+                                                                  \
   }
 
 #define NAPI_API_DEFINE_WRAPPER_PARAM_2(method, type, type2)              \
@@ -978,7 +978,7 @@ typedef unsigned int uint32;
           pEngine->m_engine, method, param, param2);                      \
       args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result)); \
     } while (false);                                                      \
-    LOG_LEAVE;                                                            \
+                                                                \
   }
 
 #define NAPI_API_DEFINE_WRAPPER_PARAM_3(method, type, type2, type3)       \
@@ -998,7 +998,7 @@ typedef unsigned int uint32;
           pEngine->m_engine, method, param, param2, param3);              \
       args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result)); \
     } while (false);                                                      \
-    LOG_LEAVE;                                                            \
+                                                                \
   }
 
 }  // namespace rtc
@@ -1015,7 +1015,7 @@ typedef unsigned int uint32;
       result = CALL_MEM_FUNC_FROM_POINTER(pChannel->m_channel, method); \
     } while (false);                                                    \
     napi_set_int_result(args, result);                                  \
-    LOG_LEAVE;                                                          \
+                                                              \
   }
 
 #define NAPI_API_CHANNEL_DEFINE_WRAPPER_1(method, type)                   \
@@ -1034,7 +1034,7 @@ typedef unsigned int uint32;
                                                      method, param);      \
     } while (false);                                                      \
     napi_set_int_result(args, result);                                    \
-    LOG_LEAVE;                                                            \
+                                                                \
   }
 
 #define NAPI_API_CHANNEL_DEFINE_WRAPPER_2(method, type, type2)                \
@@ -1054,7 +1054,7 @@ typedef unsigned int uint32;
                                                       method, param, param2); \
     } while (false);                                                          \
     napi_set_int_result(args, result);                                        \
-    LOG_LEAVE;                                                                \
+                                                                    \
   }
 
 #define NAPI_API_CHANNEL_DEFINE_WRAPPER_3(method, type, type2, type3)    \
@@ -1075,7 +1075,7 @@ typedef unsigned int uint32;
           pChannel->m_channel, method, param, param2, param3);           \
     } while (false);                                                     \
     napi_set_int_result(args, result);                                   \
-    LOG_LEAVE;                                                           \
+                                                               \
   }
 
 #if defined(_WIN32)

@@ -28,7 +28,7 @@ AgoraVideoSource::AgoraVideoSource(const std::string &param)
     : m_initialized(false), m_params(param),
       m_videoProfile(agora::rtc::VIDEO_PROFILE_DEFAULT) {
   LOG_ENTER;
-  LOG_LEAVE;
+  
 }
 
 AgoraVideoSource::~AgoraVideoSource() {
@@ -38,7 +38,7 @@ AgoraVideoSource::~AgoraVideoSource() {
   m_renderFactory.reset();
   m_ipc.reset();
   m_paramParser.reset();
-  LOG_LEAVE;
+  
 }
 
 std::string AgoraVideoSource::getId() {
@@ -54,14 +54,14 @@ bool AgoraVideoSource::initialize() {
   std::string appid = m_paramParser->getParameter("appid");
   if (appid.empty()) {
     LOG_ERROR("%s, appid is null\n", __FUNCTION__);
-    LOG_LEAVE;
+    
     return false;
   }
 
   std::string id = m_paramParser->getParameter("id");
   if (id.empty()) {
     LOG_ERROR("%s, id is null\n", __FUNCTION__);
-    LOG_LEAVE;
+    
     return false;
   }
 
@@ -70,19 +70,19 @@ bool AgoraVideoSource::initialize() {
   m_ipc.reset(createAgoraIpc(this));
   if (!m_ipc->initialize(id)) {
     LOG_ERROR("%s, ipc init fail\n", __FUNCTION__);
-    LOG_LEAVE;
+    
     return false;
   }
   if (!m_ipc->connect()) {
     LOG_ERROR("%s, ipc connect fail.\n", __FUNCTION__);
-    LOG_LEAVE;
+    
     return false;
   }
 
   m_rtcEngine.reset(createAgoraRtcEngine());
   if (!m_rtcEngine.get()) {
     LOG_ERROR("%s, rtcengine create fail.\n", __FUNCTION__);
-    LOG_LEAVE;
+    
     return false;
   }
 
@@ -98,7 +98,7 @@ bool AgoraVideoSource::initialize() {
 
   if (m_rtcEngine->initialize(context) != 0) {
     LOG_INFO("%s, AgoraVideoSource initialize failed.\n", __FUNCTION__);
-    LOG_LEAVE;
+    
     return false;
   }
 
@@ -109,7 +109,7 @@ bool AgoraVideoSource::initialize() {
     pMediaEngine->registerVideoRenderFactory(m_renderFactory.get());
   } else {
     LOG_ERROR("%s, Get media engine failed.\n", __FUNCTION__);
-    LOG_LEAVE;
+    
     return false;
   }
 
@@ -128,7 +128,7 @@ bool AgoraVideoSource::initialize() {
 
   m_ipc->sendMessage(AGORA_IPC_SOURCE_READY, nullptr, 0);
   m_initialized = true;
-  LOG_LEAVE;
+  
   return true;
 }
 
@@ -289,7 +289,7 @@ void AgoraVideoSource::onMessage(unsigned int msg, char *payload,
   LOG_ENTER;
   if (!m_initialized) {
     LOG_ERROR("%s, no init.\n", __FUNCTION__);
-    LOG_LEAVE;
+    
     return;
   }
   LOG_INFO("%s, msg : %d\n", __FUNCTION__, msg);
@@ -303,7 +303,7 @@ void AgoraVideoSource::onMessage(unsigned int msg, char *payload,
     LOG_INFO("%s    msg: %s", __FUNCTION__, "AGORA_IPC_CAPTURE_SCREEN");
     if (len != sizeof(CaptureScreenCmd)) {
       LOG_ERROR("%s, Size not equal with capture screen cmd.\n", __FUNCTION__);
-      LOG_LEAVE;
+      
       return;
     }
     CaptureScreenCmd *cmd = (CaptureScreenCmd *)payload;
@@ -341,7 +341,7 @@ void AgoraVideoSource::onMessage(unsigned int msg, char *payload,
   } else if (msg == AGORA_IPC_SET_VIDEO_RPOFILE) {
     if (len != sizeof(VideoProfileCmd)) {
       LOG_ERROR("%s, size not equal with video profile size.\n", __FUNCTION__);
-      LOG_LEAVE;
+      
       return;
     }
     VideoProfileCmd *cmd = (VideoProfileCmd *)payload;
@@ -582,7 +582,7 @@ void AgoraVideoSource::onMessage(unsigned int msg, char *payload,
     LOG_INFO("setScreenCaptureScenario, type: %d, result: %d", type, result);
   }
 
-  LOG_LEAVE;
+  
 }
 
 bool AgoraVideoSource::joinChannel(JoinChannelCmd *cmd) {
@@ -624,13 +624,13 @@ void AgoraVideoSource::run() {
 #endif
   if (idstr.empty()) {
     LOG_ERROR("%s, pid is null\n", __FUNCTION__);
-    LOG_LEAVE;
+    
     return;
   }
   m_process.reset(INodeProcess::OpenNodeProcess(std::atoi(idstr.c_str())));
   if (!m_process.get()) {
     LOG_ERROR("Process open fail.\n");
-    LOG_LEAVE;
+    
     return;
   }
   m_process->Monitor([this](INodeProcess *) {
@@ -638,7 +638,7 @@ void AgoraVideoSource::run() {
     this->exit(false);
   });
   m_ipc->run();
-  LOG_LEAVE;
+  
 }
 
 bool AgoraVideoSource::sendData(char *payload, int len) {
