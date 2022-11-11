@@ -458,6 +458,11 @@ class NodeRtcEngine : public node::ObjectWrap {
   NAPI_API(videoSourceMuteLocalVideoStream);
   NAPI_API(videoSourceSetScreenCaptureScenario);
 
+  /**
+   * 3.6.1.12
+   */
+  NAPI_API(isFeatureSupported);
+
  public:
   Isolate* getIsolate() { return m_isolate; }
   IRtcEngine* getRtcEngine() { return m_engine; }
