@@ -12,7 +12,7 @@
 #include "loguru.hpp"
 #include <string>
 
-bool startLogService(const char* path);
+bool startLogService(const char *path);
 
 void stopLogService();
 
@@ -35,7 +35,7 @@ void stopLogService();
 #define LOG_VERBOSE(format, ...) LOG_F(INFO, format, ##__VA_ARGS__)
 
 class LogHelper {
-public:
+ public:
   LogHelper(const char *name) : name_(name) {
     // write function enter log.
     LOG_INFO("==> %s\n", name_.c_str());
@@ -45,7 +45,7 @@ public:
     LOG_INFO("<== %s\n", name_.c_str());
   }
 
-private:
+ private:
   std::string name_;
 };
 

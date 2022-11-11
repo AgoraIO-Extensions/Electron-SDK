@@ -19,7 +19,6 @@ using v8::Object;
 void InitExt(Local<Object> module) {
   LOG_ENTER;
   NodeRtcEngine::Init(module);
-  
 }
 
 /**

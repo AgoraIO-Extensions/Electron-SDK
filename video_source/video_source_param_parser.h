@@ -23,9 +23,9 @@ class VideoSourceParamParser {
   VideoSourceParamParser();
   ~VideoSourceParamParser();
 
-  bool initialize(const std::string& cmdline);
-  std::string getParameter(const std::string& param);
-  bool hasSwitch(const std::string& param);
+  bool initialize(const std::string &cmdline);
+  std::string getParameter(const std::string &param);
+  bool hasSwitch(const std::string &param);
 
  private:
   /**
