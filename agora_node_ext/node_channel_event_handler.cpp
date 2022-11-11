@@ -9,70 +9,68 @@
  */
 
 #include "node_channel_event_handler.h"
-#include <stdio.h>
 #include "agora_rtc_engine.h"
 #include "node_async_queue.h"
 #include "node_log.h"
 #include "node_uid.h"
 #include "uv.h"
+#include <stdio.h>
 namespace agora {
 namespace rtc {
 
 #define FUNC_TRACE
 
-NodeChannelEventHandler::NodeChannelEventHandler(NodeRtcChannel* pChannel)
+NodeChannelEventHandler::NodeChannelEventHandler(NodeRtcChannel *pChannel)
     : m_channel(pChannel) {}
 
 NodeChannelEventHandler::~NodeChannelEventHandler() {
-  for (auto& handler : m_callbacks) {
-    delete handler.second;
-  }
+  for (auto &handler : m_callbacks) { delete handler.second; }
 }
 
-#define MAKE_JS_CALL_0(ev)                                              \
-  auto it = m_callbacks.find(ev);                                       \
-  if (it != m_callbacks.end()) {                                        \
-    Isolate* isolate = Isolate::GetCurrent();                           \
-    HandleScope scope(isolate);                                         \
-    Local<Context> context = isolate->GetCurrentContext();              \
-    NodeEventCallback& cb = *it->second;                                \
-    cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 0, \
-                                   nullptr);                            \
+#define MAKE_JS_CALL_0(ev)                                                     \
+  auto it = m_callbacks.find(ev);                                              \
+  if (it != m_callbacks.end()) {                                               \
+    Isolate *isolate = Isolate::GetCurrent();                                  \
+    HandleScope scope(isolate);                                                \
+    Local<Context> context = isolate->GetCurrentContext();                     \
+    NodeEventCallback &cb = *it->second;                                       \
+    cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 0,        \
+                                   nullptr);                                   \
   }
 
 #define MAKE_JS_CALL_1(ev, type, param)                                        \
   auto it = m_callbacks.find(ev);                                              \
   if (it != m_callbacks.end()) {                                               \
-    Isolate* isolate = Isolate::GetCurrent();                                  \
+    Isolate *isolate = Isolate::GetCurrent();                                  \
     HandleScope scope(isolate);                                                \
     Local<Context> context = isolate->GetCurrentContext();                     \
     Local<Value> argv[1]{napi_create_##type##_(isolate, param)};               \
-    NodeEventCallback& cb = *it->second;                                       \
+    NodeEventCallback &cb = *it->second;                                       \
     cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 1, argv); \
   }
 
 #define MAKE_JS_CALL_2(ev, type1, param1, type2, param2)                       \
   auto it = m_callbacks.find(ev);                                              \
   if (it != m_callbacks.end()) {                                               \
-    Isolate* isolate = Isolate::GetCurrent();                                  \
+    Isolate *isolate = Isolate::GetCurrent();                                  \
     HandleScope scope(isolate);                                                \
     Local<Context> context = isolate->GetCurrentContext();                     \
     Local<Value> argv[2]{napi_create_##type1##_(isolate, param1),              \
                          napi_create_##type2##_(isolate, param2)};             \
-    NodeEventCallback& cb = *it->second;                                       \
+    NodeEventCallback &cb = *it->second;                                       \
     cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 2, argv); \
   }
 
 #define MAKE_JS_CALL_3(ev, type1, param1, type2, param2, type3, param3)        \
   auto it = m_callbacks.find(ev);                                              \
   if (it != m_callbacks.end()) {                                               \
-    Isolate* isolate = Isolate::GetCurrent();                                  \
+    Isolate *isolate = Isolate::GetCurrent();                                  \
     HandleScope scope(isolate);                                                \
     Local<Context> context = isolate->GetCurrentContext();                     \
     Local<Value> argv[3]{napi_create_##type1##_(isolate, param1),              \
                          napi_create_##type2##_(isolate, param2),              \
                          napi_create_##type3##_(isolate, param3)};             \
-    NodeEventCallback& cb = *it->second;                                       \
+    NodeEventCallback &cb = *it->second;                                       \
     cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 3, argv); \
   }
 
@@ -80,7 +78,7 @@ NodeChannelEventHandler::~NodeChannelEventHandler() {
                        param4)                                                 \
   auto it = m_callbacks.find(ev);                                              \
   if (it != m_callbacks.end()) {                                               \
-    Isolate* isolate = Isolate::GetCurrent();                                  \
+    Isolate *isolate = Isolate::GetCurrent();                                  \
     HandleScope scope(isolate);                                                \
     Local<Context> context = isolate->GetCurrentContext();                     \
     Local<Value> argv[4]{                                                      \
@@ -89,7 +87,7 @@ NodeChannelEventHandler::~NodeChannelEventHandler() {
         napi_create_##type3##_(isolate, param3),                               \
         napi_create_##type4##_(isolate, param4),                               \
     };                                                                         \
-    NodeEventCallback& cb = *it->second;                                       \
+    NodeEventCallback &cb = *it->second;                                       \
     cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 4, argv); \
   }
 
@@ -97,7 +95,7 @@ NodeChannelEventHandler::~NodeChannelEventHandler() {
                        param4, type5, param5)                                  \
   auto it = m_callbacks.find(ev);                                              \
   if (it != m_callbacks.end()) {                                               \
-    Isolate* isolate = Isolate::GetCurrent();                                  \
+    Isolate *isolate = Isolate::GetCurrent();                                  \
     HandleScope scope(isolate);                                                \
     Local<Context> context = isolate->GetCurrentContext();                     \
     Local<Value> argv[5]{                                                      \
@@ -107,110 +105,99 @@ NodeChannelEventHandler::~NodeChannelEventHandler() {
         napi_create_##type4##_(isolate, param4),                               \
         napi_create_##type5##_(isolate, param5),                               \
     };                                                                         \
-    NodeEventCallback& cb = *it->second;                                       \
+    NodeEventCallback &cb = *it->second;                                       \
     cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 5, argv); \
   }
 
-#define CHECK_NAPI_OBJ(obj) \
-  if (obj.IsEmpty())        \
-    break;
+#define CHECK_NAPI_OBJ(obj)                                                    \
+  if (obj.IsEmpty()) break;
 
-#define NODE_SET_OBJ_PROP_STRING(obj, name, val)                         \
-  {                                                                      \
-    Local<Value> propName =                                              \
-        String::NewFromUtf8(isolate, name, NewStringType::kInternalized) \
-            .ToLocalChecked();                                           \
-    CHECK_NAPI_OBJ(propName);                                            \
-    Local<Value> propVal =                                               \
-        String::NewFromUtf8(isolate, val, NewStringType::kInternalized)  \
-            .ToLocalChecked();                                           \
-    CHECK_NAPI_OBJ(propVal);                                             \
-    v8::Maybe<bool> ret =                                                \
-        obj->Set(isolate->GetCurrentContext(), propName, propVal);       \
-    if (!ret.IsNothing()) {                                              \
-      if (!ret.ToChecked()) {                                            \
-        break;                                                           \
-      }                                                                  \
-    }                                                                    \
+#define NODE_SET_OBJ_PROP_STRING(obj, name, val)                               \
+  {                                                                            \
+    Local<Value> propName =                                                    \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized)       \
+            .ToLocalChecked();                                                 \
+    CHECK_NAPI_OBJ(propName);                                                  \
+    Local<Value> propVal =                                                     \
+        String::NewFromUtf8(isolate, val, NewStringType::kInternalized)        \
+            .ToLocalChecked();                                                 \
+    CHECK_NAPI_OBJ(propVal);                                                   \
+    v8::Maybe<bool> ret =                                                      \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal);             \
+    if (!ret.IsNothing()) {                                                    \
+      if (!ret.ToChecked()) { break; }                                         \
+    }                                                                          \
   }
 
-#define NODE_SET_OBJ_PROP_UINT32(obj, name, val)                         \
-  {                                                                      \
-    Local<Value> propName =                                              \
-        String::NewFromUtf8(isolate, name, NewStringType::kInternalized) \
-            .ToLocalChecked();                                           \
-    CHECK_NAPI_OBJ(propName);                                            \
-    Local<Value> propVal = v8::Uint32::New(isolate, val);                \
-    CHECK_NAPI_OBJ(propVal);                                             \
-    v8::Maybe<bool> ret =                                                \
-        obj->Set(isolate->GetCurrentContext(), propName, propVal);       \
-    if (!ret.IsNothing()) {                                              \
-      if (!ret.ToChecked()) {                                            \
-        break;                                                           \
-      }                                                                  \
-    }                                                                    \
+#define NODE_SET_OBJ_PROP_UINT32(obj, name, val)                               \
+  {                                                                            \
+    Local<Value> propName =                                                    \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized)       \
+            .ToLocalChecked();                                                 \
+    CHECK_NAPI_OBJ(propName);                                                  \
+    Local<Value> propVal = v8::Uint32::New(isolate, val);                      \
+    CHECK_NAPI_OBJ(propVal);                                                   \
+    v8::Maybe<bool> ret =                                                      \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal);             \
+    if (!ret.IsNothing()) {                                                    \
+      if (!ret.ToChecked()) { break; }                                         \
+    }                                                                          \
   }
 
-#define NODE_SET_OBJ_PROP_UID(obj, name, val)                            \
-  {                                                                      \
-    Local<Value> propName =                                              \
-        String::NewFromUtf8(isolate, name, NewStringType::kInternalized) \
-            .ToLocalChecked();                                           \
-    CHECK_NAPI_OBJ(propName);                                            \
-    Local<Value> propVal = NodeUid::getNodeValue(isolate, val);          \
-    CHECK_NAPI_OBJ(propVal);                                             \
-    v8::Maybe<bool> ret =                                                \
-        obj->Set(isolate->GetCurrentContext(), propName, propVal);       \
-    if (!ret.IsNothing()) {                                              \
-      if (!ret.ToChecked()) {                                            \
-        break;                                                           \
-      }                                                                  \
-    }                                                                    \
+#define NODE_SET_OBJ_PROP_UID(obj, name, val)                                  \
+  {                                                                            \
+    Local<Value> propName =                                                    \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized)       \
+            .ToLocalChecked();                                                 \
+    CHECK_NAPI_OBJ(propName);                                                  \
+    Local<Value> propVal = NodeUid::getNodeValue(isolate, val);                \
+    CHECK_NAPI_OBJ(propVal);                                                   \
+    v8::Maybe<bool> ret =                                                      \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal);             \
+    if (!ret.IsNothing()) {                                                    \
+      if (!ret.ToChecked()) { break; }                                         \
+    }                                                                          \
   }
 
-#define NODE_SET_OBJ_PROP_NUMBER(obj, name, val)                         \
-  {                                                                      \
-    Local<Value> propName =                                              \
-        String::NewFromUtf8(isolate, name, NewStringType::kInternalized) \
-            .ToLocalChecked();                                           \
-    CHECK_NAPI_OBJ(propName);                                            \
-    Local<Value> propVal = v8::Number::New(isolate, val);                \
-    CHECK_NAPI_OBJ(propVal);                                             \
-    v8::Maybe<bool> ret =                                                \
-        obj->Set(isolate->GetCurrentContext(), propName, propVal);       \
-    if (!ret.IsNothing()) {                                              \
-      if (!ret.ToChecked()) {                                            \
-        break;                                                           \
-      }                                                                  \
-    }                                                                    \
+#define NODE_SET_OBJ_PROP_NUMBER(obj, name, val)                               \
+  {                                                                            \
+    Local<Value> propName =                                                    \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized)       \
+            .ToLocalChecked();                                                 \
+    CHECK_NAPI_OBJ(propName);                                                  \
+    Local<Value> propVal = v8::Number::New(isolate, val);                      \
+    CHECK_NAPI_OBJ(propVal);                                                   \
+    v8::Maybe<bool> ret =                                                      \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal);             \
+    if (!ret.IsNothing()) {                                                    \
+      if (!ret.ToChecked()) { break; }                                         \
+    }                                                                          \
   }
-void NodeChannelEventHandler::addEventHandler(const std::string& eventName,
-                                              Persistent<Object>& obj,
-                                              Persistent<Function>& callback) {
+void NodeChannelEventHandler::addEventHandler(const std::string &eventName,
+                                              Persistent<Object> &obj,
+                                              Persistent<Function> &callback) {
   FUNC_TRACE;
-  NodeEventCallback* cb = new NodeEventCallback();
+  NodeEventCallback *cb = new NodeEventCallback();
   cb->js_this.Reset(obj);
   cb->callback.Reset(callback);
   m_callbacks.emplace(eventName, cb);
 }
 
-void NodeChannelEventHandler::fireApiError(const char* funcName) {
+void NodeChannelEventHandler::fireApiError(const char *funcName) {
   FUNC_TRACE;
   MAKE_JS_CALL_1(RTC_EVENT_API_ERROR, string, funcName);
 }
 
-void NodeChannelEventHandler::onJoinChannelSuccess(IChannel* rtcChannel,
-                                                   uid_t uid,
-                                                   int elapsed) {
+void NodeChannelEventHandler::onJoinChannelSuccess(IChannel *rtcChannel,
+                                                   uid_t uid, int elapsed) {
   FUNC_TRACE;
   node_async_call::async_call([this, uid, elapsed] {
     MAKE_JS_CALL_2(RTC_CHANNEL_EVENT_JOIN_SUCCEESS, uid, uid, int32, elapsed);
   });
 }
 
-void NodeChannelEventHandler::onChannelWarning(IChannel* rtcChannel,
-                                               int warn,
-                                               const char* msg) {
+void NodeChannelEventHandler::onChannelWarning(IChannel *rtcChannel, int warn,
+                                               const char *msg) {
   FUNC_TRACE;
   std::string m_msg(nullable(msg));
   node_async_call::async_call([this, warn, m_msg] {
@@ -219,9 +206,8 @@ void NodeChannelEventHandler::onChannelWarning(IChannel* rtcChannel,
   });
 }
 
-void NodeChannelEventHandler::onChannelError(IChannel* rtcChannel,
-                                             int err,
-                                             const char* msg) {
+void NodeChannelEventHandler::onChannelError(IChannel *rtcChannel, int err,
+                                             const char *msg) {
   FUNC_TRACE;
   std::string m_msg(nullable(msg));
   node_async_call::async_call([this, err, m_msg] {
@@ -230,22 +216,21 @@ void NodeChannelEventHandler::onChannelError(IChannel* rtcChannel,
   });
 }
 
-void NodeChannelEventHandler::onRejoinChannelSuccess(IChannel* rtcChannel,
-                                                     uid_t uid,
-                                                     int elapsed) {
+void NodeChannelEventHandler::onRejoinChannelSuccess(IChannel *rtcChannel,
+                                                     uid_t uid, int elapsed) {
   FUNC_TRACE;
   node_async_call::async_call([this, uid, elapsed] {
     MAKE_JS_CALL_2(RTC_CHANNEL_EVENT_REJOIN_SUCCEESS, uid, uid, int32, elapsed);
   });
 }
 
-void NodeChannelEventHandler::onLeaveChannel(IChannel* rtcChannel,
-                                             const RtcStats& stats) {
+void NodeChannelEventHandler::onLeaveChannel(IChannel *rtcChannel,
+                                             const RtcStats &stats) {
   FUNC_TRACE;
   unsigned int usercount = stats.userCount;
   node_async_call::async_call([this, stats, usercount] {
     do {
-      Isolate* isolate = Isolate::GetCurrent();
+      Isolate *isolate = Isolate::GetCurrent();
       HandleScope scope(isolate);
       Local<Context> context = isolate->GetCurrentContext();
       Local<Object> obj = Object::New(isolate);
@@ -287,7 +272,7 @@ void NodeChannelEventHandler::onLeaveChannel(IChannel* rtcChannel,
   });
 }
 
-void NodeChannelEventHandler::onClientRoleChanged(IChannel* rtcChannel,
+void NodeChannelEventHandler::onClientRoleChanged(IChannel *rtcChannel,
                                                   CLIENT_ROLE_TYPE oldRole,
                                                   CLIENT_ROLE_TYPE newRole) {
   FUNC_TRACE;
@@ -297,8 +282,7 @@ void NodeChannelEventHandler::onClientRoleChanged(IChannel* rtcChannel,
   });
 }
 
-void NodeChannelEventHandler::onUserJoined(IChannel* rtcChannel,
-                                           uid_t uid,
+void NodeChannelEventHandler::onUserJoined(IChannel *rtcChannel, uid_t uid,
                                            int elapsed) {
   FUNC_TRACE;
   node_async_call::async_call([this, uid, elapsed] {
@@ -306,8 +290,7 @@ void NodeChannelEventHandler::onUserJoined(IChannel* rtcChannel,
   });
 }
 
-void NodeChannelEventHandler::onUserOffline(IChannel* rtcChannel,
-                                            uid_t uid,
+void NodeChannelEventHandler::onUserOffline(IChannel *rtcChannel, uid_t uid,
                                             USER_OFFLINE_REASON_TYPE reason) {
   FUNC_TRACE;
   node_async_call::async_call([this, uid, reason] {
@@ -315,20 +298,20 @@ void NodeChannelEventHandler::onUserOffline(IChannel* rtcChannel,
   });
 }
 
-void NodeChannelEventHandler::onConnectionLost(IChannel* rtcChannel) {
+void NodeChannelEventHandler::onConnectionLost(IChannel *rtcChannel) {
   FUNC_TRACE;
   node_async_call::async_call(
       [this] { MAKE_JS_CALL_0(RTC_CHANNEL_EVENT_CONN_LOST); });
 }
 
-void NodeChannelEventHandler::onRequestToken(IChannel* rtcChannel) {
+void NodeChannelEventHandler::onRequestToken(IChannel *rtcChannel) {
   FUNC_TRACE;
   node_async_call::async_call(
       [this] { MAKE_JS_CALL_0(RTC_CHANNEL_EVENT_REQUEST_TOKEN); });
 }
 
-void NodeChannelEventHandler::onTokenPrivilegeWillExpire(IChannel* rtcChannel,
-                                                         const char* token) {
+void NodeChannelEventHandler::onTokenPrivilegeWillExpire(IChannel *rtcChannel,
+                                                         const char *token) {
   FUNC_TRACE;
   std::string m_token(nullable(token));
   node_async_call::async_call([this, m_token] {
@@ -337,13 +320,13 @@ void NodeChannelEventHandler::onTokenPrivilegeWillExpire(IChannel* rtcChannel,
   });
 }
 
-void NodeChannelEventHandler::onRtcStats(IChannel* rtcChannel,
-                                         const RtcStats& stats) {
+void NodeChannelEventHandler::onRtcStats(IChannel *rtcChannel,
+                                         const RtcStats &stats) {
   FUNC_TRACE;
   unsigned int usercount = stats.userCount;
   node_async_call::async_call([this, stats, usercount] {
     do {
-      Isolate* isolate = Isolate::GetCurrent();
+      Isolate *isolate = Isolate::GetCurrent();
       HandleScope scope(isolate);
       Local<Context> context = isolate->GetCurrentContext();
       Local<Object> obj = Object::New(isolate);
@@ -385,10 +368,8 @@ void NodeChannelEventHandler::onRtcStats(IChannel* rtcChannel,
   });
 }
 
-void NodeChannelEventHandler::onNetworkQuality(IChannel* rtcChannel,
-                                               uid_t uid,
-                                               int txQuality,
-                                               int rxQuality) {
+void NodeChannelEventHandler::onNetworkQuality(IChannel *rtcChannel, uid_t uid,
+                                               int txQuality, int rxQuality) {
   FUNC_TRACE;
   node_async_call::async_call([this, uid, txQuality, rxQuality] {
     MAKE_JS_CALL_3(RTC_CHANNEL_EVENT_NETWORK_QUALITY, uid, uid, int32,
@@ -397,12 +378,11 @@ void NodeChannelEventHandler::onNetworkQuality(IChannel* rtcChannel,
 }
 
 void NodeChannelEventHandler::onRemoteVideoStats(
-    IChannel* rtcChannel,
-    const RemoteVideoStats& stats) {
+    IChannel *rtcChannel, const RemoteVideoStats &stats) {
   FUNC_TRACE;
   node_async_call::async_call([this, stats] {
     do {
-      Isolate* isolate = Isolate::GetCurrent();
+      Isolate *isolate = Isolate::GetCurrent();
       HandleScope scope(isolate);
       Local<Context> context = isolate->GetCurrentContext();
       Local<Object> obj = Object::New(isolate);
@@ -433,13 +413,12 @@ void NodeChannelEventHandler::onRemoteVideoStats(
 }
 
 void NodeChannelEventHandler::onRemoteAudioStats(
-    IChannel* rtcChannel,
-    const RemoteAudioStats& stats) {
+    IChannel *rtcChannel, const RemoteAudioStats &stats) {
   FUNC_TRACE;
   FUNC_TRACE;
   node_async_call::async_call([this, stats] {
     do {
-      Isolate* isolate = Isolate::GetCurrent();
+      Isolate *isolate = Isolate::GetCurrent();
       HandleScope scope(isolate);
       Local<Context> context = isolate->GetCurrentContext();
       Local<Object> obj = Object::New(isolate);
@@ -475,11 +454,8 @@ void NodeChannelEventHandler::onRemoteAudioStats(
 }
 
 void NodeChannelEventHandler::onRemoteAudioStateChanged(
-    IChannel* rtcChannel,
-    uid_t uid,
-    REMOTE_AUDIO_STATE state,
-    REMOTE_AUDIO_STATE_REASON reason,
-    int elapsed) {
+    IChannel *rtcChannel, uid_t uid, REMOTE_AUDIO_STATE state,
+    REMOTE_AUDIO_STATE_REASON reason, int elapsed) {
   FUNC_TRACE;
   node_async_call::async_call([this, uid, state, reason, elapsed] {
     MAKE_JS_CALL_4(RTC_CHANNEL_EVENT_REMOTE_AUDIO_STATE_CHANGED, uid, uid,
@@ -487,18 +463,16 @@ void NodeChannelEventHandler::onRemoteAudioStateChanged(
   });
 }
 
-void NodeChannelEventHandler::onActiveSpeaker(IChannel* rtcChannel, uid_t uid) {
+void NodeChannelEventHandler::onActiveSpeaker(IChannel *rtcChannel, uid_t uid) {
   FUNC_TRACE;
   node_async_call::async_call([this, uid] {
     MAKE_JS_CALL_1(RTC_CHANNEL_EVENT_ACTIVE_SPEAKER, uid, uid);
   });
 }
 
-void NodeChannelEventHandler::onVideoSizeChanged(IChannel* rtcChannel,
-                                                 uid_t uid,
-                                                 int width,
-                                                 int height,
-                                                 int rotation) {
+void NodeChannelEventHandler::onVideoSizeChanged(IChannel *rtcChannel,
+                                                 uid_t uid, int width,
+                                                 int height, int rotation) {
   FUNC_TRACE;
   node_async_call::async_call([this, uid, width, height, rotation] {
     MAKE_JS_CALL_4(RTC_CHANNEL_EVENT_VIDEO_SIZE_CHANGED, uid, uid, int32, width,
@@ -507,11 +481,8 @@ void NodeChannelEventHandler::onVideoSizeChanged(IChannel* rtcChannel,
 }
 
 void NodeChannelEventHandler::onRemoteVideoStateChanged(
-    IChannel* rtcChannel,
-    uid_t uid,
-    REMOTE_VIDEO_STATE state,
-    REMOTE_VIDEO_STATE_REASON reason,
-    int elapsed) {
+    IChannel *rtcChannel, uid_t uid, REMOTE_VIDEO_STATE state,
+    REMOTE_VIDEO_STATE_REASON reason, int elapsed) {
   FUNC_TRACE;
   node_async_call::async_call([this, uid, state, reason, elapsed] {
     MAKE_JS_CALL_4(RTC_CHANNEL_EVENT_REMOTE_VIDEO_STATE_CHANGED, uid, uid,
@@ -519,10 +490,8 @@ void NodeChannelEventHandler::onRemoteVideoStateChanged(
   });
 }
 
-void NodeChannelEventHandler::onStreamMessage(IChannel* rtcChannel,
-                                              uid_t uid,
-                                              int streamId,
-                                              const char* data,
+void NodeChannelEventHandler::onStreamMessage(IChannel *rtcChannel, uid_t uid,
+                                              int streamId, const char *data,
                                               size_t length) {
   FUNC_TRACE;
   std::string m_data(nullable(data));
@@ -532,11 +501,9 @@ void NodeChannelEventHandler::onStreamMessage(IChannel* rtcChannel,
   });
 }
 
-void NodeChannelEventHandler::onStreamMessageError(IChannel* rtcChannel,
-                                                   uid_t uid,
-                                                   int streamId,
-                                                   int code,
-                                                   int missed,
+void NodeChannelEventHandler::onStreamMessageError(IChannel *rtcChannel,
+                                                   uid_t uid, int streamId,
+                                                   int code, int missed,
                                                    int cached) {
   FUNC_TRACE;
   node_async_call::async_call([this, uid, streamId, code, missed, cached] {
@@ -546,8 +513,7 @@ void NodeChannelEventHandler::onStreamMessageError(IChannel* rtcChannel,
 }
 
 void NodeChannelEventHandler::onChannelMediaRelayStateChanged(
-    IChannel* rtcChannel,
-    CHANNEL_MEDIA_RELAY_STATE state,
+    IChannel *rtcChannel, CHANNEL_MEDIA_RELAY_STATE state,
     CHANNEL_MEDIA_RELAY_ERROR code) {
   FUNC_TRACE;
   node_async_call::async_call([this, state, code] {
@@ -557,8 +523,7 @@ void NodeChannelEventHandler::onChannelMediaRelayStateChanged(
 }
 
 void NodeChannelEventHandler::onChannelMediaRelayEvent(
-    IChannel* rtcChannel,
-    CHANNEL_MEDIA_RELAY_EVENT code) {
+    IChannel *rtcChannel, CHANNEL_MEDIA_RELAY_EVENT code) {
   FUNC_TRACE;
   node_async_call::async_call([this, code] {
     MAKE_JS_CALL_1(RTC_CHANNEL_EVENT_CHANNEL_MEDIA_RELAY_EVENT, int32, code);
@@ -577,15 +542,14 @@ void NodeChannelEventHandler::onRtmpStreamingStateChanged(
   });
 }
 
-void NodeChannelEventHandler::onTranscodingUpdated(IChannel* rtcChannel) {
+void NodeChannelEventHandler::onTranscodingUpdated(IChannel *rtcChannel) {
   FUNC_TRACE;
   node_async_call::async_call(
       [this] { MAKE_JS_CALL_0(RTC_CHANNEL_EVENT_TRANSCODING_UPDATED); });
 }
 
-void NodeChannelEventHandler::onStreamInjectedStatus(IChannel* rtcChannel,
-                                                     const char* url,
-                                                     uid_t uid,
+void NodeChannelEventHandler::onStreamInjectedStatus(IChannel *rtcChannel,
+                                                     const char *url, uid_t uid,
                                                      int status) {
   FUNC_TRACE;
   std::string m_url(nullable(url));
@@ -596,9 +560,7 @@ void NodeChannelEventHandler::onStreamInjectedStatus(IChannel* rtcChannel,
 }
 
 void NodeChannelEventHandler::onRemoteSubscribeFallbackToAudioOnly(
-    IChannel* rtcChannel,
-    uid_t uid,
-    bool isFallbackOrRecover) {
+    IChannel *rtcChannel, uid_t uid, bool isFallbackOrRecover) {
   FUNC_TRACE;
   node_async_call::async_call([this, uid, isFallbackOrRecover] {
     MAKE_JS_CALL_2(RTC_CHANNEL_EVENT_REMOTE_SUBSCRIBE_FALLBACK_TO_AUDIO_ONLY,
@@ -607,8 +569,7 @@ void NodeChannelEventHandler::onRemoteSubscribeFallbackToAudioOnly(
 }
 
 void NodeChannelEventHandler::onConnectionStateChanged(
-    IChannel* rtcChannel,
-    CONNECTION_STATE_TYPE state,
+    IChannel *rtcChannel, CONNECTION_STATE_TYPE state,
     CONNECTION_CHANGED_REASON_TYPE reason) {
   FUNC_TRACE;
   node_async_call::async_call([this, state, reason]() {
@@ -618,10 +579,8 @@ void NodeChannelEventHandler::onConnectionStateChanged(
 }
 
 void NodeChannelEventHandler::onAudioPublishStateChanged(
-    IChannel* rtcChannel,
-    STREAM_PUBLISH_STATE oldState,
-    STREAM_PUBLISH_STATE newState,
-    int elapseSinceLastState) {
+    IChannel *rtcChannel, STREAM_PUBLISH_STATE oldState,
+    STREAM_PUBLISH_STATE newState, int elapseSinceLastState) {
   FUNC_TRACE;
   node_async_call::async_call([this, oldState, newState, elapseSinceLastState] {
     MAKE_JS_CALL_3(RTC_CHANNEL_EVENT_AUDIO_PUBLISH_STATE_CHANGED, int32,
@@ -630,24 +589,19 @@ void NodeChannelEventHandler::onAudioPublishStateChanged(
 }
 
 void NodeChannelEventHandler::onVideoPublishStateChanged(
-    IChannel* channel,
-    STREAM_PUBLISH_STATE oldState,
-    STREAM_PUBLISH_STATE newState,
-    int elapseSinceLastState) {
+    IChannel *channel, STREAM_PUBLISH_STATE oldState,
+    STREAM_PUBLISH_STATE newState, int elapseSinceLastState) {
   FUNC_TRACE;
   node_async_call::async_call([this, oldState, newState, elapseSinceLastState] {
     MAKE_JS_CALL_3(RTC_CHANNEL_EVENT_VIDEO_PUBLISH_STATE_CHANGED, int32,
-                   (int)oldState, int32, (int)newState, int32,
+                   (int) oldState, int32, (int) newState, int32,
                    elapseSinceLastState);
   });
 }
 
 void NodeChannelEventHandler::onAudioSubscribeStateChanged(
-    IChannel* rtcChannel,
-    uid_t uid,
-    STREAM_SUBSCRIBE_STATE oldState,
-    STREAM_SUBSCRIBE_STATE newState,
-    int elapseSinceLastState) {
+    IChannel *rtcChannel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState,
+    STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) {
   FUNC_TRACE;
   node_async_call::async_call(
       [this, uid, oldState, newState, elapseSinceLastState] {
@@ -658,11 +612,8 @@ void NodeChannelEventHandler::onAudioSubscribeStateChanged(
 }
 
 void NodeChannelEventHandler::onVideoSubscribeStateChanged(
-    IChannel* rtcChannel,
-    uid_t uid,
-    STREAM_SUBSCRIBE_STATE oldState,
-    STREAM_SUBSCRIBE_STATE newState,
-    int elapseSinceLastState) {
+    IChannel *rtcChannel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState,
+    STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) {
   FUNC_TRACE;
   node_async_call::async_call(
       [this, uid, oldState, newState, elapseSinceLastState] {
@@ -671,5 +622,5 @@ void NodeChannelEventHandler::onVideoSubscribeStateChanged(
                        elapseSinceLastState);
       });
 }
-}  // namespace rtc
-}  // namespace agora
+}// namespace rtc
+}// namespace agora

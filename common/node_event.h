@@ -35,7 +35,7 @@ class NodeEvent {
   std::condition_variable m_cv;
   std::atomic_bool m_setState;
 };
-}  // namespace rtc
-}  // namespace agora
+}// namespace rtc
+}// namespace agora
 
 #endif
