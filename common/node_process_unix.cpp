@@ -8,25 +8,25 @@
 /*
  *  Created by Wang Yongli, 2018
  */
-#include <dlfcn.h>
-#include <fcntl.h>
-#include <mach-o/dyld.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <memory>
-#include <sstream>
-#include <string>
-#include <thread>
 #include "loguru.hpp"
 #include "node_log.h"
 #include "node_process.h"
+#include <dlfcn.h>
+#include <fcntl.h>
+#include <mach-o/dyld.h>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <sys/socket.h>
+#include <thread>
+#include <unistd.h>
 
 class NodeProcessUnixImpl : public INodeProcess {
  public:
   NodeProcessUnixImpl(int fd, int pid);
   ~NodeProcessUnixImpl();
 
-  virtual void Monitor(std::function<void(INodeProcess*)> callback) override;
+  virtual void Monitor(std::function<void(INodeProcess *)> callback) override;
   virtual int GetProcessId() override;
 
   bool TerminateNodeProcess();
@@ -41,15 +41,12 @@ NodeProcessUnixImpl::NodeProcessUnixImpl(int fd, int pid)
 
 NodeProcessUnixImpl::~NodeProcessUnixImpl() {}
 
-int NodeProcessUnixImpl::GetProcessId() {
-  return m_pid;
-}
+int NodeProcessUnixImpl::GetProcessId() { return m_pid; }
 
-bool NodeProcessUnixImpl::TerminateNodeProcess() {
-  return true;
-}
+bool NodeProcessUnixImpl::TerminateNodeProcess() { return true; }
 
-void NodeProcessUnixImpl::Monitor(std::function<void(INodeProcess*)> callback) {
+void NodeProcessUnixImpl::Monitor(
+    std::function<void(INodeProcess *)> callback) {
   auto monitor = std::thread([callback, this] {
     char tmp;
     read(this->m_fd, &tmp, 1);
@@ -59,8 +56,8 @@ void NodeProcessUnixImpl::Monitor(std::function<void(INodeProcess*)> callback) {
 }
 
 #define VS_PARAM_NUM 3
-INodeProcess* INodeProcess::CreateNodeProcess(const char* path,
-                                              const char** params,
+INodeProcess *INodeProcess::CreateNodeProcess(const char *path,
+                                              const char **params,
                                               unsigned int flag) {
   LOG_INFO("TO start process, path : %s", path);
   if (!path || !params || !params[0]) {
@@ -87,44 +84,44 @@ INodeProcess* INodeProcess::CreateNodeProcess(const char* path,
       std::stringstream ss;
       ss << fd[1];
       std::string fd_param = "fd:" + ss.str();
-      const char* vs_params[] = {params[0],        params[1], params[2],
+      const char *vs_params[] = {params[0],        params[1], params[2],
                                  fd_param.c_str(), params[3], params[4],
                                  nullptr};
       LOG_F(INFO, "execv : %s, %s, %s, %s,%s, %s\n", vs_params[0], vs_params[1],
             vs_params[2], vs_params[3], vs_params[4], vs_params[5]);
-      execv((std::string(path) + vs_params[0]).c_str(), (char**)vs_params);
+      execv((std::string(path) + vs_params[0]).c_str(), (char **) vs_params);
     } else {
       LOG_ERROR("fcntl error.");
     }
   } else {
     // parent process
     close(fd[1]);
-    NodeProcessUnixImpl* pProcess = new NodeProcessUnixImpl(fd[0], pid);
+    NodeProcessUnixImpl *pProcess = new NodeProcessUnixImpl(fd[0], pid);
     return pProcess;
   }
   return nullptr;
 }
 
-INodeProcess* INodeProcess::OpenNodeProcess(int pid) {
+INodeProcess *INodeProcess::OpenNodeProcess(int pid) {
   /**
    * On unix, treate the parameter as the socketpair fd
    */
   LOG_ENTER;
-  NodeProcessUnixImpl* pProcess = new NodeProcessUnixImpl(pid, getppid());
+  NodeProcessUnixImpl *pProcess = new NodeProcessUnixImpl(pid, getppid());
   return pProcess;
 }
 
-void INodeProcess::DestroyNodeProcess(INodeProcess* pProcess, bool terminate) {}
+void INodeProcess::DestroyNodeProcess(INodeProcess *pProcess, bool terminate) {}
 
 int INodeProcess::GetCurrentNodeProcessId() {
   LOG_ENTER;
   return getpid();
 }
 
-bool INodeProcess::getCurrentModuleFileName(std::string& path) {
+bool INodeProcess::getCurrentModuleFileName(std::string &path) {
   LOG_ENTER;
   Dl_info info;
-  if (dladdr((const void*)INodeProcess::getCurrentModuleFileName, &info)) {
+  if (dladdr((const void *) INodeProcess::getCurrentModuleFileName, &info)) {
     path.assign(info.dli_fname);
     return true;
   }

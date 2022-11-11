@@ -10,15 +10,15 @@
 
 #ifndef AGORA_VIDEO_SOURCE_H
 #define AGORA_VIDEO_SOURCE_H
-#include <memory>
-#include <mutex>
-#include <thread>
 #include "IAgoraRtcEngine.h"
 #include "node_error.h"
 #include "node_process.h"
 #include "video_source_ipc.h"
 #include "video_source_param_parser.h"
 #include "windows_system_api.h"
+#include <memory>
+#include <mutex>
+#include <thread>
 
 class AgoraVideoSourceEventHandler;
 class AgoraVideoSourceRenderFactory;
@@ -38,7 +38,7 @@ class AgoraVideoSource : public AgoraIpcListener {
    * @param : the parameters to construct AgoraVideoSource. It's like 'id:*****
    * pid:****'.Currently id and pid parameters is needed.
    */
-  AgoraVideoSource(const std::string& param);
+  AgoraVideoSource(const std::string &param);
   ~AgoraVideoSource();
   void exit(bool notifySink);
   /**
@@ -76,28 +76,25 @@ class AgoraVideoSource : public AgoraIpcListener {
   /**
    * To process IPC messages.
    */
-  virtual void onMessage(unsigned int msg,
-                         char* payload,
+  virtual void onMessage(unsigned int msg, char *payload,
                          unsigned int len) override;
 
   /**
    * To send data via IPC
    */
-  virtual bool sendData(char* payload, int len);
+  virtual bool sendData(char *payload, int len);
 
   agora::rtc::VIDEO_PROFILE_TYPE getVideoProfile();
 
  protected:
-  bool joinChannel(JoinChannelCmd* cmd);
+  bool joinChannel(JoinChannelCmd *cmd);
   void notifyJoinedChannel(agora::rtc::uid_t uid);
   void notifyLeaveChannel();
   void notifyRequestNewToken();
   void notifyRenderReady();
-  void notifyLocalAudioStats(const agora::rtc::LocalAudioStats& audioStats);
-  void notifyLocalVideoStats(const agora::rtc::LocalVideoStats& videoStats);
-  void notifyVideoSizeChanged(agora::rtc::uid_t uid,
-                              int width,
-                              int height,
+  void notifyLocalAudioStats(const agora::rtc::LocalAudioStats &audioStats);
+  void notifyLocalVideoStats(const agora::rtc::LocalVideoStats &videoStats);
+  void notifyVideoSizeChanged(agora::rtc::uid_t uid, int width, int height,
                               int rotation);
   void notifyLocalVideoStateChanged(
       agora::rtc::LOCAL_VIDEO_STREAM_STATE localVideoState,

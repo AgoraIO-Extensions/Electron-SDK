@@ -9,13 +9,13 @@
  */
 
 #include "agora_rtc_engine.h"
-#include <nan.h>
-#include <string>
 #include "IAgoraRtcEngine2.h"
 #include "agora_video_source.h"
 #include "node_napi_api.h"
 #include "node_uid.h"
 #include "node_video_render.h"
+#include <nan.h>
+#include <string>
 
 #if defined(__APPLE__) || defined(_WIN32)
 #include "node_screen_window_info.h"
@@ -30,7 +30,7 @@
 using std::string;
 namespace agora {
 namespace rtc {
-template <typename T>
+template<typename T>
 agora::rtc::LiveTranscoding *
 getLiveTranscoding(Local<Object> &obj,
                    const Nan::FunctionCallbackInfo<Value> &args, T *pEngine) {
@@ -86,11 +86,11 @@ getLiveTranscoding(Local<Object> &obj,
         napi_get_object_property_int32_(isolate, obj, key, videoCodecProfile);
     CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
     transcoding->videoCodecProfile =
-        (VIDEO_CODEC_PROFILE_TYPE)videoCodecProfile;
+        (VIDEO_CODEC_PROFILE_TYPE) videoCodecProfile;
 
     key = "videoCodecType";
     status = napi_get_object_property_int32_(isolate, obj, key, videoCodecType);
-    transcoding->videoCodecType = (VIDEO_CODEC_TYPE_FOR_STREAM)videoCodecType;
+    transcoding->videoCodecType = (VIDEO_CODEC_TYPE_FOR_STREAM) videoCodecType;
 
     key = "backgroundColor";
     status = napi_get_object_property_uint32_(isolate, obj, key,
@@ -100,7 +100,7 @@ getLiveTranscoding(Local<Object> &obj,
     key = "audioSampleRate";
     status =
         napi_get_object_property_int32_(isolate, obj, key, audioSampleRateType);
-    transcoding->audioSampleRate = (AUDIO_SAMPLE_RATE_TYPE)audioSampleRateType;
+    transcoding->audioSampleRate = (AUDIO_SAMPLE_RATE_TYPE) audioSampleRateType;
     CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
 
     key = "audioCodecProfile";
@@ -108,7 +108,7 @@ getLiveTranscoding(Local<Object> &obj,
         napi_get_object_property_int32_(isolate, obj, key, audioCodecProfile);
     if (status == napi_ok) {
       transcoding->audioCodecProfile =
-          (AUDIO_CODEC_PROFILE_TYPE)audioCodecProfile;
+          (AUDIO_CODEC_PROFILE_TYPE) audioCodecProfile;
     }
 
     key = "audioBitrate";
@@ -215,10 +215,10 @@ getLiveTranscoding(Local<Object> &obj,
         napi_get_object_property_int32_(isolate, watermarkObj, key,
                                         wkImages[i].zOrder);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-          
+
         key = "alpha";
         napi_get_object_property_double_(isolate, watermarkObj, key,
-                                        wkImages[i].alpha);
+                                         wkImages[i].alpha);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
       }
       transcoding->watermark = wkImages;
@@ -272,15 +272,15 @@ getLiveTranscoding(Local<Object> &obj,
         napi_get_object_property_int32_(isolate, advancedFeatureObj, key,
                                         bgImages[i].height);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-        
+
         key = "zOrder";
         napi_get_object_property_int32_(isolate, advancedFeatureObj, key,
                                         bgImages[i].zOrder);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-            
+
         key = "alpha";
         napi_get_object_property_double_(isolate, advancedFeatureObj, key,
-                                        bgImages[i].alpha);
+                                         bgImages[i].alpha);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
       }
       transcoding->backgroundImage = bgImages;
@@ -344,98 +344,99 @@ getLiveTranscoding(Local<Object> &obj,
   return nullptr;
 }
 
-template <typename T>
-agora::rtc::ScreenCaptureParameters *
-getScreenCaptureParameters(Local<Object> &obj,
-                   const Nan::FunctionCallbackInfo<Value> &args, T *pEngine, std::vector<agora::rtc::IRtcEngine::WindowIDType> &excludeWindows) {
-    ScreenCaptureParameters *captureParams = new ScreenCaptureParameters;
-    std::string key = "";
-    do {
-      Isolate *isolate = args.GetIsolate();
-      Local<Context> context = isolate->GetCurrentContext();
-      napi_status status;
+template<typename T>
+agora::rtc::ScreenCaptureParameters *getScreenCaptureParameters(
+    Local<Object> &obj, const Nan::FunctionCallbackInfo<Value> &args,
+    T *pEngine,
+    std::vector<agora::rtc::IRtcEngine::WindowIDType> &excludeWindows) {
+  ScreenCaptureParameters *captureParams = new ScreenCaptureParameters;
+  std::string key = "";
+  do {
+    Isolate *isolate = args.GetIsolate();
+    Local<Context> context = isolate->GetCurrentContext();
+    napi_status status;
 
-      VideoDimensions dimensions;
-      key = "width";
-      status =
-          napi_get_object_property_int32_(isolate, obj, key, dimensions.width);
-      CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+    VideoDimensions dimensions;
+    key = "width";
+    status =
+        napi_get_object_property_int32_(isolate, obj, key, dimensions.width);
+    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
 
-      key = "height";
-      status =
-          napi_get_object_property_int32_(isolate, obj, key, dimensions.height);
-      CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+    key = "height";
+    status =
+        napi_get_object_property_int32_(isolate, obj, key, dimensions.height);
+    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
 
-      key = "frameRate";
-      status = napi_get_object_property_int32_(isolate, obj, key,
-                                              captureParams->frameRate);
-      CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+    key = "frameRate";
+    status = napi_get_object_property_int32_(isolate, obj, key,
+                                             captureParams->frameRate);
+    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
 
-      key = "bitrate";
-      status = napi_get_object_property_int32_(isolate, obj, "bitrate",
-                                              captureParams->bitrate);
-      CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+    key = "bitrate";
+    status = napi_get_object_property_int32_(isolate, obj, "bitrate",
+                                             captureParams->bitrate);
+    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
 
-      key = "captureMouseCursor";
-      status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor",
-                                              captureParams->captureMouseCursor);
-      CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+    key = "captureMouseCursor";
+    status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor",
+                                            captureParams->captureMouseCursor);
+    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
 
-      key = "windowFocus";
-      status = napi_get_object_property_bool_(isolate, obj, "windowFocus",
-                                              captureParams->windowFocus);
-      CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-      captureParams->dimensions = dimensions;
+    key = "windowFocus";
+    status = napi_get_object_property_bool_(isolate, obj, "windowFocus",
+                                            captureParams->windowFocus);
+    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+    captureParams->dimensions = dimensions;
 
-      key = "excludeWindowList";
-      Local<Name> keyName = String::NewFromUtf8(isolate, "excludeWindowList",
-                                                NewStringType::kInternalized)
-                                .ToLocalChecked();
-      Local<Value> excludeWindowList =
-          obj->Get(context, keyName).ToLocalChecked();
-      if (!excludeWindowList->IsNull() && excludeWindowList->IsArray()) {
-        auto excludeWindowListValue = v8::Array::Cast(*excludeWindowList);
-        for (int i = 0; i < excludeWindowListValue->Length(); ++i) {
-          agora::rtc::IRtcEngine::WindowIDType windowId;
-          Local<Value> value =
-              excludeWindowListValue->Get(context, i).ToLocalChecked();
-  #if defined(__APPLE__)
-          status = napi_get_value_uint32_(value, windowId);
-          CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-  #elif defined(_WIN32)
-  #if defined(_WIN64)
-          int64_t wid;
-          status = napi_get_value_int64_(value, wid);
-  #else
-          uint32_t wid;
-          status = napi_get_value_uint32_(value, wid);
-  #endif
+    key = "excludeWindowList";
+    Local<Name> keyName = String::NewFromUtf8(isolate, "excludeWindowList",
+                                              NewStringType::kInternalized)
+                              .ToLocalChecked();
+    Local<Value> excludeWindowList =
+        obj->Get(context, keyName).ToLocalChecked();
+    if (!excludeWindowList->IsNull() && excludeWindowList->IsArray()) {
+      auto excludeWindowListValue = v8::Array::Cast(*excludeWindowList);
+      for (int i = 0; i < excludeWindowListValue->Length(); ++i) {
+        agora::rtc::IRtcEngine::WindowIDType windowId;
+        Local<Value> value =
+            excludeWindowListValue->Get(context, i).ToLocalChecked();
+#if defined(__APPLE__)
+        status = napi_get_value_uint32_(value, windowId);
+        CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+#elif defined(_WIN32)
+#if defined(_WIN64)
+        int64_t wid;
+        status = napi_get_value_int64_(value, wid);
+#else
+        uint32_t wid;
+        status = napi_get_value_uint32_(value, wid);
+#endif
 
-          CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-          windowId = (HWND)wid;
-  #endif
-          excludeWindows.push_back(windowId);
-        }
+        CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+        windowId = (HWND) wid;
+#endif
+        excludeWindows.push_back(windowId);
       }
-      captureParams->excludeWindowList = (view_t *)excludeWindows.data();
-      captureParams->excludeWindowCount = excludeWindows.size();
+    }
+    captureParams->excludeWindowList = (view_t *) excludeWindows.data();
+    captureParams->excludeWindowCount = excludeWindows.size();
 
-      key = "highLightWidth";
-      status =
-          napi_get_object_property_int32_(isolate, obj, key, captureParams->highLightWidth);
+    key = "highLightWidth";
+    status = napi_get_object_property_int32_(isolate, obj, key,
+                                             captureParams->highLightWidth);
 
-      key = "highLightColor";
-      status =
-          napi_get_object_property_uint32_(isolate, obj, key, captureParams->highLightColor);
+    key = "highLightColor";
+    status = napi_get_object_property_uint32_(isolate, obj, key,
+                                              captureParams->highLightColor);
 
-      key = "enableHighLight";
-      status =
-          napi_get_object_property_bool_(isolate, obj, key, captureParams->enableHighLight);
+    key = "enableHighLight";
+    status = napi_get_object_property_bool_(isolate, obj, key,
+                                            captureParams->enableHighLight);
 
-      return captureParams;
-    } while (false);
+    return captureParams;
+  } while (false);
 
-    return nullptr;
+  return nullptr;
 }
 
 DEFINE_CLASS(NodeRtcEngine);
@@ -445,8 +446,8 @@ DEFINE_CLASS(NodeRtcChannel);
  * To declared class and member functions that could be used in JS layer
  * directly.
  */
-void NodeRtcEngine::Init(Local<Object>& module) {
-  Isolate* isolate = module->GetIsolate();
+void NodeRtcEngine::Init(Local<Object> &module) {
+  Isolate *isolate = module->GetIsolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   BEGIN_PROPERTY_DEFINE(NodeRtcEngine, createInstance, 5)
   PROPERTY_METHOD_DEFINE(onEvent)
@@ -764,7 +765,7 @@ void NodeRtcEngine::Init(Local<Object>& module) {
 
   /**
    * 3.5.2 && 3.6.0
-  */
+   */
   PROPERTY_METHOD_DEFINE(takeSnapshot);
   PROPERTY_METHOD_DEFINE(startRtmpStreamWithoutTranscoding);
   PROPERTY_METHOD_DEFINE(startRtmpStreamWithTranscoding)
@@ -774,28 +775,33 @@ void NodeRtcEngine::Init(Local<Object>& module) {
   PROPERTY_METHOD_DEFINE(followSystemPlaybackDevice);
   PROPERTY_METHOD_DEFINE(followSystemRecordingDevice);
   /*
-  * 3.4.11
-  */
+   * 3.4.11
+   */
   PROPERTY_METHOD_DEFINE(getScreenCaptureSources);
   /*
-  * 3.6.0.2
-  */
+   * 3.6.0.2
+   */
   PROPERTY_METHOD_DEFINE(setLowlightEnhanceOptions);
   PROPERTY_METHOD_DEFINE(setColorEnhanceOptions);
   PROPERTY_METHOD_DEFINE(setVideoDenoiserOptions);
   PROPERTY_METHOD_DEFINE(startEchoTestWithConfig)
-  
+
   PROPERTY_METHOD_DEFINE(setLocalAccessPoint);
   PROPERTY_METHOD_DEFINE(videoSourceSetLocalAccessPoint);
   PROPERTY_METHOD_DEFINE(sendStreamMessageWithArrayBuffer);
 
-  /* 
+  /*
    * 3.6.1.8
    */
   PROPERTY_METHOD_DEFINE(videoSourceSetCloudProxy);
   PROPERTY_METHOD_DEFINE(videoSourceMuteLocalVideoStream);
   PROPERTY_METHOD_DEFINE(videoSourceSetScreenCaptureScenario);
-  
+
+  /**
+   * 3.6.1.12
+   */
+  PROPERTY_METHOD_DEFINE(isFeatureSupported);
+
   EN_PROPERTY_DEFINE()
   module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
               tpl->GetFunction(context).ToLocalChecked());
@@ -804,14 +810,14 @@ void NodeRtcEngine::Init(Local<Object>& module) {
 /**
  * The function is used as class constructor in JS layer
  */
-void NodeRtcEngine::createInstance(const FunctionCallbackInfo<Value>& args) {
+void NodeRtcEngine::createInstance(const FunctionCallbackInfo<Value> &args) {
   LOG_ENTER;
-  Isolate* isolate = args.GetIsolate();
+  Isolate *isolate = args.GetIsolate();
   /*
    *  Called from new
    */
   if (args.IsConstructCall()) {
-    NodeRtcEngine* engine = new NodeRtcEngine(isolate);
+    NodeRtcEngine *engine = new NodeRtcEngine(isolate);
     engine->Wrap(args.This());
     args.GetReturnValue().Set(args.This());
   } else {
@@ -820,13 +826,12 @@ void NodeRtcEngine::createInstance(const FunctionCallbackInfo<Value>& args) {
     Local<Object> instance = cons->NewInstance(context).ToLocalChecked();
     args.GetReturnValue().Set(instance);
   }
-  LOG_LEAVE;
 }
 
 /**
  * Constructor
  */
-NodeRtcEngine::NodeRtcEngine(Isolate* isolate) : m_isolate(isolate) {
+NodeRtcEngine::NodeRtcEngine(Isolate *isolate) : m_isolate(isolate) {
   LOG_ENTER;
   /** m_engine provide SDK functionality */
   m_engine = createAgoraRtcEngine();
@@ -840,7 +845,6 @@ NodeRtcEngine::NodeRtcEngine(Isolate* isolate) : m_isolate(isolate) {
    * multiple process */
   m_videoSourceSink.reset(createVideoSource());
   metadataObserver.reset(new NodeMetadataObserver());
-  LOG_LEAVE;
 }
 
 NodeRtcEngine::~NodeRtcEngine() {
@@ -859,19 +863,15 @@ NodeRtcEngine::~NodeRtcEngine() {
     m_engine->release();
     m_engine = nullptr;
   }
-  if (metadataObserver.get()) {
-    metadataObserver.reset(nullptr);
-  }
+  if (metadataObserver.get()) { metadataObserver.reset(nullptr); }
   m_videoSourceSink.reset(nullptr);
   m_externalVideoRenderFactory.reset(nullptr);
   m_eventHandler.reset(nullptr);
   m_avPluginManager.reset(nullptr);
-  LOG_LEAVE;
 }
 
 void NodeRtcEngine::destroyVideoSource() {
-  if (m_videoSourceSink.get())
-    m_videoSourceSink->release();
+  if (m_videoSourceSink.get()) m_videoSourceSink->release();
 }
 
 NAPI_API_DEFINE_WRAPPER_PARAM_0(startEchoTest);
@@ -930,8 +930,7 @@ NAPI_API_DEFINE_WRAPPER_PARAM_1(muteLocalAudioStream, bool);
 
 NAPI_API_DEFINE_WRAPPER_PARAM_1(muteAllRemoteAudioStreams, bool);
 
-NAPI_API_DEFINE_WRAPPER_PARAM_1(setDefaultMuteAllRemoteAudioStreams,
-                                        bool);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(setDefaultMuteAllRemoteAudioStreams, bool);
 
 NAPI_API_DEFINE_WRAPPER_PARAM_1(muteLocalVideoStream, bool);
 
@@ -939,8 +938,7 @@ NAPI_API_DEFINE_WRAPPER_PARAM_1(enableLocalVideo, bool);
 
 NAPI_API_DEFINE_WRAPPER_PARAM_1(muteAllRemoteVideoStreams, bool);
 
-NAPI_API_DEFINE_WRAPPER_PARAM_1(setDefaultMuteAllRemoteVideoStreams,
-                                        bool);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(setDefaultMuteAllRemoteVideoStreams, bool);
 
 NAPI_API_DEFINE_WRAPPER_PARAM_1(adjustAudioMixingVolume, int32);
 
@@ -952,10 +950,7 @@ NAPI_API_DEFINE_WRAPPER_PARAM_1(setAudioMixingPosition, int32);
 
 NAPI_API_DEFINE_WRAPPER_PARAM_1(setLocalVoicePitch, double);
 
-NAPI_API_DEFINE_WRAPPER_PARAM_3(setExternalAudioSink,
-                                        bool,
-                                        int32,
-                                        int32);
+NAPI_API_DEFINE_WRAPPER_PARAM_3(setExternalAudioSink, bool, int32, int32);
 
 NAPI_API_DEFINE_WRAPPER_PARAM_1(setLogFile, nodestring);
 
@@ -975,7 +970,7 @@ NAPI_API_DEFINE(NodeRtcEngine, addPublishStreamUrl) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring url;
@@ -988,7 +983,6 @@ NAPI_API_DEFINE(NodeRtcEngine, addPublishStreamUrl) {
     result = pEngine->m_engine->addPublishStreamUrl(url, transcodingEnabled);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE_WRAPPER_PARAM_1(removePublishStreamUrl, nodestring);
@@ -996,8 +990,8 @@ NAPI_API_DEFINE(NodeRtcEngine, addVideoWatermark) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -1041,7 +1035,6 @@ NAPI_API_DEFINE(NodeRtcEngine, addVideoWatermark) {
     result = pEngine->m_engine->addVideoWatermark(url, watermarkOptions);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 NAPI_API_DEFINE_WRAPPER_PARAM_0(clearVideoWatermarks);
 
@@ -1060,9 +1053,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setLiveTranscoding) {
                             std::string("arg 0 is not a object"));
 
     auto liveTranscoding = getLiveTranscoding(obj, args, pEngine);
-    if (liveTranscoding == nullptr) {
-      break;
-    }
+    if (liveTranscoding == nullptr) { break; }
     result = pEngine->m_engine->setLiveTranscoding(*liveTranscoding);
     if (liveTranscoding->watermark) {
       for (unsigned int i = 0; i < liveTranscoding->watermarkCount; i++) {
@@ -1088,7 +1079,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setLiveTranscoding) {
     delete liveTranscoding;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, addInjectStreamUrl) {
@@ -1096,8 +1086,8 @@ NAPI_API_DEFINE(NodeRtcEngine, addInjectStreamUrl) {
   int result = -1;
   napi_status status = napi_ok;
   do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -1136,7 +1126,7 @@ NAPI_API_DEFINE(NodeRtcEngine, addInjectStreamUrl) {
     status = napi_get_object_property_int32_(
         isolate, configObj, "audioSampleRate", audioSampleRate);
     CHECK_NAPI_STATUS(pEngine, status);
-    config.audioSampleRate = (AUDIO_SAMPLE_RATE_TYPE)audioSampleRate;
+    config.audioSampleRate = (AUDIO_SAMPLE_RATE_TYPE) audioSampleRate;
 
     status = napi_get_object_property_int32_(isolate, configObj, "audioBitrate",
                                              config.audioBitrate);
@@ -1149,7 +1139,6 @@ NAPI_API_DEFINE(NodeRtcEngine, addInjectStreamUrl) {
     result = pEngine->m_engine->addInjectStreamUrl(url, config);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE_WRAPPER_PARAM_1(removeInjectStreamUrl, nodestring);
@@ -1159,8 +1148,8 @@ NAPI_API_DEFINE(NodeRtcEngine, setBeautyEffectOptions) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     bool enabled;
@@ -1190,9 +1179,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setBeautyEffectOptions) {
           opts.lighteningContrastLevel =
               BeautyOptions::LIGHTENING_CONTRAST_HIGH;
           break;
-        default:
-          status = napi_invalid_arg;
-          break;
+        default: status = napi_invalid_arg; break;
       }
       CHECK_NAPI_STATUS(pEngine, status);
 
@@ -1218,7 +1205,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setBeautyEffectOptions) {
     result = pEngine->m_engine->setBeautyEffectOptions(enabled, opts);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceChanger) {
@@ -1226,7 +1212,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceChanger) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -1234,10 +1220,10 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceChanger) {
     status = napi_get_value_int32_(args[0], voiceChanger);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    result = pEngine->m_engine->setLocalVoiceChanger(VOICE_CHANGER_PRESET(voiceChanger));
+    result = pEngine->m_engine->setLocalVoiceChanger(
+        VOICE_CHANGER_PRESET(voiceChanger));
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceReverbPreset) {
@@ -1245,7 +1231,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceReverbPreset) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -1253,10 +1239,10 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceReverbPreset) {
     status = napi_get_value_int32_(args[0], preset_value);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    result = pEngine->m_engine->setLocalVoiceReverbPreset(AUDIO_REVERB_PRESET(preset_value));
+    result = pEngine->m_engine->setLocalVoiceReverbPreset(
+        AUDIO_REVERB_PRESET(preset_value));
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, enableSoundPositionIndication) {
@@ -1264,9 +1250,9 @@ NAPI_API_DEFINE(NodeRtcEngine, enableSoundPositionIndication) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
-    CHECK_NATIVE_THIS(pEngine); 
+    CHECK_NATIVE_THIS(pEngine);
 
     bool enabled;
     status = napi_get_value_bool_(args[0], enabled);
@@ -1274,7 +1260,6 @@ NAPI_API_DEFINE(NodeRtcEngine, enableSoundPositionIndication) {
     result = pEngine->m_engine->enableSoundPositionIndication(enabled);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setRemoteVoicePosition) {
@@ -1282,7 +1267,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setRemoteVoicePosition) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -1301,7 +1286,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setRemoteVoicePosition) {
     result = pEngine->m_engine->setRemoteVoicePosition(uid, pan, gain);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, startLastmileProbeTest) {
@@ -1309,8 +1293,8 @@ NAPI_API_DEFINE(NodeRtcEngine, startLastmileProbeTest) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -1341,7 +1325,6 @@ NAPI_API_DEFINE(NodeRtcEngine, startLastmileProbeTest) {
     result = pEngine->m_engine->startLastmileProbeTest(config);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, stopLastmileProbeTest) {
@@ -1349,14 +1332,13 @@ NAPI_API_DEFINE(NodeRtcEngine, stopLastmileProbeTest) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
     result = pEngine->m_engine->stopLastmileProbeTest();
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setRemoteUserPriority) {
@@ -1364,7 +1346,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setRemoteUserPriority) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -1387,7 +1369,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setRemoteUserPriority) {
     result = pEngine->m_engine->setRemoteUserPriority(uid, type);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, startEchoTestWithInterval) {
@@ -1395,7 +1376,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startEchoTestWithInterval) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -1406,7 +1387,6 @@ NAPI_API_DEFINE(NodeRtcEngine, startEchoTestWithInterval) {
     result = pEngine->m_engine->startEchoTest(interval);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, startEchoTestWithConfig) {
@@ -1445,14 +1425,13 @@ NAPI_API_DEFINE(NodeRtcEngine, startEchoTestWithConfig) {
     result = pEngine->m_engine->startEchoTest(config);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setLocalAccessPoint) {
   LOG_ENTER;
   napi_status status = napi_ok;
   int result = -1;
-  
+
   do {
     Isolate *isolate = args.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
@@ -1468,7 +1447,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalAccessPoint) {
     CHECK_NAPI_STATUS(pEngine, status);
 
     LocalAccessPointConfiguration localAccessPointConfiguration;
-    
+
     v8::Array *ipList;
     v8::Array *domainList;
     std::vector<const char *> ipListVec;
@@ -1488,15 +1467,15 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalAccessPoint) {
         CHECK_NAPI_STATUS(pEngine, status);
         ipListVecString.push_back(string(str));
       }
-      for(int index = 0; index < count; ++index)
-      {
+      for (int index = 0; index < count; ++index) {
         ipListVec.push_back(ipListVecString[index].c_str());
       }
       localAccessPointConfiguration.ipList = ipListVec.data();
       localAccessPointConfiguration.ipListSize = count;
     }
-    
-    status = napi_get_object_property_array_(isolate, obj, "domainList", domainList);
+
+    status =
+        napi_get_object_property_array_(isolate, obj, "domainList", domainList);
     if (status == napi_ok && domainList->Length() > 0) {
       auto count = domainList->Length();
       domainListVec.reserve(count);
@@ -1508,26 +1487,27 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalAccessPoint) {
         CHECK_NAPI_STATUS(pEngine, status);
         domainListVecString.push_back(string(str));
       }
-      for(int index = 0; index < count; ++index)
-      {
+      for (int index = 0; index < count; ++index) {
         domainListVec.push_back(domainListVecString[index].c_str());
       }
       localAccessPointConfiguration.domainList = domainListVec.data();
       localAccessPointConfiguration.domainListSize = count;
     }
-    
+
     NodeString verifyDomainNameStr;
-    status = napi_get_object_property_nodestring_(isolate, obj, "verifyDomainName", verifyDomainNameStr);
+    status = napi_get_object_property_nodestring_(
+        isolate, obj, "verifyDomainName", verifyDomainNameStr);
     CHECK_NAPI_STATUS(pEngine, status);
     localAccessPointConfiguration.verifyDomainName = verifyDomainNameStr;
-    
+
     int32_t mode;
     status = napi_get_object_property_int32_(isolate, obj, "mode", mode);
     CHECK_NAPI_STATUS(pEngine, status);
-    localAccessPointConfiguration.mode = (LOCAL_PROXY_MODE)mode;
-    
+    localAccessPointConfiguration.mode = (LOCAL_PROXY_MODE) mode;
+
     Local<Object> advancedConfigObj;
-    status = napi_get_object_property_object_(isolate, obj, "advancedConfig", advancedConfigObj);
+    status = napi_get_object_property_object_(isolate, obj, "advancedConfig",
+                                              advancedConfigObj);
     CHECK_NAPI_STATUS(pEngine, status);
     if (!advancedConfigObj->IsObject()) {
       status = napi_invalid_arg;
@@ -1537,36 +1517,42 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalAccessPoint) {
     UploadServerInfo uploadServerInfo;
     advancedConfigInfo.logUploadServer = &uploadServerInfo;
     localAccessPointConfiguration.advancedConfig = &advancedConfigInfo;
-    
+
     Local<Object> uploadServerInfoObj;
-    status = napi_get_object_property_object_(isolate, advancedConfigObj, "logUploadServer", uploadServerInfoObj);
+    status = napi_get_object_property_object_(
+        isolate, advancedConfigObj, "logUploadServer", uploadServerInfoObj);
     CHECK_NAPI_STATUS(pEngine, status);
     if (!uploadServerInfoObj->IsObject()) {
       status = napi_invalid_arg;
       CHECK_NAPI_STATUS(pEngine, status);
     }
-    
+
     NodeString serverDomainStr;
-    status = napi_get_object_property_nodestring_(isolate, uploadServerInfoObj, "serverDomain", serverDomainStr);
+    status = napi_get_object_property_nodestring_(
+        isolate, uploadServerInfoObj, "serverDomain", serverDomainStr);
     CHECK_NAPI_STATUS(pEngine, status);
     uploadServerInfo.serverDomain = serverDomainStr;
-    
+
     NodeString serverPathStr;
     status = napi_get_object_property_nodestring_(isolate, uploadServerInfoObj,
                                                   "serverPath", serverPathStr);
     CHECK_NAPI_STATUS(pEngine, status);
     uploadServerInfo.serverPath = serverPathStr;
-    
-    status = napi_get_object_property_int32_(isolate, uploadServerInfoObj, "serverPort", uploadServerInfo.serverPort);
+
+    status = napi_get_object_property_int32_(isolate, uploadServerInfoObj,
+                                             "serverPort",
+                                             uploadServerInfo.serverPort);
     CHECK_NAPI_STATUS(pEngine, status);
-    
-    status = napi_get_object_property_bool_(isolate, uploadServerInfoObj, "serverHttps", uploadServerInfo.serverHttps);
+
+    status = napi_get_object_property_bool_(isolate, uploadServerInfoObj,
+                                            "serverHttps",
+                                            uploadServerInfo.serverHttps);
     CHECK_NAPI_STATUS(pEngine, status);
-    
-    result = pEngine->m_engine->setLocalAccessPoint(localAccessPointConfiguration);
+
+    result =
+        pEngine->m_engine->setLocalAccessPoint(localAccessPointConfiguration);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetLocalAccessPoint) {
@@ -1634,7 +1620,7 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetLocalAccessPoint) {
     int32_t mode;
     status = napi_get_object_property_int32_(isolate, obj, "mode", mode);
     CHECK_NAPI_STATUS(pEngine, status);
-    cmd->mode = (LOCAL_PROXY_MODE)mode;
+    cmd->mode = (LOCAL_PROXY_MODE) mode;
 
     Local<Object> advancedConfigObj;
     status = napi_get_object_property_object_(isolate, obj, "advancedConfig",
@@ -1688,14 +1674,13 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetLocalAccessPoint) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetCloudProxy) {
   LOG_ENTER;
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -1706,14 +1691,15 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetCloudProxy) {
       result = -2;
       break;
     }
-    if (!pEngine->m_videoSourceSink.get() ||
-      pEngine->m_videoSourceSink->setCloudProxy((agora::rtc::CLOUD_PROXY_TYPE)proxyType) != node_ok) {
+    if (!pEngine->m_videoSourceSink.get()
+        || pEngine->m_videoSourceSink->setCloudProxy(
+               (agora::rtc::CLOUD_PROXY_TYPE) proxyType)
+            != node_ok) {
       break;
     }
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceMuteLocalVideoStream) {
@@ -1721,7 +1707,7 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceMuteLocalVideoStream) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -1729,14 +1715,13 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceMuteLocalVideoStream) {
     status = napi_get_value_bool_(args[0], mute);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    if (!pEngine->m_videoSourceSink.get() ||
-      pEngine->m_videoSourceSink->muteLocalVideoStream(mute) != node_ok) {
+    if (!pEngine->m_videoSourceSink.get()
+        || pEngine->m_videoSourceSink->muteLocalVideoStream(mute) != node_ok) {
       break;
     }
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetScreenCaptureScenario) {
@@ -1744,7 +1729,7 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetScreenCaptureScenario) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -1752,14 +1737,34 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetScreenCaptureScenario) {
     status = napi_get_value_uint32_(args[0], type);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    if (!pEngine->m_videoSourceSink.get() ||
-      pEngine->m_videoSourceSink->setScreenCaptureScenario((agora::rtc::SCREEN_SCENARIO_TYPE)type) != node_ok) {
+    if (!pEngine->m_videoSourceSink.get()
+        || pEngine->m_videoSourceSink->setScreenCaptureScenario(
+               (agora::rtc::SCREEN_SCENARIO_TYPE) type)
+            != node_ok) {
       break;
     }
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, isFeatureSupported) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  bool result = false;
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    uint32 type;
+    status = napi_get_value_uint32_(args[0], type);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    result =
+        pEngine->m_engine->isFeatureSupported((agora::rtc::FeatureType) type);
+  } while (false);
+  napi_set_bool_result(args, result);
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, sendStreamMessageWithArrayBuffer) {
@@ -1778,10 +1783,9 @@ NAPI_API_DEFINE(NodeRtcEngine, sendStreamMessageWithArrayBuffer) {
     napi_get_value_arraybuffer_(args[1], buffer, length);
     CHECK_NAPI_STATUS(pEngine, status);
     result = pEngine->m_engine->sendStreamMessage(
-        streamId, (const char *)buffer.data(), length);
+        streamId, (const char *) buffer.data(), length);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, startAudioDeviceLoopbackTest) {
@@ -1789,7 +1793,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startAudioDeviceLoopbackTest) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -1800,11 +1804,10 @@ NAPI_API_DEFINE(NodeRtcEngine, startAudioDeviceLoopbackTest) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
     result = adm ? adm->startAudioDeviceLoopbackTest(interval) : -1;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, stopAudioDeviceLoopbackTest) {
@@ -1812,18 +1815,17 @@ NAPI_API_DEFINE(NodeRtcEngine, stopAudioDeviceLoopbackTest) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
     result = adm ? adm->stopAudioDeviceLoopbackTest() : -1;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setCameraCapturerConfiguration) {
@@ -1831,8 +1833,8 @@ NAPI_API_DEFINE(NodeRtcEngine, setCameraCapturerConfiguration) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -1850,7 +1852,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setCameraCapturerConfiguration) {
     status =
         napi_get_object_property_int32_(isolate, obj, "preference", preference);
     CHECK_NAPI_STATUS(pEngine, status);
-    config.preference = (CAPTURER_OUTPUT_PREFERENCE)preference;
+    config.preference = (CAPTURER_OUTPUT_PREFERENCE) preference;
 
     status = napi_get_object_property_int32_(isolate, obj, "captureWidth",
                                              config.captureWidth);
@@ -1863,7 +1865,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setCameraCapturerConfiguration) {
     result = pEngine->m_engine->setCameraCapturerConfiguration(config);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setLogFileSize) {
@@ -1871,8 +1872,8 @@ NAPI_API_DEFINE(NodeRtcEngine, setLogFileSize) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -1883,7 +1884,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setLogFileSize) {
     result = pEngine->m_engine->setLogFileSize(size);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setBool) {
@@ -1891,7 +1891,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setBool) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring key;
@@ -1904,7 +1904,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setBool) {
     result = param->setBool(key, value);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setInt) {
@@ -1912,7 +1911,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setInt) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring key;
@@ -1925,7 +1924,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setInt) {
     result = param->setInt(key, value);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setUInt) {
@@ -1933,7 +1931,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setUInt) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring key;
@@ -1946,7 +1944,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setUInt) {
     result = param->setUInt(key, value);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setNumber) {
@@ -1954,7 +1951,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setNumber) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring key;
@@ -1967,7 +1964,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setNumber) {
     result = param->setNumber(key, value);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setString) {
@@ -1975,7 +1971,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setString) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring key;
@@ -1988,7 +1984,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setString) {
     result = param->setString(key, value);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setObject) {
@@ -1996,7 +1991,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setObject) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring key;
@@ -2009,14 +2004,13 @@ NAPI_API_DEFINE(NodeRtcEngine, setObject) {
     result = param->setObject(key, value);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getBool) {
   LOG_ENTER;
   napi_status status = napi_ok;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring key;
@@ -2027,14 +2021,13 @@ NAPI_API_DEFINE(NodeRtcEngine, getBool) {
     param->getBool(key, value);
     napi_set_bool_result(args, value);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getInt) {
   LOG_ENTER;
   napi_status status = napi_ok;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring key;
@@ -2045,14 +2038,13 @@ NAPI_API_DEFINE(NodeRtcEngine, getInt) {
     param->getInt(key, value);
     napi_set_int_result(args, value);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getUInt) {
   LOG_ENTER;
   napi_status status = napi_ok;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring key;
@@ -2063,14 +2055,13 @@ NAPI_API_DEFINE(NodeRtcEngine, getUInt) {
     param->getUInt(key, value);
     args.GetReturnValue().Set(v8::Uint32::New(args.GetIsolate(), value));
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getNumber) {
   LOG_ENTER;
   napi_status status = napi_ok;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring key;
@@ -2081,14 +2072,13 @@ NAPI_API_DEFINE(NodeRtcEngine, getNumber) {
     param->getNumber(key, value);
     args.GetReturnValue().Set(v8::Number::New(args.GetIsolate(), value));
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getString) {
   LOG_ENTER;
   napi_status status = napi_ok;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring key;
@@ -2099,14 +2089,13 @@ NAPI_API_DEFINE(NodeRtcEngine, getString) {
     param->getString(key, value);
     napi_set_string_result(args, value->c_str());
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getObject) {
   LOG_ENTER;
   napi_status status = napi_ok;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring key;
@@ -2117,14 +2106,13 @@ NAPI_API_DEFINE(NodeRtcEngine, getObject) {
     param->getObject(key, value);
     napi_set_string_result(args, value->c_str());
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getArray) {
   LOG_ENTER;
   napi_status status = napi_ok;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring key;
@@ -2135,7 +2123,6 @@ NAPI_API_DEFINE(NodeRtcEngine, getArray) {
     param->getArray(key, value);
     napi_set_string_result(args, value->c_str());
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setParameters) {
@@ -2143,7 +2130,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setParameters) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring param;
@@ -2154,7 +2141,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setParameters) {
     result = ap->setParameters(param);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setProfile) {
@@ -2162,7 +2148,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setProfile) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring profile;
@@ -2175,14 +2161,13 @@ NAPI_API_DEFINE(NodeRtcEngine, setProfile) {
     result = param->setProfile(profile, merge);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, convertPath) {
   LOG_ENTER;
   napi_status status = napi_ok;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring path;
@@ -2193,7 +2178,6 @@ NAPI_API_DEFINE(NodeRtcEngine, convertPath) {
     param->convertPath(path, value);
     napi_set_string_result(args, value->c_str());
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setExternalAudioSource) {
@@ -2201,10 +2185,10 @@ NAPI_API_DEFINE(NodeRtcEngine, setExternalAudioSource) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    
+
     int sampleRate, channels;
     bool enabled;
     status = napi_get_value_bool_(args[0], enabled);
@@ -2213,10 +2197,10 @@ NAPI_API_DEFINE(NodeRtcEngine, setExternalAudioSource) {
     CHECK_NAPI_STATUS(pEngine, status);
     status = napi_get_value_int32_(args[2], channels);
     CHECK_NAPI_STATUS(pEngine, status);
-    result = pEngine->m_engine->setExternalAudioSource(enabled, sampleRate, channels);
+    result = pEngine->m_engine->setExternalAudioSource(enabled, sampleRate,
+                                                       channels);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setLocalVideoMirrorMode) {
@@ -2224,17 +2208,16 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalVideoMirrorMode) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     int32 mirrorType;
     status = napi_get_value_int32_(args[0], mirrorType);
     CHECK_NAPI_STATUS(pEngine, status);
     result = pEngine->m_engine->setLocalVideoMirrorMode(
-        (agora::rtc::VIDEO_MIRROR_MODE_TYPE)mirrorType);
+        (agora::rtc::VIDEO_MIRROR_MODE_TYPE) mirrorType);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, enableLoopbackRecording) {
@@ -2242,7 +2225,7 @@ NAPI_API_DEFINE(NodeRtcEngine, enableLoopbackRecording) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     bool enable;
@@ -2251,7 +2234,7 @@ NAPI_API_DEFINE(NodeRtcEngine, enableLoopbackRecording) {
     CHECK_NAPI_STATUS(pEngine, status);
     if (!args[1]->IsNull()) {
       status = napi_get_value_nodestring_(args[1], deviceName);
-      CHECK_NAPI_STATUS(pEngine, status); 
+      CHECK_NAPI_STATUS(pEngine, status);
       result = pEngine->m_engine->enableLoopbackRecording(enable, deviceName);
     } else {
       result = pEngine->m_engine->enableLoopbackRecording(enable);
@@ -2259,7 +2242,6 @@ NAPI_API_DEFINE(NodeRtcEngine, enableLoopbackRecording) {
 
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceEqualization) {
@@ -2267,7 +2249,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceEqualization) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     int32 bandFrequency, bandGain;
@@ -2276,10 +2258,9 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceEqualization) {
     status = napi_get_value_int32_(args[1], bandGain);
     CHECK_NAPI_STATUS(pEngine, status);
     result = pEngine->m_engine->setLocalVoiceEqualization(
-        (AUDIO_EQUALIZATION_BAND_FREQUENCY)bandFrequency, bandGain);
+        (AUDIO_EQUALIZATION_BAND_FREQUENCY) bandFrequency, bandGain);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceReverb) {
@@ -2287,7 +2268,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceReverb) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     int32 reverbKey, value;
@@ -2295,10 +2276,10 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceReverb) {
     CHECK_NAPI_STATUS(pEngine, status);
     status = napi_get_value_int32_(args[1], value);
     CHECK_NAPI_STATUS(pEngine, status);
-    result = pEngine->m_engine->setLocalVoiceReverb((AUDIO_REVERB_TYPE)reverbKey, value);
+    result = pEngine->m_engine->setLocalVoiceReverb(
+        (AUDIO_REVERB_TYPE) reverbKey, value);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setLocalPublishFallbackOption) {
@@ -2306,17 +2287,16 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalPublishFallbackOption) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     int32 option;
     status = napi_get_value_int32_(args[0], option);
     CHECK_NAPI_STATUS(pEngine, status);
-    result =
-    pEngine->m_engine->setLocalPublishFallbackOption((STREAM_FALLBACK_OPTIONS)option);
+    result = pEngine->m_engine->setLocalPublishFallbackOption(
+        (STREAM_FALLBACK_OPTIONS) option);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setRemoteSubscribeFallbackOption) {
@@ -2324,17 +2304,16 @@ NAPI_API_DEFINE(NodeRtcEngine, setRemoteSubscribeFallbackOption) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     int32 option;
     status = napi_get_value_int32_(args[0], option);
     CHECK_NAPI_STATUS(pEngine, status);
-    result =
-    pEngine->m_engine->setRemoteSubscribeFallbackOption((STREAM_FALLBACK_OPTIONS)option);
+    result = pEngine->m_engine->setRemoteSubscribeFallbackOption(
+        (STREAM_FALLBACK_OPTIONS) option);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceInitialize) {
@@ -2342,7 +2321,7 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceInitialize) {
   int result = -1;
   do {
     LOG_INFO("VideSource: %s\n", __FUNCTION__);
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     LOG_INFO("VideSource: %s check pEngine \n", __FUNCTION__);
     CHECK_NATIVE_THIS(pEngine);
@@ -2360,10 +2339,10 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceInitialize) {
     NodeString bundleId;
     napi_get_value_nodestring_(args[3], bundleId);
 
-    if (!pEngine->m_videoSourceSink.get() ||
-        !pEngine->m_videoSourceSink->initialize(pEngine->m_eventHandler.get(),
-                                                appid, areaCode, groupId,
-                                                bundleId)) {
+    if (!pEngine->m_videoSourceSink.get()
+        || !pEngine->m_videoSourceSink->initialize(
+            pEngine->m_eventHandler.get(), appid, areaCode, groupId,
+            bundleId)) {
       if (!pEngine->m_videoSourceSink.get()) {
         LOG_ERROR("VideSource: %s not get m_videoSourceSink\n", __FUNCTION__);
       } else {
@@ -2376,17 +2355,16 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceInitialize) {
   } while (false);
   LOG_INFO("VideSource: %s result : %d \n", __FUNCTION__, result);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceJoin) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    Isolate* isolate = args.GetIsolate();
+    Isolate *isolate = args.GetIsolate();
     NodeString key, name, chan_info;
     uid_t uid;
     napi_status status = napi_get_value_nodestring_(args[0], key);
@@ -2440,14 +2418,13 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceJoin) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceLeave) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     if (pEngine->m_videoSourceSink.get()) {
@@ -2456,14 +2433,13 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceLeave) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceRenewToken) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     NodeString token;
@@ -2475,14 +2451,13 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceRenewToken) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetChannelProfile) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     int profile;
@@ -2495,19 +2470,18 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetChannelProfile) {
 
     if (pEngine->m_videoSourceSink.get()) {
       pEngine->m_videoSourceSink->setVideoSourceChannelProfile(
-          (agora::rtc::CHANNEL_PROFILE_TYPE)profile, permissionKey);
+          (agora::rtc::CHANNEL_PROFILE_TYPE) profile, permissionKey);
       result = 0;
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetVideoProfile) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     int profile;
@@ -2518,12 +2492,11 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetVideoProfile) {
     CHECK_NAPI_STATUS(pEngine, status);
     if (pEngine->m_videoSourceSink.get()) {
       pEngine->m_videoSourceSink->setVideoSourceVideoProfile(
-          (agora::rtc::VIDEO_PROFILE_TYPE)profile, swapWidthAndHeight);
+          (agora::rtc::VIDEO_PROFILE_TYPE) profile, swapWidthAndHeight);
       result = 0;
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, startScreenCapture2) {
@@ -2531,8 +2504,8 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCapture2) {
   int result = -1;
   napi_status status = napi_ok;
   do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -2553,7 +2526,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCapture2) {
 #endif
 
     CHECK_NAPI_STATUS(pEngine, status);
-    HWND windowId = (HWND)wid;
+    HWND windowId = (HWND) wid;
 #endif
     status = napi_get_value_uint32_(args[1], captureFreq);
     CHECK_NAPI_STATUS(pEngine, status);
@@ -2582,14 +2555,13 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCapture2) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, stopScreenCapture2) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     if (pEngine->m_videoSourceSink.get()) {
@@ -2598,14 +2570,13 @@ NAPI_API_DEFINE(NodeRtcEngine, stopScreenCapture2) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetLogFile) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     NodeString file;
@@ -2617,14 +2588,13 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetLogFile) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceRelease) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     if (pEngine->m_videoSourceSink.get()) {
@@ -2633,14 +2603,13 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceRelease) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceStartPreview) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     if (pEngine->m_videoSourceSink.get()) {
@@ -2649,14 +2618,13 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceStartPreview) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceStopPreview) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -2666,14 +2634,13 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceStopPreview) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceEnableWebSdkInteroperability) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -2688,35 +2655,34 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceEnableWebSdkInteroperability) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceEnableDualStreamMode) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     bool enable;
     napi_status status = napi_get_value_bool_(args[0], enable);
     CHECK_NAPI_STATUS(pEngine, status);
-    if (!pEngine->m_videoSourceSink.get() ||
-        pEngine->m_videoSourceSink->enableDualStreamMode(enable) != node_ok) {
+    if (!pEngine->m_videoSourceSink.get()
+        || pEngine->m_videoSourceSink->enableDualStreamMode(enable)
+            != node_ok) {
       break;
     }
 
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetParameter) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -2730,15 +2696,14 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetParameter) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceUpdateScreenCaptureRegion) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -2764,7 +2729,6 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceUpdateScreenCaptureRegion) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videosourceStartScreenCaptureByScreen) {
@@ -2773,8 +2737,8 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceStartScreenCaptureByScreen) {
   int result = -1;
   std::string key = "";
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -2859,12 +2823,11 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceStartScreenCaptureByScreen) {
     }
     status = napi_get_value_object_(isolate, args[2], obj);
     CHECK_NAPI_STATUS(pEngine, status);
-    
+
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
-    ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
-    if (captureParams == nullptr) {
-      break;
-    }
+    ScreenCaptureParameters *captureParams =
+        getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
+    if (captureParams == nullptr) { break; }
 
     if (pEngine->m_videoSourceSink.get()) {
       pEngine->m_videoSourceSink->startScreenCaptureByScreen(
@@ -2875,7 +2838,6 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceStartScreenCaptureByScreen) {
     delete captureParams;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceStartScreenCaptureByDisplayId) {
@@ -2884,8 +2846,8 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceStartScreenCaptureByDisplayId) {
   int result = -1;
   std::string key = "";
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -2939,12 +2901,11 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceStartScreenCaptureByDisplayId) {
     }
     status = napi_get_value_object_(isolate, args[2], obj);
     CHECK_NAPI_STATUS(pEngine, status);
-    
+
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
-    ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
-    if (captureParams == nullptr) {
-      break;
-    }
+    ScreenCaptureParameters *captureParams =
+        getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
+    if (captureParams == nullptr) { break; }
 
     if (pEngine->m_videoSourceSink.get()) {
       pEngine->m_videoSourceSink->startScreenCaptureByDisplayId(
@@ -2955,7 +2916,6 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceStartScreenCaptureByDisplayId) {
     delete captureParams;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByDisplayId) {
@@ -2964,8 +2924,8 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByDisplayId) {
   int result = -1;
   std::string key = "";
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -3019,20 +2979,18 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByDisplayId) {
     }
     status = napi_get_value_object_(isolate, args[2], obj);
     CHECK_NAPI_STATUS(pEngine, status);
-    
+
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
-    ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
-    if (captureParams == nullptr) {
-      break;
-    }
+    ScreenCaptureParameters *captureParams =
+        getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
+    if (captureParams == nullptr) { break; }
 
     result = pEngine->m_engine->startScreenCaptureByDisplayId(
-          displayInfo.idVal, regionRect, *captureParams);
+        displayInfo.idVal, regionRect, *captureParams);
 
     delete captureParams;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videosourceStartScreenCaptureByWindow) {
@@ -3041,8 +2999,8 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceStartScreenCaptureByWindow) {
   int result = -1;
   std::string key = "";
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     key = "windowSymbol";
@@ -3061,7 +3019,7 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceStartScreenCaptureByWindow) {
 #endif
 
     CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-    windowId = (HWND)wid;
+    windowId = (HWND) wid;
 #endif
     key = "rect";
     // regionRect
@@ -3097,12 +3055,11 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceStartScreenCaptureByWindow) {
     }
     status = napi_get_value_object_(isolate, args[2], obj);
     CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-    
+
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
-    ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
-    if (captureParams == nullptr) {
-      break;
-    }
+    ScreenCaptureParameters *captureParams =
+        getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
+    if (captureParams == nullptr) { break; }
 
     if (pEngine->m_videoSourceSink.get()) {
       pEngine->m_videoSourceSink->startScreenCaptureByWindow(
@@ -3113,7 +3070,6 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceStartScreenCaptureByWindow) {
     delete captureParams;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videosourceUpdateScreenCaptureParameters) {
@@ -3122,8 +3078,8 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceUpdateScreenCaptureParameters) {
   int result = -1;
   std::string key = "";
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -3136,12 +3092,11 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceUpdateScreenCaptureParameters) {
     Local<Object> obj;
     status = napi_get_value_object_(isolate, args[0], obj);
     CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-    
+
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
-    ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
-    if (captureParams == nullptr) {
-      break;
-    }
+    ScreenCaptureParameters *captureParams =
+        getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
+    if (captureParams == nullptr) { break; }
 
     if (pEngine->m_videoSourceSink.get()) {
       pEngine->m_videoSourceSink->updateScreenCaptureParameters(*captureParams,
@@ -3152,7 +3107,6 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceUpdateScreenCaptureParameters) {
     delete captureParams;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videosourceSetScreenCaptureContentHint) {
@@ -3160,7 +3114,7 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceSetScreenCaptureContentHint) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -3170,15 +3124,9 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceSetScreenCaptureContentHint) {
     CHECK_NAPI_STATUS(pEngine, status);
 
     switch (value) {
-      case 0:
-        hint = CONTENT_HINT_NONE;
-        break;
-      case 1:
-        hint = CONTENT_HINT_MOTION;
-        break;
-      case 2:
-        hint = CONTENT_HINT_DETAILS;
-        break;
+      case 0: hint = CONTENT_HINT_NONE; break;
+      case 1: hint = CONTENT_HINT_MOTION; break;
+      case 2: hint = CONTENT_HINT_DETAILS; break;
     }
 
     if (pEngine->m_videoSourceSink.get()) {
@@ -3187,14 +3135,13 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceSetScreenCaptureContentHint) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceEnableLoopbackRecording) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     if (pEngine->m_videoSourceSink.get()) {
@@ -3218,24 +3165,22 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceEnableLoopbackRecording) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceEnableAudio) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    if (!pEngine->m_videoSourceSink.get() ||
-        pEngine->m_videoSourceSink->enableAudio() != node_ok) {
+    if (!pEngine->m_videoSourceSink.get()
+        || pEngine->m_videoSourceSink->enableAudio() != node_ok) {
       break;
     }
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceEnableEncryption) {
@@ -3243,8 +3188,8 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceEnableEncryption) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     bool enable;
@@ -3271,17 +3216,17 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceEnableEncryption) {
                                           encryptionConfig.encryptionKdfSalt);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    encryptionConfig.encryptionMode = (ENCRYPTION_MODE)encryptionMode;
+    encryptionConfig.encryptionMode = (ENCRYPTION_MODE) encryptionMode;
     encryptionConfig.encryptionKey = encryptionKey;
-    if (!pEngine->m_videoSourceSink.get() ||
-        pEngine->m_videoSourceSink->enableEncryption(
-            enable, encryptionConfig) != node_ok) {
+    if (!pEngine->m_videoSourceSink.get()
+        || pEngine->m_videoSourceSink->enableEncryption(enable,
+                                                        encryptionConfig)
+            != node_ok) {
       break;
     }
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetEncryptionMode) {
@@ -3289,7 +3234,7 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetEncryptionMode) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -3297,15 +3242,14 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetEncryptionMode) {
     status = napi_get_value_nodestring_(args[0], encryptionMode);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    if (!pEngine->m_videoSourceSink.get() ||
-        pEngine->m_videoSourceSink->setEncryptionMode(encryptionMode) !=
-            node_ok) {
+    if (!pEngine->m_videoSourceSink.get()
+        || pEngine->m_videoSourceSink->setEncryptionMode(encryptionMode)
+            != node_ok) {
       break;
     }
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetEncryptionSecret) {
@@ -3313,7 +3257,7 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetEncryptionSecret) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -3321,34 +3265,32 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetEncryptionSecret) {
     status = napi_get_value_nodestring_(args[0], secret);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    if (!pEngine->m_videoSourceSink.get() ||
-        pEngine->m_videoSourceSink->setEncryptionSecret(secret) != node_ok) {
+    if (!pEngine->m_videoSourceSink.get()
+        || pEngine->m_videoSourceSink->setEncryptionSecret(secret) != node_ok) {
       break;
     }
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, leaveChannel) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     result = pEngine->m_engine->leaveChannel();
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, enableLocalAudio) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     bool enable;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -3357,14 +3299,13 @@ NAPI_API_DEFINE(NodeRtcEngine, enableLocalAudio) {
     result = pEngine->m_engine->enableLocalAudio(enable);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, renewToken) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     NodeString newkey;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -3374,32 +3315,28 @@ NAPI_API_DEFINE(NodeRtcEngine, renewToken) {
     result = pEngine->m_engine->renewToken(newkey);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, registerDeliverFrame) {
   LOG_ENTER;
   int result = false;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    NodeVideoFrameTransporter* pTransporter = getNodeVideoFrameTransporter();
-    if (pTransporter) {
-      result = pTransporter->initialize(isolate, args);
-    }
+    NodeVideoFrameTransporter *pTransporter = getNodeVideoFrameTransporter();
+    if (pTransporter) { result = pTransporter->initialize(isolate, args); }
   } while (false);
   napi_set_bool_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, initialize) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     NodeString appid, logPath;
@@ -3432,14 +3369,10 @@ NAPI_API_DEFINE(NodeRtcEngine, initialize) {
       }
       status = napi_get_object_property_int32_(isolate, oLogConfigs, "fileSize",
                                                fileSize);
-      if (status == napi_ok) {
-        logConfig.fileSize = fileSize;
-      }
+      if (status == napi_ok) { logConfig.fileSize = fileSize; }
       status =
           napi_get_object_property_int32_(isolate, oLogConfigs, "level", level);
-      if (status == napi_ok) {
-        logConfig.level = (LOG_LEVEL)level;
-      }
+      if (status == napi_ok) { logConfig.level = (LOG_LEVEL) level; }
       context.logConfig = logConfig;
     } else {
       LOG_INFO("no logConfig found");
@@ -3458,24 +3391,23 @@ NAPI_API_DEFINE(NodeRtcEngine, initialize) {
       pMediaEngine->registerVideoRenderFactory(
           pEngine->m_externalVideoRenderFactory.get());
     }
-    IRtcEngine3* m_engine2 = (IRtcEngine3*)pEngine->m_engine;
+    IRtcEngine3 *m_engine2 = (IRtcEngine3 *) pEngine->m_engine;
     m_engine2->setAppType(AppType(3));
     pEngine->m_engine->enableVideo();
     pEngine->m_engine->enableLocalVideo(true);
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getVersion) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     int build = 0;
-    const char* strVersion = pEngine->m_engine->getVersion(&build);
+    const char *strVersion = pEngine->m_engine->getVersion(&build);
     Local<Object> obj = Object::New(args.GetIsolate());
     CHECK_NAPI_OBJECT(obj);
     Local<Value> key = String::NewFromUtf8(args.GetIsolate(), "version",
@@ -3496,14 +3428,13 @@ NAPI_API_DEFINE(NodeRtcEngine, getVersion) {
     obj->Set(args.GetIsolate()->GetCurrentContext(), buildKey, buildValue);
     args.GetReturnValue().Set(obj);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setEncryptionMode) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring mode;
@@ -3513,26 +3444,24 @@ NAPI_API_DEFINE(NodeRtcEngine, setEncryptionMode) {
     result = pEngine->m_engine->setEncryptionMode(mode);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getErrorDescription) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     int errorCode;
     napi_status status = napi_get_value_int32_(args[0], errorCode);
     CHECK_NAPI_STATUS(pEngine, status);
-    const char* desc = pEngine->m_engine->getErrorDescription(errorCode);
+    const char *desc = pEngine->m_engine->getErrorDescription(errorCode);
     Local<Value> descValue = String::NewFromUtf8(args.GetIsolate(), desc,
                                                  NewStringType::kInternalized)
                                  .ToLocalChecked();
     CHECK_NAPI_OBJECT(descValue);
     args.GetReturnValue().Set(descValue);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, joinChannel) {
@@ -3540,8 +3469,8 @@ NAPI_API_DEFINE(NodeRtcEngine, joinChannel) {
   int result = -1;
   NodeString key, name, chan_info;
   do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     uid_t uid;
@@ -3602,7 +3531,6 @@ NAPI_API_DEFINE(NodeRtcEngine, joinChannel) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, switchChannel) {
@@ -3610,8 +3538,8 @@ NAPI_API_DEFINE(NodeRtcEngine, switchChannel) {
   int result = -1;
   NodeString key, name;
   do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     napi_status status = napi_get_value_nodestring_(args[0], key);
@@ -3656,14 +3584,13 @@ NAPI_API_DEFINE(NodeRtcEngine, switchChannel) {
 
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setChannelProfile) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     napi_status status = napi_ok;
@@ -3674,14 +3601,13 @@ NAPI_API_DEFINE(NodeRtcEngine, setChannelProfile) {
         pEngine->m_engine->setChannelProfile(CHANNEL_PROFILE_TYPE(profile));
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setClientRole) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     napi_status status = napi_ok;
@@ -3691,14 +3617,13 @@ NAPI_API_DEFINE(NodeRtcEngine, setClientRole) {
     result = pEngine->m_engine->setClientRole(CLIENT_ROLE_TYPE(role));
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setVideoProfile) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     napi_status status = napi_ok;
@@ -3710,7 +3635,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setVideoProfile) {
                                                 swapWandH);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setVideoEncoderConfiguration) {
@@ -3718,8 +3642,8 @@ NAPI_API_DEFINE(NodeRtcEngine, setVideoEncoderConfiguration) {
   int result = -1;
   do {
     napi_status status = napi_ok;
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -3756,7 +3680,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setVideoEncoderConfiguration) {
                                              frameRateVal);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    config.frameRate = (FRAME_RATE)frameRateVal;
+    config.frameRate = (FRAME_RATE) frameRateVal;
 
     int orientationModeVal;
     ORIENTATION_MODE orientationMode;
@@ -3765,18 +3689,10 @@ NAPI_API_DEFINE(NodeRtcEngine, setVideoEncoderConfiguration) {
     CHECK_NAPI_STATUS(pEngine, status);
 
     switch (orientationModeVal) {
-      case 0:
-        orientationMode = ORIENTATION_MODE_ADAPTIVE;
-        break;
-      case 1:
-        orientationMode = ORIENTATION_MODE_FIXED_LANDSCAPE;
-        break;
-      case 2:
-        orientationMode = ORIENTATION_MODE_FIXED_PORTRAIT;
-        break;
-      default:
-        status = napi_invalid_arg;
-        break;
+      case 0: orientationMode = ORIENTATION_MODE_ADAPTIVE; break;
+      case 1: orientationMode = ORIENTATION_MODE_FIXED_LANDSCAPE; break;
+      case 2: orientationMode = ORIENTATION_MODE_FIXED_PORTRAIT; break;
+      default: status = napi_invalid_arg; break;
     }
     CHECK_NAPI_STATUS(pEngine, status);
     config.orientationMode = orientationMode;
@@ -3788,18 +3704,10 @@ NAPI_API_DEFINE(NodeRtcEngine, setVideoEncoderConfiguration) {
     CHECK_NAPI_STATUS(pEngine, status);
 
     switch (degradationPrefValue) {
-      case 0:
-        degradationPref = MAINTAIN_QUALITY;
-        break;
-      case 1:
-        degradationPref = MAINTAIN_FRAMERATE;
-        break;
-      case 2:
-        degradationPref = MAINTAIN_BALANCED;
-        break;
-      default:
-        status = napi_invalid_arg;
-        break;
+      case 0: degradationPref = MAINTAIN_QUALITY; break;
+      case 1: degradationPref = MAINTAIN_FRAMERATE; break;
+      case 2: degradationPref = MAINTAIN_BALANCED; break;
+      default: status = napi_invalid_arg; break;
     }
     CHECK_NAPI_STATUS(pEngine, status);
     config.degradationPreference = degradationPref;
@@ -3812,14 +3720,13 @@ NAPI_API_DEFINE(NodeRtcEngine, setVideoEncoderConfiguration) {
     result = pEngine->m_engine->setVideoEncoderConfiguration(config);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setAudioProfile) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     napi_status status = napi_ok;
@@ -3831,13 +3738,12 @@ NAPI_API_DEFINE(NodeRtcEngine, setAudioProfile) {
                                                 AUDIO_SCENARIO_TYPE(scenario));
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getCallId) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     util::AString callId;
@@ -3845,7 +3751,6 @@ NAPI_API_DEFINE(NodeRtcEngine, getCallId) {
       napi_set_string_result(args, callId->c_str());
     }
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, rate) {
@@ -3853,7 +3758,7 @@ NAPI_API_DEFINE(NodeRtcEngine, rate) {
   NodeString callId, desc;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     napi_status status = napi_ok;
@@ -3868,7 +3773,6 @@ NAPI_API_DEFINE(NodeRtcEngine, rate) {
     result = pEngine->m_engine->rate(callId, rating, desc);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, complain) {
@@ -3876,7 +3780,7 @@ NAPI_API_DEFINE(NodeRtcEngine, complain) {
   NodeString callId, desc;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     napi_status status = napi_ok;
@@ -3889,7 +3793,6 @@ NAPI_API_DEFINE(NodeRtcEngine, complain) {
     result = pEngine->m_engine->complain(callId, desc);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setEncryptionSecret) {
@@ -3897,7 +3800,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setEncryptionSecret) {
   NodeString secret;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     napi_status status = napi_ok;
     CHECK_NATIVE_THIS(pEngine);
@@ -3907,14 +3810,13 @@ NAPI_API_DEFINE(NodeRtcEngine, setEncryptionSecret) {
     result = pEngine->m_engine->setEncryptionSecret(secret);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, createDataStream) {
   LOG_ENTER;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     napi_status status = napi_ok;
@@ -3950,7 +3852,6 @@ NAPI_API_DEFINE(NodeRtcEngine, createDataStream) {
       napi_set_int_result(args, streamId);
     }
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, sendStreamMessage) {
@@ -3958,7 +3859,7 @@ NAPI_API_DEFINE(NodeRtcEngine, sendStreamMessage) {
   NodeString msg;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     napi_status status = napi_ok;
@@ -3970,14 +3871,13 @@ NAPI_API_DEFINE(NodeRtcEngine, sendStreamMessage) {
     result = pEngine->m_engine->sendStreamMessage(streamId, msg, strlen(msg));
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, muteRemoteAudioStream) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -3990,14 +3890,13 @@ NAPI_API_DEFINE(NodeRtcEngine, muteRemoteAudioStream) {
     result = pEngine->m_engine->muteRemoteAudioStream(uid, mute);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, subscribe) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -4020,7 +3919,7 @@ NAPI_API_DEFINE(NodeRtcEngine, subscribe) {
     VideoCanvas canvas;
     canvas.uid = uid;
     canvas.renderMode = RENDER_MODE_HIDDEN;
-    canvas.view = (view_t)context;
+    canvas.view = (view_t) context;
     if (channel) {
       strlcpy(canvas.channelId, channel, agora::rtc::MAX_CHANNEL_ID_LENGTH);
     }
@@ -4028,14 +3927,13 @@ NAPI_API_DEFINE(NodeRtcEngine, subscribe) {
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, unsubscribe) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -4055,33 +3953,31 @@ NAPI_API_DEFINE(NodeRtcEngine, unsubscribe) {
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setupLocalVideo) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     auto context = new NodeRenderContext(NODE_RENDER_TYPE_LOCAL);
     VideoCanvas canvas;
     canvas.uid = 0;
     canvas.renderMode = RENDER_MODE_HIDDEN;
-    canvas.view = (view_t)context;
+    canvas.view = (view_t) context;
     pEngine->m_engine->setupLocalVideo(canvas);
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setVideoRenderDimension) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     NodeRenderType type;
@@ -4091,12 +3987,12 @@ NAPI_API_DEFINE(NodeRtcEngine, setVideoRenderDimension) {
     napi_status status = napi_ok;
     status = napi_get_value_int32_(args[0], renderType);
     CHECK_NAPI_STATUS(pEngine, status);
-    if (renderType < NODE_RENDER_TYPE_LOCAL ||
-        renderType > NODE_RENDER_TYPE_VIDEO_SOURCE) {
+    if (renderType < NODE_RENDER_TYPE_LOCAL
+        || renderType > NODE_RENDER_TYPE_VIDEO_SOURCE) {
       LOG_ERROR("Invalid render type : %d\n", renderType);
       break;
     }
-    type = (NodeRenderType)renderType;
+    type = (NodeRenderType) renderType;
     status = NodeUid::getUidFromNodeValue(args[1], uid);
     CHECK_NAPI_STATUS(pEngine, status);
     status = napi_get_value_int32_(args[2], width);
@@ -4108,14 +4004,13 @@ NAPI_API_DEFINE(NodeRtcEngine, setVideoRenderDimension) {
 
     std::string sChannelId = channelId ? std::string(channelId) : "";
 
-    auto* pTransporter = getNodeVideoFrameTransporter();
+    auto *pTransporter = getNodeVideoFrameTransporter();
     if (pTransporter) {
       pTransporter->setVideoDimension(type, uid, sChannelId, width, height);
       result = 0;
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setHighFPS) {
@@ -4123,7 +4018,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setHighFPS) {
   int result = -1;
   napi_status status = napi_invalid_arg;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     uint32_t fps;
@@ -4140,7 +4035,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setHighFPS) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setFPS) {
@@ -4148,7 +4042,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setFPS) {
   int result = -1;
   napi_status status = napi_invalid_arg;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     uint32_t fps;
@@ -4165,7 +4059,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setFPS) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, addToHighVideo) {
@@ -4173,7 +4066,7 @@ NAPI_API_DEFINE(NodeRtcEngine, addToHighVideo) {
   int result = -1;
   napi_status status = napi_invalid_arg;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     agora::rtc::uid_t uid;
@@ -4192,7 +4085,6 @@ NAPI_API_DEFINE(NodeRtcEngine, addToHighVideo) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, removeFromHighVideo) {
@@ -4200,7 +4092,7 @@ NAPI_API_DEFINE(NodeRtcEngine, removeFromHighVideo) {
   int result = -1;
   napi_status status = napi_invalid_arg;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     agora::rtc::uid_t uid;
@@ -4218,7 +4110,6 @@ NAPI_API_DEFINE(NodeRtcEngine, removeFromHighVideo) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getConnectionState) {
@@ -4226,14 +4117,13 @@ NAPI_API_DEFINE(NodeRtcEngine, getConnectionState) {
   int result = -1;
   napi_status status = napi_invalid_arg;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     CONNECTION_STATE_TYPE type = pEngine->m_engine->getConnectionState();
     result = type;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, release) {
@@ -4242,7 +4132,7 @@ NAPI_API_DEFINE(NodeRtcEngine, release) {
   napi_status status = napi_invalid_arg;
   stopLogService();
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     bool sync = false;
@@ -4271,14 +4161,13 @@ NAPI_API_DEFINE(NodeRtcEngine, release) {
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, muteRemoteVideoStream) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -4289,18 +4178,16 @@ NAPI_API_DEFINE(NodeRtcEngine, muteRemoteVideoStream) {
     status = napi_get_value_bool_(args[1], mute);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    
     result = pEngine->m_engine->muteRemoteVideoStream(uid, mute);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setRemoteVideoStreamType) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -4312,17 +4199,17 @@ NAPI_API_DEFINE(NodeRtcEngine, setRemoteVideoStreamType) {
     status = napi_get_value_int32_(args[1], streamType);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    result = pEngine->m_engine->setRemoteVideoStreamType(uid, REMOTE_VIDEO_STREAM_TYPE(streamType));
+    result = pEngine->m_engine->setRemoteVideoStreamType(
+        uid, REMOTE_VIDEO_STREAM_TYPE(streamType));
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setRemoteDefaultVideoStreamType) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine;
+    NodeRtcEngine *pEngine;
     napi_status status = napi_ok;
     int streamType;
     napi_get_native_this(args, pEngine);
@@ -4334,19 +4221,16 @@ NAPI_API_DEFINE(NodeRtcEngine, setRemoteDefaultVideoStreamType) {
         REMOTE_VIDEO_STREAM_TYPE(streamType));
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
-NAPI_API_DEFINE_WRAPPER_PARAM_3(enableAudioVolumeIndication,
-                                int32,
-                                int32,
+NAPI_API_DEFINE_WRAPPER_PARAM_3(enableAudioVolumeIndication, int32, int32,
                                 bool);
 
 NAPI_API_DEFINE(NodeRtcEngine, startAudioMixing) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     NodeString filepath;
     bool loopback, replace;
@@ -4356,56 +4240,53 @@ NAPI_API_DEFINE(NodeRtcEngine, startAudioMixing) {
     napi_get_param_5(args, nodestring, filepath, bool, loopback, bool, replace,
                      int32, cycle, int32, startPos);
     CHECK_NAPI_STATUS(pEngine, status);
-    result = pEngine->m_engine->startAudioMixing(filepath, loopback, replace, cycle, startPos);
+    result = pEngine->m_engine->startAudioMixing(filepath, loopback, replace,
+                                                 cycle, startPos);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getAudioMixingCurrentPosition) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
     int position = pEngine->m_engine->getAudioMixingCurrentPosition();
     napi_set_int_result(args, position);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getAudioMixingPlayoutVolume) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
     int volume = pEngine->m_engine->getAudioMixingPlayoutVolume();
     napi_set_int_result(args, volume);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getAudioMixingPublishVolume) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
     int volume = pEngine->m_engine->getAudioMixingPublishVolume();
     napi_set_int_result(args, volume);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setRecordingAudioFrameParameters) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -4419,14 +4300,13 @@ NAPI_API_DEFINE(NodeRtcEngine, setRecordingAudioFrameParameters) {
         samplesPerCall);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setPlaybackAudioFrameParameters) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     int sampleRate, channel, mode, samplesPerCall;
     napi_get_native_this(args, pEngine);
@@ -4440,14 +4320,13 @@ NAPI_API_DEFINE(NodeRtcEngine, setPlaybackAudioFrameParameters) {
         samplesPerCall);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setMixedAudioFrameParameters) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     int sampleRate, samplesPerCall;
     napi_get_native_this(args, pEngine);
@@ -4455,17 +4334,17 @@ NAPI_API_DEFINE(NodeRtcEngine, setMixedAudioFrameParameters) {
     napi_get_param_2(args, int32, sampleRate, int32, samplesPerCall);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    result = pEngine->m_engine->setMixedAudioFrameParameters(sampleRate, samplesPerCall);
+    result = pEngine->m_engine->setMixedAudioFrameParameters(sampleRate,
+                                                             samplesPerCall);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setHighQualityAudioParameters) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     bool fullband, stereo, fullBitrate;
     napi_get_native_this(args, pEngine);
@@ -4473,18 +4352,18 @@ NAPI_API_DEFINE(NodeRtcEngine, setHighQualityAudioParameters) {
     napi_get_param_3(args, bool, fullband, bool, stereo, bool, fullBitrate);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    result = pEngine->m_engine->setHighQualityAudioParameters(fullband, stereo, fullBitrate);
+    result = pEngine->m_engine->setHighQualityAudioParameters(fullband, stereo,
+                                                              fullBitrate);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 #if defined(__APPLE__) || defined(_WIN32)
 NAPI_API_DEFINE(NodeRtcEngine, startScreenCapture) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
@@ -4507,7 +4386,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCapture) {
 #endif
 
     CHECK_NAPI_STATUS(pEngine, status);
-    HWND windowId = (HWND)wid;
+    HWND windowId = (HWND) wid;
 #endif
     status = napi_get_value_int32_(args[1], captureFreq);
     CHECK_NAPI_STATUS(pEngine, status);
@@ -4533,29 +4412,27 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCapture) {
                                                    &region, bitrate);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, stopScreenCapture) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     result = pEngine->m_engine->stopScreenCapture();
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, updateScreenCaptureRegion) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -4579,14 +4456,13 @@ NAPI_API_DEFINE(NodeRtcEngine, updateScreenCaptureRegion) {
     result = pEngine->m_engine->updateScreenCaptureRegion(&region);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 #endif
 
 NAPI_API_DEFINE(NodeRtcEngine, onEvent) {
   // LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -4610,17 +4486,17 @@ NAPI_API_DEFINE(NodeRtcEngine, onEvent) {
     Local<Object> obj = args.This();
     Persistent<Object> persistObj;
     persistObj.Reset(obj);
-    pEngine->m_eventHandler->addEventHandler((char*)eventName, persistObj,
+    pEngine->m_eventHandler->addEventHandler((char *) eventName, persistObj,
                                              persist);
   } while (false);
-  // LOG_LEAVE;
+  //
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getVideoDevices) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -4628,7 +4504,7 @@ NAPI_API_DEFINE(NodeRtcEngine, getVideoDevices) {
     if (!pEngine->m_videoVdm) {
       pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
     }
-    IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
+    IVideoDeviceManager *vdm = pEngine->m_videoVdm->get();
     auto vdc = vdm ? vdm->enumerateVideoDevices() : nullptr;
     int count = vdc ? vdc->getCount() : 0;
     Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), count);
@@ -4651,14 +4527,13 @@ NAPI_API_DEFINE(NodeRtcEngine, getVideoDevices) {
     }
     args.GetReturnValue().Set(devices);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setVideoDevice) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -4669,17 +4544,16 @@ NAPI_API_DEFINE(NodeRtcEngine, setVideoDevice) {
     if (!pEngine->m_videoVdm) {
       pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
     }
-    IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
+    IVideoDeviceManager *vdm = pEngine->m_videoVdm->get();
     result = vdm ? vdm->setDevice(deviceId) : -1;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getCurrentVideoDevice) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     char deviceId[MAX_DEVICE_ID_LENGTH] = {0};
@@ -4687,20 +4561,17 @@ NAPI_API_DEFINE(NodeRtcEngine, getCurrentVideoDevice) {
     if (!pEngine->m_videoVdm) {
       pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
     }
-    IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
-    if (vdm) {
-      vdm->getDevice(deviceId);
-    }
+    IVideoDeviceManager *vdm = pEngine->m_videoVdm->get();
+    if (vdm) { vdm->getDevice(deviceId); }
     napi_set_string_result(args, deviceId);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, startVideoDeviceTest) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     auto context = new NodeRenderContext(NODE_RENDER_TYPE_DEVICE_TEST);
@@ -4708,36 +4579,34 @@ NAPI_API_DEFINE(NodeRtcEngine, startVideoDeviceTest) {
     if (!pEngine->m_videoVdm) {
       pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
     }
-    IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
+    IVideoDeviceManager *vdm = pEngine->m_videoVdm->get();
     result = vdm ? vdm->startDeviceTest(context) : -1;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, stopVideoDeviceTest) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
     if (!pEngine->m_videoVdm) {
       pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
     }
-    IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
+    IVideoDeviceManager *vdm = pEngine->m_videoVdm->get();
     result = vdm ? vdm->stopDeviceTest() : -1;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getAudioPlaybackDevices) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -4745,7 +4614,7 @@ NAPI_API_DEFINE(NodeRtcEngine, getAudioPlaybackDevices) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
     auto pdc = adm ? adm->enumeratePlaybackDevices() : nullptr;
     int count = pdc ? pdc->getCount() : 0;
     Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), count);
@@ -4768,14 +4637,13 @@ NAPI_API_DEFINE(NodeRtcEngine, getAudioPlaybackDevices) {
     }
     args.GetReturnValue().Set(devices);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setAudioPlaybackDevice) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -4786,18 +4654,17 @@ NAPI_API_DEFINE(NodeRtcEngine, setAudioPlaybackDevice) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
     result = adm ? adm->setPlaybackDevice(deviceId) : -1;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getPlaybackDeviceInfo) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -4805,7 +4672,7 @@ NAPI_API_DEFINE(NodeRtcEngine, getPlaybackDeviceInfo) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
     auto pdc = adm ? adm->enumeratePlaybackDevices() : nullptr;
     int count = pdc ? pdc->getCount() : 0;
 
@@ -4830,13 +4697,12 @@ NAPI_API_DEFINE(NodeRtcEngine, getPlaybackDeviceInfo) {
     }
     args.GetReturnValue().Set(devices);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getCurrentAudioPlaybackDevice) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     char deviceId[MAX_DEVICE_ID_LENGTH] = {0};
@@ -4844,20 +4710,17 @@ NAPI_API_DEFINE(NodeRtcEngine, getCurrentAudioPlaybackDevice) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-    if (adm) {
-      adm->getPlaybackDevice(deviceId);
-    }
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
+    if (adm) { adm->getPlaybackDevice(deviceId); }
     napi_set_string_result(args, deviceId);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setAudioPlaybackVolume) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -4868,17 +4731,16 @@ NAPI_API_DEFINE(NodeRtcEngine, setAudioPlaybackVolume) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
     result = adm ? adm->setPlaybackDeviceVolume(volume) : -1;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getAudioPlaybackVolume) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     int volume;
@@ -4886,20 +4748,17 @@ NAPI_API_DEFINE(NodeRtcEngine, getAudioPlaybackVolume) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-    if (adm) {
-      adm->getPlaybackDeviceVolume(&volume);
-    }
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
+    if (adm) { adm->getPlaybackDeviceVolume(&volume); }
     napi_set_int_result(args, volume);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getAudioRecordingDevices) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -4907,7 +4766,7 @@ NAPI_API_DEFINE(NodeRtcEngine, getAudioRecordingDevices) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
     auto pdc = adm ? adm->enumerateRecordingDevices() : nullptr;
     int count = pdc ? pdc->getCount() : 0;
     Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), count);
@@ -4930,14 +4789,13 @@ NAPI_API_DEFINE(NodeRtcEngine, getAudioRecordingDevices) {
     }
     args.GetReturnValue().Set(devices);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setAudioRecordingDevice) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -4948,18 +4806,17 @@ NAPI_API_DEFINE(NodeRtcEngine, setAudioRecordingDevice) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
     result = adm ? adm->setRecordingDevice(deviceId) : -1;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getRecordingDeviceInfo) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -4967,7 +4824,7 @@ NAPI_API_DEFINE(NodeRtcEngine, getRecordingDeviceInfo) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
     auto pdc = adm ? adm->enumerateRecordingDevices() : nullptr;
     int count = pdc ? pdc->getCount() : 0;
 
@@ -4992,13 +4849,12 @@ NAPI_API_DEFINE(NodeRtcEngine, getRecordingDeviceInfo) {
     }
     args.GetReturnValue().Set(devices);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getCurrentAudioRecordingDevice) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     char deviceId[MAX_DEVICE_ID_LENGTH] = {0};
@@ -5006,19 +4862,16 @@ NAPI_API_DEFINE(NodeRtcEngine, getCurrentAudioRecordingDevice) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-    if (adm) {
-      adm->getRecordingDevice(deviceId);
-    }
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
+    if (adm) { adm->getRecordingDevice(deviceId); }
     napi_set_string_result(args, deviceId);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getAudioRecordingVolume) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     int volume;
@@ -5026,20 +4879,17 @@ NAPI_API_DEFINE(NodeRtcEngine, getAudioRecordingVolume) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-    if (adm) {
-      adm->getRecordingDeviceVolume(&volume);
-    }
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
+    if (adm) { adm->getRecordingDeviceVolume(&volume); }
     napi_set_int_result(args, volume);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setAudioRecordingVolume) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -5050,18 +4900,17 @@ NAPI_API_DEFINE(NodeRtcEngine, setAudioRecordingVolume) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
     result = adm ? adm->setRecordingDeviceVolume(volume) : -1;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, startAudioPlaybackDeviceTest) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -5072,36 +4921,34 @@ NAPI_API_DEFINE(NodeRtcEngine, startAudioPlaybackDeviceTest) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
     result = adm ? adm->startPlaybackDeviceTest(filePath) : -1;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, stopAudioPlaybackDeviceTest) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
     result = adm ? adm->stopPlaybackDeviceTest() : -1;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, startAudioRecordingDeviceTest) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -5112,35 +4959,33 @@ NAPI_API_DEFINE(NodeRtcEngine, startAudioRecordingDeviceTest) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
     result = adm ? adm->startRecordingDeviceTest(indicateInterval) : -1;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, stopAudioRecordingDeviceTest) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
     result = adm ? adm->stopRecordingDeviceTest() : -1;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getAudioPlaybackDeviceMute) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     bool mute;
@@ -5148,20 +4993,17 @@ NAPI_API_DEFINE(NodeRtcEngine, getAudioPlaybackDeviceMute) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-    if (adm) {
-      adm->getPlaybackDeviceMute(&mute);
-    }
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
+    if (adm) { adm->getPlaybackDeviceMute(&mute); }
     napi_set_bool_result(args, mute);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setAudioPlaybackDeviceMute) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -5172,17 +5014,16 @@ NAPI_API_DEFINE(NodeRtcEngine, setAudioPlaybackDeviceMute) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
     result = adm ? adm->setPlaybackDeviceMute(mute) : -1;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getAudioRecordingDeviceMute) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     bool mute;
@@ -5190,20 +5031,17 @@ NAPI_API_DEFINE(NodeRtcEngine, getAudioRecordingDeviceMute) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-    if (adm) {
-      adm->getRecordingDeviceMute(&mute);
-    }
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
+    if (adm) { adm->getRecordingDeviceMute(&mute); }
     napi_set_bool_result(args, mute);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setAudioRecordingDeviceMute) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -5214,24 +5052,23 @@ NAPI_API_DEFINE(NodeRtcEngine, setAudioRecordingDeviceMute) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
     result = adm ? adm->setRecordingDeviceMute(mute) : -1;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, initializePluginManager) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
-    agora::media::IMediaEngine* pMediaEngine = nullptr;
+    agora::media::IMediaEngine *pMediaEngine = nullptr;
     pEngine->getRtcEngine()->queryInterface(agora::AGORA_IID_MEDIA_ENGINE,
-                                            (void**)&pMediaEngine);
+                                            (void **) &pMediaEngine);
     if (pEngine->m_avPluginManager.get()) {
       pMediaEngine->registerVideoFrameObserver(
           pEngine->m_avPluginManager.get());
@@ -5243,37 +5080,35 @@ NAPI_API_DEFINE(NodeRtcEngine, initializePluginManager) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, releasePluginManager) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
-    agora::media::IMediaEngine* pMediaEngine = nullptr;
+    agora::media::IMediaEngine *pMediaEngine = nullptr;
     pEngine->getRtcEngine()->queryInterface(agora::AGORA_IID_MEDIA_ENGINE,
-                                            (void**)&pMediaEngine);
+                                            (void **) &pMediaEngine);
     pMediaEngine->registerVideoFrameObserver(NULL);
     pMediaEngine->registerAudioFrameObserver(NULL);
-     pEngine->getRtcEngine()->registerPacketObserver(NULL);
+    pEngine->getRtcEngine()->registerPacketObserver(NULL);
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, registerPlugin) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    Isolate* isolate = args.GetIsolate();
+    Isolate *isolate = args.GetIsolate();
 
     CHECK_PLUGIN_MANAGER_EXIST(pEngine);
 
@@ -5291,7 +5126,7 @@ NAPI_API_DEFINE(NodeRtcEngine, registerPlugin) {
     status = napi_get_object_property_nodestring_(isolate, obj, "id", pluginId);
     CHECK_NAPI_STATUS(pEngine, status);
     mPluginId = pluginId;
-    CHECK_PLUGIN_INFO_NOT_EXIST(pEngine, mPluginId);  // has exist => break
+    CHECK_PLUGIN_INFO_NOT_EXIST(pEngine, mPluginId);// has exist => break
 
     status = napi_get_object_property_nodestring_(isolate, obj, "path",
                                                   pluginFilePath);
@@ -5309,7 +5144,7 @@ NAPI_API_DEFINE(NodeRtcEngine, registerPlugin) {
 
 #ifdef WIN32
     // AddDllDirectory(mPluginFolderPath.c_str());
-    char* wPluginFilePath = U2G(mPluginFilePath.c_str());
+    char *wPluginFilePath = U2G(mPluginFilePath.c_str());
     pluginInfo.pluginModule =
         LoadLibraryEx(wPluginFilePath, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
     delete[] wPluginFilePath;
@@ -5318,10 +5153,10 @@ NAPI_API_DEFINE(NodeRtcEngine, registerPlugin) {
     CHECK_PLUGIN_MODULE_EXIST(pluginInfo);
 
     createAgoraAVFramePlugin createPlugin =
-        (createAgoraAVFramePlugin)GetProcAddress(
-            (HMODULE)pluginInfo.pluginModule, "createAVFramePlugin");
+        (createAgoraAVFramePlugin) GetProcAddress(
+            (HMODULE) pluginInfo.pluginModule, "createAVFramePlugin");
     if (!createPlugin) {
-      FreeLibrary((HMODULE)pluginInfo.pluginModule);
+      FreeLibrary((HMODULE) pluginInfo.pluginModule);
       pluginInfo.pluginModule = NULL;
       LOG_ERROR(
           "Error :%s, :%d,  GetProcAddress \"createAVFramePlugin\" Failed\n",
@@ -5332,7 +5167,7 @@ NAPI_API_DEFINE(NodeRtcEngine, registerPlugin) {
     pluginInfo.pluginModule = dlopen(mPluginFilePath.c_str(), RTLD_LAZY);
     CHECK_PLUGIN_MODULE_EXIST(pluginInfo);
 
-    createAgoraAVFramePlugin createPlugin = (createAgoraAVFramePlugin)dlsym(
+    createAgoraAVFramePlugin createPlugin = (createAgoraAVFramePlugin) dlsym(
         pluginInfo.pluginModule, "createAVFramePlugin");
     if (!createPlugin) {
       dlclose(pluginInfo.pluginModule);
@@ -5349,7 +5184,7 @@ NAPI_API_DEFINE(NodeRtcEngine, registerPlugin) {
 
 #ifdef WIN32
 
-    char* wPluginFolderPath = U2G(mPluginFolderPath.c_str());
+    char *wPluginFolderPath = U2G(mPluginFolderPath.c_str());
     if (pluginInfo.instance->load(wPluginFolderPath) != 0) {
       LOG_ERROR(
           "Error :%s, :%d, plugin: \"%s\"  IAudioFramePlugin::load Failed\n",
@@ -5371,14 +5206,13 @@ NAPI_API_DEFINE(NodeRtcEngine, registerPlugin) {
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, unregisterPlugin) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -5387,20 +5221,19 @@ NAPI_API_DEFINE(NodeRtcEngine, unregisterPlugin) {
     std::string pluginId;
     napi_status status = napi_ok;
     READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
-    CHECK_PLUGIN_INFO_EXIST(pEngine, pluginId);  // not exist
+    CHECK_PLUGIN_INFO_EXIST(pEngine, pluginId);// not exist
 
     pEngine->m_avPluginManager->unregisterPlugin(pluginId);
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, enablePlugin) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -5435,14 +5268,13 @@ NAPI_API_DEFINE(NodeRtcEngine, enablePlugin) {
     pEngine->m_avPluginManager->enablePlugin(pluginId, enabled);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getPlugins) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -5464,14 +5296,13 @@ NAPI_API_DEFINE(NodeRtcEngine, getPlugins) {
     }
     args.GetReturnValue().Set(result);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setPluginParameter) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -5492,14 +5323,13 @@ NAPI_API_DEFINE(NodeRtcEngine, setPluginParameter) {
     result = pluginInfo.instance->setParameter(param);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getPluginParameter) {
   LOG_ENTER;
   std::string result = "";
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -5520,14 +5350,13 @@ NAPI_API_DEFINE(NodeRtcEngine, getPluginParameter) {
     result = std::string(pluginInfo.instance->getParameter(paramKey));
   } while (false);
   napi_set_string_result(args, result.c_str());
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, sendCustomReportMessage) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -5551,95 +5380,83 @@ NAPI_API_DEFINE(NodeRtcEngine, sendCustomReportMessage) {
                                                         label, value);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
-#define CHECK_NAPI_OBJ(obj) \
-  if (obj.IsEmpty())        \
-    break;
+#define CHECK_NAPI_OBJ(obj)                                                    \
+  if (obj.IsEmpty()) break;
 
-#define NODE_SET_OBJ_PROP_UINT32(isolate, obj, name, val)                \
-  {                                                                      \
-    Local<Value> propName =                                              \
-        String::NewFromUtf8(isolate, name, NewStringType::kInternalized) \
-            .ToLocalChecked();                                           \
-    Local<Value> propVal = v8::Uint32::New(isolate, val);                \
-    CHECK_NAPI_OBJ(propVal);                                             \
-    v8::Maybe<bool> ret =                                                \
-        obj->Set(isolate->GetCurrentContext(), propName, propVal);       \
-    if (!ret.IsNothing()) {                                              \
-      if (!ret.ToChecked()) {                                            \
-        break;                                                           \
-      }                                                                  \
-    }                                                                    \
+#define NODE_SET_OBJ_PROP_UINT32(isolate, obj, name, val)                      \
+  {                                                                            \
+    Local<Value> propName =                                                    \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized)       \
+            .ToLocalChecked();                                                 \
+    Local<Value> propVal = v8::Uint32::New(isolate, val);                      \
+    CHECK_NAPI_OBJ(propVal);                                                   \
+    v8::Maybe<bool> ret =                                                      \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal);             \
+    if (!ret.IsNothing()) {                                                    \
+      if (!ret.ToChecked()) { break; }                                         \
+    }                                                                          \
   }
 
-#define NODE_SET_OBJ_PROP_Number(isolate, obj, name, val)                \
-  {                                                                      \
-    Local<Value> propName =                                              \
-        String::NewFromUtf8(isolate, name, NewStringType::kInternalized) \
-            .ToLocalChecked();                                           \
-    Local<Value> propVal = v8::Number::New(isolate, val);                \
-    CHECK_NAPI_OBJ(propVal);                                             \
-    v8::Maybe<bool> ret =                                                \
-        obj->Set(isolate->GetCurrentContext(), propName, propVal);       \
-    if (!ret.IsNothing()) {                                              \
-      if (!ret.ToChecked()) {                                            \
-        break;                                                           \
-      }                                                                  \
-    }                                                                    \
+#define NODE_SET_OBJ_PROP_Number(isolate, obj, name, val)                      \
+  {                                                                            \
+    Local<Value> propName =                                                    \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized)       \
+            .ToLocalChecked();                                                 \
+    Local<Value> propVal = v8::Number::New(isolate, val);                      \
+    CHECK_NAPI_OBJ(propVal);                                                   \
+    v8::Maybe<bool> ret =                                                      \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal);             \
+    if (!ret.IsNothing()) {                                                    \
+      if (!ret.ToChecked()) { break; }                                         \
+    }                                                                          \
   }
 
-#define NODE_SET_OBJ_PROP_BOOL(isolate, obj, name, val)                  \
-  {                                                                      \
-    Local<Value> propName =                                              \
-        String::NewFromUtf8(isolate, name, NewStringType::kInternalized) \
-            .ToLocalChecked();                                           \
-    Local<Value> propVal = v8::Boolean::New(isolate, val);               \
-    CHECK_NAPI_OBJ(propVal);                                             \
-    v8::Maybe<bool> ret =                                                \
-        obj->Set(isolate->GetCurrentContext(), propName, propVal);       \
-    if (!ret.IsNothing()) {                                              \
-      if (!ret.ToChecked()) {                                            \
-        break;                                                           \
-      }                                                                  \
-    }                                                                    \
+#define NODE_SET_OBJ_PROP_BOOL(isolate, obj, name, val)                        \
+  {                                                                            \
+    Local<Value> propName =                                                    \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized)       \
+            .ToLocalChecked();                                                 \
+    Local<Value> propVal = v8::Boolean::New(isolate, val);                     \
+    CHECK_NAPI_OBJ(propVal);                                                   \
+    v8::Maybe<bool> ret =                                                      \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal);             \
+    if (!ret.IsNothing()) {                                                    \
+      if (!ret.ToChecked()) { break; }                                         \
+    }                                                                          \
   }
 
-#define NODE_SET_OBJ_PROP_String(isolate, obj, name, val)                \
-  {                                                                      \
-    Local<Value> propName =                                              \
-        String::NewFromUtf8(isolate, name, NewStringType::kInternalized) \
-            .ToLocalChecked();                                           \
-    Local<Value> propVal =                                               \
-        String::NewFromUtf8(isolate, val, NewStringType::kInternalized)  \
-            .ToLocalChecked();                                           \
-    CHECK_NAPI_OBJ(propVal);                                             \
-    v8::Maybe<bool> ret =                                                \
-        obj->Set(isolate->GetCurrentContext(), propName, propVal);       \
-    if (!ret.IsNothing()) {                                              \
-      if (!ret.ToChecked()) {                                            \
-        break;                                                           \
-      }                                                                  \
-    }                                                                    \
+#define NODE_SET_OBJ_PROP_String(isolate, obj, name, val)                      \
+  {                                                                            \
+    Local<Value> propName =                                                    \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized)       \
+            .ToLocalChecked();                                                 \
+    Local<Value> propVal =                                                     \
+        String::NewFromUtf8(isolate, val, NewStringType::kInternalized)        \
+            .ToLocalChecked();                                                 \
+    CHECK_NAPI_OBJ(propVal);                                                   \
+    v8::Maybe<bool> ret =                                                      \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal);             \
+    if (!ret.IsNothing()) {                                                    \
+      if (!ret.ToChecked()) { break; }                                         \
+    }                                                                          \
   }
 
-#define NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, name, info)                \
-  {                                                                           \
-    Local<Value> propName =                                                   \
-        String::NewFromUtf8(isolate, name, NewStringType::kInternalized)      \
-            .ToLocalChecked();                                                \
-    Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, info.length); \
-    memcpy(buff->GetContents().Data(), info.buffer, info.length);             \
-    Local<v8::Uint8Array> dataarray =                                         \
-        v8::Uint8Array::New(buff, 0, info.length);                            \
-    v8::Maybe<bool> ret =                                                     \
-        obj->Set(isolate->GetCurrentContext(), propName, dataarray);          \
-    if (!ret.IsNothing()) {                                                   \
-      if (!ret.ToChecked()) {                                                 \
-        break;                                                                \
-      }                                                                       \
-    }                                                                         \
+#define NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, name, info)                 \
+  {                                                                            \
+    Local<Value> propName =                                                    \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized)       \
+            .ToLocalChecked();                                                 \
+    Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, info.length);  \
+    memcpy(buff->GetContents().Data(), info.buffer, info.length);              \
+    Local<v8::Uint8Array> dataarray =                                          \
+        v8::Uint8Array::New(buff, 0, info.length);                             \
+    v8::Maybe<bool> ret =                                                      \
+        obj->Set(isolate->GetCurrentContext(), propName, dataarray);           \
+    if (!ret.IsNothing()) {                                                    \
+      if (!ret.ToChecked()) { break; }                                         \
+    }                                                                          \
   }
 
 NAPI_API_DEFINE(NodeRtcEngine, getScreenWindowsInfo) {
@@ -5659,7 +5476,7 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenWindowsInfo) {
         ScreenWindowInfo windowInfo = allWindows[i];
         Local<v8::Object> obj = Object::New(isolate);
 #ifdef _WIN32
-        UINT32 windowId = (UINT32)windowInfo.windowId;
+        UINT32 windowId = (UINT32) windowInfo.windowId;
 #elif defined(__APPLE__)
         unsigned int windowId = windowInfo.windowId;
 #endif
@@ -5694,7 +5511,6 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenWindowsInfo) {
     cb->callback.Get(isolate)->Call(context, cb->js_this.Get(isolate), 1, rec);
     delete cb;
   });
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getScreenDisplaysInfo) {
@@ -5713,7 +5529,7 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenDisplaysInfo) {
       for (unsigned int i = 0; i < allDisplays.size(); ++i) {
         ScreenDisplayInfo displayInfo = allDisplays[i];
         Local<v8::Object> obj = Object::New(isolate);
-#ifdef WIN32 // __WIN32
+#ifdef WIN32// __WIN32
         DisplayInfo displayId = displayInfo.displayInfo;
 #else
         ScreenIDType displayId = displayInfo.displayId;
@@ -5753,14 +5569,13 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenDisplaysInfo) {
     cb->callback.Get(isolate)->Call(context, cb->js_this.Get(isolate), 1, rec);
     delete cb;
   });
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, registerLocalUserAccount) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -5775,15 +5590,14 @@ NAPI_API_DEFINE(NodeRtcEngine, registerLocalUserAccount) {
     result = pEngine->m_engine->registerLocalUserAccount(appId, userAccount);
   } while (false);
   napi_set_array_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, joinChannelWithUserAccount) {
   LOG_ENTER;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -5837,15 +5651,14 @@ NAPI_API_DEFINE(NodeRtcEngine, joinChannelWithUserAccount) {
     }
   } while (false);
   napi_set_array_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getUserInfoByUserAccount) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -5871,17 +5684,16 @@ NAPI_API_DEFINE(NodeRtcEngine, getUserInfoByUserAccount) {
     obj->Set(context, propName, userObj);
     args.GetReturnValue().Set(obj);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getUserInfoByUid) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    Isolate* isolate = args.GetIsolate();
+    Isolate *isolate = args.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
 
     uid_t uid;
@@ -5904,7 +5716,6 @@ NAPI_API_DEFINE(NodeRtcEngine, getUserInfoByUid) {
     obj->Set(context, propName, userObj);
     args.GetReturnValue().Set(obj);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, startChannelMediaRelay) {
@@ -5912,8 +5723,8 @@ NAPI_API_DEFINE(NodeRtcEngine, startChannelMediaRelay) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -5953,7 +5764,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startChannelMediaRelay) {
         srcInfo.channelName = nullptr;
       }
       if (token != nullptr) {
-        sourceToken = (string)token;
+        sourceToken = (string) token;
         srcInfo.token = sourceToken.c_str();
       } else {
         srcInfo.token = nullptr;
@@ -6020,7 +5831,6 @@ NAPI_API_DEFINE(NodeRtcEngine, startChannelMediaRelay) {
 
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, updateChannelMediaRelay) {
@@ -6028,8 +5838,8 @@ NAPI_API_DEFINE(NodeRtcEngine, updateChannelMediaRelay) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -6068,7 +5878,7 @@ NAPI_API_DEFINE(NodeRtcEngine, updateChannelMediaRelay) {
         srcInfo.channelName = nullptr;
       }
       if (token != nullptr) {
-        sourceToken = (string)token;
+        sourceToken = (string) token;
         srcInfo.token = sourceToken.c_str();
       } else {
         srcInfo.token = nullptr;
@@ -6133,7 +5943,6 @@ NAPI_API_DEFINE(NodeRtcEngine, updateChannelMediaRelay) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, stopChannelMediaRelay) {
@@ -6141,14 +5950,13 @@ NAPI_API_DEFINE(NodeRtcEngine, stopChannelMediaRelay) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
     result = pEngine->m_engine->stopChannelMediaRelay();
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, createChannel) {
@@ -6156,8 +5964,8 @@ NAPI_API_DEFINE(NodeRtcEngine, createChannel) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -6165,18 +5973,15 @@ NAPI_API_DEFINE(NodeRtcEngine, createChannel) {
     napi_status status = napi_get_value_nodestring_(args[0], channelName);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    IRtcEngine2* engine = (IRtcEngine2*)(pEngine->m_engine);
-    IChannel* pChannel = engine->createChannel(channelName);
+    IRtcEngine2 *engine = (IRtcEngine2 *) (pEngine->m_engine);
+    IChannel *pChannel = engine->createChannel(channelName);
 
-    if (!pChannel) {
-      break;
-    }
+    if (!pChannel) { break; }
 
     // Prepare constructor template
     Local<Object> jschannel = NodeRtcChannel::Init(isolate, pChannel);
     args.GetReturnValue().Set(jschannel);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByWindow) {
@@ -6184,8 +5989,8 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByWindow) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -6204,7 +6009,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByWindow) {
 #endif
 
     CHECK_NAPI_STATUS(pEngine, status);
-    windowId = (HWND)wid;
+    windowId = (HWND) wid;
 #endif
 
     // regionRect
@@ -6235,12 +6040,11 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByWindow) {
     }
     status = napi_get_value_object_(isolate, args[2], obj);
     CHECK_NAPI_STATUS(pEngine, status);
-    
+
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
-    ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
-    if (captureParams == nullptr) {
-      break;
-    }
+    ScreenCaptureParameters *captureParams =
+        getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
+    if (captureParams == nullptr) { break; }
 
     result = pEngine->m_engine->startScreenCaptureByWindowId(
         reinterpret_cast<agora::rtc::view_t>(windowId), regionRect,
@@ -6249,7 +6053,6 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByWindow) {
     delete captureParams;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByScreen) {
@@ -6257,8 +6060,8 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByScreen) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -6328,12 +6131,11 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByScreen) {
     }
     status = napi_get_value_object_(isolate, args[2], obj);
     CHECK_NAPI_STATUS(pEngine, status);
-    
+
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
-    ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
-    if (captureParams == nullptr) {
-      break;
-    }
+    ScreenCaptureParameters *captureParams =
+        getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
+    if (captureParams == nullptr) { break; }
 
 #if defined(_WIN32)
     result = pEngine->m_engine->startScreenCaptureByScreenRect(
@@ -6346,7 +6148,6 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByScreen) {
     delete captureParams;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, updateScreenCaptureParameters) {
@@ -6354,8 +6155,8 @@ NAPI_API_DEFINE(NodeRtcEngine, updateScreenCaptureParameters) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -6367,19 +6168,17 @@ NAPI_API_DEFINE(NodeRtcEngine, updateScreenCaptureParameters) {
     Local<Object> obj;
     status = napi_get_value_object_(isolate, args[0], obj);
     CHECK_NAPI_STATUS(pEngine, status);
-    
+
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
-    ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
-    if (captureParams == nullptr) {
-      break;
-    }
+    ScreenCaptureParameters *captureParams =
+        getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
+    if (captureParams == nullptr) { break; }
 
     result = pEngine->m_engine->updateScreenCaptureParameters(*captureParams);
 
     delete captureParams;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setScreenCaptureContentHint) {
@@ -6387,7 +6186,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setScreenCaptureContentHint) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -6397,21 +6196,14 @@ NAPI_API_DEFINE(NodeRtcEngine, setScreenCaptureContentHint) {
     CHECK_NAPI_STATUS(pEngine, status);
 
     switch (value) {
-      case 0:
-        hint = CONTENT_HINT_NONE;
-        break;
-      case 1:
-        hint = CONTENT_HINT_MOTION;
-        break;
-      case 2:
-        hint = CONTENT_HINT_DETAILS;
-        break;
+      case 0: hint = CONTENT_HINT_NONE; break;
+      case 1: hint = CONTENT_HINT_MOTION; break;
+      case 2: hint = CONTENT_HINT_DETAILS; break;
     }
 
     result = pEngine->m_engine->setScreenCaptureContentHint(hint);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 /**
  * 3.0.1 Apis
@@ -6422,7 +6214,7 @@ NAPI_API_DEFINE(NodeRtcEngine, registerMediaMetadataObserver) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     LOG_F(INFO, "registerMediaMetadataObserver");
@@ -6434,14 +6226,13 @@ NAPI_API_DEFINE(NodeRtcEngine, registerMediaMetadataObserver) {
         IMetadataObserver::METADATA_TYPE::VIDEO_METADATA);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, unRegisterMediaMetadataObserver) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     LOG_F(INFO, "unRegisterMediaMetadataObserver");
@@ -6452,7 +6243,6 @@ NAPI_API_DEFINE(NodeRtcEngine, unRegisterMediaMetadataObserver) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, sendMetadata) {
@@ -6460,8 +6250,8 @@ NAPI_API_DEFINE(NodeRtcEngine, sendMetadata) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
@@ -6479,7 +6269,7 @@ NAPI_API_DEFINE(NodeRtcEngine, sendMetadata) {
     double timeStampMs = 0;
     unsigned int size;
     nodestring buffer;
-    char* _buffer;
+    char *_buffer;
 
     Local<Object> obj;
     status = napi_get_value_object_(isolate, args[0], obj);
@@ -6495,17 +6285,16 @@ NAPI_API_DEFINE(NodeRtcEngine, sendMetadata) {
     // status = napi_get_object_property_double_(isolate, obj, "timeStampMs",
     // timeStampMs); CHECK_NAPI_STATUS(pEngine, status);
     result = pEngine->metadataObserver.get()->sendMetadata(
-        uid, size, reinterpret_cast<unsigned char*>(_buffer), timeStampMs);
+        uid, size, reinterpret_cast<unsigned char *>(_buffer), timeStampMs);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, addMetadataEventHandler) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -6540,14 +6329,13 @@ NAPI_API_DEFINE(NodeRtcEngine, addMetadataEventHandler) {
                                                         persist2);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setMaxMetadataSize) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -6557,15 +6345,14 @@ NAPI_API_DEFINE(NodeRtcEngine, setMaxMetadataSize) {
     result = pEngine->metadataObserver.get()->setMaxMetadataSize(maxSize);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, enableEncryption) {
   LOG_ENTER;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -6591,19 +6378,18 @@ NAPI_API_DEFINE(NodeRtcEngine, enableEncryption) {
                                           config.encryptionKdfSalt);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    config.encryptionMode = (ENCRYPTION_MODE)encryptionMode;
+    config.encryptionMode = (ENCRYPTION_MODE) encryptionMode;
     config.encryptionKey = encryptionKey;
     result = pEngine->m_engine->enableEncryption(enabled, config);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setAudioEffectPreset) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -6614,14 +6400,13 @@ NAPI_API_DEFINE(NodeRtcEngine, setAudioEffectPreset) {
         pEngine->m_engine->setAudioEffectPreset(AUDIO_EFFECT_PRESET(preset));
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setVoiceBeautifierPreset) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -6632,14 +6417,13 @@ NAPI_API_DEFINE(NodeRtcEngine, setVoiceBeautifierPreset) {
         VOICE_BEAUTIFIER_PRESET(preset));
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setAudioEffectParameters) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -6660,7 +6444,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setAudioEffectParameters) {
         AUDIO_EFFECT_PRESET(preset), param1, param2);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setClientRoleWithOptions) {
@@ -6668,8 +6451,8 @@ NAPI_API_DEFINE(NodeRtcEngine, setClientRoleWithOptions) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcEngine* pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     unsigned int role;
@@ -6683,7 +6466,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setClientRoleWithOptions) {
       status = napi_get_value_object_(isolate, args[1], obj);
       CHECK_NAPI_STATUS(pEngine, status);
 
-      int audienceLatencyLevel = (int)AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
+      int audienceLatencyLevel = (int) AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
 
       status = napi_get_object_property_int32_(
           isolate, obj, "audienceLatencyLevel", audienceLatencyLevel);
@@ -6696,16 +6479,13 @@ NAPI_API_DEFINE(NodeRtcEngine, setClientRoleWithOptions) {
         case 2:
           opts.audienceLatencyLevel = AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
           break;
-        default:
-          status = napi_invalid_arg;
-          break;
+        default: status = napi_invalid_arg; break;
       }
       CHECK_NAPI_STATUS(pEngine, status);
     }
-    result = pEngine->m_engine->setClientRole((CLIENT_ROLE_TYPE)role, opts);
+    result = pEngine->m_engine->setClientRole((CLIENT_ROLE_TYPE) role, opts);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 // 3.3.0 APIs
@@ -6713,7 +6493,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setCloudProxy) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -6723,7 +6503,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setCloudProxy) {
     result = pEngine->m_engine->setCloudProxy(CLOUD_PROXY_TYPE(type));
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE_WRAPPER_PARAM_1(enableDeepLearningDenoise, bool);
@@ -6732,7 +6511,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setVoiceBeautifierParameters) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -6750,13 +6529,12 @@ NAPI_API_DEFINE(NodeRtcEngine, setVoiceBeautifierParameters) {
         VOICE_BEAUTIFIER_PRESET(preset), param1, param2);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, uploadLogFile) {
   LOG_ENTER;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     napi_status status = napi_ok;
@@ -6769,14 +6547,13 @@ NAPI_API_DEFINE(NodeRtcEngine, uploadLogFile) {
       napi_set_string_result(args, requestId->c_str());
     }
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setVoiceConversionPreset) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -6789,7 +6566,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setVoiceConversionPreset) {
         VOICE_CONVERSION_PRESET(preset));
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 /*
  * 3.4.0
@@ -6798,19 +6574,18 @@ NAPI_API_DEFINE(NodeRtcEngine, getAudioMixingDuration) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     result = pEngine->m_engine->getAudioMixingDuration();
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 NAPI_API_DEFINE(NodeRtcEngine, startAudioRecording) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -6829,15 +6604,13 @@ NAPI_API_DEFINE(NodeRtcEngine, startAudioRecording) {
     result = pEngine->m_engine->startAudioRecording(config);
   } while (false);
   napi_set_int_result(args, result);
-
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, adjustLoopbackRecordingSignalVolume) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -6849,14 +6622,12 @@ NAPI_API_DEFINE(NodeRtcEngine, adjustLoopbackRecordingSignalVolume) {
     result = pEngine->m_engine->adjustLoopbackRecordingSignalVolume(volume);
   } while (false);
   napi_set_int_result(args, result);
-
-  LOG_LEAVE;
 }
 NAPI_API_DEFINE(NodeRtcEngine, setEffectPosition) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -6868,15 +6639,13 @@ NAPI_API_DEFINE(NodeRtcEngine, setEffectPosition) {
     result = pEngine->m_engine->setEffectPosition(soundId, pos);
   } while (false);
   napi_set_int_result(args, result);
-
-  LOG_LEAVE;
 }
 NAPI_API_DEFINE(NodeRtcEngine, getEffectDuration) {
   LOG_ENTER;
   int result = -1;
   NodeString filePath;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -6884,14 +6653,12 @@ NAPI_API_DEFINE(NodeRtcEngine, getEffectDuration) {
     result = pEngine->m_engine->getEffectDuration(filePath);
   } while (false);
   napi_set_int_result(args, result);
-
-  LOG_LEAVE;
 }
 NAPI_API_DEFINE(NodeRtcEngine, getEffectCurrentPosition) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -6903,14 +6670,12 @@ NAPI_API_DEFINE(NodeRtcEngine, getEffectCurrentPosition) {
     result = pEngine->m_engine->getEffectCurrentPosition(soundId);
   } while (false);
   napi_set_int_result(args, result);
-
-  LOG_LEAVE;
 }
 NAPI_API_DEFINE(NodeRtcEngine, playEffect) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -6927,30 +6692,26 @@ NAPI_API_DEFINE(NodeRtcEngine, playEffect) {
                                            pan, gain, publish, startPos);
   } while (false);
   napi_set_int_result(args, result);
-
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setProcessDpiAwareness) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     result = SetProcessDpiAwarenessEx();
   } while (false);
   napi_set_int_result(args, result);
-
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetProcessDpiAwareness) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
@@ -6960,17 +6721,15 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetProcessDpiAwareness) {
     }
   } while (false);
   napi_set_int_result(args, result);
-
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, startAudioRecordingWithConfig) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
-    Isolate* isolate = args.GetIsolate();
+    Isolate *isolate = args.GetIsolate();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     if (args[0]->IsObject()) {
@@ -6992,16 +6751,14 @@ NAPI_API_DEFINE(NodeRtcEngine, startAudioRecordingWithConfig) {
       CHECK_NAPI_STATUS(pEngine, status);
 
       AudioRecordingConfiguration config;
-      config.filePath = (char*)filePath;
-      config.recordingQuality = (AUDIO_RECORDING_QUALITY_TYPE)recordingQuality;
-      config.recordingPosition = (AUDIO_RECORDING_POSITION)recordingPosition;
+      config.filePath = (char *) filePath;
+      config.recordingQuality = (AUDIO_RECORDING_QUALITY_TYPE) recordingQuality;
+      config.recordingPosition = (AUDIO_RECORDING_POSITION) recordingPosition;
       result = pEngine->m_engine->startAudioRecording(config);
     }
 
   } while (false);
   napi_set_int_result(args, result);
-
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setAddonLogFile) {
@@ -7009,7 +6766,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setAddonLogFile) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring path;
@@ -7020,44 +6777,40 @@ NAPI_API_DEFINE(NodeRtcEngine, setAddonLogFile) {
     result = startLogService(sPath.c_str());
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetAddonLogFile) {
   LOG_ENTER;
   napi_status status = napi_ok;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     nodestring path;
     napi_get_param_1(args, nodestring, path);
     CHECK_NAPI_STATUS(pEngine, status);
-    if (!pEngine->m_videoSourceSink.get() ||
-        pEngine->m_videoSourceSink->setAddonLogFile(path) != node_ok) {
+    if (!pEngine->m_videoSourceSink.get()
+        || pEngine->m_videoSourceSink->setAddonLogFile(path) != node_ok) {
       break;
     }
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 NAPI_API_DEFINE(NodeRtcEngine, enableVirtualBackground) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
-    Isolate* isolate = args.GetIsolate();
+    Isolate *isolate = args.GetIsolate();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
     bool enabled;
     status = napi_get_value_bool_(args[0], enabled);
     CHECK_NAPI_STATUS(pEngine, status);
-    if (!args[1]->IsObject()) {
-      break;
-    }
+    if (!args[1]->IsObject()) { break; }
 
     Local<Object> obj;
     status = napi_get_value_object_(isolate, args[1], obj);
@@ -7074,49 +6827,49 @@ NAPI_API_DEFINE(NodeRtcEngine, enableVirtualBackground) {
         isolate, obj, "background_source_type", background_source_type);
     CHECK_NAPI_STATUS(pEngine, status);
     backgroundSource.background_source_type =
-        (VirtualBackgroundSource::BACKGROUND_SOURCE_TYPE)background_source_type;
+        (VirtualBackgroundSource::BACKGROUND_SOURCE_TYPE)
+            background_source_type;
 
     status = napi_get_object_property_uint32_(isolate, obj, "color",
                                               backgroundSource.color);
     CHECK_NAPI_STATUS(pEngine, status);
-      
+
     int blur_degree = VirtualBackgroundSource::BLUR_DEGREE_HIGH;
-    status = napi_get_object_property_int32_(isolate, obj, "blur_degree", blur_degree);
-    backgroundSource.blur_degree = (VirtualBackgroundSource::BACKGROUND_BLUR_DEGREE)blur_degree;
+    status = napi_get_object_property_int32_(isolate, obj, "blur_degree",
+                                             blur_degree);
+    backgroundSource.blur_degree =
+        (VirtualBackgroundSource::BACKGROUND_BLUR_DEGREE) blur_degree;
 
     result =
         pEngine->m_engine->enableVirtualBackground(enabled, backgroundSource);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, pauseAllChannelMediaRelay) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
     result = pEngine->m_engine->pauseAllChannelMediaRelay();
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, resumeAllChannelMediaRelay) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
     result = pEngine->m_engine->resumeAllChannelMediaRelay();
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setAudioMixingPlaybackSpeed) {
@@ -7124,7 +6877,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setAudioMixingPlaybackSpeed) {
   int result = -1;
   napi_status status = napi_ok;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     int speed = 100;
@@ -7132,7 +6885,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setAudioMixingPlaybackSpeed) {
     result = pEngine->m_engine->setAudioMixingPlaybackSpeed(speed);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setAudioMixingDualMonoMode) {
@@ -7140,15 +6892,15 @@ NAPI_API_DEFINE(NodeRtcEngine, setAudioMixingDualMonoMode) {
   int result = -1;
   napi_status status = napi_ok;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     int mode;
     napi_get_param_1(args, int32, mode);
-    result = pEngine->m_engine->setAudioMixingDualMonoMode((agora::media::AUDIO_MIXING_DUAL_MONO_MODE)mode);
+    result = pEngine->m_engine->setAudioMixingDualMonoMode(
+        (agora::media::AUDIO_MIXING_DUAL_MONO_MODE) mode);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getAudioFileInfo) {
@@ -7156,8 +6908,8 @@ NAPI_API_DEFINE(NodeRtcEngine, getAudioFileInfo) {
   int result = -1;
   napi_status status = napi_ok;
   do {
-    
-    NodeRtcEngine* pEngine = nullptr;
+
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     NodeString filePath;
@@ -7165,20 +6917,18 @@ NAPI_API_DEFINE(NodeRtcEngine, getAudioFileInfo) {
     result = pEngine->m_engine->getAudioFileInfo(filePath);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getAudioTrackCount) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     result = pEngine->m_engine->getAudioTrackCount();
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, selectAudioTrack) {
@@ -7186,7 +6936,7 @@ NAPI_API_DEFINE(NodeRtcEngine, selectAudioTrack) {
   int result = -1;
   napi_status status = napi_ok;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     int index;
@@ -7194,7 +6944,6 @@ NAPI_API_DEFINE(NodeRtcEngine, selectAudioTrack) {
     result = pEngine->m_engine->selectAudioTrack(index);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceMuteRemoteAudioStream) {
@@ -7213,15 +6962,14 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceMuteRemoteAudioStream) {
     status = napi_get_value_bool_(args[1], mute);
     CHECK_NAPI_STATUS(pEngine, status);
     LOG_F(INFO, "videoSourceMuteRemoteAudioStream: %d", mute);
-    if (!pEngine->m_videoSourceSink.get() ||
-        pEngine->m_videoSourceSink->muteRemoteAudioStream(uid, mute) !=
-            node_ok) {
+    if (!pEngine->m_videoSourceSink.get()
+        || pEngine->m_videoSourceSink->muteRemoteAudioStream(uid, mute)
+            != node_ok) {
       break;
     }
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceMuteAllRemoteAudioStreams) {
@@ -7236,15 +6984,14 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceMuteAllRemoteAudioStreams) {
     napi_status status = napi_get_value_bool_(args[0], mute);
     CHECK_NAPI_STATUS(pEngine, status);
     LOG_F(INFO, "videoSourceMuteAllRemoteAudioStreams: %d", mute);
-    if (!pEngine->m_videoSourceSink.get() ||
-        pEngine->m_videoSourceSink->muteAllRemoteAudioStreams(mute) !=
-            node_ok) {
+    if (!pEngine->m_videoSourceSink.get()
+        || pEngine->m_videoSourceSink->muteAllRemoteAudioStreams(mute)
+            != node_ok) {
       break;
     }
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceMuteRemoteVideoStream) {
@@ -7263,15 +7010,14 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceMuteRemoteVideoStream) {
     status = napi_get_value_bool_(args[1], mute);
     CHECK_NAPI_STATUS(pEngine, status);
     LOG_F(INFO, "videoSourceMuteRemoteVideoStream: %d", mute);
-    if (!pEngine->m_videoSourceSink.get() ||
-        pEngine->m_videoSourceSink->muteRemoteVideoStream(uid, mute) !=
-            node_ok) {
+    if (!pEngine->m_videoSourceSink.get()
+        || pEngine->m_videoSourceSink->muteRemoteVideoStream(uid, mute)
+            != node_ok) {
       break;
     }
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceMuteAllRemoteVideoStreams) {
@@ -7286,15 +7032,14 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceMuteAllRemoteVideoStreams) {
     napi_status status = napi_get_value_bool_(args[0], mute);
     CHECK_NAPI_STATUS(pEngine, status);
     LOG_F(INFO, "videoSourceMuteAllRemoteVideoStreams: %d", mute);
-    if (!pEngine->m_videoSourceSink.get() ||
-        pEngine->m_videoSourceSink->muteAllRemoteVideoStreams(mute) !=
-            node_ok) {
+    if (!pEngine->m_videoSourceSink.get()
+        || pEngine->m_videoSourceSink->muteAllRemoteVideoStreams(mute)
+            != node_ok) {
       break;
     }
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, adjustLoopbackSignalVolume) {
@@ -7311,7 +7056,6 @@ NAPI_API_DEFINE(NodeRtcEngine, adjustLoopbackSignalVolume) {
     result = pEngine->m_engine->adjustLoopbackRecordingSignalVolume(volume);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceAdjustLoopbackRecordingSignalVolume) {
@@ -7325,15 +7069,15 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceAdjustLoopbackRecordingSignalVolume) {
     napi_status status = napi_get_value_int32_(args[0], volume);
     CHECK_NAPI_STATUS(pEngine, status);
     LOG_F(INFO, "videoSourceAdjustLoopbackRecordingSignalVolume:%d", volume);
-    if (!pEngine->m_videoSourceSink.get() ||
-        pEngine->m_videoSourceSink->adjustLoopbackRecordingSignalVolume(
-            volume) != node_ok) {
+    if (!pEngine->m_videoSourceSink.get()
+        || pEngine->m_videoSourceSink->adjustLoopbackRecordingSignalVolume(
+               volume)
+            != node_ok) {
       break;
     }
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceAdjustRecordingSignalVolume) {
@@ -7347,15 +7091,14 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceAdjustRecordingSignalVolume) {
     napi_status status = napi_get_value_int32_(args[0], volume);
     CHECK_NAPI_STATUS(pEngine, status);
     LOG_F(INFO, "videoSourceAdjustRecordingSignalVolume:%d", volume);
-    if (!pEngine->m_videoSourceSink.get() ||
-        pEngine->m_videoSourceSink->adjustRecordingSignalVolume(volume) !=
-            node_ok) {
+    if (!pEngine->m_videoSourceSink.get()
+        || pEngine->m_videoSourceSink->adjustRecordingSignalVolume(volume)
+            != node_ok) {
       break;
     }
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceDisableAudio) {
@@ -7365,14 +7108,13 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceDisableAudio) {
     NodeRtcEngine *pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    if (!pEngine->m_videoSourceSink.get() ||
-        pEngine->m_videoSourceSink->disableAudio() != node_ok) {
+    if (!pEngine->m_videoSourceSink.get()
+        || pEngine->m_videoSourceSink->disableAudio() != node_ok) {
       break;
     }
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getDefaultAudioPlaybackDevices) {
@@ -7410,7 +7152,6 @@ NAPI_API_DEFINE(NodeRtcEngine, getDefaultAudioPlaybackDevices) {
 
     args.GetReturnValue().Set(dev);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getDefaultAudioRecordingDevices) {
@@ -7447,7 +7188,6 @@ NAPI_API_DEFINE(NodeRtcEngine, getDefaultAudioRecordingDevices) {
     deviceId[0] = '\0';
     args.GetReturnValue().Set(dev);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, takeSnapshot) {
@@ -7473,7 +7213,6 @@ NAPI_API_DEFINE(NodeRtcEngine, takeSnapshot) {
     result = pEngine->m_engine->takeSnapshot(channel, uid, filePath);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, startRtmpStreamWithoutTranscoding) {
@@ -7492,7 +7231,6 @@ NAPI_API_DEFINE(NodeRtcEngine, startRtmpStreamWithoutTranscoding) {
 
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, startRtmpStreamWithTranscoding) {
@@ -7513,36 +7251,33 @@ NAPI_API_DEFINE(NodeRtcEngine, startRtmpStreamWithTranscoding) {
                             std::string("arg 1 is not a object"));
 
     auto liveTranscoding = getLiveTranscoding(obj, args, pEngine);
-    if (liveTranscoding == nullptr) {
-      break;
-    }
+    if (liveTranscoding == nullptr) { break; }
     result = pEngine->m_engine->startRtmpStreamWithTranscoding(
         url, *liveTranscoding);
     if (liveTranscoding->watermark) {
-        for (unsigned int i=0; i<liveTranscoding->watermarkCount; i++) {
-            delete liveTranscoding->watermark[i].url;
-        }
+      for (unsigned int i = 0; i < liveTranscoding->watermarkCount; i++) {
+        delete liveTranscoding->watermark[i].url;
+      }
       delete[] liveTranscoding->watermark;
     }
     if (liveTranscoding->backgroundImage) {
-        for (unsigned int i=0; i<liveTranscoding->backgroundImageCount; i++) {
-            delete liveTranscoding->backgroundImage[i].url;
-        }
+      for (unsigned int i = 0; i < liveTranscoding->backgroundImageCount; i++) {
+        delete liveTranscoding->backgroundImage[i].url;
+      }
       delete[] liveTranscoding->backgroundImage;
     }
     if (liveTranscoding->transcodingUsers) {
       delete[] liveTranscoding->transcodingUsers;
     }
     if (liveTranscoding->advancedFeatures) {
-        for (unsigned int i=0; i<liveTranscoding->advancedFeatureCount; i++) {
-            delete liveTranscoding->advancedFeatures[i].featureName;
-        }
+      for (unsigned int i = 0; i < liveTranscoding->advancedFeatureCount; i++) {
+        delete liveTranscoding->advancedFeatures[i].featureName;
+      }
       delete[] liveTranscoding->advancedFeatures;
     }
     delete liveTranscoding;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, updateRtmpTranscoding) {
@@ -7560,9 +7295,7 @@ NAPI_API_DEFINE(NodeRtcEngine, updateRtmpTranscoding) {
                             std::string("arg 0 is not a object"));
 
     auto liveTranscoding = getLiveTranscoding(obj, args, pEngine);
-    if (liveTranscoding == nullptr) {
-      break;
-    }
+    if (liveTranscoding == nullptr) { break; }
     result = pEngine->m_engine->updateRtmpTranscoding(*liveTranscoding);
     if (liveTranscoding->watermark) {
       for (unsigned int i = 0; i < liveTranscoding->watermarkCount; i++) {
@@ -7588,7 +7321,6 @@ NAPI_API_DEFINE(NodeRtcEngine, updateRtmpTranscoding) {
     delete liveTranscoding;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, stopRtmpStream) {
@@ -7607,7 +7339,6 @@ NAPI_API_DEFINE(NodeRtcEngine, stopRtmpStream) {
 
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setAVSyncSource) {
@@ -7629,7 +7360,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setAVSyncSource) {
     result = pEngine->m_engine->setAVSyncSource(channelId, uid);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, followSystemPlaybackDevice) {
@@ -7650,7 +7380,6 @@ NAPI_API_DEFINE(NodeRtcEngine, followSystemPlaybackDevice) {
     result = pEngine->m_audioVdm->get()->followSystemPlaybackDevice(enable);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, followSystemRecordingDevice) {
@@ -7671,7 +7400,6 @@ NAPI_API_DEFINE(NodeRtcEngine, followSystemRecordingDevice) {
     result = pEngine->m_audioVdm->get()->followSystemRecordingDevice(enable);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getScreenCaptureSources) {
@@ -7685,9 +7413,7 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenCaptureSources) {
   do {
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    if (!args[0]->IsObject()) {
-      break;
-    }
+    if (!args[0]->IsObject()) { break; }
 
     Local<Object> thumbSizeObj;
     status = napi_get_value_object_(isolate, args[0], thumbSizeObj);
@@ -7753,17 +7479,17 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenCaptureSources) {
 
       NODE_SET_OBJ_PROP_UINT32(isolate, obj, "type", type);
       NODE_SET_OBJ_PROP_UINT32(isolate, obj, "sourceId",
-                               (unsigned long)sourceId);
+                               (unsigned long) sourceId);
       NODE_SET_OBJ_PROP_String(isolate, obj, "sourceName", sourceName.c_str());
       NODE_SET_OBJ_PROP_String(isolate, obj, "processPath",
                                processPath.c_str());
       NODE_SET_OBJ_PROP_String(isolate, obj, "sourceTitle",
                                sourceTitle.c_str());
       NODE_SET_OBJ_PROP_BOOL(isolate, obj, "primaryMonitor", primaryMonitor);
-      #ifdef _WIN32
+#ifdef _WIN32
       bool minimizeWindow = info.minimizeWindow;
       NODE_SET_OBJ_PROP_BOOL(isolate, obj, "minimizeWindow", minimizeWindow);
-      #endif
+#endif
 
       Local<v8::Object> iconImageObj = Object::New(isolate);
       if (info.iconImage.buffer) {
@@ -7818,7 +7544,6 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenCaptureSources) {
 
   } while (false);
   napi_set_array_result(args, infos);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setLowlightEnhanceOptions) {
@@ -7847,12 +7572,11 @@ NAPI_API_DEFINE(NodeRtcEngine, setLowlightEnhanceOptions) {
       CHECK_NAPI_STATUS(pEngine, status);
     }
     agora::rtc::LowLightEnhanceOptions opts(
-        (agora::rtc::LowLightEnhanceOptions::LOW_LIGHT_ENHANCE_MODE)mode,
-        (agora::rtc::LowLightEnhanceOptions::LOW_LIGHT_ENHANCE_LEVEL)level);
+        (agora::rtc::LowLightEnhanceOptions::LOW_LIGHT_ENHANCE_MODE) mode,
+        (agora::rtc::LowLightEnhanceOptions::LOW_LIGHT_ENHANCE_LEVEL) level);
     result = pEngine->m_engine->setLowlightEnhanceOptions(enabled, opts);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setVideoDenoiserOptions) {
@@ -7881,12 +7605,11 @@ NAPI_API_DEFINE(NodeRtcEngine, setVideoDenoiserOptions) {
       CHECK_NAPI_STATUS(pEngine, status);
     }
     agora::rtc::VideoDenoiserOptions opts(
-        (agora::rtc::VideoDenoiserOptions::VIDEO_DENOISER_MODE)mode,
-        (agora::rtc::VideoDenoiserOptions::VIDEO_DENOISER_LEVEL)level);
+        (agora::rtc::VideoDenoiserOptions::VIDEO_DENOISER_MODE) mode,
+        (agora::rtc::VideoDenoiserOptions::VIDEO_DENOISER_LEVEL) level);
     result = pEngine->m_engine->setVideoDenoiserOptions(enabled, opts);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, setColorEnhanceOptions) {
@@ -7919,7 +7642,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setColorEnhanceOptions) {
     result = pEngine->m_engine->setColorEnhanceOptions(enabled, opts);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 /**
@@ -7930,7 +7652,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setColorEnhanceOptions) {
  * To declared class and member functions that could be used in JS layer
  * directly.
  */
-Local<Object> NodeRtcChannel::Init(Isolate* isolate, IChannel* pChannel) {
+Local<Object> NodeRtcChannel::Init(Isolate *isolate, IChannel *pChannel) {
   Local<Context> context = isolate->GetCurrentContext();
   BEGIN_PROPERTY_DEFINE(NodeRtcChannel, createInstance, 5)
   PROPERTY_METHOD_DEFINE(onEvent)
@@ -7998,23 +7720,21 @@ Local<Object> NodeRtcChannel::Init(Isolate* isolate, IChannel* pChannel) {
 /**
  * The function is used as class constructor in JS layer
  */
-void NodeRtcChannel::createInstance(const FunctionCallbackInfo<Value>& args) {
+void NodeRtcChannel::createInstance(const FunctionCallbackInfo<Value> &args) {
   LOG_ENTER;
-  Isolate* isolate = args.GetIsolate();
+  Isolate *isolate = args.GetIsolate();
 
   Local<v8::External> argChannel = Local<v8::External>::Cast(args[0]);
-  IChannel* pChannel = static_cast<IChannel*>(argChannel->Value());
-  NodeRtcChannel* channel = new NodeRtcChannel(isolate, pChannel);
+  IChannel *pChannel = static_cast<IChannel *>(argChannel->Value());
+  NodeRtcChannel *channel = new NodeRtcChannel(isolate, pChannel);
   channel->Wrap(args.This());
   args.GetReturnValue().Set(args.This());
-
-  LOG_LEAVE;
 }
 
 /**
  * Constructor
  */
-NodeRtcChannel::NodeRtcChannel(Isolate* isolate, IChannel* pChannel)
+NodeRtcChannel::NodeRtcChannel(Isolate *isolate, IChannel *pChannel)
     : m_isolate(isolate), m_channel(pChannel) {
   LOG_ENTER;
   metadataObserver.reset(new NodeMetadataObserver());
@@ -8022,7 +7742,6 @@ NodeRtcChannel::NodeRtcChannel(Isolate* isolate, IChannel* pChannel)
   m_eventHandler.reset(new NodeChannelEventHandler(this));
 
   m_channel->setChannelEventHandler(m_eventHandler.get());
-  LOG_LEAVE;
 }
 
 NodeRtcChannel::~NodeRtcChannel() {
@@ -8033,16 +7752,13 @@ NodeRtcChannel::~NodeRtcChannel() {
   }
   m_eventHandler.reset(nullptr);
 
-  if (metadataObserver.get()) {
-    metadataObserver.reset(nullptr);
-  }
-  LOG_LEAVE;
+  if (metadataObserver.get()) { metadataObserver.reset(nullptr); }
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, onEvent) {
   // LOG_ENTER;
   do {
-    NodeRtcChannel* pChannel = nullptr;
+    NodeRtcChannel *pChannel = nullptr;
     napi_status status = napi_ok;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
@@ -8066,10 +7782,10 @@ NAPI_API_DEFINE(NodeRtcChannel, onEvent) {
     Local<Object> obj = args.This();
     Persistent<Object> persistObj;
     persistObj.Reset(obj);
-    pChannel->m_eventHandler->addEventHandler((char*)eventName, persistObj,
+    pChannel->m_eventHandler->addEventHandler((char *) eventName, persistObj,
                                               persist);
   } while (false);
-  // LOG_LEAVE;
+  //
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, joinChannel) {
@@ -8077,8 +7793,8 @@ NAPI_API_DEFINE(NodeRtcChannel, joinChannel) {
   int result = -1;
   NodeString key, name, chan_info;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcChannel* pChannel = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
     uid_t uid;
@@ -8132,15 +7848,14 @@ NAPI_API_DEFINE(NodeRtcChannel, joinChannel) {
         pChannel->m_channel->joinChannel(key, extra_info.c_str(), uid, options);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, joinChannelWithUserAccount) {
   LOG_ENTER;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcChannel* pChannel = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
 
@@ -8186,30 +7901,28 @@ NAPI_API_DEFINE(NodeRtcChannel, joinChannelWithUserAccount) {
                                                              options);
   } while (false);
   napi_set_array_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, channelId) {
   LOG_ENTER;
   napi_status status = napi_ok;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcChannel* pChannel = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
 
-    const char* channelId = pChannel->m_channel->channelId();
+    const char *channelId = pChannel->m_channel->channelId();
     napi_set_string_result(args, channelId);
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, getCallId) {
   LOG_ENTER;
   napi_status status = napi_ok;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcChannel* pChannel = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
 
@@ -8218,14 +7931,13 @@ NAPI_API_DEFINE(NodeRtcChannel, getCallId) {
       napi_set_string_result(args, callId->c_str());
     }
   } while (false);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, setClientRole) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcChannel* pChannel = nullptr;
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
     unsigned int role;
@@ -8235,14 +7947,13 @@ NAPI_API_DEFINE(NodeRtcChannel, setClientRole) {
     result = pChannel->m_channel->setClientRole(CLIENT_ROLE_TYPE(role));
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, setRemoteUserPriority) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcChannel* pChannel = nullptr;
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
 
@@ -8258,14 +7969,13 @@ NAPI_API_DEFINE(NodeRtcChannel, setRemoteUserPriority) {
         uid, PRIORITY_TYPE(priority));
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, setRemoteRenderMode) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcChannel* pChannel = nullptr;
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
     napi_status status;
@@ -8286,15 +7996,12 @@ NAPI_API_DEFINE(NodeRtcChannel, setRemoteRenderMode) {
         uid, RENDER_MODE_TYPE(renderMode), VIDEO_MIRROR_MODE_TYPE(mirrorMode));
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_CHANNEL_DEFINE_WRAPPER_1(renewToken, nodestring);
 NAPI_API_CHANNEL_DEFINE_WRAPPER_1(setEncryptionSecret, nodestring);
 NAPI_API_CHANNEL_DEFINE_WRAPPER_1(setEncryptionMode, nodestring);
-NAPI_API_CHANNEL_DEFINE_WRAPPER_3(setRemoteVoicePosition,
-                                  int32,
-                                  double,
+NAPI_API_CHANNEL_DEFINE_WRAPPER_3(setRemoteVoicePosition, int32, double,
                                   double);
 NAPI_API_CHANNEL_DEFINE_WRAPPER_1(setDefaultMuteAllRemoteAudioStreams, bool);
 NAPI_API_CHANNEL_DEFINE_WRAPPER_1(setDefaultMuteAllRemoteVideoStreams, bool);
@@ -8307,7 +8014,7 @@ NAPI_API_DEFINE(NodeRtcChannel, setRemoteVideoStreamType) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcChannel* pChannel = nullptr;
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
     napi_status status;
@@ -8324,14 +8031,13 @@ NAPI_API_DEFINE(NodeRtcChannel, setRemoteVideoStreamType) {
         uid, REMOTE_VIDEO_STREAM_TYPE(streamType));
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, setRemoteDefaultVideoStreamType) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcChannel* pChannel = nullptr;
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
     napi_status status;
@@ -8344,15 +8050,14 @@ NAPI_API_DEFINE(NodeRtcChannel, setRemoteDefaultVideoStreamType) {
         REMOTE_VIDEO_STREAM_TYPE(streamType));
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, createDataStream) {
   LOG_ENTER;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcChannel* pChannel = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
     napi_status status;
@@ -8377,19 +8082,16 @@ NAPI_API_DEFINE(NodeRtcChannel, createDataStream) {
       result = pChannel->m_channel->createDataStream(&streamId, config);
     }
 
-    if (result == 0) {
-      result = streamId;
-    }
+    if (result == 0) { result = streamId; }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, sendStreamMessage) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcChannel* pChannel = nullptr;
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
     napi_status status;
@@ -8403,7 +8105,6 @@ NAPI_API_DEFINE(NodeRtcChannel, sendStreamMessage) {
     result = pChannel->m_channel->sendStreamMessage(streamId, msg, strlen(msg));
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_CHANNEL_DEFINE_WRAPPER_2(addPublishStreamUrl, nodestring, bool);
@@ -8412,7 +8113,7 @@ NAPI_API_DEFINE(NodeRtcChannel, setLiveTranscoding) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcChannel* pChannel = nullptr;
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
 
     Local<Object> obj;
@@ -8422,9 +8123,7 @@ NAPI_API_DEFINE(NodeRtcChannel, setLiveTranscoding) {
                             std::string("arg 0 is not a object"));
 
     auto liveTranscoding = getLiveTranscoding(obj, args, pChannel);
-    if (liveTranscoding == nullptr) {
-      break;
-    }
+    if (liveTranscoding == nullptr) { break; }
     result = pChannel->m_channel->setLiveTranscoding(*liveTranscoding);
     if (liveTranscoding->watermark) {
       for (unsigned int i = 0; i < liveTranscoding->watermarkCount; i++) {
@@ -8450,15 +8149,14 @@ NAPI_API_DEFINE(NodeRtcChannel, setLiveTranscoding) {
     delete liveTranscoding;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, addInjectStreamUrl) {
   LOG_ENTER;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcChannel* pChannel = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
     napi_status status;
@@ -8513,7 +8211,6 @@ NAPI_API_DEFINE(NodeRtcChannel, addInjectStreamUrl) {
     result = pChannel->m_channel->addInjectStreamUrl(url, config);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 NAPI_API_CHANNEL_DEFINE_WRAPPER_1(removeInjectStreamUrl, nodestring);
 
@@ -8522,8 +8219,8 @@ NAPI_API_DEFINE(NodeRtcChannel, startChannelMediaRelay) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcChannel* pChannel = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
     Local<Context> context = isolate->GetCurrentContext();
@@ -8563,7 +8260,7 @@ NAPI_API_DEFINE(NodeRtcChannel, startChannelMediaRelay) {
         srcInfo.channelName = nullptr;
       }
       if (token != nullptr) {
-        sourceToken = (string)token;
+        sourceToken = (string) token;
         srcInfo.token = sourceToken.c_str();
       } else {
         srcInfo.token = nullptr;
@@ -8630,7 +8327,6 @@ NAPI_API_DEFINE(NodeRtcChannel, startChannelMediaRelay) {
 
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, updateChannelMediaRelay) {
@@ -8638,8 +8334,8 @@ NAPI_API_DEFINE(NodeRtcChannel, updateChannelMediaRelay) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcChannel* pChannel = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
     Local<Context> context = isolate->GetCurrentContext();
@@ -8679,7 +8375,7 @@ NAPI_API_DEFINE(NodeRtcChannel, updateChannelMediaRelay) {
         srcInfo.channelName = nullptr;
       }
       if (token != nullptr) {
-        sourceToken = (string)token;
+        sourceToken = (string) token;
         srcInfo.token = sourceToken.c_str();
       } else {
         srcInfo.token = nullptr;
@@ -8744,7 +8440,6 @@ NAPI_API_DEFINE(NodeRtcChannel, updateChannelMediaRelay) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 NAPI_API_CHANNEL_DEFINE_WRAPPER(stopChannelMediaRelay);
 
@@ -8752,7 +8447,7 @@ NAPI_API_DEFINE(NodeRtcChannel, getConnectionState) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcChannel* pChannel = nullptr;
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
     napi_status status;
@@ -8760,7 +8455,6 @@ NAPI_API_DEFINE(NodeRtcChannel, getConnectionState) {
     result = pChannel->m_channel->getConnectionState();
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_CHANNEL_DEFINE_WRAPPER(publish);
@@ -8772,8 +8466,8 @@ NAPI_API_DEFINE(NodeRtcChannel, release) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcChannel* pChannel = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
 
@@ -8785,7 +8479,6 @@ NAPI_API_DEFINE(NodeRtcChannel, release) {
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 /**
@@ -8797,7 +8490,7 @@ NAPI_API_DEFINE(NodeRtcChannel, registerMediaMetadataObserver) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcChannel* pChannel = nullptr;
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
     LOG_F(INFO, "NodeRtcChannel  registerMediaMetadataObserver");
@@ -8809,14 +8502,13 @@ NAPI_API_DEFINE(NodeRtcChannel, registerMediaMetadataObserver) {
         IMetadataObserver::METADATA_TYPE::VIDEO_METADATA);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, unRegisterMediaMetadataObserver) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcChannel* pChannel = nullptr;
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
     LOG_F(INFO, "NodeRtcChannel unRegisterMediaMetadataObserver");
@@ -8827,7 +8519,6 @@ NAPI_API_DEFINE(NodeRtcChannel, unRegisterMediaMetadataObserver) {
     }
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, sendMetadata) {
@@ -8835,8 +8526,8 @@ NAPI_API_DEFINE(NodeRtcChannel, sendMetadata) {
   napi_status status = napi_ok;
   int result = -1;
   do {
-    Isolate* isolate = args.GetIsolate();
-    NodeRtcChannel* pChannel = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcChannel *pChannel = nullptr;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
 
@@ -8854,7 +8545,7 @@ NAPI_API_DEFINE(NodeRtcChannel, sendMetadata) {
     unsigned int size;
     nodestring buffer;
     double timeStampMs = 0;
-    char* _buffer;
+    char *_buffer;
 
     Local<Object> obj;
     status = napi_get_value_object_(isolate, args[0], obj);
@@ -8870,17 +8561,16 @@ NAPI_API_DEFINE(NodeRtcChannel, sendMetadata) {
     // status = napi_get_object_property_double_(isolate, obj, "timeStampMs",
     // timeStampMs); CHECK_NAPI_STATUS(pChannel, status);
     result = pChannel->metadataObserver.get()->sendMetadata(
-        uid, size, reinterpret_cast<unsigned char*>(_buffer), timeStampMs);
+        uid, size, reinterpret_cast<unsigned char *>(_buffer), timeStampMs);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, addMetadataEventHandler) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcChannel* pChannel = nullptr;
+    NodeRtcChannel *pChannel = nullptr;
     napi_status status = napi_ok;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
@@ -8915,14 +8605,13 @@ NAPI_API_DEFINE(NodeRtcChannel, addMetadataEventHandler) {
                                                          persist2);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, setMaxMetadataSize) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcChannel* pChannel = nullptr;
+    NodeRtcChannel *pChannel = nullptr;
     napi_status status = napi_ok;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
@@ -8932,19 +8621,18 @@ NAPI_API_DEFINE(NodeRtcChannel, setMaxMetadataSize) {
     result = pChannel->metadataObserver.get()->setMaxMetadataSize(maxSize);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, enableEncryption) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcChannel* pChannel = nullptr;
+    NodeRtcChannel *pChannel = nullptr;
     napi_status status = napi_ok;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
 
-    Isolate* isolate = args.GetIsolate();
+    Isolate *isolate = args.GetIsolate();
     bool enabled;
     status = napi_get_value_bool_(args[0], enabled);
     CHECK_NAPI_STATUS(pChannel, status);
@@ -8968,24 +8656,23 @@ NAPI_API_DEFINE(NodeRtcChannel, enableEncryption) {
                                           config.encryptionKdfSalt);
     CHECK_NAPI_STATUS(pChannel, status);
 
-    config.encryptionMode = (ENCRYPTION_MODE)encryptionMode;
+    config.encryptionMode = (ENCRYPTION_MODE) encryptionMode;
     config.encryptionKey = encryptionKey;
     result = pChannel->m_channel->enableEncryption(enabled, config);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, setClientRoleWithOptions) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcChannel* pChannel = nullptr;
+    NodeRtcChannel *pChannel = nullptr;
     napi_status status = napi_ok;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
 
-    Isolate* isolate = args.GetIsolate();
+    Isolate *isolate = args.GetIsolate();
     unsigned int role;
     status = napi_get_value_uint32_(args[0], role);
     CHECK_NAPI_STATUS(pChannel, status);
@@ -8997,7 +8684,7 @@ NAPI_API_DEFINE(NodeRtcChannel, setClientRoleWithOptions) {
       status = napi_get_value_object_(isolate, args[1], obj);
       CHECK_NAPI_STATUS(pChannel, status);
 
-      int audienceLatencyLevel = (int)AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
+      int audienceLatencyLevel = (int) AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
 
       status = napi_get_object_property_int32_(
           isolate, obj, "audienceLatencyLevel", audienceLatencyLevel);
@@ -9010,23 +8697,20 @@ NAPI_API_DEFINE(NodeRtcChannel, setClientRoleWithOptions) {
         case 2:
           opts.audienceLatencyLevel = AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
           break;
-        default:
-          status = napi_invalid_arg;
-          break;
+        default: status = napi_invalid_arg; break;
       }
       CHECK_NAPI_STATUS(pChannel, status);
     }
-    result = pChannel->m_channel->setClientRole((CLIENT_ROLE_TYPE)role, opts);
+    result = pChannel->m_channel->setClientRole((CLIENT_ROLE_TYPE) role, opts);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, muteLocalAudioStream) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcChannel* pChannel = nullptr;
+    NodeRtcChannel *pChannel = nullptr;
     napi_status status = napi_ok;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
@@ -9036,14 +8720,13 @@ NAPI_API_DEFINE(NodeRtcChannel, muteLocalAudioStream) {
     result = pChannel->m_channel->muteLocalAudioStream(mute);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, muteLocalVideoStream) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcChannel* pChannel = nullptr;
+    NodeRtcChannel *pChannel = nullptr;
     napi_status status = napi_ok;
     napi_get_native_channel(args, pChannel);
     CHECK_NATIVE_CHANNEL(pChannel);
@@ -9053,7 +8736,6 @@ NAPI_API_DEFINE(NodeRtcChannel, muteLocalVideoStream) {
     result = pChannel->m_channel->muteLocalVideoStream(mute);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcChannel, sendStreamMessageWithArrayBuffer) {
@@ -9072,14 +8754,13 @@ NAPI_API_DEFINE(NodeRtcChannel, sendStreamMessageWithArrayBuffer) {
     napi_get_value_arraybuffer_(args[1], buffer, length);
     CHECK_NAPI_STATUS(pChannel, status);
     result = pChannel->m_channel->sendStreamMessage(
-        streamId, (const char *)buffer.data(), length);
+        streamId, (const char *) buffer.data(), length);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
 }
 
-}  // namespace rtc
-}  // namespace agora
+}// namespace rtc
+}// namespace agora
 
 #if defined(_WIN32)
 /*
@@ -9087,8 +8768,8 @@ NAPI_API_DEFINE(NodeRtcChannel, sendStreamMessageWithArrayBuffer) {
  */
 
 size_t                   /* O - Length of string */
-strlcpy(char* dst,       /* O - Destination string */
-        const char* src, /* I - Source string */
+strlcpy(char *dst,       /* O - Destination string */
+        const char *src, /* I - Source string */
         size_t size)     /* I - Size of destination string buffer */
 {
   size_t srclen; /* Length of source string */
@@ -9104,8 +8785,7 @@ strlcpy(char* dst,       /* O - Destination string */
    * Copy the appropriate amount...
    */
 
-  if (srclen > size)
-    srclen = size;
+  if (srclen > size) srclen = size;
 
   memcpy(dst, src, srclen);
   dst[srclen] = '\0';

@@ -11,11 +11,11 @@
 #ifndef AGORA_VIDEO_SOURCE_SINK_H
 #define AGORA_VIDEO_SOURCE_SINK_H
 
-#include <string>
 #include "IAgoraRtcEngine.h"
 #include "node_error.h"
 #include "video_source_ipc.h"
 #include "windows_system_api.h"
+#include <string>
 
 namespace agora {
 namespace rtc {
@@ -44,20 +44,19 @@ class IAgoraVideoSourceEventHandler {
 
   virtual void onVideoSourceExit() = 0;
 
-  virtual void onVideoSourceLocalAudioStats(const LocalAudioStats& stats) = 0;
+  virtual void onVideoSourceLocalAudioStats(const LocalAudioStats &stats) = 0;
 
-  virtual void onVideoSourceVideoSizeChanged(uid_t uid,
-                                             int width,
-                                             int height,
+  virtual void onVideoSourceVideoSizeChanged(uid_t uid, int width, int height,
                                              int rotation) = 0;
 
-  virtual void onVideoSourceLocalVideoStats(const LocalVideoStats& stats) = 0;
+  virtual void onVideoSourceLocalVideoStats(const LocalVideoStats &stats) = 0;
 
   virtual void onVideoSourceLocalAudioStateChanged(int state, int error) = 0;
 
   virtual void onVideoSourceLocalVideoStateChanged(int state, int error) = 0;
 
-  virtual void onVideoSourceScreenCaptureInfoUpdated(ScreenCaptureInfoCmd &info) = 0;
+  virtual void
+  onVideoSourceScreenCaptureInfoUpdated(ScreenCaptureInfoCmd &info) = 0;
 };
 
 /**
@@ -71,11 +70,9 @@ class AgoraVideoSource {
    * To initialize Video source.
    * @param eventHandler : video source event handler.
    */
-  virtual bool initialize(IAgoraVideoSourceEventHandler* eventHandler,
-                          const char* appid,
-                          unsigned int areaCode,
-                          const char* groupId,
-                          const char* bundleId) = 0;
+  virtual bool initialize(IAgoraVideoSourceEventHandler *eventHandler,
+                          const char *appid, unsigned int areaCode,
+                          const char *groupId, const char *bundleId) = 0;
 
   /**
    * To ask video source to join channel with specified parameters.
@@ -117,15 +114,14 @@ class AgoraVideoSource {
    * @param bitrate : bitrate of video
    */
   virtual node_error captureScreen(agora::rtc::IRtcEngine::WindowIDType id,
-                                   int captureFreq,
-                                   agora::rtc::Rect* rect,
+                                   int captureFreq, agora::rtc::Rect *rect,
                                    int bitrate) = 0;
 
   /**
    * To update shared window area
    * @param rect : updated area
    */
-  virtual node_error updateScreenCapture(agora::rtc::Rect* rect) = 0;
+  virtual node_error updateScreenCapture(agora::rtc::Rect *rect) = 0;
 
   /**
    * To stop screen share
@@ -136,24 +132,24 @@ class AgoraVideoSource {
    * To renew video source's token.
    * @param token : new token
    */
-  virtual node_error renewVideoSourceToken(const char* token) = 0;
+  virtual node_error renewVideoSourceToken(const char *token) = 0;
 
   /**
    * To set video source channel profile
    * @param profile : video source's channel profile
    */
-  virtual node_error setVideoSourceChannelProfile(
-      agora::rtc::CHANNEL_PROFILE_TYPE profile,
-      const char* permissionKey) = 0;
+  virtual node_error
+  setVideoSourceChannelProfile(agora::rtc::CHANNEL_PROFILE_TYPE profile,
+                               const char *permissionKey) = 0;
 
   /**
    * To set video source's video profile
    * @param profile : the video source's video profile
    * @param swapWidthAndHeight : whether adjust width and height
    */
-  virtual node_error setVideoSourceVideoProfile(
-      agora::rtc::VIDEO_PROFILE_TYPE profile,
-      bool swapWidthAndHeight) = 0;
+  virtual node_error
+  setVideoSourceVideoProfile(agora::rtc::VIDEO_PROFILE_TYPE profile,
+                             bool swapWidthAndHeight) = 0;
 
   /**
    * Enable interoperability with the Agora Web SDK.
@@ -171,69 +167,66 @@ class AgoraVideoSource {
    * set log file path of videosource
    * @param file : filepath of log
    */
-  virtual node_error setLogFile(const char* file) = 0;
+  virtual node_error setLogFile(const char *file) = 0;
 
   /**
    * To set parameters for video source.
    */
-  virtual void setParameters(const char* parameters) = 0;
+  virtual void setParameters(const char *parameters) = 0;
 
   /**
    * set screenshare content hint
    */
-  virtual node_error setScreenCaptureContentHint(
-      VideoContentHint contentHint) = 0;
-
+  virtual node_error
+  setScreenCaptureContentHint(VideoContentHint contentHint) = 0;
 
   /**
    * start screen capture by screen rect
    */
   virtual node_error startScreenCaptureByScreen(
-      ScreenIDType screenId,
-      const Rectangle& regionRect,
-      const agora::rtc::ScreenCaptureParameters& captureParams,
-      const std::vector<agora::rtc::IRtcEngine::WindowIDType>&
-          excludeWindows) = 0;
+      ScreenIDType screenId, const Rectangle &regionRect,
+      const agora::rtc::ScreenCaptureParameters &captureParams,
+      const std::vector<agora::rtc::IRtcEngine::WindowIDType>
+          &excludeWindows) = 0;
 
   /**
    * start screen capture by windowId
    */
   virtual node_error startScreenCaptureByWindow(
       agora::rtc::IRtcEngine::WindowIDType windowId,
-      const Rectangle& regionRect,
-      const agora::rtc::ScreenCaptureParameters& captureParams) = 0;
+      const Rectangle &regionRect,
+      const agora::rtc::ScreenCaptureParameters &captureParams) = 0;
 
   virtual node_error startScreenCaptureByDisplayId(
-      DisplayInfo displayId,
-      const Rectangle& regionRect,
-      const agora::rtc::ScreenCaptureParameters& captureParams,
-      const std::vector<agora::rtc::IRtcEngine::WindowIDType>&
-          excludeWindows) = 0;
+      DisplayInfo displayId, const Rectangle &regionRect,
+      const agora::rtc::ScreenCaptureParameters &captureParams,
+      const std::vector<agora::rtc::IRtcEngine::WindowIDType>
+          &excludeWindows) = 0;
 
   /**
    * start screen capture by windowId
    */
   virtual node_error updateScreenCaptureParameters(
-      const agora::rtc::ScreenCaptureParameters& captureParams,
-      const std::vector<agora::rtc::IRtcEngine::WindowIDType>&
-          excludeWindows) = 0;
+      const agora::rtc::ScreenCaptureParameters &captureParams,
+      const std::vector<agora::rtc::IRtcEngine::WindowIDType>
+          &excludeWindows) = 0;
 
   /**
    * Enable loopbackRecording
    * @param enabled : whether enable loopbackRecording
    */
   virtual node_error enableLoopbackRecording(bool enabled,
-                                             const char* deviceName) = 0;
+                                             const char *deviceName) = 0;
   /**
    * Enable audio
    */
   virtual node_error enableAudio() = 0;
-  virtual node_error setEncryptionMode(const char* encryptionMode) = 0;
+  virtual node_error setEncryptionMode(const char *encryptionMode) = 0;
   virtual node_error enableEncryption(bool enable,
                                       EncryptionConfig encryptionConfig) = 0;
-  virtual node_error setEncryptionSecret(const char* secret) = 0;
+  virtual node_error setEncryptionSecret(const char *secret) = 0;
   virtual node_error setProcessDpiAwareness() = 0;
-  virtual node_error setAddonLogFile(const char* file) = 0;
+  virtual node_error setAddonLogFile(const char *file) = 0;
 
   /* meeting */
   virtual node_error adjustRecordingSignalVolume(int volume) = 0;
@@ -245,21 +238,23 @@ class AgoraVideoSource {
   virtual node_error muteRemoteVideoStream(agora::rtc::uid_t userId,
                                            bool mute) = 0;
   virtual node_error muteAllRemoteVideoStreams(bool mute) = 0;
-  
-  virtual node_error setLocalAccessPoint(std::unique_ptr<LocalAccessPointConfigurationCmd> &cmd) = 0;
+
+  virtual node_error setLocalAccessPoint(
+      std::unique_ptr<LocalAccessPointConfigurationCmd> &cmd) = 0;
 
   virtual node_error setCloudProxy(agora::rtc::CLOUD_PROXY_TYPE type) = 0;
 
   virtual node_error muteLocalVideoStream(bool mute) = 0;
-  virtual node_error setScreenCaptureScenario(agora::rtc::SCREEN_SCENARIO_TYPE type) = 0;
+  virtual node_error
+  setScreenCaptureScenario(agora::rtc::SCREEN_SCENARIO_TYPE type) = 0;
 };
 
 /**
  * Video source may be has different implementation on different platforms. The
  * API is used to generate video source.
  */
-AgoraVideoSource* createVideoSource();
-}  // namespace rtc
-}  // namespace agora
+AgoraVideoSource *createVideoSource();
+}// namespace rtc
+}// namespace agora
 
 #endif
