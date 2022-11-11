@@ -795,6 +795,11 @@ void NodeRtcEngine::Init(Local<Object>& module) {
   PROPERTY_METHOD_DEFINE(videoSourceSetCloudProxy);
   PROPERTY_METHOD_DEFINE(videoSourceMuteLocalVideoStream);
   PROPERTY_METHOD_DEFINE(videoSourceSetScreenCaptureScenario);
+
+  /**
+   * 3.6.1.12
+   */
+  PROPERTY_METHOD_DEFINE(isFeatureSupported);
   
   EN_PROPERTY_DEFINE()
   module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
@@ -1759,6 +1764,25 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetScreenCaptureScenario) {
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, isFeatureSupported) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  bool result = false;
+  do {
+    NodeRtcEngine* pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    uint32 type;
+    status = napi_get_value_uint32_(args[0], type);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    result = pEngine->m_engine->isFeatureSupported((agora::rtc::FeatureType)type);
+  } while (false);
+  napi_set_bool_result(args, result);
   LOG_LEAVE;
 }
 
