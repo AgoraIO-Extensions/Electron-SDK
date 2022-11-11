@@ -8,9 +8,9 @@
 #ifndef AGORA_SCREEN_WINDOW_INFO_H
 #define AGORA_SCREEN_WINDOW_INFO_H
 
-#include "video_source_ipc.h"
 #include <string>
 #include <vector>
+#include "video_source_ipc.h"
 
 #if defined(_WIN32)
 #include <windows.h>

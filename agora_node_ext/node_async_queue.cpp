@@ -9,8 +9,8 @@
  */
 
 #include "node_async_queue.h"
-#include <functional>
 #include <uv.h>
+#include <functional>
 
 namespace agora {
 namespace rtc {
@@ -23,5 +23,5 @@ node_async_call::node_async_call() {
 }
 
 node_async_call::~node_async_call() {}
-}// namespace rtc
-}// namespace agora
+}  // namespace rtc
+}  // namespace agora

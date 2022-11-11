@@ -14,10 +14,11 @@ VideoSourceParamParser::VideoSourceParamParser() {}
 
 VideoSourceParamParser::~VideoSourceParamParser() {}
 
-bool VideoSourceParamParser::initialize(const std::string &cmdline) {
+bool VideoSourceParamParser::initialize(const std::string& cmdline) {
   size_t pos = 0;
   do {
-    if (cmdline.empty()) break;
+    if (cmdline.empty())
+      break;
     size_t tmp = cmdline.find_first_of(" ", pos);
     std::string param = cmdline.substr(pos, tmp - pos);
     size_t tmp2 = param.find_first_of(":");
@@ -26,21 +27,26 @@ bool VideoSourceParamParser::initialize(const std::string &cmdline) {
     } else {
       m_switchs.push_back(param);
     }
-    if (tmp == cmdline.npos) break;
+    if (tmp == cmdline.npos)
+      break;
     pos = tmp + 1;
   } while (true);
   return true;
 }
 
-std::string VideoSourceParamParser::getParameter(const std::string &param) {
+std::string VideoSourceParamParser::getParameter(const std::string& param) {
   auto it = m_params.find(param);
-  if (it != m_params.end()) { return it->second; }
+  if (it != m_params.end()) {
+    return it->second;
+  }
   return nullptr;
 }
 
-bool VideoSourceParamParser::hasSwitch(const std::string &param) {
-  for (auto &it : m_switchs) {
-    if (it == param) { return true; }
+bool VideoSourceParamParser::hasSwitch(const std::string& param) {
+  for (auto& it : m_switchs) {
+    if (it == param) {
+      return true;
+    }
   }
   return false;
 }

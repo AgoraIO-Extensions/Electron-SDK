@@ -10,9 +10,8 @@
 #ifndef AGORA_NODE_LOG_H
 #define AGORA_NODE_LOG_H
 #include "loguru.hpp"
-#include <string>
 
-bool startLogService(const char *path);
+bool startLogService(const char* path);
 
 void stopLogService();
 
@@ -34,24 +33,14 @@ void stopLogService();
  */
 #define LOG_VERBOSE(format, ...) LOG_F(INFO, format, ##__VA_ARGS__)
 
-class LogHelper {
- public:
-  LogHelper(const char *name) : name_(name) {
-    // write function enter log.
-    LOG_INFO("==> %s\n", name_.c_str());
-  }
-  ~LogHelper() {
-    // write function leave log.
-    LOG_INFO("<== %s\n", name_.c_str());
-  }
-
- private:
-  std::string name_;
-};
-
 /**
  * write function enter log.
  */
-#define LOG_ENTER auto log_helper(std::make_unique<LogHelper>(__FUNCTION__));
+#define LOG_ENTER LOG_VERBOSE("==> %s\n", __FUNCTION__)
+
+/**
+ * write function leave log.
+ */
+#define LOG_LEAVE LOG_VERBOSE("<== %s\n", __FUNCTION__)
 
 #endif

@@ -15,13 +15,13 @@
 
 #ifndef AGORA_VIDEO_SOURCE_IPC_H
 #define AGORA_VIDEO_SOURCE_IPC_H
-#include "IAgoraRtcEngine.h"
+#include <string>
+#include <vector>
 #include "ipc_shm.h"
 #include <functional>
-#include <memory>
-#include <string>
+#include "IAgoraRtcEngine.h"
 #include <thread>
-#include <vector>
+#include <memory>
 
 #if defined(__APPLE__)
 struct DisplayID {
@@ -152,10 +152,11 @@ struct ScreenCaptureParametersCmd {
   int excludeWindowCount;
 };
 
-struct MuteRemoteStreamsCmd {
- public:
-  agora::rtc::uid_t uid;
-  bool mute;
+struct MuteRemoteStreamsCmd
+{
+public:
+    agora::rtc::uid_t uid;
+    bool mute;
 };
 
 struct CaptureScreenByDisplayCmd {
@@ -227,8 +228,8 @@ struct ChannelProfileCmd {
   agora::rtc::CHANNEL_PROFILE_TYPE profile;
   char permissionKey[MAX_PERMISSION_KEY];
   ChannelProfileCmd()
-      : profile(agora::rtc::CHANNEL_PROFILE_LIVE_BROADCASTING), permissionKey{
-                                                                    0} {}
+      : profile(agora::rtc::CHANNEL_PROFILE_LIVE_BROADCASTING),
+        permissionKey{0} {}
 };
 
 /**
@@ -244,25 +245,25 @@ struct LoopbackRecordingCmd {
 struct SetParameterCmd {
   char parameters[MAX_PARAMETER_LEN];
 
- public:
+public:
   SetParameterCmd() : parameters{0} {}
 };
 
 struct EncryptionConfigCmd {
- public:
+public:
   bool enable;
   agora::rtc::ENCRYPTION_MODE encryptionMode;
   char encryptionKey[agora::rtc::MAX_DEVICE_ID_LENGTH];
 
   EncryptionConfigCmd()
-      : encryptionMode(agora::rtc::ENCRYPTION_MODE::AES_128_XTS), encryptionKey{
-                                                                      '\0'} {}
+      : encryptionMode(agora::rtc::ENCRYPTION_MODE::AES_128_XTS),
+        encryptionKey{'\0'} {}
 
   /* data */
 };
 
 struct LocalAudioStatsCmd {
- public:
+public:
   int numChannels;
   /** The sample rate (Hz).
    */
@@ -277,7 +278,7 @@ struct LocalAudioStatsCmd {
 };
 
 struct LocalVideoStatsCmd {
- public:
+public:
   /** Bitrate (Kbps) sent in the reported interval, which does not include
    * the bitrate of the retransmission video after packet loss.
    */
@@ -333,7 +334,7 @@ struct LocalVideoStatsCmd {
 };
 
 struct VideoSizeChangedCmd {
- public:
+public:
   agora::rtc::uid_t uid;
   int width;
   int height;
@@ -341,19 +342,19 @@ struct VideoSizeChangedCmd {
 };
 
 struct LocalVideoStateChangedCmd {
- public:
+public:
   int localVideoState;
   int error;
 };
 
 struct LocalAudioStateChangedCmd {
- public:
+public:
   int localAudioState;
   int error;
 };
 
 struct ScreenCaptureInfoCmd {
- public:
+public:
   char cardType[MAX_PARAMETER_LEN];
   int errCode;
 };
@@ -362,11 +363,11 @@ struct ScreenCaptureInfoCmd {
  * AgoraIpcListener is used to monitor IPC message
  */
 class AgoraIpcListener {
- public:
+public:
   virtual ~AgoraIpcListener() {}
-  virtual void onMessage(unsigned int msg, char *payload, unsigned int len) {
-    (void) payload;
-    (void) len;
+  virtual void onMessage(unsigned int msg, char* payload, unsigned int len) {
+    (void)payload;
+    (void)len;
   }
 };
 
@@ -375,15 +376,15 @@ class AgoraIpcListener {
  * virtual class, may have different implementation on different platforms.
  */
 class IAgoraIpc {
- public:
-  IAgoraIpc(AgoraIpcListener *listener) : m_listener(listener) {}
+public:
+  IAgoraIpc(AgoraIpcListener* listener) : m_listener(listener) {}
   virtual ~IAgoraIpc() {}
-  virtual const std::string &getId() { return m_id; }
+  virtual const std::string& getId() { return m_id; }
   /**
    * To initialize IPC.
    * @param id : the id used to identify the IPC endpoint.
    */
-  virtual bool initialize(const std::string &id) = 0;
+  virtual bool initialize(const std::string& id) = 0;
   /**
    * To put IPC endpoint in listen state, then other endpoint can connect the
    * endpoint.
@@ -407,12 +408,13 @@ class IAgoraIpc {
    * @param payload : the pointer to the transferred data.
    * @param len : the length of the data payload.
    */
-  virtual bool sendMessage(AgoraIpcMsg msg, char *payload,
+  virtual bool sendMessage(AgoraIpcMsg msg,
+                           char* payload,
                            unsigned int len) = 0;
 
  protected:
   std::string m_id;
-  AgoraIpcListener *m_listener;
+  AgoraIpcListener* m_listener;
 };
 
 /**
@@ -422,7 +424,7 @@ class IAgoraIpc {
 #define DATA_DELIVER_BLOCK_SIZE 6145000
 // 3110450
 class AgoraIpcDataSender {
- public:
+public:
   AgoraIpcDataSender();
   ~AgoraIpcDataSender();
 
@@ -430,23 +432,23 @@ class AgoraIpcDataSender {
    * To initialize the AgoraIpcDataSender.
    * @param id : sender identifier.
    */
-  bool initialize(const std::string &id);
+  bool initialize(const std::string& id);
   /**
    * To send data.
    * @param payload : the pointer to data to be sent.
    * @param len : the length of the data.
    */
-  void sendData(char *payload, unsigned int len);
+  void sendData(char* payload, unsigned int len);
   /**
    * To send multiple data in one time.
    * @payloads : vector of data to be sent.
    */
-  void sendMultiData(const std::vector<std::pair<char *, int32_t>> &payloads);
+  void sendMultiData(const std::vector<std::pair<char*, int32_t>>& payloads);
 
   /** Disconnect the sender and IPC */
   void Disconnect();
 
- private:
+private:
   shm_ipc<1, DATA_DELIVER_BLOCK_SIZE> m_ipcData;
   bool m_initialized;
   std::string m_id;
@@ -457,7 +459,7 @@ class AgoraIpcDataSender {
  * The AgoraIpcDataReceiver provide receive-only facilities.
  */
 class AgoraIpcDataReceiver {
- public:
+public:
   AgoraIpcDataReceiver();
   ~AgoraIpcDataReceiver();
 
@@ -466,8 +468,8 @@ class AgoraIpcDataReceiver {
    * @param id : IPC identifier
    * @param handler : the receiver event handler.
    */
-  bool initialize(const std::string &id,
-                  const std::function<void(const char *, int)> &handler);
+  bool initialize(const std::string& id,
+                  const std::function<void(const char*, int)>& handler);
   /**
    * To start the IPC.
    */
@@ -478,8 +480,8 @@ class AgoraIpcDataReceiver {
    */
   void stop();
 
- private:
-  std::function<void(const char *, int)> m_handler;
+private:
+  std::function<void(const char*, int)> m_handler;
   std::string m_id;
   bool m_initialized;
   shm_ipc<1, DATA_DELIVER_BLOCK_SIZE> m_ipcData;
@@ -489,6 +491,6 @@ class AgoraIpcDataReceiver {
 /**
  * To create IAgroaIpc instance.
  */
-IAgoraIpc *createAgoraIpc(AgoraIpcListener *listner);
+IAgoraIpc* createAgoraIpc(AgoraIpcListener* listner);
 
 #endif

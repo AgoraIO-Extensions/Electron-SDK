@@ -29,7 +29,8 @@ struct NodeRenderContext {
   uid_t m_uid;
   std::string m_channelId;
 
-  NodeRenderContext(enum NodeRenderType type, uid_t uid = 0,
+  NodeRenderContext(enum NodeRenderType type,
+                    uid_t uid = 0,
                     std::string channelId = "")
       : m_type(type), m_uid(uid), m_channelId(channelId) {}
 };
@@ -39,15 +40,15 @@ struct NodeRenderContext {
  */
 class NodeVideoRenderFactory : public IExternalVideoRenderFactory {
  public:
-  NodeVideoRenderFactory(NodeRtcEngine &engine);
+  NodeVideoRenderFactory(NodeRtcEngine& engine);
   ~NodeVideoRenderFactory();
 
  public:
-  virtual IExternalVideoRender *
-  createRenderInstance(const ExternalVideoRenerContext &context) override;
+  virtual IExternalVideoRender* createRenderInstance(
+      const ExternalVideoRenerContext& context) override;
 
  protected:
-  NodeRtcEngine &m_engine;
+  NodeRtcEngine& m_engine;
 };
 
 /**
@@ -55,20 +56,21 @@ class NodeVideoRenderFactory : public IExternalVideoRenderFactory {
  */
 class NodeVideoRender : public IExternalVideoRender {
  public:
-  NodeVideoRender(NodeRenderContext *nrc,
-                  const ExternalVideoRenerContext &context);
+  NodeVideoRender(NodeRenderContext* nrc,
+                  const ExternalVideoRenerContext& context);
   ~NodeVideoRender();
 
  public:
   virtual void release() override;
   virtual int initialize() override;
-  virtual int deliverFrame(const IVideoFrame &videoFrame, int rotation,
+  virtual int deliverFrame(const IVideoFrame& videoFrame,
+                           int rotation,
                            bool mirrored) override;
 
  private:
   std::unique_ptr<NodeVideoStreamChannel> m_channel;
 };
-}// namespace rtc
-}// namespace agora
+}  // namespace rtc
+}  // namespace agora
 
 #endif

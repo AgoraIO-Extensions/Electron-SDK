@@ -8,22 +8,20 @@
  *  Created by Wang Yongli, 2018
  */
 
-#include "loguru.hpp"
-#include "node_log.h"
-#include "node_process.h"
 #include <Windows.h>
 #include <memory>
 #include <thread>
+#include "loguru.hpp"
+#include "node_log.h"
+#include "node_process.h"
 
-std::wstring utf82wide(const std::string &utf8) {
+std::wstring utf82wide(const std::string& utf8) {
   if (utf8.empty()) return std::move(std::wstring());
-  int len =
-      MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), utf8.size(), nullptr, 0);
-  wchar_t *buf = new wchar_t[len + 1];
+  int len = MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), utf8.size(), nullptr, 0);
+  wchar_t* buf = new wchar_t[len + 1];
   if (!buf) return std::move(std::wstring());
   ZeroMemory(buf, sizeof(wchar_t) * (len + 1));
-  MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), utf8.size(), buf,
-                      sizeof(wchar_t) * (len + 1));
+  MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), utf8.size(), buf, sizeof(wchar_t) * (len + 1));
   std::wstring result(buf);
   delete[] buf;
   return std::move(result);
@@ -34,7 +32,7 @@ class NodeProcessWinImpl : public INodeProcess {
   NodeProcessWinImpl(HANDLE hProcess, int pid);
   ~NodeProcessWinImpl();
 
-  virtual void Monitor(std::function<void(INodeProcess *)> callback) override;
+  virtual void Monitor(std::function<void(INodeProcess*)> callback) override;
   virtual int GetProcessId() override;
 
   bool TerminateNodeProcess();
@@ -53,7 +51,9 @@ NodeProcessWinImpl::~NodeProcessWinImpl() {
   LOG_INFO("%s deleted\n", __FUNCTION__);
 }
 
-int NodeProcessWinImpl::GetProcessId() { return m_pid; }
+int NodeProcessWinImpl::GetProcessId() {
+  return m_pid;
+}
 
 bool NodeProcessWinImpl::TerminateNodeProcess() {
   LOG_INFO("%s, to terminate process.\n", __FUNCTION__);
@@ -68,10 +68,10 @@ bool NodeProcessWinImpl::TerminateNodeProcess() {
   return true;
 }
 
-void NodeProcessWinImpl::Monitor(std::function<void(INodeProcess *)> callback) {
+void NodeProcessWinImpl::Monitor(std::function<void(INodeProcess*)> callback) {
   LOG_INFO("%s, to monitor\n", __FUNCTION__);
   HANDLE hp = m_hProcess;
-  INodeProcess *pProcess = static_cast<INodeProcess *>(this);
+  INodeProcess* pProcess = static_cast<INodeProcess*>(this);
   auto thd = std::thread([hp, pProcess, callback] {
     if (hp != NULL) {
       LOG_INFO("Waiting for process\n");
@@ -80,12 +80,14 @@ void NodeProcessWinImpl::Monitor(std::function<void(INodeProcess *)> callback) {
       LOG_ERROR("monitor : process is null\n");
     }
     LOG_INFO("Monitor complete.\n");
-    if (callback) { callback(pProcess); }
+    if (callback) {
+      callback(pProcess);
+    }
   });
   thd.detach();
 }
 // https://jira.agoralab.co/browse/CSD-30422
-void replaceSpecialString(std::string &cmdline) {
+void replaceSpecialString(std::string& cmdline) {
   std::string specialX86 = "Program Files (x86)";
   std::string simpleX86 = "Progra~2";
 
@@ -95,22 +97,24 @@ void replaceSpecialString(std::string &cmdline) {
     std::string simple = "Progra~1";
 
     res = cmdline.find(special);
-    if (res != cmdline.npos) { cmdline.replace(res, special.length(), simple); }
+    if (res != cmdline.npos) {
+      cmdline.replace(res, special.length(), simple);
+    }
   } else {
     cmdline.replace(res, specialX86.length(), simpleX86);
   }
   LOG_INFO("%s, cmdline : %s\n", __FUNCTION__, cmdline.c_str());
 }
 
-INodeProcess *INodeProcess::CreateNodeProcess(const char *path,
-                                              const char **params,
+INodeProcess* INodeProcess::CreateNodeProcess(const char* path,
+                                              const char** params,
                                               unsigned int flag) {
   STARTUPINFOW info = {0};
   info.cb = sizeof(info);
   PROCESS_INFORMATION pi = {0};
   DWORD err;
   std::string cmdline(path);
-  const char **param = &params[0];
+  const char** param = &params[0];
   while (*param) {
     cmdline += *param;
     cmdline += " ";
@@ -124,17 +128,16 @@ INodeProcess *INodeProcess::CreateNodeProcess(const char *path,
 
   LOG_INFO("%s, cmdline : %s\n", __FUNCTION__, cmdline.c_str());
 
-  if (!CreateProcessW(NULL, (LPWSTR) utf82wide(cmdline.c_str()).c_str(), NULL,
-                      NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &info, &pi)) {
+  if (!CreateProcessW(NULL, (LPWSTR)utf82wide(cmdline.c_str()).c_str(), NULL, NULL, FALSE,
+                      CREATE_NO_WINDOW, NULL, NULL, &info, &pi)) {
     err = GetLastError();
     LOG_ERROR("%s, create process failed with error %d\n", __FUNCTION__, err);
 
     // windows special path replace
     replaceSpecialString(cmdline);
-
-    if (!CreateProcessW(NULL, (LPWSTR) utf82wide(cmdline.c_str()).c_str(), NULL,
-                        NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &info,
-                        &pi)) {
+    
+    if (!CreateProcessW(NULL, (LPWSTR)utf82wide(cmdline.c_str()).c_str(), NULL, NULL, FALSE,
+                        CREATE_NO_WINDOW, NULL, NULL, &info, &pi)) {
       err = GetLastError();
       LOG_ERROR("%s, again create process failed with error %d\n", __FUNCTION__,
                 err);
@@ -144,7 +147,7 @@ INodeProcess *INodeProcess::CreateNodeProcess(const char *path,
   }
   LOG_INFO("%s success.\n", __FUNCTION__);
   CloseHandle(pi.hThread);
-  NodeProcessWinImpl *pProcess =
+  NodeProcessWinImpl* pProcess =
       new NodeProcessWinImpl(pi.hProcess, pi.dwProcessId);
   if (!pProcess) {
     LOG_ERROR("create process failed with error :CloseHandle");
@@ -155,7 +158,7 @@ INodeProcess *INodeProcess::CreateNodeProcess(const char *path,
   return pProcess;
 }
 
-INodeProcess *INodeProcess::OpenNodeProcess(int pid) {
+INodeProcess* INodeProcess::OpenNodeProcess(int pid) {
   LOG_ENTER;
   HANDLE hProcess = OpenProcess(SYNCHRONIZE, FALSE, pid);
   if (!hProcess) {
@@ -163,7 +166,7 @@ INodeProcess *INodeProcess::OpenNodeProcess(int pid) {
     return nullptr;
   }
 
-  auto *pProcess = new NodeProcessWinImpl(hProcess, pid);
+  auto* pProcess = new NodeProcessWinImpl(hProcess, pid);
   if (!pProcess) {
     CloseHandle(hProcess);
     return nullptr;
@@ -171,48 +174,53 @@ INodeProcess *INodeProcess::OpenNodeProcess(int pid) {
   return pProcess;
 }
 
-void INodeProcess::DestroyNodeProcess(INodeProcess *pProcess, bool terminate) {
+void INodeProcess::DestroyNodeProcess(INodeProcess* pProcess, bool terminate) {
   if (!pProcess) {
     LOG_ERROR("%s, null process\n", __FUNCTION__);
     return;
   }
-  NodeProcessWinImpl *pWinProcess = static_cast<NodeProcessWinImpl *>(pProcess);
+  NodeProcessWinImpl* pWinProcess = static_cast<NodeProcessWinImpl*>(pProcess);
   if (!pWinProcess) {
     LOG_ERROR("%s, not winprocess\n", __FUNCTION__);
     return;
   }
-  if (terminate) { pWinProcess->TerminateNodeProcess(); }
+  if (terminate) {
+    pWinProcess->TerminateNodeProcess();
+  }
 
   delete pWinProcess;
 }
 
-int INodeProcess::GetCurrentNodeProcessId() { return GetCurrentProcessId(); }
+int INodeProcess::GetCurrentNodeProcessId() {
+  return GetCurrentProcessId();
+}
 
-std::string wide2utf8(const std::wstring &wide) {
+std::string wide2utf8(const std::wstring& wide) {
   if (wide.empty()) return std::move(std::string());
-  int len = WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), wide.size(), nullptr,
-                                0, nullptr, nullptr);
-  char *buf = new char[len + 1];
+  int len =
+      WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), wide.size(), nullptr, 0, nullptr, nullptr);
+  char* buf = new char[len + 1];
   if (!buf) return std::move(std::string());
   ZeroMemory(buf, len + 1);
-  WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), wide.size(), buf, len + 1,
-                      nullptr, nullptr);
+  WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), wide.size(), buf, len + 1, nullptr, nullptr);
   std::string result(buf);
   delete[] buf;
   return std::move(result);
 }
 
-bool INodeProcess::getCurrentModuleFileName(std::string &targetPath) {
+bool INodeProcess::getCurrentModuleFileName(std::string& targetPath) {
   HMODULE module = NULL;
   if (!GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
-                          (LPCSTR) &getCurrentModuleFileName, &module)) {
+                          (LPCSTR)&getCurrentModuleFileName, &module)) {
     return false;
   }
 
   char path[MAX_PATH] = {0};
-  LPWSTR pwsz1 = new WCHAR[MAX_PATH];
-  if (!GetModuleFileNameW(module, pwsz1, MAX_PATH)) { return false; }
-
+  LPWSTR pwsz1 = new WCHAR[MAX_PATH]; 
+  if (!GetModuleFileNameW(module, pwsz1, MAX_PATH)) {
+    return false;
+  }
+  
   targetPath.assign(wide2utf8(pwsz1));
   return true;
 }

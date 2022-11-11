@@ -12,12 +12,12 @@
 #include "node_log.h"
 
 AgoraVideoSourceEventHandler::AgoraVideoSourceEventHandler(
-    AgoraVideoSource &videoSource)
+    AgoraVideoSource& videoSource)
     : m_videoSource(videoSource) {}
 
 AgoraVideoSourceEventHandler::~AgoraVideoSourceEventHandler() {}
 
-void AgoraVideoSourceEventHandler::onJoinChannelSuccess(const char *channel,
+void AgoraVideoSourceEventHandler::onJoinChannelSuccess(const char* channel,
                                                         uid_t uid,
                                                         int elapsed) {
   LOG_INFO("%s, channel :%s, uid : %d, elapsed :%d", __FUNCTION__, channel, uid,
@@ -25,7 +25,7 @@ void AgoraVideoSourceEventHandler::onJoinChannelSuccess(const char *channel,
   m_videoSource.notifyJoinedChannel(uid);
 }
 
-void AgoraVideoSourceEventHandler::onRejoinChannelSuccess(const char *channel,
+void AgoraVideoSourceEventHandler::onRejoinChannelSuccess(const char* channel,
                                                           uid_t uid,
                                                           int elapsed) {
   LOG_INFO("%s, channel :%s, uid: %d, elapsed :%d", __FUNCTION__, channel, uid,
@@ -33,30 +33,33 @@ void AgoraVideoSourceEventHandler::onRejoinChannelSuccess(const char *channel,
   m_videoSource.notifyJoinedChannel(uid);
 }
 
-void AgoraVideoSourceEventHandler::onWarning(int warn, const char *msg) {
+void AgoraVideoSourceEventHandler::onWarning(int warn, const char* msg) {
   LOG_INFO("%s, warn :%d, msg :%s", __FUNCTION__, warn, msg);
 }
 
-void AgoraVideoSourceEventHandler::onError(int err, const char *msg) {
+void AgoraVideoSourceEventHandler::onError(int err, const char* msg) {
   LOG_INFO("%s, err : %d, msg :%s", __FUNCTION__, err, msg);
 }
 
-void AgoraVideoSourceEventHandler::onLeaveChannel(const RtcStats &stats) {
+void AgoraVideoSourceEventHandler::onLeaveChannel(const RtcStats& stats) {
   LOG_INFO("%s", __FUNCTION__);
   m_videoSource.notifyLeaveChannel();
 }
 
-void AgoraVideoSourceEventHandler::onRtcStats(const RtcStats &stats) {
+void AgoraVideoSourceEventHandler::onRtcStats(const RtcStats& stats) {
   LOG_INFO("%s", __FUNCTION__);
 }
 
 void AgoraVideoSourceEventHandler::onVideoDeviceStateChanged(
-    const char *deviceId, int deviceType, int deviceState) {
+    const char* deviceId,
+    int deviceType,
+    int deviceState) {
   LOG_INFO("%s, deviceId :%s, deviceType :%d, deviceStatus :%d", __FUNCTION__,
            deviceId, deviceType, deviceState);
 }
 
-void AgoraVideoSourceEventHandler::onNetworkQuality(uid_t uid, int txQuality,
+void AgoraVideoSourceEventHandler::onNetworkQuality(uid_t uid,
+                                                    int txQuality,
                                                     int rxQuality) {
   // LOG_INFO("%s, uid :%d, txQuality :%d, rxQuality:%d", __FUNCTION__, uid,
   // txQuality, rxQuality);
@@ -66,13 +69,15 @@ void AgoraVideoSourceEventHandler::onLastmileQuality(int quality) {
   LOG_INFO("%s, quality :%d", __FUNCTION__, quality);
 }
 
-void AgoraVideoSourceEventHandler::onFirstLocalVideoFrame(int width, int height,
+void AgoraVideoSourceEventHandler::onFirstLocalVideoFrame(int width,
+                                                          int height,
                                                           int elapsed) {
   LOG_INFO("%s, width :%d, height :%d, elapsed: %d", __FUNCTION__, width,
            height, elapsed);
 }
 
-void AgoraVideoSourceEventHandler::onVideoSizeChanged(uid_t uid, int width,
+void AgoraVideoSourceEventHandler::onVideoSizeChanged(uid_t uid,
+                                                      int width,
                                                       int height,
                                                       int rotation) {
   LOG_INFO("%s, uid :%d, width :%d, height:%d, rotation :%d", __FUNCTION__, uid,
@@ -80,13 +85,14 @@ void AgoraVideoSourceEventHandler::onVideoSizeChanged(uid_t uid, int width,
   m_videoSource.notifyVideoSizeChanged(uid, width, height, rotation);
 }
 
-void AgoraVideoSourceEventHandler::onApiCallExecuted(int err, const char *api,
-                                                     const char *result) {
+void AgoraVideoSourceEventHandler::onApiCallExecuted(int err,
+                                                     const char* api,
+                                                     const char* result) {
   LOG_INFO("%s, err :%d, api :%s", __FUNCTION__, err, api);
 }
 
 void AgoraVideoSourceEventHandler::onLocalVideoStats(
-    const LocalVideoStats &stats) {
+    const LocalVideoStats& stats) {
   m_videoSource.notifyLocalVideoStats(stats);
   LOG_INFO("%s", __FUNCTION__);
 }
@@ -95,7 +101,8 @@ void AgoraVideoSourceEventHandler::onCameraReady() {
   LOG_INFO("%s", __FUNCTION__);
 }
 
-void AgoraVideoSourceEventHandler::onCameraFocusAreaChanged(int x, int y,
+void AgoraVideoSourceEventHandler::onCameraFocusAreaChanged(int x,
+                                                            int y,
                                                             int width,
                                                             int height) {
   LOG_INFO("%s, x :%d, y:%d, width:%d, heigh:%d", __FUNCTION__, x, y, width,
@@ -124,17 +131,19 @@ void AgoraVideoSourceEventHandler::onRequestToken() {
 }
 
 void AgoraVideoSourceEventHandler::onLocalAudioStats(
-    const LocalAudioStats &stats) {
+    const LocalAudioStats& stats) {
   m_videoSource.notifyLocalAudioStats(stats);
 }
 
 void AgoraVideoSourceEventHandler::onLocalAudioStateChanged(
-    LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error) {
+    LOCAL_AUDIO_STREAM_STATE state,
+    LOCAL_AUDIO_STREAM_ERROR error) {
   m_videoSource.notifyLocalAudioStateChanged(state, error);
 }
 
 void AgoraVideoSourceEventHandler::onLocalVideoStateChanged(
-    LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error) {
+    LOCAL_VIDEO_STREAM_STATE localVideoState,
+    LOCAL_VIDEO_STREAM_ERROR error) {
   m_videoSource.notifyLocalVideoStateChanged(localVideoState, error);
 }
 
@@ -142,6 +151,6 @@ void AgoraVideoSourceEventHandler::onLocalVideoStateChanged(
 void AgoraVideoSourceEventHandler::onScreenCaptureInfoUpdated(
     agora::rtc::ScreenCaptureInfo &info) {
   m_videoSource.notifyScreenCaptureInfoUpdated(info.graphicsCardType,
-                                               (int) info.errCode);
+                                               (int)info.errCode);
 }
 #endif

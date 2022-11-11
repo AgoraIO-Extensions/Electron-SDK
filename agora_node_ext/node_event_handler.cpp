@@ -9,68 +9,70 @@
  */
 
 #include "node_event_handler.h"
+#include <stdio.h>
 #include "agora_rtc_engine.h"
 #include "node_async_queue.h"
 #include "node_log.h"
 #include "node_uid.h"
 #include "uv.h"
-#include <stdio.h>
 namespace agora {
 namespace rtc {
 
 #define FUNC_TRACE
 
-NodeEventHandler::NodeEventHandler(NodeRtcEngine *pEngine)
+NodeEventHandler::NodeEventHandler(NodeRtcEngine* pEngine)
     : m_engine(pEngine) {}
 
 NodeEventHandler::~NodeEventHandler() {
-  for (auto &handler : m_callbacks) { delete handler.second; }
+  for (auto& handler : m_callbacks) {
+    delete handler.second;
+  }
 }
 
-#define MAKE_JS_CALL_0(ev)                                                     \
-  auto it = m_callbacks.find(ev);                                              \
-  if (it != m_callbacks.end()) {                                               \
-    Isolate *isolate = Isolate::GetCurrent();                                  \
-    HandleScope scope(isolate);                                                \
-    Local<Context> context = isolate->GetCurrentContext();                     \
-    NodeEventCallback &cb = *it->second;                                       \
-    cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 0,        \
-                                   nullptr);                                   \
+#define MAKE_JS_CALL_0(ev)                                              \
+  auto it = m_callbacks.find(ev);                                       \
+  if (it != m_callbacks.end()) {                                        \
+    Isolate* isolate = Isolate::GetCurrent();                           \
+    HandleScope scope(isolate);                                         \
+    Local<Context> context = isolate->GetCurrentContext();              \
+    NodeEventCallback& cb = *it->second;                                \
+    cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 0, \
+                                   nullptr);                            \
   }
 
 #define MAKE_JS_CALL_1(ev, type, param)                                        \
   auto it = m_callbacks.find(ev);                                              \
   if (it != m_callbacks.end()) {                                               \
-    Isolate *isolate = Isolate::GetCurrent();                                  \
+    Isolate* isolate = Isolate::GetCurrent();                                  \
     HandleScope scope(isolate);                                                \
     Local<Context> context = isolate->GetCurrentContext();                     \
     Local<Value> argv[1]{napi_create_##type##_(isolate, param)};               \
-    NodeEventCallback &cb = *it->second;                                       \
+    NodeEventCallback& cb = *it->second;                                       \
     cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 1, argv); \
   }
 
 #define MAKE_JS_CALL_2(ev, type1, param1, type2, param2)                       \
   auto it = m_callbacks.find(ev);                                              \
   if (it != m_callbacks.end()) {                                               \
-    Isolate *isolate = Isolate::GetCurrent();                                  \
+    Isolate* isolate = Isolate::GetCurrent();                                  \
     HandleScope scope(isolate);                                                \
     Local<Context> context = isolate->GetCurrentContext();                     \
     Local<Value> argv[2]{napi_create_##type1##_(isolate, param1),              \
                          napi_create_##type2##_(isolate, param2)};             \
-    NodeEventCallback &cb = *it->second;                                       \
+    NodeEventCallback& cb = *it->second;                                       \
     cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 2, argv); \
   }
 
 #define MAKE_JS_CALL_3(ev, type1, param1, type2, param2, type3, param3)        \
   auto it = m_callbacks.find(ev);                                              \
   if (it != m_callbacks.end()) {                                               \
-    Isolate *isolate = Isolate::GetCurrent();                                  \
+    Isolate* isolate = Isolate::GetCurrent();                                  \
     HandleScope scope(isolate);                                                \
     Local<Context> context = isolate->GetCurrentContext();                     \
     Local<Value> argv[3]{napi_create_##type1##_(isolate, param1),              \
                          napi_create_##type2##_(isolate, param2),              \
                          napi_create_##type3##_(isolate, param3)};             \
-    NodeEventCallback &cb = *it->second;                                       \
+    NodeEventCallback& cb = *it->second;                                       \
     cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 3, argv); \
   }
 
@@ -78,7 +80,7 @@ NodeEventHandler::~NodeEventHandler() {
                        param4)                                                 \
   auto it = m_callbacks.find(ev);                                              \
   if (it != m_callbacks.end()) {                                               \
-    Isolate *isolate = Isolate::GetCurrent();                                  \
+    Isolate* isolate = Isolate::GetCurrent();                                  \
     HandleScope scope(isolate);                                                \
     Local<Context> context = isolate->GetCurrentContext();                     \
     Local<Value> argv[4]{                                                      \
@@ -87,7 +89,7 @@ NodeEventHandler::~NodeEventHandler() {
         napi_create_##type3##_(isolate, param3),                               \
         napi_create_##type4##_(isolate, param4),                               \
     };                                                                         \
-    NodeEventCallback &cb = *it->second;                                       \
+    NodeEventCallback& cb = *it->second;                                       \
     cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 4, argv); \
   }
 
@@ -95,7 +97,7 @@ NodeEventHandler::~NodeEventHandler() {
                        param4, type5, param5)                                  \
   auto it = m_callbacks.find(ev);                                              \
   if (it != m_callbacks.end()) {                                               \
-    Isolate *isolate = Isolate::GetCurrent();                                  \
+    Isolate* isolate = Isolate::GetCurrent();                                  \
     HandleScope scope(isolate);                                                \
     Local<Context> context = isolate->GetCurrentContext();                     \
     Local<Value> argv[5]{                                                      \
@@ -105,7 +107,7 @@ NodeEventHandler::~NodeEventHandler() {
         napi_create_##type4##_(isolate, param4),                               \
         napi_create_##type5##_(isolate, param5),                               \
     };                                                                         \
-    NodeEventCallback &cb = *it->second;                                       \
+    NodeEventCallback& cb = *it->second;                                       \
     cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 5, argv); \
   }
 
@@ -128,79 +130,90 @@ NodeEventHandler::~NodeEventHandler() {
     cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 6, argv); \
   }
 
-#define CHECK_NAPI_OBJ(obj)                                                    \
-  if (obj.IsEmpty()) break;
+#define CHECK_NAPI_OBJ(obj) \
+  if (obj.IsEmpty())        \
+    break;
 
-#define NODE_SET_OBJ_PROP_STRING(obj, name, val)                               \
-  {                                                                            \
-    Local<Value> propName =                                                    \
-        String::NewFromUtf8(isolate, name, NewStringType::kInternalized)       \
-            .ToLocalChecked();                                                 \
-    CHECK_NAPI_OBJ(propName);                                                  \
-    Local<Value> propVal =                                                     \
-        String::NewFromUtf8(isolate, val, NewStringType::kInternalized)        \
-            .ToLocalChecked();                                                 \
-    CHECK_NAPI_OBJ(propVal);                                                   \
-    v8::Maybe<bool> ret =                                                      \
-        obj->Set(isolate->GetCurrentContext(), propName, propVal);             \
-    if (!ret.IsNothing()) {                                                    \
-      if (!ret.ToChecked()) { break; }                                         \
-    }                                                                          \
+#define NODE_SET_OBJ_PROP_STRING(obj, name, val)                         \
+  {                                                                      \
+    Local<Value> propName =                                              \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized) \
+            .ToLocalChecked();                                           \
+    CHECK_NAPI_OBJ(propName);                                            \
+    Local<Value> propVal =                                               \
+        String::NewFromUtf8(isolate, val, NewStringType::kInternalized)  \
+            .ToLocalChecked();                                           \
+    CHECK_NAPI_OBJ(propVal);                                             \
+    v8::Maybe<bool> ret =                                                \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal);       \
+    if (!ret.IsNothing()) {                                              \
+      if (!ret.ToChecked()) {                                            \
+        break;                                                           \
+      }                                                                  \
+    }                                                                    \
   }
 
-#define NODE_SET_OBJ_PROP_UINT32(obj, name, val)                               \
-  {                                                                            \
-    Local<Value> propName =                                                    \
-        String::NewFromUtf8(isolate, name, NewStringType::kInternalized)       \
-            .ToLocalChecked();                                                 \
-    CHECK_NAPI_OBJ(propName);                                                  \
-    Local<Value> propVal = v8::Uint32::New(isolate, val);                      \
-    CHECK_NAPI_OBJ(propVal);                                                   \
-    v8::Maybe<bool> ret =                                                      \
-        obj->Set(isolate->GetCurrentContext(), propName, propVal);             \
-    if (!ret.IsNothing()) {                                                    \
-      if (!ret.ToChecked()) { break; }                                         \
-    }                                                                          \
+#define NODE_SET_OBJ_PROP_UINT32(obj, name, val)                         \
+  {                                                                      \
+    Local<Value> propName =                                              \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized) \
+            .ToLocalChecked();                                           \
+    CHECK_NAPI_OBJ(propName);                                            \
+    Local<Value> propVal = v8::Uint32::New(isolate, val);                \
+    CHECK_NAPI_OBJ(propVal);                                             \
+    v8::Maybe<bool> ret =                                                \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal);       \
+    if (!ret.IsNothing()) {                                              \
+      if (!ret.ToChecked()) {                                            \
+        break;                                                           \
+      }                                                                  \
+    }                                                                    \
   }
 
-#define NODE_SET_OBJ_PROP_UID(obj, name, val)                                  \
-  {                                                                            \
-    Local<Value> propName =                                                    \
-        String::NewFromUtf8(isolate, name, NewStringType::kInternalized)       \
-            .ToLocalChecked();                                                 \
-    CHECK_NAPI_OBJ(propName);                                                  \
-    Local<Value> propVal = NodeUid::getNodeValue(isolate, val);                \
-    CHECK_NAPI_OBJ(propVal);                                                   \
-    v8::Maybe<bool> ret =                                                      \
-        obj->Set(isolate->GetCurrentContext(), propName, propVal);             \
-    if (!ret.IsNothing()) {                                                    \
-      if (!ret.ToChecked()) { break; }                                         \
-    }                                                                          \
+#define NODE_SET_OBJ_PROP_UID(obj, name, val)                            \
+  {                                                                      \
+    Local<Value> propName =                                              \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized) \
+            .ToLocalChecked();                                           \
+    CHECK_NAPI_OBJ(propName);                                            \
+    Local<Value> propVal = NodeUid::getNodeValue(isolate, val);          \
+    CHECK_NAPI_OBJ(propVal);                                             \
+    v8::Maybe<bool> ret =                                                \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal);       \
+    if (!ret.IsNothing()) {                                              \
+      if (!ret.ToChecked()) {                                            \
+        break;                                                           \
+      }                                                                  \
+    }                                                                    \
   }
 
-#define NODE_SET_OBJ_PROP_NUMBER(obj, name, val)                               \
-  {                                                                            \
-    Local<Value> propName =                                                    \
-        String::NewFromUtf8(isolate, name, NewStringType::kInternalized)       \
-            .ToLocalChecked();                                                 \
-    CHECK_NAPI_OBJ(propName);                                                  \
-    Local<Value> propVal = v8::Number::New(isolate, val);                      \
-    CHECK_NAPI_OBJ(propVal);                                                   \
-    v8::Maybe<bool> ret =                                                      \
-        obj->Set(isolate->GetCurrentContext(), propName, propVal);             \
-    if (!ret.IsNothing()) {                                                    \
-      if (!ret.ToChecked()) { break; }                                         \
-    }                                                                          \
+#define NODE_SET_OBJ_PROP_NUMBER(obj, name, val)                         \
+  {                                                                      \
+    Local<Value> propName =                                              \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized) \
+            .ToLocalChecked();                                           \
+    CHECK_NAPI_OBJ(propName);                                            \
+    Local<Value> propVal = v8::Number::New(isolate, val);                \
+    CHECK_NAPI_OBJ(propVal);                                             \
+    v8::Maybe<bool> ret =                                                \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal);       \
+    if (!ret.IsNothing()) {                                              \
+      if (!ret.ToChecked()) {                                            \
+        break;                                                           \
+      }                                                                  \
+    }                                                                    \
   }
 
-void NodeEventHandler::onJoinChannelSuccess_node(const char *channel, uid_t id,
+void NodeEventHandler::onJoinChannelSuccess_node(const char* channel,
+                                                 uid_t id,
                                                  int elapsed) {
   FUNC_TRACE;
   MAKE_JS_CALL_3(RTC_EVENT_JOIN_CHANNEL, string, channel, uid, id, int32,
                  elapsed);
 }
 
-void NodeEventHandler::onJoinChannelSuccess(const char *channel, uid_t uid,
+void NodeEventHandler::onJoinChannelSuccess(const char* channel,
+                                            uid_t uid,
                                             int elapsed) {
   FUNC_TRACE;
   std::string channelName = channel;
@@ -209,14 +222,16 @@ void NodeEventHandler::onJoinChannelSuccess(const char *channel, uid_t uid,
   });
 }
 
-void NodeEventHandler::onRejoinChannelSuccess_node(const char *channel,
-                                                   uid_t uid, int elapsed) {
+void NodeEventHandler::onRejoinChannelSuccess_node(const char* channel,
+                                                   uid_t uid,
+                                                   int elapsed) {
   FUNC_TRACE;
   MAKE_JS_CALL_3(RTC_EVENT_REJOIN_CHANNEL, string, channel, uid, uid, int32,
                  elapsed);
 }
 
-void NodeEventHandler::onRejoinChannelSuccess(const char *channel, uid_t uid,
+void NodeEventHandler::onRejoinChannelSuccess(const char* channel,
+                                              uid_t uid,
                                               int elapsed) {
   FUNC_TRACE;
   std::string channelName(channel);
@@ -225,31 +240,34 @@ void NodeEventHandler::onRejoinChannelSuccess(const char *channel, uid_t uid,
   });
 }
 
-void NodeEventHandler::onWarning_node(int warn, const char *msg) {
+void NodeEventHandler::onWarning_node(int warn, const char* msg) {
   FUNC_TRACE;
   MAKE_JS_CALL_2(RTC_EVENT_WARNING, int32, warn, string, msg);
 }
 
-void NodeEventHandler::onWarning(int warn, const char *msg) {
+void NodeEventHandler::onWarning(int warn, const char* msg) {
   FUNC_TRACE;
   std::string message;
-  if (msg) message.assign(msg);
+  if (msg)
+    message.assign(msg);
   node_async_call::async_call(
       [this, warn, message]() { this->onWarning_node(warn, message.c_str()); });
 }
 
-void NodeEventHandler::onError_node(int err, const char *msg) {
+void NodeEventHandler::onError_node(int err, const char* msg) {
   MAKE_JS_CALL_2(RTC_EVENT_ERROR, int32, err, string, msg);
 }
 
-void NodeEventHandler::onError(int err, const char *msg) {
+void NodeEventHandler::onError(int err, const char* msg) {
   std::string errorDesc;
-  if (msg) errorDesc.assign(msg);
+  if (msg)
+    errorDesc.assign(msg);
   node_async_call::async_call(
       [this, err, errorDesc] { this->onError_node(err, errorDesc.c_str()); });
 }
 
-void NodeEventHandler::onAudioQuality_node(uid_t uid, int quality,
+void NodeEventHandler::onAudioQuality_node(uid_t uid,
+                                           int quality,
                                            unsigned short dealy,
                                            unsigned short lost) {
   FUNC_TRACE;
@@ -257,7 +275,8 @@ void NodeEventHandler::onAudioQuality_node(uid_t uid, int quality,
                  dealy, uint16, lost);
 }
 
-void NodeEventHandler::onAudioQuality(uid_t uid, int quality,
+void NodeEventHandler::onAudioQuality(uid_t uid,
+                                      int quality,
                                       unsigned short dealy,
                                       unsigned short lost) {
   FUNC_TRACE;
@@ -266,13 +285,13 @@ void NodeEventHandler::onAudioQuality(uid_t uid, int quality,
   });
 }
 
-void NodeEventHandler::onAudioVolumeIndication_node(AudioVolumeInfo *speakers,
+void NodeEventHandler::onAudioVolumeIndication_node(AudioVolumeInfo* speakers,
                                                     unsigned int speakerNumber,
                                                     int totalVolume) {
   FUNC_TRACE;
   auto it = m_callbacks.find(RTC_EVENT_AUDIO_VOLUME_INDICATION);
   if (it != m_callbacks.end()) {
-    Isolate *isolate = Isolate::GetCurrent();
+    Isolate* isolate = Isolate::GetCurrent();
     HandleScope scope(isolate);
     Local<Context> context = isolate->GetCurrentContext();
     Local<v8::Array> arrSpeakers = v8::Array::New(isolate, speakerNumber);
@@ -290,19 +309,19 @@ void NodeEventHandler::onAudioVolumeIndication_node(AudioVolumeInfo *speakers,
     Local<Value> argv[3]{arrSpeakers,
                          napi_create_uint32_(isolate, speakerNumber),
                          napi_create_uint32_(isolate, totalVolume)};
-    NodeEventCallback &cb = *it->second;
+    NodeEventCallback& cb = *it->second;
     cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 3, argv);
   }
   // MAKE_JS_CALL_4(RTC_EVENT_AUDIO_VOLUME_INDICATION, uid, speaker.uid, uint32,
   // speaker.volume, uint32, speakerNumber, int32, totalVolume);
 }
 
-void NodeEventHandler::onAudioVolumeIndication(const AudioVolumeInfo *speaker,
+void NodeEventHandler::onAudioVolumeIndication(const AudioVolumeInfo* speaker,
                                                unsigned int speakerNumber,
                                                int totalVolume) {
   FUNC_TRACE;
   if (speaker) {
-    AudioVolumeInfo *localSpeakers = new AudioVolumeInfo[speakerNumber];
+    AudioVolumeInfo* localSpeakers = new AudioVolumeInfo[speakerNumber];
     for (unsigned int i = 0; i < speakerNumber; i++) {
       AudioVolumeInfo tmp = speaker[i];
       localSpeakers[i].uid = tmp.uid;
@@ -322,16 +341,17 @@ void NodeEventHandler::onAudioVolumeIndication(const AudioVolumeInfo *speaker,
   }
 }
 
-void NodeEventHandler::onLeaveChannel_node(const RtcStats &stats) {
+void NodeEventHandler::onLeaveChannel_node(const RtcStats& stats) {
   FUNC_TRACE;
   unsigned int usercount = stats.userCount;
-  LOG_INFO("duration : %d, tx :%d, rx :%d, txbr :%d, rxbr :%d, txAudioBr :%d, "
-           "rxAudioBr :%d, users :%d\n",
-           stats.duration, stats.txBytes, stats.rxBytes, stats.txKBitRate,
-           stats.rxKBitRate, stats.txAudioKBitRate, stats.rxAudioKBitRate,
-           usercount);
+  LOG_INFO(
+      "duration : %d, tx :%d, rx :%d, txbr :%d, rxbr :%d, txAudioBr :%d, "
+      "rxAudioBr :%d, users :%d\n",
+      stats.duration, stats.txBytes, stats.rxBytes, stats.txKBitRate,
+      stats.rxKBitRate, stats.txAudioKBitRate, stats.rxAudioKBitRate,
+      usercount);
   do {
-    Isolate *isolate = Isolate::GetCurrent();
+    Isolate* isolate = Isolate::GetCurrent();
     HandleScope scope(isolate);
     Local<Context> context = isolate->GetCurrentContext();
     Local<Object> obj = Object::New(isolate);
@@ -373,21 +393,22 @@ void NodeEventHandler::onLeaveChannel_node(const RtcStats &stats) {
   } while (false);
 }
 
-void NodeEventHandler::onLeaveChannel(const RtcStats &stats) {
+void NodeEventHandler::onLeaveChannel(const RtcStats& stats) {
   FUNC_TRACE;
   node_async_call::async_call(
       [this, stats] { this->onLeaveChannel_node(stats); });
 }
 
-void NodeEventHandler::onRtcStats_node(const RtcStats &stats) {
+void NodeEventHandler::onRtcStats_node(const RtcStats& stats) {
   unsigned int usercount = stats.userCount;
-  LOG_INFO("duration : %d, tx :%d, rx :%d, txbr :%d, rxbr :%d, txAudioBr :%d, "
-           "rxAudioBr :%d, users :%d\n",
-           stats.duration, stats.txBytes, stats.rxBytes, stats.txKBitRate,
-           stats.rxKBitRate, stats.txAudioKBitRate, stats.rxAudioKBitRate,
-           usercount);
+  LOG_INFO(
+      "duration : %d, tx :%d, rx :%d, txbr :%d, rxbr :%d, txAudioBr :%d, "
+      "rxAudioBr :%d, users :%d\n",
+      stats.duration, stats.txBytes, stats.rxBytes, stats.txKBitRate,
+      stats.rxKBitRate, stats.txAudioKBitRate, stats.rxAudioKBitRate,
+      usercount);
   do {
-    Isolate *isolate = Isolate::GetCurrent();
+    Isolate* isolate = Isolate::GetCurrent();
     HandleScope scope(isolate);
     Local<Context> context = isolate->GetCurrentContext();
     Local<Object> obj = Object::New(isolate);
@@ -429,11 +450,11 @@ void NodeEventHandler::onRtcStats_node(const RtcStats &stats) {
   } while (false);
 }
 
-void NodeEventHandler::onRtcStats(const RtcStats &stats) {
+void NodeEventHandler::onRtcStats(const RtcStats& stats) {
   node_async_call::async_call([this, stats] { this->onRtcStats_node(stats); });
 }
 
-void NodeEventHandler::onAudioDeviceStateChanged_node(const char *deviceId,
+void NodeEventHandler::onAudioDeviceStateChanged_node(const char* deviceId,
                                                       int deviceType,
                                                       int deviceStats) {
   FUNC_TRACE;
@@ -441,7 +462,7 @@ void NodeEventHandler::onAudioDeviceStateChanged_node(const char *deviceId,
                  deviceType, int32, deviceStats);
 }
 
-void NodeEventHandler::onAudioDeviceStateChanged(const char *deviceId,
+void NodeEventHandler::onAudioDeviceStateChanged(const char* deviceId,
                                                  int deviceType,
                                                  int deviceStats) {
   FUNC_TRACE;
@@ -493,7 +514,7 @@ void NodeEventHandler::onAudioEffectFinished(int soundId) {
       [this, soundId] { this->onAudioEffectFinished_node(soundId); });
 }
 
-void NodeEventHandler::onVideoDeviceStateChanged_node(const char *deviceId,
+void NodeEventHandler::onVideoDeviceStateChanged_node(const char* deviceId,
                                                       int deviceType,
                                                       int deviceState) {
   FUNC_TRACE;
@@ -501,7 +522,7 @@ void NodeEventHandler::onVideoDeviceStateChanged_node(const char *deviceId,
                  deviceType, int32, deviceState);
 }
 
-void NodeEventHandler::onVideoDeviceStateChanged(const char *deviceId,
+void NodeEventHandler::onVideoDeviceStateChanged(const char* deviceId,
                                                  int deviceType,
                                                  int deviceState) {
   FUNC_TRACE;
@@ -511,7 +532,8 @@ void NodeEventHandler::onVideoDeviceStateChanged(const char *deviceId,
   });
 }
 
-void NodeEventHandler::onNetworkQuality_node(uid_t uid, int txQuality,
+void NodeEventHandler::onNetworkQuality_node(uid_t uid,
+                                             int txQuality,
                                              int rxQuality) {
   // event_log("uid : %d, txQuality :%d, rxQuality :%d\n", uid, txQuality,
   // rxQuality);
@@ -519,7 +541,8 @@ void NodeEventHandler::onNetworkQuality_node(uid_t uid, int txQuality,
                  rxQuality);
 }
 
-void NodeEventHandler::onNetworkQuality(uid_t uid, int txQuality,
+void NodeEventHandler::onNetworkQuality(uid_t uid,
+                                        int txQuality,
                                         int rxQuality) {
   node_async_call::async_call([this, uid, txQuality, rxQuality] {
     this->onNetworkQuality_node(uid, txQuality, rxQuality);
@@ -537,14 +560,16 @@ void NodeEventHandler::onLastmileQuality(int quality) {
       [this, quality] { this->onLastmileQuality_node(quality); });
 }
 
-void NodeEventHandler::onFirstLocalVideoFrame_node(int width, int height,
+void NodeEventHandler::onFirstLocalVideoFrame_node(int width,
+                                                   int height,
                                                    int elapsed) {
   FUNC_TRACE;
   MAKE_JS_CALL_3(RTC_EVENT_FIRST_LOCAL_VIDEO_FRAME, int32, width, int32, height,
                  int32, elapsed);
 }
 
-void NodeEventHandler::onFirstLocalVideoFrame(int width, int height,
+void NodeEventHandler::onFirstLocalVideoFrame(int width,
+                                              int height,
                                               int elapsed) {
   FUNC_TRACE;
   node_async_call::async_call([this, width, height, elapsed] {
@@ -552,29 +577,37 @@ void NodeEventHandler::onFirstLocalVideoFrame(int width, int height,
   });
 }
 
-void NodeEventHandler::onFirstRemoteVideoDecoded_node(uid_t uid, int width,
-                                                      int height, int elapsed) {
+void NodeEventHandler::onFirstRemoteVideoDecoded_node(uid_t uid,
+                                                      int width,
+                                                      int height,
+                                                      int elapsed) {
   FUNC_TRACE;
   MAKE_JS_CALL_4(RTC_EVENT_FIRST_REMOTE_VIDEO_DECODED, uid, uid, int32, width,
                  int32, height, int32, elapsed);
 }
 
-void NodeEventHandler::onFirstRemoteVideoDecoded(uid_t uid, int width,
-                                                 int height, int elapsed) {
+void NodeEventHandler::onFirstRemoteVideoDecoded(uid_t uid,
+                                                 int width,
+                                                 int height,
+                                                 int elapsed) {
   FUNC_TRACE;
   node_async_call::async_call([this, uid, width, height, elapsed] {
     this->onFirstRemoteVideoDecoded_node(uid, width, height, elapsed);
   });
 }
 
-void NodeEventHandler::onVideoSizeChanged_node(uid_t uid, int width, int height,
+void NodeEventHandler::onVideoSizeChanged_node(uid_t uid,
+                                               int width,
+                                               int height,
                                                int rotation) {
   FUNC_TRACE;
   MAKE_JS_CALL_4(RTC_EVENT_VIDEO_SIZE_CHANGED, uid, uid, int32, width, int32,
                  height, int32, rotation);
 }
 
-void NodeEventHandler::onVideoSizeChanged(uid_t uid, int width, int height,
+void NodeEventHandler::onVideoSizeChanged(uid_t uid,
+                                          int width,
+                                          int height,
                                           int rotation) {
   FUNC_TRACE;
   node_async_call::async_call([this, uid, width, height, rotation] {
@@ -583,7 +616,9 @@ void NodeEventHandler::onVideoSizeChanged(uid_t uid, int width, int height,
 }
 
 void NodeEventHandler::onRemoteVideoStateChanged_node(
-    uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason,
+    uid_t uid,
+    REMOTE_VIDEO_STATE state,
+    REMOTE_VIDEO_STATE_REASON reason,
     int elapsed) {
   FUNC_TRACE;
   MAKE_JS_CALL_4(RTC_EVENT_REMOTE_VIDEO_STATE_CHANGED, uid, uid, int32, state,
@@ -591,7 +626,9 @@ void NodeEventHandler::onRemoteVideoStateChanged_node(
 }
 
 void NodeEventHandler::onRemoteVideoStateChanged(
-    uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason,
+    uid_t uid,
+    REMOTE_VIDEO_STATE state,
+    REMOTE_VIDEO_STATE_REASON reason,
     int elapsed) {
   FUNC_TRACE;
   node_async_call::async_call([this, uid, state, reason, elapsed] {
@@ -599,8 +636,10 @@ void NodeEventHandler::onRemoteVideoStateChanged(
   });
 }
 
-void NodeEventHandler::onFirstRemoteVideoFrame_node(uid_t uid, int width,
-                                                    int height, int elapsed) {
+void NodeEventHandler::onFirstRemoteVideoFrame_node(uid_t uid,
+                                                    int width,
+                                                    int height,
+                                                    int elapsed) {
   FUNC_TRACE;
   MAKE_JS_CALL_4(RTC_EVENT_FIRST_REMOTE_VIDEO_FRAME, uid, uid, int32, width,
                  int32, height, int32, elapsed);
@@ -675,13 +714,14 @@ void NodeEventHandler::onUserEnableLocalVideo(uid_t uid, bool enabled) {
   });
 }
 
-void NodeEventHandler::onApiCallExecuted_node(const char *api, int error) {
+void NodeEventHandler::onApiCallExecuted_node(const char* api, int error) {
   FUNC_TRACE;
   MAKE_JS_CALL_2(RTC_EVENT_APICALL_EXECUTED, string, api, int32, error);
 }
 
-void NodeEventHandler::onApiCallExecuted(int err, const char *api,
-                                         const char *result) {
+void NodeEventHandler::onApiCallExecuted(int err,
+                                         const char* api,
+                                         const char* result) {
   FUNC_TRACE;
   std::string apiName(api);
   node_async_call::async_call([this, apiName, err] {
@@ -689,10 +729,10 @@ void NodeEventHandler::onApiCallExecuted(int err, const char *api,
   });
 }
 
-void NodeEventHandler::onLocalVideoStats_node(const LocalVideoStats &stats) {
+void NodeEventHandler::onLocalVideoStats_node(const LocalVideoStats& stats) {
   FUNC_TRACE;
   do {
-    Isolate *isolate = Isolate::GetCurrent();
+    Isolate* isolate = Isolate::GetCurrent();
     HandleScope scope(isolate);
     Local<Context> context = isolate->GetCurrentContext();
     Local<Object> obj = Object::New(isolate);
@@ -717,7 +757,7 @@ void NodeEventHandler::onLocalVideoStats_node(const LocalVideoStats &stats) {
     NODE_SET_OBJ_PROP_UINT32(obj, "txPacketLossRate", stats.txPacketLossRate);
     NODE_SET_OBJ_PROP_UINT32(obj, "captureFrameRate", stats.captureFrameRate);
     NODE_SET_OBJ_PROP_UINT32(obj, "captureBrightnessLevel",
-                             (int) stats.captureBrightnessLevel);
+                             (int)stats.captureBrightnessLevel);
 
     Local<Value> arg[1] = {obj};
     auto it = m_callbacks.find(RTC_EVENT_LOCAL_VIDEO_STATS);
@@ -728,16 +768,16 @@ void NodeEventHandler::onLocalVideoStats_node(const LocalVideoStats &stats) {
   } while (false);
 }
 
-void NodeEventHandler::onLocalVideoStats(const LocalVideoStats &stats) {
+void NodeEventHandler::onLocalVideoStats(const LocalVideoStats& stats) {
   FUNC_TRACE;
   node_async_call::async_call(
       [this, stats] { this->onLocalVideoStats_node(stats); });
 }
 
-void NodeEventHandler::onRemoteVideoStats_node(const RemoteVideoStats &stats) {
+void NodeEventHandler::onRemoteVideoStats_node(const RemoteVideoStats& stats) {
   FUNC_TRACE;
   do {
-    Isolate *isolate = Isolate::GetCurrent();
+    Isolate* isolate = Isolate::GetCurrent();
     HandleScope scope(isolate);
     Local<Context> context = isolate->GetCurrentContext();
     Local<Object> obj = Object::New(isolate);
@@ -766,7 +806,7 @@ void NodeEventHandler::onRemoteVideoStats_node(const RemoteVideoStats &stats) {
   } while (false);
 }
 
-void NodeEventHandler::onRemoteVideoStats(const RemoteVideoStats &stats) {
+void NodeEventHandler::onRemoteVideoStats(const RemoteVideoStats& stats) {
   FUNC_TRACE;
   printf("frame rate : %d, bitrate : %d, width %d, height %d\n",
          stats.rendererOutputFrameRate, stats.receivedBitrate, stats.width,
@@ -785,14 +825,18 @@ void NodeEventHandler::onCameraReady() {
   node_async_call::async_call([this] { this->onCameraReady_node(); });
 }
 
-void NodeEventHandler::onCameraFocusAreaChanged_node(int x, int y, int width,
+void NodeEventHandler::onCameraFocusAreaChanged_node(int x,
+                                                     int y,
+                                                     int width,
                                                      int height) {
   FUNC_TRACE;
   MAKE_JS_CALL_4(RTC_EVENT_CAMERA_FOCUS_AREA_CHANGED, int32, x, int32, y, int32,
                  width, int32, height);
 }
 
-void NodeEventHandler::onCameraFocusAreaChanged(int x, int y, int width,
+void NodeEventHandler::onCameraFocusAreaChanged(int x,
+                                                int y,
+                                                int width,
                                                 int height) {
   FUNC_TRACE;
   node_async_call::async_call([this, x, y, width, height] {
@@ -800,14 +844,18 @@ void NodeEventHandler::onCameraFocusAreaChanged(int x, int y, int width,
   });
 }
 
-void NodeEventHandler::onCameraExposureAreaChanged_node(int x, int y, int width,
+void NodeEventHandler::onCameraExposureAreaChanged_node(int x,
+                                                        int y,
+                                                        int width,
                                                         int height) {
   FUNC_TRACE;
   MAKE_JS_CALL_4(RTC_EVENT_CAMERA_FOCUS_AREA_CHANGED, int32, x, int32, y, int32,
                  width, int32, height);
 }
 
-void NodeEventHandler::onCameraExposureAreaChanged(int x, int y, int width,
+void NodeEventHandler::onCameraExposureAreaChanged(int x,
+                                                   int y,
+                                                   int width,
                                                    int height) {
   FUNC_TRACE;
   node_async_call::async_call([this, x, y, width, height] {
@@ -855,15 +903,19 @@ void NodeEventHandler::onConnectionBanned() {
   node_async_call::async_call([this] { this->onConnectionBanned_node(); });
 }
 
-void NodeEventHandler::onStreamMessage_node(uid_t uid, int streamId,
-                                            const char *data, size_t length) {
+void NodeEventHandler::onStreamMessage_node(uid_t uid,
+                                            int streamId,
+                                            const char* data,
+                                            size_t length) {
   FUNC_TRACE;
   MAKE_JS_CALL_4(RTC_EVENT_STREAM_MESSAGE, uid, uid, int32, streamId, string,
                  data, int32, length);
 }
 
-void NodeEventHandler::onStreamMessage(uid_t uid, int streamId,
-                                       const char *data, size_t length) {
+void NodeEventHandler::onStreamMessage(uid_t uid,
+                                       int streamId,
+                                       const char* data,
+                                       size_t length) {
   FUNC_TRACE;
   std::string msg(data);
   node_async_call::async_call([this, uid, streamId, msg, length] {
@@ -871,16 +923,21 @@ void NodeEventHandler::onStreamMessage(uid_t uid, int streamId,
   });
 }
 
-void NodeEventHandler::onStreamMessageError_node(uid_t uid, int streamId,
-                                                 int code, int missed,
+void NodeEventHandler::onStreamMessageError_node(uid_t uid,
+                                                 int streamId,
+                                                 int code,
+                                                 int missed,
                                                  int cached) {
   FUNC_TRACE;
   MAKE_JS_CALL_5(RTC_EVENT_STREAM_MESSAGE_ERROR, uid, uid, int32, streamId,
                  int32, code, int32, missed, int32, cached);
 }
 
-void NodeEventHandler::onStreamMessageError(uid_t uid, int streamId, int code,
-                                            int missed, int cached) {
+void NodeEventHandler::onStreamMessageError(uid_t uid,
+                                            int streamId,
+                                            int code,
+                                            int missed,
+                                            int cached) {
   FUNC_TRACE;
   node_async_call::async_call([this, uid, streamId, code, missed, cached] {
     this->onStreamMessageError_node(uid, streamId, code, missed, cached);
@@ -919,12 +976,12 @@ void NodeEventHandler::onRequestToken() {
   node_async_call::async_call([this] { this->onRequestToken_node(); });
 }
 
-void NodeEventHandler::onTokenPrivilegeWillExpire_node(const char *token) {
+void NodeEventHandler::onTokenPrivilegeWillExpire_node(const char* token) {
   FUNC_TRACE;
   MAKE_JS_CALL_1(RTC_EVENT_TOKEN_PRIVILEGE_WILL_EXPIRE, string, token);
 }
 
-void NodeEventHandler::onTokenPrivilegeWillExpire(const char *token) {
+void NodeEventHandler::onTokenPrivilegeWillExpire(const char* token) {
   FUNC_TRACE;
   std::string sToken(token);
   node_async_call::async_call([this, sToken] {
@@ -961,25 +1018,25 @@ void NodeEventHandler::onFirstRemoteAudioDecoded(uid_t uid, int elapsed) {
   });
 }
 
-void NodeEventHandler::onStreamPublished_node(const char *url, int error) {
+void NodeEventHandler::onStreamPublished_node(const char* url, int error) {
   FUNC_TRACE;
   MAKE_JS_CALL_2(RTC_EVENT_STREAM_PUBLISHED, string, url, int32, error);
 }
 
-void NodeEventHandler::onStreamPublished(const char *url, int error) {
+void NodeEventHandler::onStreamPublished(const char* url, int error) {
   std::string mUrl = std::string(url);
   node_async_call::async_call([this, mUrl, error] {
     this->onStreamPublished_node(mUrl.c_str(), error);
   });
 }
 
-void NodeEventHandler::onStreamUnpublished(const char *url) {
+void NodeEventHandler::onStreamUnpublished(const char* url) {
   std::string mUrl = std::string(url);
   node_async_call::async_call(
       [this, mUrl] { this->onStreamUnpublished_node(mUrl.c_str()); });
 }
 
-void NodeEventHandler::onStreamUnpublished_node(const char *url) {
+void NodeEventHandler::onStreamUnpublished_node(const char* url) {
   FUNC_TRACE;
   MAKE_JS_CALL_1(RTC_EVENT_STREAM_UNPUBLISHED, string, url);
 }
@@ -994,14 +1051,16 @@ void NodeEventHandler::onTranscodingUpdated() {
   node_async_call::async_call([this] { this->onTranscodingUpdated_node(); });
 }
 
-void NodeEventHandler::onStreamInjectedStatus_node(const char *url, uid_t uid,
+void NodeEventHandler::onStreamInjectedStatus_node(const char* url,
+                                                   uid_t uid,
                                                    int status) {
   FUNC_TRACE;
   MAKE_JS_CALL_3(RTC_EVENT_STREAM_INJECT_STATUS, string, url, uid, uid, int32,
                  status);
 }
 
-void NodeEventHandler::onStreamInjectedStatus(const char *url, uid_t uid,
+void NodeEventHandler::onStreamInjectedStatus(const char* url,
+                                              uid_t uid,
                                               int status) {
   FUNC_TRACE;
   node_async_call::async_call([this, url, uid, status] {
@@ -1025,14 +1084,16 @@ void NodeEventHandler::onLocalPublishFallbackToAudioOnly(
 }
 
 void NodeEventHandler::onRemoteSubscribeFallbackToAudioOnly_node(
-    uid_t uid, bool isFallbackOrRecover) {
+    uid_t uid,
+    bool isFallbackOrRecover) {
   FUNC_TRACE;
   MAKE_JS_CALL_2(RTC_EVENT_REMOTE_SUBSCRIBE_FALLBACK_TO_AUDIO_ONLY, uid, uid,
                  bool, isFallbackOrRecover);
 }
 
 void NodeEventHandler::onRemoteSubscribeFallbackToAudioOnly(
-    uid_t uid, bool isFallbackOrRecover) {
+    uid_t uid,
+    bool isFallbackOrRecover) {
   FUNC_TRACE;
   node_async_call::async_call([this, uid, isFallbackOrRecover] {
     this->onRemoteSubscribeFallbackToAudioOnly_node(uid, isFallbackOrRecover);
@@ -1064,14 +1125,17 @@ void NodeEventHandler::onClientRoleChanged(CLIENT_ROLE_TYPE oldRole,
 }
 
 void NodeEventHandler::onAudioDeviceVolumeChanged_node(
-    MEDIA_DEVICE_TYPE deviceType, int volume, bool muted) {
+    MEDIA_DEVICE_TYPE deviceType,
+    int volume,
+    bool muted) {
   FUNC_TRACE;
   MAKE_JS_CALL_3(RTC_EVENT_AUDIO_DEVICE_VOLUME_CHANGED, int32, deviceType,
                  int32, volume, bool, muted);
 }
 
 void NodeEventHandler::onAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType,
-                                                  int volume, bool muted) {
+                                                  int volume,
+                                                  bool muted) {
   FUNC_TRACE;
   node_async_call::async_call([this, deviceType, volume, muted] {
     this->onAudioDeviceVolumeChanged_node(deviceType, volume, muted);
@@ -1079,7 +1143,9 @@ void NodeEventHandler::onAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType,
 }
 
 void NodeEventHandler::onRemoteAudioTransportStats_node(
-    agora::rtc::uid_t uid, unsigned short delay, unsigned short lost,
+    agora::rtc::uid_t uid,
+    unsigned short delay,
+    unsigned short lost,
     unsigned short rxKBitRate) {
   FUNC_TRACE;
   MAKE_JS_CALL_4(RTC_EVENT_REMOTE_AUDIO_TRANSPORT_STATS, uid, uid, uint16,
@@ -1087,17 +1153,19 @@ void NodeEventHandler::onRemoteAudioTransportStats_node(
 }
 
 void NodeEventHandler::onRemoteVideoTransportStats_node(
-    agora::rtc::uid_t uid, unsigned short delay, unsigned short lost,
+    agora::rtc::uid_t uid,
+    unsigned short delay,
+    unsigned short lost,
     unsigned short rxKBitRate) {
   FUNC_TRACE;
   MAKE_JS_CALL_4(RTC_EVENT_REMOTE_VIDEO_TRANSPORT_STATS, uid, uid, uint16,
                  delay, uint16, lost, uint16, rxKBitRate);
 }
 
-void NodeEventHandler::onRemoteAudioStats_node(const RemoteAudioStats &stats) {
+void NodeEventHandler::onRemoteAudioStats_node(const RemoteAudioStats& stats) {
   FUNC_TRACE;
   do {
-    Isolate *isolate = Isolate::GetCurrent();
+    Isolate* isolate = Isolate::GetCurrent();
     HandleScope scope(isolate);
     Local<Context> context = isolate->GetCurrentContext();
     Local<Object> obj = Object::New(isolate);
@@ -1150,7 +1218,7 @@ void NodeEventHandler::onRemoteVideoTransportStats(agora::rtc::uid_t uid,
   });
 }
 
-void NodeEventHandler::onRemoteAudioStats(const RemoteAudioStats &stats) {
+void NodeEventHandler::onRemoteAudioStats(const RemoteAudioStats& stats) {
   FUNC_TRACE;
   node_async_call::async_call(
       [this, stats] { this->onRemoteAudioStats_node(stats); });
@@ -1168,14 +1236,16 @@ void NodeEventHandler::onMicrophoneEnabled(bool enabled) {
 }
 
 void NodeEventHandler::onConnectionStateChanged_node(
-    CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason) {
+    CONNECTION_STATE_TYPE state,
+    CONNECTION_CHANGED_REASON_TYPE reason) {
   FUNC_TRACE;
   MAKE_JS_CALL_2(RTC_EVENT_CONNECTION_STATE_CHANED, int32, state, int32,
                  reason);
 }
 
 void NodeEventHandler::onConnectionStateChanged(
-    CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason) {
+    CONNECTION_STATE_TYPE state,
+    CONNECTION_CHANGED_REASON_TYPE reason) {
   FUNC_TRACE;
   node_async_call::async_call([this, state, reason] {
     this->onConnectionStateChanged_node(state, reason);
@@ -1235,10 +1305,10 @@ void NodeEventHandler::onVideoSourceLeaveChannel_node() {
 }
 
 void NodeEventHandler::onVideoSourceLocalAudioStats(
-    const LocalAudioStats &stats) {
+    const LocalAudioStats& stats) {
   node_async_call::async_call([this, stats] {
     do {
-      Isolate *isolate = Isolate::GetCurrent();
+      Isolate* isolate = Isolate::GetCurrent();
       HandleScope scope(isolate);
       Local<Context> context = isolate->GetCurrentContext();
       Local<Object> obj = Object::New(isolate);
@@ -1259,8 +1329,10 @@ void NodeEventHandler::onVideoSourceLocalAudioStats(
   });
 }
 
-void NodeEventHandler::onVideoSourceVideoSizeChanged(uid_t uid, int width,
-                                                     int height, int rotation) {
+void NodeEventHandler::onVideoSourceVideoSizeChanged(uid_t uid,
+                                                     int width,
+                                                     int height,
+                                                     int rotation) {
   node_async_call::async_call([this, uid, width, height, rotation] {
     MAKE_JS_CALL_4(RTC_EVENT_VIDEO_SOURCE_VIDEO_SIZE_CHANGED, uid, uid, int32,
                    width, int32, height, int32, rotation);
@@ -1268,10 +1340,10 @@ void NodeEventHandler::onVideoSourceVideoSizeChanged(uid_t uid, int width,
 }
 
 void NodeEventHandler::onVideoSourceLocalVideoStats(
-    const LocalVideoStats &stats) {
+    const LocalVideoStats& stats) {
   node_async_call::async_call([this, stats] {
     do {
-      Isolate *isolate = Isolate::GetCurrent();
+      Isolate* isolate = Isolate::GetCurrent();
       HandleScope scope(isolate);
       Local<Context> context = isolate->GetCurrentContext();
       Local<Object> obj = Object::New(isolate);
@@ -1298,7 +1370,7 @@ void NodeEventHandler::onVideoSourceLocalVideoStats(
       NODE_SET_OBJ_PROP_UINT32(obj, "txPacketLossRate", stats.txPacketLossRate);
       NODE_SET_OBJ_PROP_UINT32(obj, "captureFrameRate", stats.captureFrameRate);
       NODE_SET_OBJ_PROP_UINT32(obj, "captureBrightnessLevel",
-                               (int) stats.captureBrightnessLevel);
+                               (int)stats.captureBrightnessLevel);
 
       Local<Value> arg[1] = {obj};
       auto it = m_callbacks.find(RTC_EVENT_VIDEO_SOURCE_LOCAL_VIDEO_STATS);
@@ -1326,24 +1398,25 @@ void NodeEventHandler::onVideoSourceLocalVideoStateChanged(int state,
   });
 }
 
-void NodeEventHandler::addEventHandler(const std::string &eventName,
-                                       Persistent<Object> &obj,
-                                       Persistent<Function> &callback) {
+void NodeEventHandler::addEventHandler(const std::string& eventName,
+                                       Persistent<Object>& obj,
+                                       Persistent<Function>& callback) {
   FUNC_TRACE;
-  NodeEventCallback *cb = new NodeEventCallback();
+  NodeEventCallback* cb = new NodeEventCallback();
   ;
   cb->js_this.Reset(obj);
   cb->callback.Reset(callback);
   m_callbacks.emplace(eventName, cb);
 }
 
-void NodeEventHandler::fireApiError(const char *funcName) {
+void NodeEventHandler::fireApiError(const char* funcName) {
   FUNC_TRACE;
   MAKE_JS_CALL_1(RTC_EVENT_API_ERROR, string, funcName);
 }
 
 void NodeEventHandler::onAudioMixingStateChanged(
-    AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_REASON_TYPE errorCode) {
+    AUDIO_MIXING_STATE_TYPE state,
+    AUDIO_MIXING_REASON_TYPE errorCode) {
   FUNC_TRACE;
   node_async_call::async_call([this, state, errorCode] {
     this->onAudioMixingStateChanged_node(state, errorCode);
@@ -1351,24 +1424,25 @@ void NodeEventHandler::onAudioMixingStateChanged(
 }
 
 void NodeEventHandler::onAudioMixingStateChanged_node(
-    AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_REASON_TYPE errorCode) {
+    AUDIO_MIXING_STATE_TYPE state,
+    AUDIO_MIXING_REASON_TYPE errorCode) {
   FUNC_TRACE;
   MAKE_JS_CALL_2(RTC_EVENT_AUDIO_MIXING_STATE_CHANGED, int32, state, int32,
                  errorCode);
 }
 
 void NodeEventHandler::onLastmileProbeResult(
-    const LastmileProbeResult &result) {
+    const LastmileProbeResult& result) {
   FUNC_TRACE;
   node_async_call::async_call(
       [this, result] { this->onLastmileProbeResult_node(result); });
 }
 
 void NodeEventHandler::onLastmileProbeResult_node(
-    const LastmileProbeResult &result) {
+    const LastmileProbeResult& result) {
   FUNC_TRACE;
   do {
-    Isolate *isolate = Isolate::GetCurrent();
+    Isolate* isolate = Isolate::GetCurrent();
     HandleScope scope(isolate);
     Local<Context> context = isolate->GetCurrentContext();
     Local<Object> obj = Object::New(isolate);
@@ -1410,7 +1484,7 @@ void NodeEventHandler::onLastmileProbeResult_node(
  * 2.8.0
  */
 void NodeEventHandler::onLocalUserRegistered(uid_t uid,
-                                             const char *userAccount) {
+                                             const char* userAccount) {
   FUNC_TRACE;
   std::string mUserAccount = std::string(userAccount);
   node_async_call::async_call([this, uid, mUserAccount] {
@@ -1418,21 +1492,21 @@ void NodeEventHandler::onLocalUserRegistered(uid_t uid,
   });
 }
 void NodeEventHandler::onLocalUserRegistered_node(uid_t uid,
-                                                  const char *userAccount) {
+                                                  const char* userAccount) {
   FUNC_TRACE;
   MAKE_JS_CALL_2(RTC_EVENT_LOCAL_USER_REGISTERED, uid, uid, string,
                  userAccount);
 }
 
-void NodeEventHandler::onUserInfoUpdated(uid_t uid, const UserInfo &info) {
+void NodeEventHandler::onUserInfoUpdated(uid_t uid, const UserInfo& info) {
   FUNC_TRACE;
   node_async_call::async_call(
       [this, uid, info] { this->onUserInfoUpdated_node(uid, info); });
 }
-void NodeEventHandler::onUserInfoUpdated_node(uid_t uid, const UserInfo &info) {
+void NodeEventHandler::onUserInfoUpdated_node(uid_t uid, const UserInfo& info) {
   FUNC_TRACE;
   do {
-    Isolate *isolate = Isolate::GetCurrent();
+    Isolate* isolate = Isolate::GetCurrent();
     HandleScope scope(isolate);
     Local<Context> context = isolate->GetCurrentContext();
     Local<Object> obj = Object::New(isolate);
@@ -1451,7 +1525,8 @@ void NodeEventHandler::onUserInfoUpdated_node(uid_t uid, const UserInfo &info) {
 }
 
 void NodeEventHandler::onLocalVideoStateChanged(
-    LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error) {
+    LOCAL_VIDEO_STREAM_STATE localVideoState,
+    LOCAL_VIDEO_STREAM_ERROR error) {
   FUNC_TRACE;
   node_async_call::async_call([this, localVideoState, error] {
     this->onLocalVideoStateChanged_node(localVideoState, error);
@@ -1459,16 +1534,17 @@ void NodeEventHandler::onLocalVideoStateChanged(
 }
 
 void NodeEventHandler::onLocalVideoStateChanged_node(
-    LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error) {
+    LOCAL_VIDEO_STREAM_STATE localVideoState,
+    LOCAL_VIDEO_STREAM_ERROR error) {
   FUNC_TRACE;
   MAKE_JS_CALL_2(RTC_EVENT_LOCAL_VIDEO_STATE_CHANGED, int32, localVideoState,
                  int32, error);
 }
 
-void NodeEventHandler::onLocalAudioStats_node(const LocalAudioStats &stats) {
+void NodeEventHandler::onLocalAudioStats_node(const LocalAudioStats& stats) {
   FUNC_TRACE;
   do {
-    Isolate *isolate = Isolate::GetCurrent();
+    Isolate* isolate = Isolate::GetCurrent();
     HandleScope scope(isolate);
     Local<Context> context = isolate->GetCurrentContext();
     Local<Object> obj = Object::New(isolate);
@@ -1488,14 +1564,15 @@ void NodeEventHandler::onLocalAudioStats_node(const LocalAudioStats &stats) {
   } while (false);
 }
 
-void NodeEventHandler::onLocalAudioStats(const LocalAudioStats &stats) {
+void NodeEventHandler::onLocalAudioStats(const LocalAudioStats& stats) {
   FUNC_TRACE;
   node_async_call::async_call(
       [this, stats] { this->onLocalAudioStats_node(stats); });
 }
 
 void NodeEventHandler::onLocalAudioStateChanged(
-    LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error) {
+    LOCAL_AUDIO_STREAM_STATE state,
+    LOCAL_AUDIO_STREAM_ERROR error) {
   FUNC_TRACE;
   node_async_call::async_call([this, state, error] {
     this->onLocalAudioStateChanged_node(state, error);
@@ -1503,14 +1580,17 @@ void NodeEventHandler::onLocalAudioStateChanged(
 }
 
 void NodeEventHandler::onLocalAudioStateChanged_node(
-    LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error) {
+    LOCAL_AUDIO_STREAM_STATE state,
+    LOCAL_AUDIO_STREAM_ERROR error) {
   FUNC_TRACE;
   MAKE_JS_CALL_2(RTC_EVENT_LOCAL_AUDIO_STATE_CHANGED, int32, state, int32,
                  error);
 }
 
 void NodeEventHandler::onRemoteAudioStateChanged(
-    uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason,
+    uid_t uid,
+    REMOTE_AUDIO_STATE state,
+    REMOTE_AUDIO_STATE_REASON reason,
     int elapsed) {
   FUNC_TRACE;
   node_async_call::async_call([this, uid, state, reason, elapsed] {
@@ -1519,7 +1599,9 @@ void NodeEventHandler::onRemoteAudioStateChanged(
 }
 
 void NodeEventHandler::onRemoteAudioStateChanged_node(
-    uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason,
+    uid_t uid,
+    REMOTE_AUDIO_STATE state,
+    REMOTE_AUDIO_STATE_REASON reason,
     int elapsed) {
   FUNC_TRACE;
   MAKE_JS_CALL_4(RTC_EVENT_REMOTE_AUDIO_STATE_CHANGED, uid, uid, int32, state,
@@ -1540,7 +1622,8 @@ void NodeEventHandler::onChannelMediaRelayEvent_node(
 }
 
 void NodeEventHandler::onChannelMediaRelayStateChanged(
-    CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR code) {
+    CHANNEL_MEDIA_RELAY_STATE state,
+    CHANNEL_MEDIA_RELAY_ERROR code) {
   FUNC_TRACE;
   node_async_call::async_call([this, state, code] {
     this->onChannelMediaRelayStateChanged_node(state, code);
@@ -1548,7 +1631,8 @@ void NodeEventHandler::onChannelMediaRelayStateChanged(
 }
 
 void NodeEventHandler::onChannelMediaRelayStateChanged_node(
-    CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR code) {
+    CHANNEL_MEDIA_RELAY_STATE state,
+    CHANNEL_MEDIA_RELAY_ERROR code) {
   FUNC_TRACE;
   MAKE_JS_CALL_2(RTC_EVENT_CHANNEL_MEDIA_RELAY_STATE, int32, state, int32,
                  code);
@@ -1579,17 +1663,17 @@ void NodeEventHandler::onFirstLocalVideoFramePublished(int elapsed) {
   });
 }
 
-void NodeEventHandler::onRtmpStreamingEvent(const char *url,
+void NodeEventHandler::onRtmpStreamingEvent(const char* url,
                                             RTMP_STREAMING_EVENT eventCode) {
   FUNC_TRACE;
   std::string mUrl(url);
   node_async_call::async_call([this, mUrl, eventCode] {
     MAKE_JS_CALL_2(RTC_EVENT_RTMP_STREAMING_EVENT, string, mUrl.c_str(), int32,
-                   (int) eventCode);
+                   (int)eventCode);
   });
 }
 
-void NodeEventHandler::onAudioPublishStateChanged(const char *channel,
+void NodeEventHandler::onAudioPublishStateChanged(const char* channel,
                                                   STREAM_PUBLISH_STATE oldState,
                                                   STREAM_PUBLISH_STATE newState,
                                                   int elapseSinceLastState) {
@@ -1598,12 +1682,12 @@ void NodeEventHandler::onAudioPublishStateChanged(const char *channel,
   node_async_call::async_call(
       [this, mChannel, oldState, newState, elapseSinceLastState] {
         MAKE_JS_CALL_4(RTC_EVENT_AUDIO_PUBLISH_STATE_CHANGED, string,
-                       mChannel.c_str(), int32, (int) oldState, int32,
-                       (int) newState, int32, elapseSinceLastState);
+                       mChannel.c_str(), int32, (int)oldState, int32,
+                       (int)newState, int32, elapseSinceLastState);
       });
 }
 
-void NodeEventHandler::onVideoPublishStateChanged(const char *channel,
+void NodeEventHandler::onVideoPublishStateChanged(const char* channel,
                                                   STREAM_PUBLISH_STATE oldState,
                                                   STREAM_PUBLISH_STATE newState,
                                                   int elapseSinceLastState) {
@@ -1618,8 +1702,11 @@ void NodeEventHandler::onVideoPublishStateChanged(const char *channel,
 }
 
 void NodeEventHandler::onAudioSubscribeStateChanged(
-    const char *channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState,
-    STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) {
+    const char* channel,
+    uid_t uid,
+    STREAM_SUBSCRIBE_STATE oldState,
+    STREAM_SUBSCRIBE_STATE newState,
+    int elapseSinceLastState) {
   FUNC_TRACE;
   std::string mChannel(channel);
   node_async_call::async_call(
@@ -1631,8 +1718,11 @@ void NodeEventHandler::onAudioSubscribeStateChanged(
 }
 
 void NodeEventHandler::onVideoSubscribeStateChanged(
-    const char *channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState,
-    STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) {
+    const char* channel,
+    uid_t uid,
+    STREAM_SUBSCRIBE_STATE oldState,
+    STREAM_SUBSCRIBE_STATE newState,
+    int elapseSinceLastState) {
   FUNC_TRACE;
   std::string mChannel(channel);
   node_async_call::async_call(
@@ -1646,12 +1736,13 @@ void NodeEventHandler::onVideoSubscribeStateChanged(
 void NodeEventHandler::onAudioRouteChanged(AUDIO_ROUTE_TYPE routing) {
   FUNC_TRACE;
   node_async_call::async_call([this, routing] {
-    MAKE_JS_CALL_1(RTC_EVENT_AUDIO_ROUTE_CHANGED, int32, (int) routing);
+    MAKE_JS_CALL_1(RTC_EVENT_AUDIO_ROUTE_CHANGED, int32, (int)routing);
   });
 }
 
 // 3.3.0 callbacks
-void NodeEventHandler::onUploadLogResult(const char *requestId, bool success,
+void NodeEventHandler::onUploadLogResult(const char* requestId,
+                                         bool success,
                                          UPLOAD_ERROR_REASON reason) {
   FUNC_TRACE;
 
@@ -1663,7 +1754,8 @@ void NodeEventHandler::onUploadLogResult(const char *requestId, bool success,
 }
 // 3.4.5
 void NodeEventHandler::onVirtualBackgroundSourceEnabled(
-    bool enabled, VIRTUAL_BACKGROUND_SOURCE_STATE_REASON reason) {
+    bool enabled,
+    VIRTUAL_BACKGROUND_SOURCE_STATE_REASON reason) {
   FUNC_TRACE;
   ;
   node_async_call::async_call([this, enabled, reason] {
@@ -1672,29 +1764,28 @@ void NodeEventHandler::onVirtualBackgroundSourceEnabled(
   });
 }
 // 3.5.1
-void NodeEventHandler::onRequestAudioFileInfo(
-    const agora::rtc::AudioFileInfo &info, AUDIO_FILE_INFO_ERROR error) {
+void NodeEventHandler::onRequestAudioFileInfo(const agora::rtc::AudioFileInfo& info, AUDIO_FILE_INFO_ERROR error) {
   FUNC_TRACE;
   std::string filePath(info.filePath);
   node_async_call::async_call([this, info, filePath, error] {
-    FUNC_TRACE;
-    do {
-      Isolate *isolate = Isolate::GetCurrent();
-      HandleScope scope(isolate);
-      Local<Context> context = isolate->GetCurrentContext();
-      Local<Object> obj = Object::New(isolate);
-      CHECK_NAPI_OBJ(obj);
+      FUNC_TRACE;
+      do {
+        Isolate* isolate = Isolate::GetCurrent();
+        HandleScope scope(isolate);
+        Local<Context> context = isolate->GetCurrentContext();
+        Local<Object> obj = Object::New(isolate);
+        CHECK_NAPI_OBJ(obj);
 
-      NODE_SET_OBJ_PROP_STRING(obj, "filePath", filePath.c_str());
-      NODE_SET_OBJ_PROP_UINT32(obj, "durationMs", info.durationMs);
+        NODE_SET_OBJ_PROP_STRING(obj, "filePath", filePath.c_str());
+        NODE_SET_OBJ_PROP_UINT32(obj, "durationMs", info.durationMs);
 
-      Local<Value> arg[2] = {obj, napi_create_int32_(isolate, error)};
-      auto it = m_callbacks.find(RTC_EVENT_REQUEST_AUDIO_FILE_INFO);
-      if (it != m_callbacks.end()) {
-        it->second->callback.Get(isolate)->Call(
-            context, it->second->js_this.Get(isolate), 2, arg);
-      }
-    } while (false);
+        Local<Value> arg[2] = {obj, napi_create_int32_(isolate, error)};
+        auto it = m_callbacks.find(RTC_EVENT_REQUEST_AUDIO_FILE_INFO);
+        if (it != m_callbacks.end()) {
+          it->second->callback.Get(isolate)->Call(
+              context, it->second->js_this.Get(isolate), 2, arg);
+        }
+      } while (false);
   });
 }
 /* meeting */
@@ -1725,27 +1816,20 @@ void NodeEventHandler::onVideoSourceScreenCaptureInfoUpdated(
 }
 
 // 3.5.2
-void NodeEventHandler::onSnapshotTaken(const char *channel, uid_t uid,
-                                       const char *filePath, int width,
-                                       int height, int errCode) {
+void NodeEventHandler::onSnapshotTaken(const char* channel, uid_t uid, const char* filePath, int width, int height, int errCode) {
   std::string channelIdStr(channel);
   std::string filePathStr(filePath);
-  node_async_call::async_call(
-      [this, channelIdStr, uid, filePathStr, width, height, errCode] {
-        MAKE_JS_CALL_6(RTC_EVENT_SNAPSHOT_TAKEN, string, channelIdStr.c_str(),
-                       uid, uid, string, filePathStr.c_str(), int32, width,
-                       int32, height, int32, errCode);
-      });
-}
-
-// 3.6.0.2
-void NodeEventHandler::onAudioDeviceTestVolumeIndication(
-    AudioDeviceTestVolumeType volumeType, int volume) {
-  node_async_call::async_call([this, volumeType, volume] {
-    MAKE_JS_CALL_2(RTC_EVENT_AUDIO_DEVICE_TEST_VOLUME_INDICATION, int32,
-                   volumeType, int32, volume);
+  node_async_call::async_call([this, channelIdStr, uid, filePathStr, width, height, errCode] {
+    MAKE_JS_CALL_6(RTC_EVENT_SNAPSHOT_TAKEN, string, channelIdStr.c_str(), uid, uid, string, filePathStr.c_str(), int32, width, int32, height, int32, errCode);
   });
 }
 
-}// namespace rtc
-}// namespace agora
+// 3.6.0.2
+void NodeEventHandler::onAudioDeviceTestVolumeIndication(AudioDeviceTestVolumeType volumeType, int volume) {
+  node_async_call::async_call([this, volumeType, volume] {
+    MAKE_JS_CALL_2(RTC_EVENT_AUDIO_DEVICE_TEST_VOLUME_INDICATION, int32, volumeType, int32, volume);
+  });
+}
+
+}  // namespace rtc
+}  // namespace agora
