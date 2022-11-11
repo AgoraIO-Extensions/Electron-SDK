@@ -80,7 +80,6 @@ import {
   UInt8ArrayBuffer,
   ScreenCaptureSourceInfo,
   SCREEN_SCENARIO_TYPE,
-  FeatureType,
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -6900,10 +6899,6 @@ class AgoraRtcEngine extends EventEmitter {
 
   videoSourceSetScreenCaptureScenario(type: SCREEN_SCENARIO_TYPE): number {
     return this.rtcEngine.videoSourceSetScreenCaptureScenario(type);
-  }
-
-  isFeatureSupported(type: FeatureType): boolean {
-    return this.rtcEngine.isFeatureSupported(type);
   }
 }
 /** The AgoraRtcEngine interface. */

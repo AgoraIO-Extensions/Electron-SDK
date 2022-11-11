@@ -11,10 +11,10 @@
 #ifndef NODE_VIDEO_STREAM_CHANNEL_H
 #define NODE_VIDEO_STREAM_CHANNEL_H
 
-#include "agora_rtc_engine.h"
 #include <array>
 #include <memory>
 #include <mutex>
+#include "agora_rtc_engine.h"
 #pragma once
 
 namespace agora {
@@ -26,10 +26,11 @@ struct NodeRenderContext;
  */
 class NodeVideoStreamChannel {
  public:
-  NodeVideoStreamChannel(NodeRenderContext *context);
+  NodeVideoStreamChannel(NodeRenderContext* context);
   ~NodeVideoStreamChannel();
 
-  int deliverFrame(const agora::media::IVideoFrame &videoFrame, int rotation,
+  int deliverFrame(const agora::media::IVideoFrame& videoFrame,
+                   int rotation,
                    bool mirrored);
 
  private:
@@ -38,7 +39,7 @@ class NodeVideoStreamChannel {
   stream_buffer_type m_buffer;
   buffer_list buffers;
 };
-}// namespace rtc
-}// namespace agora
+}  // namespace rtc
+}  // namespace agora
 
 #endif

@@ -12,8 +12,8 @@ void ConvertRGBToBMP(void *srcRGBABuffer, BufferInfo &bufferInfo, int32_t width,
   CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
   CGContextRef bitmapContext =
       CGBitmapContextCreate(srcRGBABuffer, width, height,
-                            8,        // bitsPerComponent
-                            4 * width,// bytesPerRow
+                            8,         // bitsPerComponent
+                            4 * width, // bytesPerRow
                             colorSpace, kCGImageAlphaPremultipliedLast);
 
   CFRelease(colorSpace);
@@ -31,10 +31,10 @@ void ConvertRGBToBMP(void *srcRGBABuffer, BufferInfo &bufferInfo, int32_t width,
   CGImageDestinationFinalize(dest);
   CFRelease(dest);
 
-  unsigned int imageDataLength = (unsigned int) CFDataGetLength(cfImageData);
+  unsigned int imageDataLength = (unsigned int)CFDataGetLength(cfImageData);
   if (imageDataLength > 0) {
     unsigned char *imageData =
-        (unsigned char *) calloc(imageDataLength, sizeof(unsigned char));
+        (unsigned char *)calloc(imageDataLength, sizeof(unsigned char));
     if (imageData == NULL) {
       LOG_ERROR("Out of memory.");
     } else {
@@ -56,17 +56,17 @@ void copyImageDataToWindowInfo(CGImageRef image, ScreenWindowInfo &windowInfo) {
       nil, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
   CFNumberRef imageMaxSize = CFNumberCreate(NULL, kCFNumberIntType, &maxSize);
   CFDictionarySetValue(properties, kCGImageDestinationImageMaxPixelSize,
-                       (CFTypeRef) imageMaxSize);
+                       (CFTypeRef)imageMaxSize);
   CFRelease(imageMaxSize);
   CGImageDestinationAddImage(destination, image, properties);
   CFRelease(properties);
   CGImageDestinationFinalize(destination);
   CFRelease(destination);
 
-  unsigned int imageDataLength = (unsigned int) CFDataGetLength(cfImageData);
+  unsigned int imageDataLength = (unsigned int)CFDataGetLength(cfImageData);
   if (imageDataLength > 0) {
     unsigned char *imageData =
-        (unsigned char *) calloc(imageDataLength, sizeof(unsigned char));
+        (unsigned char *)calloc(imageDataLength, sizeof(unsigned char));
     if (imageData == NULL) {
       LOG_ERROR("Out of memory.");
     } else {
@@ -89,17 +89,17 @@ void copyImageDataToDisplayInfo(CGImageRef image,
       nil, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
   CFNumberRef imageMaxSize = CFNumberCreate(NULL, kCFNumberIntType, &maxSize);
   CFDictionarySetValue(properties, kCGImageDestinationImageMaxPixelSize,
-                       (CFTypeRef) imageMaxSize);
+                       (CFTypeRef)imageMaxSize);
   CFRelease(imageMaxSize);
   CGImageDestinationAddImage(destination, image, properties);
   CFRelease(properties);
   CGImageDestinationFinalize(destination);
   CFRelease(destination);
 
-  unsigned int imageDataLength = (unsigned int) CFDataGetLength(cfImageData);
+  unsigned int imageDataLength = (unsigned int)CFDataGetLength(cfImageData);
   if (imageDataLength > 0) {
     unsigned char *imageData =
-        (unsigned char *) calloc(imageDataLength, sizeof(unsigned char));
+        (unsigned char *)calloc(imageDataLength, sizeof(unsigned char));
     if (imageData == NULL) {
       LOG_ERROR("Out of memory.");
     } else {
@@ -132,7 +132,7 @@ std::string convertCFStringToStdString(CFStringRef cfString) {
     if (length > 0) {
       CFIndex maxSize =
           CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8) + 1;
-      char *buffer = (char *) malloc(maxSize);
+      char *buffer = (char *)malloc(maxSize);
       if (buffer) {
         if (CFStringGetCString(cfString, buffer, maxSize,
                                kCFStringEncodingUTF8)) {
@@ -145,7 +145,9 @@ std::string convertCFStringToStdString(CFStringRef cfString) {
     }
   }
 
-  if (newString) { CFRelease(newString); }
+  if (newString) {
+    CFRelease(newString);
+  }
 
   return stdString;
 }
@@ -183,7 +185,9 @@ bool setWindowInfoWithDictionary(ScreenWindowInfo &windowInfo,
 
   CFStringRef name =
       static_cast<CFStringRef>(CFDictionaryGetValue(windowDic, kCGWindowName));
-  if (name) { windowInfo.name = convertCFStringToStdString(name); }
+  if (name) {
+    windowInfo.name = convertCFStringToStdString(name);
+  }
 
   CFStringRef ownerName = static_cast<CFStringRef>(
       CFDictionaryGetValue(windowDic, kCGWindowOwnerName));
@@ -222,12 +226,13 @@ std::vector<ScreenWindowInfo> getAllWindowInfo() {
     int layer;
     CFNumberRef layerNumber = static_cast<CFNumberRef>(
         CFDictionaryGetValue(windowDic, kCGWindowLayer));
-    if (!CFNumberGetValue(layerNumber, kCFNumberSInt32Type, &layer)
-        || layer != 0)
+    if (!CFNumberGetValue(layerNumber, kCFNumberSInt32Type, &layer) ||
+        layer != 0)
       continue;
 
     ScreenWindowInfo screenWindow;
-    if (!setWindowInfoWithDictionary(screenWindow, windowDic)) continue;
+    if (!setWindowInfoWithDictionary(screenWindow, windowDic))
+      continue;
 
     CFStringRef name = static_cast<CFStringRef>(
         CFDictionaryGetValue(windowDic, kCGWindowName));
@@ -237,7 +242,8 @@ std::vector<ScreenWindowInfo> getAllWindowInfo() {
       if (sharingStateRef) {
         int state = 0;
         CFNumberGetValue(sharingStateRef, kCFNumberSInt32Type, &state);
-        if (state == 0) continue;
+        if (state == 0)
+          continue;
       }
     }
 
@@ -245,7 +251,8 @@ std::vector<ScreenWindowInfo> getAllWindowInfo() {
         CGRectNull, kCGWindowListOptionIncludingWindow, screenWindow.windowId,
         kCGWindowImageBoundsIgnoreFraming);
 
-    if (!screenShot) continue;
+    if (!screenShot)
+      continue;
 
     if (screenShot) {
       copyImageDataToWindowInfo(screenShot, screenWindow);

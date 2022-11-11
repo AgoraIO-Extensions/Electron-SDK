@@ -1,127 +1,126 @@
 #include "IAVFramePluginManager.h"
-#include "IAVFramePlugin.h"
 #include <stdint.h>
 #include <stdio.h>
+#include "IAVFramePlugin.h"
 
 IAVFramePluginManager::IAVFramePluginManager() {}
 
 IAVFramePluginManager::~IAVFramePluginManager() {}
 
-bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame &videoFrame) {
-  for (auto const &element : m_mapPlugins) {
+bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame& videoFrame) {
+  for (auto const& element : m_mapPlugins) {
     if (element.second.enabled) {
       element.second.instance->onPluginCaptureVideoFrame(
-          (VideoPluginFrame *) &videoFrame);
+          (VideoPluginFrame*)&videoFrame);
     }
   }
   return true;
 }
 
 bool IAVFramePluginManager::onRenderVideoFrame(unsigned int uid,
-                                               VideoFrame &videoFrame) {
-  for (auto const &element : m_mapPlugins) {
+                                               VideoFrame& videoFrame) {
+  for (auto const& element : m_mapPlugins) {
     if (element.second.enabled) {
       element.second.instance->onPluginRenderVideoFrame(
-          uid, (VideoPluginFrame *) &videoFrame);
+          uid, (VideoPluginFrame*)&videoFrame);
     }
   }
   return true;
 }
 
-bool IAVFramePluginManager::onRecordAudioFrame(AudioFrame &audioFrame) {
-  for (auto const &element : m_mapPlugins) {
+bool IAVFramePluginManager::onRecordAudioFrame(AudioFrame& audioFrame) {
+  for (auto const& element : m_mapPlugins) {
     if (element.second.enabled) {
       element.second.instance->onPluginRecordAudioFrame(
-          (AudioPluginFrame *) &audioFrame);
+          (AudioPluginFrame*)&audioFrame);
     }
   }
   return true;
 }
 
-bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame &audioFrame) {
-  for (auto const &element : m_mapPlugins) {
+bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame) {
+  for (auto const& element : m_mapPlugins) {
     if (element.second.enabled) {
       element.second.instance->onPluginPlaybackAudioFrame(
-          (AudioPluginFrame *) &audioFrame);
+          (AudioPluginFrame*)&audioFrame);
     }
   }
   return true;
 }
 
-bool IAVFramePluginManager::onMixedAudioFrame(AudioFrame &audioFrame) {
-  for (auto const &element : m_mapPlugins) {
+bool IAVFramePluginManager::onMixedAudioFrame(AudioFrame& audioFrame) {
+  for (auto const& element : m_mapPlugins) {
     if (element.second.enabled) {
       element.second.instance->onPluginMixedAudioFrame(
-          (AudioPluginFrame *) &audioFrame);
+          (AudioPluginFrame*)&audioFrame);
     }
   }
   return true;
 }
 
 bool IAVFramePluginManager::onPlaybackAudioFrameBeforeMixing(
-    unsigned int uid, AudioFrame &audioFrame) {
-  for (auto const &element : m_mapPlugins) {
+    unsigned int uid,
+    AudioFrame& audioFrame) {
+  for (auto const& element : m_mapPlugins) {
     if (element.second.enabled) {
       element.second.instance->onPluginPlaybackAudioFrameBeforeMixing(
-          uid, (AudioPluginFrame *) &audioFrame);
+          uid, (AudioPluginFrame*)&audioFrame);
     }
   }
   return true;
 }
 
-bool IAVFramePluginManager::onSendAudioPacket(Packet &packet) {
-  for (auto const &element : m_mapPlugins) {
+bool IAVFramePluginManager::onSendAudioPacket(Packet& packet) {
+  for (auto const& element : m_mapPlugins) {
     if (element.second.enabled) {
-      element.second.instance->onPluginSendAudioPacket(
-          (PluginPacket *) &packet);
+      element.second.instance->onPluginSendAudioPacket((PluginPacket*)&packet);
     }
   }
   return true;
 }
 
-bool IAVFramePluginManager::onSendVideoPacket(Packet &packet) {
-  for (auto const &element : m_mapPlugins) {
+bool IAVFramePluginManager::onSendVideoPacket(Packet& packet) {
+  for (auto const& element : m_mapPlugins) {
     if (element.second.enabled) {
-      element.second.instance->onPluginSendVideoPacket(
-          (PluginPacket *) &packet);
+      element.second.instance->onPluginSendVideoPacket((PluginPacket*)&packet);
     }
   }
   return true;
 }
 
-bool IAVFramePluginManager::onReceiveAudioPacket(Packet &packet) {
-  for (auto const &element : m_mapPlugins) {
+bool IAVFramePluginManager::onReceiveAudioPacket(Packet& packet) {
+  for (auto const& element : m_mapPlugins) {
     if (element.second.enabled) {
-      element.second.instance->onPluginReceiveAudioPacket(
-          (PluginPacket *) &packet);
+      element.second.instance->onPluginReceiveAudioPacket((PluginPacket*)&packet);
     }
   }
   return true;
 }
 
-bool IAVFramePluginManager::onReceiveVideoPacket(Packet &packet) {
-  for (auto const &element : m_mapPlugins) {
+bool IAVFramePluginManager::onReceiveVideoPacket(Packet& packet) {
+  for (auto const& element : m_mapPlugins) {
     if (element.second.enabled) {
-      element.second.instance->onPluginReceiveVideoPacket(
-          (PluginPacket *) &packet);
+      element.second.instance->onPluginReceiveVideoPacket((PluginPacket*)&packet);
     }
   }
   return true;
 }
 
-void IAVFramePluginManager::registerPlugin(agora_plugin_info &plugin) {
+void IAVFramePluginManager::registerPlugin(agora_plugin_info& plugin) {
   m_mapPlugins.emplace(plugin.id, plugin);
 }
 
-void IAVFramePluginManager::unregisterPlugin(std::string &pluginId) {
+void IAVFramePluginManager::unregisterPlugin(std::string& pluginId) {
   auto iter = m_mapPlugins.find(pluginId);
   if (iter != m_mapPlugins.end()) {
     // free plugin instance
-    if (iter->second.instance) { iter->second.instance->release(); }
+    if (iter->second.instance) {
+      iter->second.instance->release();
+    }
     // unload libs
     if (iter->second.pluginModule) {
 #ifdef WIN32
-      FreeLibrary((HMODULE) (iter->second.pluginModule));
+      FreeLibrary((HMODULE)(iter->second.pluginModule));
 #else
       dlclose(iter->second.pluginModule);
 #endif
@@ -130,11 +129,11 @@ void IAVFramePluginManager::unregisterPlugin(std::string &pluginId) {
   }
 }
 
-bool IAVFramePluginManager::hasPlugin(std::string &pluginId) {
+bool IAVFramePluginManager::hasPlugin(std::string& pluginId) {
   return m_mapPlugins.end() != m_mapPlugins.find(pluginId);
 }
 
-bool IAVFramePluginManager::enablePlugin(std::string &pluginId, bool enabled) {
+bool IAVFramePluginManager::enablePlugin(std::string& pluginId, bool enabled) {
   auto iter = m_mapPlugins.find(pluginId);
   if (iter != m_mapPlugins.end()) {
     iter->second.enabled = enabled;
@@ -143,8 +142,8 @@ bool IAVFramePluginManager::enablePlugin(std::string &pluginId, bool enabled) {
   return false;
 }
 
-bool IAVFramePluginManager::getPlugin(std::string &pluginId,
-                                      agora_plugin_info &pluginInfo) {
+bool IAVFramePluginManager::getPlugin(std::string& pluginId,
+                                      agora_plugin_info& pluginInfo) {
   auto iter = m_mapPlugins.find(pluginId);
   if (iter != m_mapPlugins.end()) {
     pluginInfo = iter->second;
@@ -155,18 +154,22 @@ bool IAVFramePluginManager::getPlugin(std::string &pluginId,
 
 std::vector<std::string> IAVFramePluginManager::getPlugins() {
   std::vector<std::string> result;
-  for (auto const &element : m_mapPlugins) { result.push_back(element.first); }
+  for (auto const& element : m_mapPlugins) {
+    result.push_back(element.first);
+  }
   return result;
 }
 
 int IAVFramePluginManager::release() {
-  for (auto const &element : m_mapPlugins) {
+  for (auto const& element : m_mapPlugins) {
     // free plugin instance
-    if (element.second.instance) { element.second.instance->release(); }
+    if (element.second.instance) {
+      element.second.instance->release();
+    }
     // unload libs
     if (element.second.pluginModule) {
 #ifdef WIN32
-      FreeLibrary((HMODULE) (element.second.pluginModule));
+      FreeLibrary((HMODULE)(element.second.pluginModule));
 #else
       dlclose(element.second.pluginModule);
 #endif

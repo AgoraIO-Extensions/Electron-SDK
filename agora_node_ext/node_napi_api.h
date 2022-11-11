@@ -16,12 +16,12 @@
 
 #include <IAgoraMediaEngine.h>
 #include <IAgoraRtcEngine.h>
+#include <nan.h>
+#include <node.h>
 #include <array>
 #include <atomic>
 #include <memory>
 #include <mutex>
-#include <nan.h>
-#include <node.h>
 #include <thread>
 #include <unordered_map>
 #include <vector>
@@ -63,7 +63,7 @@ typedef enum {
 } napi_status;
 
 struct buffer_info {
-  unsigned char *buffer;
+  unsigned char* buffer;
   uint32_t length;
 };
 
@@ -92,15 +92,31 @@ class VideoFrameInfo {
   uint32_t m_count;
   std::string m_channelId;
   VideoFrameInfo()
-      : m_renderType(NODE_RENDER_TYPE_REMOTE), m_uid(0), m_destWidth(0),
-        m_destHeight(0), m_needUpdate(false), m_count(0), m_channelId("") {}
+      : m_renderType(NODE_RENDER_TYPE_REMOTE),
+        m_uid(0),
+        m_destWidth(0),
+        m_destHeight(0),
+        m_needUpdate(false),
+        m_count(0),
+        m_channelId("") {}
   VideoFrameInfo(NodeRenderType type)
-      : m_renderType(type), m_uid(0), m_destWidth(0), m_destHeight(0),
-        m_needUpdate(false), m_count(0), m_channelId("") {}
-  VideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid,
+      : m_renderType(type),
+        m_uid(0),
+        m_destWidth(0),
+        m_destHeight(0),
+        m_needUpdate(false),
+        m_count(0),
+        m_channelId("") {}
+  VideoFrameInfo(NodeRenderType type,
+                 agora::rtc::uid_t uid,
                  std::string channelId)
-      : m_renderType(type), m_uid(uid), m_destWidth(0), m_destHeight(0),
-        m_needUpdate(false), m_count(0), m_channelId(channelId) {}
+      : m_renderType(type),
+        m_uid(uid),
+        m_destWidth(0),
+        m_destHeight(0),
+        m_needUpdate(false),
+        m_count(0),
+        m_channelId(channelId) {}
 };
 
 class NodeVideoFrameTransporter {
@@ -108,14 +124,20 @@ class NodeVideoFrameTransporter {
   NodeVideoFrameTransporter();
   ~NodeVideoFrameTransporter();
 
-  bool initialize(Isolate *isolate,
-                  const Nan::FunctionCallbackInfo<Value> &callbackinfo);
-  int deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid,
-                        std::string channelId, const IVideoFrame &videoFrame,
-                        int rotation, bool mirrored);
-  int deliverVideoSourceFrame(const char *payload, int len);
-  int setVideoDimension(NodeRenderType, agora::rtc::uid_t uid,
-                        std::string channelId, uint32_t width, uint32_t height);
+  bool initialize(Isolate* isolate,
+                  const Nan::FunctionCallbackInfo<Value>& callbackinfo);
+  int deliverFrame_I420(NodeRenderType type,
+                        agora::rtc::uid_t uid,
+                        std::string channelId,
+                        const IVideoFrame& videoFrame,
+                        int rotation,
+                        bool mirrored);
+  int deliverVideoSourceFrame(const char* payload, int len);
+  int setVideoDimension(NodeRenderType,
+                        agora::rtc::uid_t uid,
+                        std::string channelId,
+                        uint32_t width,
+                        uint32_t height);
   void addToHighVideo(agora::rtc::uid_t uid, std::string channelId);
   void removeFromeHighVideo(agora::rtc::uid_t uid, std::string channelId);
   void setHighFPS(uint32_t fps);
@@ -144,28 +166,38 @@ class NodeVideoFrameTransporter {
     uint16_t rotation;
     uint32_t timestamp;
   };
-  VideoFrameInfo &getVideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid,
+  VideoFrameInfo& getVideoFrameInfo(NodeRenderType type,
+                                    agora::rtc::uid_t uid,
                                     std::string channelId);
   bool deinitialize();
-  VideoFrameInfo &getHighVideoFrameInfo(agora::rtc::uid_t uid,
+  VideoFrameInfo& getHighVideoFrameInfo(agora::rtc::uid_t uid,
                                         std::string channelId);
-  void setupFrameHeader(image_header_type *header, int stride, int width,
+  void setupFrameHeader(image_header_type* header,
+                        int stride,
+                        int width,
                         int height);
-  void copyFrame(const agora::media::IVideoFrame &videoFrame,
-                 VideoFrameInfo &info, int dest_stride, int src_stride,
-                 int width, int height);
-  void copyAndCentreYuv(const unsigned char *srcYPlane,
-                        const unsigned char *srcUPlane,
-                        const unsigned char *srcVPlane, int width, int height,
-                        int srcStride, unsigned char *dstYPlane,
-                        unsigned char *dstUPlane, unsigned char *dstVPlane,
+  void copyFrame(const agora::media::IVideoFrame& videoFrame,
+                 VideoFrameInfo& info,
+                 int dest_stride,
+                 int src_stride,
+                 int width,
+                 int height);
+  void copyAndCentreYuv(const unsigned char* srcYPlane,
+                        const unsigned char* srcUPlane,
+                        const unsigned char* srcVPlane,
+                        int width,
+                        int height,
+                        int srcStride,
+                        unsigned char* dstYPlane,
+                        unsigned char* dstUPlane,
+                        unsigned char* dstVPlane,
                         int dstStride);
   void FlushVideo();
   void highFlushVideo();
 
  private:
   bool init;
-  Isolate *env;
+  Isolate* env;
   Persistent<Function> callback;
   Persistent<Object> js_this;
   std::unordered_map<std::string,
@@ -185,7 +217,7 @@ class NodeVideoFrameTransporter {
   uint32_t m_FPS;
 };
 
-NodeVideoFrameTransporter *getNodeVideoFrameTransporter();
+NodeVideoFrameTransporter* getNodeVideoFrameTransporter();
 
 /**
  * NodeString is used to translate string from V8 value and vice versa in the
@@ -194,7 +226,7 @@ NodeVideoFrameTransporter *getNodeVideoFrameTransporter();
 class NodeString {
  public:
   NodeString() : p_mem(nullptr) {}
-  NodeString(char *buf) : p_mem(buf) {}
+  NodeString(char* buf) : p_mem(buf) {}
   ~NodeString() {
     if (p_mem) {
       free_buf(p_mem);
@@ -202,7 +234,7 @@ class NodeString {
     }
   }
 
-  void setBuf(char *buf) {
+  void setBuf(char* buf) {
     if (p_mem) {
       free_buf(p_mem);
       p_mem = nullptr;
@@ -210,13 +242,13 @@ class NodeString {
     p_mem = buf;
   }
 
-  operator char *() { return p_mem; }
+  operator char*() { return p_mem; }
 
-  static char *alloc_buf(size_t length) { return (char *) calloc(length, 1); }
-  static void free_buf(char *buf) { free(buf); }
+  static char* alloc_buf(size_t length) { return (char*)calloc(length, 1); }
+  static void free_buf(char* buf) { free(buf); }
 
  private:
-  char *p_mem;
+  char* p_mem;
 };
 
 /** To declare class constructor, needed for classes to be exposed to JS layer.
@@ -228,9 +260,9 @@ class NodeString {
 /**
  * used to define class that could be used directly in JS layer.
  */
-#define BEGIN_PROPERTY_DEFINE(className, constructor, fieldCount)              \
-  Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, constructor);   \
-  tpl->SetClassName(Nan::New<v8::String>(#className).ToLocalChecked());        \
+#define BEGIN_PROPERTY_DEFINE(className, constructor, fieldCount)            \
+  Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, constructor); \
+  tpl->SetClassName(Nan::New<v8::String>(#className).ToLocalChecked());      \
   tpl->InstanceTemplate()->SetInternalFieldCount(fieldCount);
 
 /**
@@ -240,188 +272,190 @@ class NodeString {
 // name);
 #define PROPERTY_METHOD_DEFINE(name) Nan::SetPrototypeMethod(tpl, #name, name);
 
-#define EN_PROPERTY_DEFINE()                                                   \
+#define EN_PROPERTY_DEFINE() \
   constructor.Reset(tpl->GetFunction(context).ToLocalChecked());
 
 #define NAPI_AUTO_LENGTH SIZE_MAX
 
-#define BEGIN_OBJECT_DEFINE(object, value)                                     \
-  status = napi_get_value_object_(isolate, value, object);                     \
+#define BEGIN_OBJECT_DEFINE(object, value)                 \
+  status = napi_get_value_object_(isolate, value, object); \
   CHECK_NAPI_STATUS(pEngine, status);
 
-#define BEGIN_SUB_OBJECT_DEFINE(value, object, key)                            \
-  status = napi_get_object_property_object_(isolate, object, key, value);      \
+#define BEGIN_SUB_OBJECT_DEFINE(value, object, key)                       \
+  status = napi_get_object_property_object_(isolate, object, key, value); \
   CHECK_NAPI_STATUS(pEngine, status);
 
-#define GET_OBJECT_PROPERTY(owner, type, key, value)                           \
-  status = napi_get_object_property_##type##_(isolate, owner, key, value);     \
+#define GET_OBJECT_PROPERTY(owner, type, key, value)                       \
+  status = napi_get_object_property_##type##_(isolate, owner, key, value); \
   CHECK_NAPI_STATUS(pEngine, status);
 
 /**
  * get the utf8 string from V8 value.
  */
-int napi_get_value_string_utf8_(const Local<Value> &str, char *buffer,
+int napi_get_value_string_utf8_(const Local<Value>& str,
+                                char* buffer,
                                 uint32_t len);
 
-napi_status napi_get_value_uid_t_(const Local<Value> &value,
-                                  agora::rtc::uid_t &result);
+napi_status napi_get_value_uid_t_(const Local<Value>& value,
+                                  agora::rtc::uid_t& result);
 
 /**
  * get uint32 from V8 value.
  */
-napi_status napi_get_value_uint32_(const Local<Value> &value, uint32_t &result);
+napi_status napi_get_value_uint32_(const Local<Value>& value, uint32_t& result);
 
 /**
  * get bool from V8 value.
  */
-napi_status napi_get_value_bool_(const Local<Value> &value, bool &result);
+napi_status napi_get_value_bool_(const Local<Value>& value, bool& result);
 
 /**
  * get int32 from V8 value.
  */
-napi_status napi_get_value_int32_(const Local<Value> &value, int32_t &result);
+napi_status napi_get_value_int32_(const Local<Value>& value, int32_t& result);
 
 /**
  * get double from V8 value.
  */
-napi_status napi_get_value_double_(const Local<Value> &value, double &result);
+napi_status napi_get_value_double_(const Local<Value>& value, double& result);
 
 /**
  * get int64 from V8 value.
  */
-napi_status napi_get_value_int64_(const Local<Value> &value, int64_t &result);
+napi_status napi_get_value_int64_(const Local<Value>& value, int64_t& result);
 
 /**
  * get nodestring from V8 value.
  */
-napi_status napi_get_value_nodestring_(const Local<Value> &str,
-                                       NodeString &nodechar);
+napi_status napi_get_value_nodestring_(const Local<Value>& str,
+                                       NodeString& nodechar);
 
 /**
  * get object from V8 value.
  */
-napi_status napi_get_value_object_(Isolate *isolate, const Local<Value> &value,
-                                   Local<Object> &object);
+napi_status napi_get_value_object_(Isolate* isolate,
+                                   const Local<Value>& value,
+                                   Local<Object>& object);
 
 /**
  * Create V8 value from uint32
  */
-Local<Value> napi_create_uint32_(Isolate *isolate, const uint32_t &value);
+Local<Value> napi_create_uint32_(Isolate* isolate, const uint32_t& value);
 
 /**
  * Create V8 from bool
  */
-Local<Value> napi_create_bool_(Isolate *isolate, const bool &value);
+Local<Value> napi_create_bool_(Isolate* isolate, const bool& value);
 
 /**
  * Create V8 from string
  */
-Local<Value> napi_create_string_(Isolate *isolate, const char *value);
+Local<Value> napi_create_string_(Isolate* isolate, const char* value);
 
 /**
  * Create V8 value from double
  */
-Local<Value> napi_create_double_(Isolate *isolate, const double &value);
+Local<Value> napi_create_double_(Isolate* isolate, const double& value);
 
 /**
  * Create V8 value from uint64
  */
-Local<Value> napi_create_uint64_(Isolate *isolate, const uint64_t &value);
+Local<Value> napi_create_uint64_(Isolate* isolate, const uint64_t& value);
 
 /**
  * Create V8 value from int32
  */
-Local<Value> napi_create_int32_(Isolate *isolate, const int32_t &value);
+Local<Value> napi_create_int32_(Isolate* isolate, const int32_t& value);
 
 /**
  * Create V8 value from uint16
  */
-Local<Value> napi_create_uint16_(Isolate *isolate, const uint16_t &value);
+Local<Value> napi_create_uint16_(Isolate* isolate, const uint16_t& value);
 
 /**
  * Create V8 value from uid
  */
-Local<Value> napi_create_uid_(Isolate *isolate, const agora::rtc::uid_t &uid);
+Local<Value> napi_create_uid_(Isolate* isolate, const agora::rtc::uid_t& uid);
 
 /**
  * get uint32 property from V8 object.
  */
-napi_status napi_get_object_property_uint32_(Isolate *isolate,
-                                             const Local<Object> &obj,
-                                             const std::string &propName,
-                                             uint32_t &result);
+napi_status napi_get_object_property_uint32_(Isolate* isolate,
+                                             const Local<Object>& obj,
+                                             const std::string& propName,
+                                             uint32_t& result);
 
 /**
  * get bool property from V8 object.
  */
-napi_status napi_get_object_property_bool_(Isolate *isolate,
-                                           const Local<Object> &obj,
-                                           const std::string &propName,
-                                           bool &result);
+napi_status napi_get_object_property_bool_(Isolate* isolate,
+                                           const Local<Object>& obj,
+                                           const std::string& propName,
+                                           bool& result);
 
 /**
  * get int32 property from V8 object.
  */
-napi_status napi_get_object_property_int32_(Isolate *isolate,
-                                            const Local<Object> &obj,
-                                            const std::string &propName,
-                                            int32_t &result);
+napi_status napi_get_object_property_int32_(Isolate* isolate,
+                                            const Local<Object>& obj,
+                                            const std::string& propName,
+                                            int32_t& result);
 
 /**
  * get double property from V8 object.
  */
-napi_status napi_get_object_property_double_(Isolate *isolate,
-                                             const Local<Object> &obj,
-                                             const std::string &propName,
-                                             double &result);
+napi_status napi_get_object_property_double_(Isolate* isolate,
+                                             const Local<Object>& obj,
+                                             const std::string& propName,
+                                             double& result);
 
 /**
  * get int64 property from V8 object.
  */
-napi_status napi_get_object_property_int64_(Isolate *isolate,
-                                            const Local<Object> &obj,
-                                            const std::string &propName,
-                                            int64_t &result);
+napi_status napi_get_object_property_int64_(Isolate* isolate,
+                                            const Local<Object>& obj,
+                                            const std::string& propName,
+                                            int64_t& result);
 
 /**
  * get nodestring property from V8 object.
  */
-napi_status napi_get_object_property_nodestring_(Isolate *isolate,
-                                                 const Local<Object> &obj,
-                                                 const std::string &propName,
-                                                 NodeString &nodechar);
+napi_status napi_get_object_property_nodestring_(Isolate* isolate,
+                                                 const Local<Object>& obj,
+                                                 const std::string& propName,
+                                                 NodeString& nodechar);
 
 /**
  * get nodestring property from V8 object.
  */
-napi_status napi_get_object_property_uid_(Isolate *isolate,
-                                          const Local<Object> &obj,
-                                          const std::string &propName,
-                                          agora::rtc::uid_t &uid);
+napi_status napi_get_object_property_uid_(Isolate* isolate,
+                                          const Local<Object>& obj,
+                                          const std::string& propName,
+                                          agora::rtc::uid_t& uid);
 
 /**
  * get object property from V8 object.
  */
-napi_status napi_get_object_property_object_(Isolate *isolate,
-                                             const Local<Object> &obj,
-                                             const std::string &propName,
-                                             Local<Object> &childobj);
+napi_status napi_get_object_property_object_(Isolate* isolate,
+                                             const Local<Object>& obj,
+                                             const std::string& propName,
+                                             Local<Object>& childobj);
 napi_status napi_get_object_property_array_(Isolate *isolate,
                                             const Local<Object> &obj,
                                             const std::string &propName,
                                             v8::Array *&array);
-napi_status napi_get_object_property_arraybuffer_(Isolate *isolate,
-                                                  const Local<Object> &obj,
-                                                  const std::string &propName,
-                                                  void *buffer);
+napi_status napi_get_object_property_arraybuffer_(Isolate* isolate,
+                                                  const Local<Object>& obj,
+                                                  const std::string& propName,
+                                                  void* buffer);
 
 napi_status napi_get_value_arraybuffer_(const Local<Value> &value,
                                         std::vector<uint8_t> &buffer,
                                         uint32_t &length);
 
-const char *nullable(char const *s);
+const char* nullable(char const* s);
 
 #ifdef _WIN32
-char *U2G(const char *srcstr);
+char* U2G(const char* srcstr);
 #endif
 #endif

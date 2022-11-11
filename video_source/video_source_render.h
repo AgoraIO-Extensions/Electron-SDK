@@ -11,10 +11,10 @@
 #ifndef AGORA_VIDEO_SOURCE_RENDER_H
 #define AGORA_VIDEO_SOURCE_RENDER_H
 
+#include <memory>
 #include "IAgoraMediaEngine.h"
 #include "IAgoraRtcEngine.h"
 #include "video_source_transporter.h"
-#include <memory>
 
 class AgoraVideoSource;
 
@@ -28,14 +28,14 @@ using agora::media::IVideoFrame;
  */
 class AgoraVideoSourceRenderFactory : public IExternalVideoRenderFactory {
  public:
-  AgoraVideoSourceRenderFactory(AgoraVideoSource &videoSource);
+  AgoraVideoSourceRenderFactory(AgoraVideoSource& videoSource);
   ~AgoraVideoSourceRenderFactory();
 
-  virtual IExternalVideoRender *
-  createRenderInstance(const ExternalVideoRenerContext &context) override;
+  virtual IExternalVideoRender* createRenderInstance(
+      const ExternalVideoRenerContext& context) override;
 
  private:
-  AgoraVideoSource &m_videoSource;
+  AgoraVideoSource& m_videoSource;
 };
 
 /**
@@ -43,16 +43,17 @@ class AgoraVideoSourceRenderFactory : public IExternalVideoRenderFactory {
  */
 class AgoraVideoSourceRender : public IExternalVideoRender {
  public:
-  AgoraVideoSourceRender(AgoraVideoSource &videoSource);
+  AgoraVideoSourceRender(AgoraVideoSource& videoSource);
   ~AgoraVideoSourceRender();
 
   virtual void release() override;
   virtual int initialize() override;
-  virtual int deliverFrame(const IVideoFrame &videoFrame, int rotation,
+  virtual int deliverFrame(const IVideoFrame& videoFrame,
+                           int rotation,
                            bool mirrored) override;
 
  private:
-  AgoraVideoSource &m_videoSource;
+  AgoraVideoSource& m_videoSource;
   /**
    * AgoraVideoSourceRender rely on IAgoraVideoSourceTransporter to convey video
    * data to sink.
