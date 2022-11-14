@@ -113,14 +113,14 @@ export default class ScreenShare
       }
     });
     this.engine.registerEventHandler(this);
-
+    console.log(`sdk version: ${JSON.stringify(this.engine.getVersion())}`)
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();
 
     this.engine.setVideoEncoderConfiguration({
       dimensions: {width: 1920, height: 1080},
-      frameRate: 30
+      frameRate: 10
     })
 
     // Start preview before joinChannel
@@ -316,20 +316,20 @@ export default class ScreenShare
     let transcodingUsers: TranscodingUser[] = [];
     this.state.joinChannelSuccess ? transcodingUsers.push({
       uid: this.state.uid,
+      x: 920,
+      y: 0,
+      width: 1080,
+      height: 720,
+      zOrder: 2
+    }):console.log("no camera source");
+
+    this.state.startScreenCapture ? transcodingUsers.push({
+      uid: this.state.uid2,
       x: 0,
       y: 0,
       width: 1920,
       height: 1080,
       zOrder: 1
-    }):console.log("no camera source");
-
-    this.state.startScreenCapture ? transcodingUsers.push({
-      uid: this.state.uid2,
-      x: 500,
-      y: 500,
-      width: 1920,
-      height: 1080,
-      zOrder: 2
     }):console.log("no screen source");
 
 
@@ -338,15 +338,14 @@ export default class ScreenShare
       height: 1080,
       videoFramerate: 30,
       userCount: transcodingUsers.length,
-      transcodingUsers: transcodingUsers
+      transcodingUsers: transcodingUsers,
+      videoBitrate: 6000
     };
   };
 
   protected startRtmpStreaming() {
-    debugger
     if (this.state.startRtmpStreaming) {
       let transcoding = this._generateLiveTranscoding();
-      debugger
       let ret = this.engine.startRtmpStreamWithTranscoding("rtmp://push.lxtest.agoramdn.com/live/xxxxx", transcoding);
       this.setState({ 
         startRtmpStreaming: false
