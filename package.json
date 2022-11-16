@@ -152,7 +152,9 @@
   },
   "eslintIgnore": [
     "node_modules/",
-    "lib/"
+    "dist/",
+    "js/",
+    "types/"
   ],
   "prettier": {
     "quoteProps": "consistent",
