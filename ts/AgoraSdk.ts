@@ -21,6 +21,9 @@ export * from './Renderer/RendererManager';
 export * from './Types';
 export * from './Utils';
 
+/**
+ * @ignore
+ */
 const instance = new RtcEngineExInternal();
 
 /**
