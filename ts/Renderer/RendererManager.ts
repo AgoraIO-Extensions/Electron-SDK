@@ -26,14 +26,35 @@ import GlRenderer from './GlRenderer';
 import { IRenderer, RenderFailCallback } from './IRenderer';
 import { YUVCanvasRenderer } from './YUVCanvasRenderer';
 
+/**
+ * @ignore
+ */
 class RendererManager {
+  /**
+   * @ignore
+   */
   isRendering = false;
   renderFps: number;
+  /**
+   * @ignore
+   */
   videoFrameUpdateInterval?: NodeJS.Timer;
+  /**
+   * @ignore
+   */
   renderers: RenderMap;
+  /**
+   * @ignore
+   */
   renderMode: RENDER_MODE;
+  /**
+   * @ignore
+   */
   msgBridge: AgoraElectronBridge;
 
+  /**
+   * @ignore
+   */
   constructor() {
     this.renderFps = 10;
     this.renderers = new Map();
@@ -44,6 +65,9 @@ class RendererManager {
     this.msgBridge = AgoraEnv.AgoraElectronBridge;
   }
 
+  /**
+   * @ignore
+   */
   setRenderMode(mode: RENDER_MODE) {
     this.renderMode = mode;
     logInfo(
@@ -51,6 +75,9 @@ class RendererManager {
     );
   }
 
+  /**
+   * @ignore
+   */
   setFPS(fps: number) {
     this.renderFps = fps;
     this.restartRender();
@@ -62,6 +89,9 @@ class RendererManager {
     mirror: boolean = false
   ): void {
     if (!view) {
+      /**
+       * @ignore
+       */
       logError('setRenderOption: view not exist', view);
     }
     this.forEachStream(({ renders }) => {
@@ -80,6 +110,9 @@ class RendererManager {
       rendererOptions,
       videoSourceType,
     }: FormatRendererVideoConfig =
+      /**
+       * @ignore
+       */
       getDefaultRendererVideoConfig(rendererConfig);
 
     if (!rendererConfig.view) {
@@ -107,6 +140,9 @@ class RendererManager {
     try {
       gl =
         canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      /**
+       * @ignore
+       */
       logInfo('Your browser support webGL');
     } catch (e) {
       logWarn('Your browser may not support webGL');
@@ -121,6 +157,9 @@ class RendererManager {
   }
 
   public setupVideo(rendererVideoConfig: RendererVideoConfig): number {
+    /**
+     * @ignore
+     */
     const formatConfig = getDefaultRendererVideoConfig(rendererVideoConfig);
 
     const { uid, channelId, videoSourceType, rendererOptions, view } =
@@ -137,6 +176,9 @@ class RendererManager {
     }
 
     // ensure a render to RenderMap
+    /**
+     * @ignore
+     */
     const render = this.bindHTMLElementToRender(formatConfig, view!);
 
     // render config
@@ -155,6 +197,9 @@ class RendererManager {
   }
 
   public setupLocalVideo(rendererConfig: RendererVideoConfig): number {
+    /**
+     * @ignore
+     */
     const { videoSourceType } = rendererConfig;
     if (videoSourceType === VideoSourceType.VideoSourceRemote) {
       logError('setupLocalVideo videoSourceType error', videoSourceType);
@@ -165,6 +210,9 @@ class RendererManager {
   }
 
   public setupRemoteVideo(rendererConfig: RendererVideoConfig): number {
+    /**
+     * @ignore
+     */
     const { videoSourceType } = rendererConfig;
     if (videoSourceType !== VideoSourceType.VideoSourceRemote) {
       logError('setupRemoteVideo videoSourceType error', videoSourceType);
@@ -178,12 +226,21 @@ class RendererManager {
   }
 
   public destroyRendererByView(view: Element): void {
+    /**
+     * @ignore
+     */
     const renders = this.renderers;
     renders.forEach((channelMap, videoSourceType) => {
       channelMap.forEach((uidMap, channelId) => {
         uidMap.forEach((renderConfig, uid) => {
           let hasRender = false;
+          /**
+           * @ignore
+           */
           const remainRenders = renderConfig.renders?.filter((render) => {
+            /**
+             * @ignore
+             */
             const isFilter = render.equalsElement(view);
 
             if (isFilter) {
@@ -210,6 +267,9 @@ class RendererManager {
     channelId?: Channel,
     uid?: number
   ): void {
+    /**
+     * @ignore
+     */
     const config = formatConfigByVideoSourceType(
       videoSourceType,
       channelId,
@@ -220,7 +280,13 @@ class RendererManager {
     uid = config.uid;
 
     this.disableVideoFrameCache(config);
+    /**
+     * @ignore
+     */
     const uidMap = this.renderers.get(videoSourceType)?.get(channelId);
+    /**
+     * @ignore
+     */
     const renderMap = uidMap?.get(uid);
     if (!renderMap) {
       return;
@@ -232,6 +298,9 @@ class RendererManager {
   }
 
   public removeAllRenderer(): void {
+    /**
+     * @ignore
+     */
     const renderMap = this.forEachStream(
       (renderConfig, videoFrameCacheConfig) => {
         this.disableVideoFrameCache(videoFrameCacheConfig);
@@ -261,10 +330,16 @@ class RendererManager {
 
   public startRenderer(): void {
     this.isRendering = true;
+    /**
+     * @ignore
+     */
     const renderFunc = (
       rendererItem: RenderConfig,
       { videoSourceType, channelId, uid }: VideoFrameCacheConfig
     ) => {
+      /**
+       * @ignore
+       */
       const { renders } = rendererItem;
       if (!renders || renders?.length === 0) {
         return;
@@ -283,7 +358,13 @@ class RendererManager {
           break;
         case 2: {
           // IRIS_VIDEO_PROCESS_ERR::ERR_SIZE_NOT_MATCHING
+          /**
+           * @ignore
+           */
           const { width, height } = finalResult;
+          /**
+           * @ignore
+           */
           const newShareVideoFrame = this.resizeShareVideoFrame(
             videoSourceType,
             channelId,
@@ -311,6 +392,9 @@ class RendererManager {
         logDebug('GetVideoFrame isNewFrame is false', rendererItem);
         return;
       }
+      /**
+       * @ignore
+       */
       const renderVideoFrame = rendererItem.shareVideoFrame;
       if (renderVideoFrame.width > 0 && renderVideoFrame.height > 0) {
         renders.forEach((renderItem) => {
@@ -371,9 +455,15 @@ class RendererManager {
     view: HTMLElement
   ): IRenderer {
     this.ensureRendererConfig(config);
+    /**
+     * @ignore
+     */
     const renders = this.getRenderers(config);
     const filterRenders =
       renders?.filter((render) => render.equalsElement(view)) || [];
+    /**
+     * @ignore
+     */
     const hasBeenAdd = filterRenders.length > 0;
     if (hasBeenAdd) {
       logWarn(
@@ -382,15 +472,27 @@ class RendererManager {
       );
       return filterRenders[0];
     }
+    /**
+     * @ignore
+     */
     const renderer = this.createRenderer(() => {
+      /**
+       * @ignore
+       */
       const renderConfig = this.getRender(config);
       if (!renderConfig) {
         return;
       }
       renderConfig.renders = renders.filter((r) => r !== renderer);
+      /**
+       * @ignore
+       */
       const contentMode = renderer.contentMode;
       renderer.unbind();
       this.setRenderMode(RENDER_MODE.SOFTWARE);
+      /**
+       * @ignore
+       */
       const newRender = this.createRenderer();
       newRender.contentMode = contentMode;
       newRender.bind(view);
@@ -411,6 +513,9 @@ class RendererManager {
       }
     ) => void
   ): RenderMap {
+    /**
+     * @ignore
+     */
     const renders = this.renderers;
     renders.forEach((channelMap, videoSourceType) => {
       channelMap.forEach((uidMap, channelId) => {
@@ -449,7 +554,13 @@ class RendererManager {
         }
       >
     | undefined {
+    /**
+     * @ignore
+     */
     const { videoSourceType, uid, channelId } = config;
+    /**
+     * @ignore
+     */
     const emptyRenderConfig = {
       renders: [],
       shareVideoFrame: this.resizeShareVideoFrame(
@@ -458,20 +569,38 @@ class RendererManager {
         uid
       ),
     };
+    /**
+     * @ignore
+     */
     const emptyUidMap = new Map([[uid, emptyRenderConfig]]);
+    /**
+     * @ignore
+     */
     const emptyChannelMap = new Map([[channelId, emptyUidMap]]);
 
+    /**
+     * @ignore
+     */
     const renderers = this.renderers;
+    /**
+     * @ignore
+     */
     const videoSourceMap = renderers.get(videoSourceType);
     if (!videoSourceMap) {
       renderers.set(videoSourceType, emptyChannelMap);
       return emptyUidMap;
     }
+    /**
+     * @ignore
+     */
     const channelMap = videoSourceMap.get(channelId);
     if (!channelMap) {
       videoSourceMap.set(channelId, emptyUidMap);
       return emptyUidMap;
     }
+    /**
+     * @ignore
+     */
     const renderConfig = channelMap?.get(uid);
     if (!renderConfig) {
       channelMap?.set(uid, emptyRenderConfig);
@@ -518,6 +647,9 @@ class RendererManager {
   }
 }
 
+/**
+ * @ignore
+ */
 const AgoraRendererManager = new RendererManager();
 
 AgoraEnv.AgoraRendererManager = AgoraRendererManager;

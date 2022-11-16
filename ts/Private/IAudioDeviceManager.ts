@@ -2,6 +2,7 @@ import './extension/IAudioDeviceManagerExtension';
 import { AudioDeviceInfo } from './IAgoraRtcEngine';
 /**
  * The maximum length of the device ID.
+ *
  */
 export enum MaxDeviceIdLengthType {
   /**
@@ -12,10 +13,12 @@ export enum MaxDeviceIdLengthType {
 
 /**
  * Audio device management methods.
+ *
  */
 export abstract class IAudioDeviceManager {
   /**
    * Enumerates the audio playback devices.
+   *
    *
    * @returns
    * Success: Returns an AudioDeviceInfo array, which includes all the audio playback devices.Failure: An empty array.
@@ -25,6 +28,7 @@ export abstract class IAudioDeviceManager {
   /**
    * Enumerates the audio capture devices.
    *
+   *
    * @returns
    * Success: An AudioDeviceInfo array, which includes all the audio capture devices.Failure: An empty array.
    */
@@ -32,6 +36,7 @@ export abstract class IAudioDeviceManager {
 
   /**
    * Sets the audio playback device.
+   *
    *
    * @param deviceId The ID of the specified audio playback device. You can get the device ID by calling enumeratePlaybackDevices . Connecting or disconnecting the audio device does not change the value of deviceId.The maximum length is MaxDeviceIdLengthType .
    *
@@ -43,6 +48,7 @@ export abstract class IAudioDeviceManager {
   /**
    * Retrieves the audio playback device associated with the device ID.
    *
+   *
    * @returns
    * The current audio playback device.
    */
@@ -50,6 +56,7 @@ export abstract class IAudioDeviceManager {
 
   /**
    * Retrieves the audio playback device associated with the device ID.
+   *
    *
    * @returns
    * An AudioDeviceInfo object, which contains the ID and device name of the audio devices.
@@ -69,6 +76,7 @@ export abstract class IAudioDeviceManager {
   /**
    * Sets the audio recording device.
    *
+   *
    * @param deviceId The ID of the audio recording device. You can get the device ID by calling enumerateRecordingDevices . Plugging or unplugging the audio device does not change the value of deviceId.The maximum length is MaxDeviceIdLengthType .
    *
    * @returns
@@ -79,6 +87,7 @@ export abstract class IAudioDeviceManager {
   /**
    * Gets the current audio recording device.
    *
+   *
    * @returns
    * The current audio recording device.
    */
@@ -86,6 +95,7 @@ export abstract class IAudioDeviceManager {
 
   /**
    * Retrieves the volume of the audio recording device.
+   *
    *
    * @returns
    * An AudioDeviceInfo object, which includes the device ID and device name.
@@ -195,6 +205,7 @@ export abstract class IAudioDeviceManager {
   /**
    * Sets the audio playback device used by the SDK to follow the system default audio playback device.
    *
+   *
    * @param enable Whether to follow the system default audio playback device:true: Follow. The SDK immediately switches the audio playback device when the system default audio playback device changes.false: Do not follow. The SDK switches the audio playback device to the system default audio playback device only when the currently used audio playback device is disconnected.
    *
    * @returns
@@ -204,6 +215,7 @@ export abstract class IAudioDeviceManager {
 
   /**
    * Sets the audio recording device used by the SDK to follow the system default audio recording device.
+   *
    *
    * @param enable Whether to follow the system default audio recording device:true: Follow. The SDK immediately switches the audio recording device when the system default audio recording device changes.false: Do not follow. The SDK switches the audio recording device to the system default audio recording device only when the currently used audio recording device is disconnected.
    *
@@ -219,6 +231,7 @@ export abstract class IAudioDeviceManager {
 
   /**
    * Releases all the resources occupied by the IAudioDeviceManager object.
+   *
    */
   abstract release(): void;
 
