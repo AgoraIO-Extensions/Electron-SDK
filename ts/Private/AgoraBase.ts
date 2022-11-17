@@ -558,6 +558,10 @@ export enum InterfaceIdType {
    * @ignore
    */
   AgoraIidMetachatService = 14,
+  /**
+   * @ignore
+   */
+  AgoraIidMusicContentCenter = 15,
 }
 
 /**
@@ -1077,7 +1081,7 @@ export class VideoSubscriptionOptions {
  */
 export class EncodedVideoFrameInfo {
   /**
-   * The codec type of the local video stream. See VideoCodecType . The default value is VideoCodecH264(2).
+   * The codec type of the local video stream. See VideoCodecType . The default value is VideoCodecH264 (2).
    */
   codecType?: VideoCodecType;
   /**
@@ -1141,6 +1145,46 @@ export enum VideoMirrorModeType {
 }
 
 /**
+ * @ignore
+ */
+export enum CodecCapMask {
+  /**
+   * @ignore
+   */
+  CodecCapMaskNone = 0,
+  /**
+   * @ignore
+   */
+  CodecCapMaskHwDec = 1 << 0,
+  /**
+   * @ignore
+   */
+  CodecCapMaskHwEnc = 1 << 1,
+  /**
+   * @ignore
+   */
+  CodecCapMaskSwDec = 1 << 2,
+  /**
+   * @ignore
+   */
+  CodecCapMaskSwEnc = 1 << 3,
+}
+
+/**
+ * @ignore
+ */
+export class CodecCapInfo {
+  /**
+   * @ignore
+   */
+  codec_type?: VideoCodecType;
+  /**
+   * @ignore
+   */
+  codec_cap_mask?: number;
+}
+
+/**
  * Video encoder configurations.
  */
 export class VideoEncoderConfiguration {
@@ -1149,7 +1193,7 @@ export class VideoEncoderConfiguration {
    */
   codecType?: VideoCodecType;
   /**
-   * The dimensions of the encoded video (px). This parameter measures the video encoding quality in the format of length × width.
+   * The dimensions of the encoded video (px). See VideoDimensions . This parameter measures the video encoding quality in the format of length × width. The default value is 640 × 360. You can set a custom value.
    */
   dimensions?: VideoDimensions;
   /**
@@ -1925,9 +1969,9 @@ export enum LocalVideoStreamError {
    */
   LocalVideoStreamErrorCaptureFailure = 4,
   /**
-   * 5: The local video encoding fails.
+   * @ignore
    */
-  LocalVideoStreamErrorEncodeFailure = 5,
+  LocalVideoStreamErrorCodecNotSupport = 5,
   /**
    * @ignore
    */
@@ -1945,7 +1989,7 @@ export enum LocalVideoStreamError {
    */
   LocalVideoStreamErrorDeviceDisconnected = 9,
   /**
-   * 10:(macOS and Windows only) The SDK cannot find the video device in the video device list. Check whether the ID of the video device is valid.
+   * 10: (macOS and Windows only) The SDK cannot find the video device in the video device list. Check whether the ID of the video device is valid.
    */
   LocalVideoStreamErrorDeviceInvalidId = 10,
   /**
@@ -1953,11 +1997,11 @@ export enum LocalVideoStreamError {
    */
   LocalVideoStreamErrorDeviceSystemPressure = 101,
   /**
-   * 11:(macOS only) The shared window is minimized when you call startScreenCaptureByWindowId to share a window. The SDK cannot share a minimized window. You can cancel the minimization of this window at the application layer, for example by maximizing this window.
+   * 11: (macOS only) The shared window is minimized when you call startScreenCaptureByWindowId to share a window. The SDK cannot share a minimized window. You can cancel the minimization of this window at the application layer, for example by maximizing this window.
    */
   LocalVideoStreamErrorScreenCaptureWindowMinimized = 11,
   /**
-   * 12:(macOS and Windows only) The error code indicates that a window shared by the window ID has been closed or a full-screen window shared by the window ID has exited full-screen mode. After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a black screen, Agora recommends that you immediately stop screen sharing.Common scenarios for reporting this error code:When the local user closes the shared window, the SDK reports this error code.The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After the user exits full-screen mode, the SDK reports this error code.The local user watches a web video or reads a web document in full-screen mode first, and then shares the window of the web video or document. After the user exits full-screen mode, the SDK reports this error code.
+   * 12: (macOS and Windows only) The error code indicates that a window shared by the window ID has been closed or a full-screen window shared by the window ID has exited full-screen mode. After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a black screen, Agora recommends that you immediately stop screen sharing.Common scenarios for reporting this error code:When the local user closes the shared window, the SDK reports this error code.The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After the user exits full-screen mode, the SDK reports this error code.The local user watches a web video or reads a web document in full-screen mode first, and then shares the window of the web video or document. After the user exits full-screen mode, the SDK reports this error code.
    */
   LocalVideoStreamErrorScreenCaptureWindowClosed = 12,
   /**
@@ -2124,6 +2168,10 @@ export enum RemoteVideoStateReason {
    * @ignore
    */
   RemoteVideoStateReasonSdkInBackground = 12,
+  /**
+   * @ignore
+   */
+  RemoteVideoStateReasonCodecNotSupport = 13,
 }
 
 /**
@@ -2572,7 +2620,7 @@ export class TranscodingUser {
    */
   uid?: number;
   /**
-   * The x coordinate (pixel) of the host's video on the output video frame (taking the upper left corner of the video frame as the origin). The value range is [0, width], where width is thewidth set in LiveTranscoding .
+   * The x coordinate (pixel) of the host's video on the output video frame (taking the upper left corner of the video frame as the origin). The value range is [0, width], where width is the width set in LiveTranscoding .
    */
   x?: number;
   /**
@@ -2588,13 +2636,11 @@ export class TranscodingUser {
    */
   height?: number;
   /**
-   * The layer index number of the host's video. The value range is [0,100].
-   * 0: (Default) The host's video is the bottom layer.100: The host's video is the top layer.If the value is less than 0 or greater than 100, the error ERR_INVALID_ARGUMENT is returned.Starting from v2.3, setting zOrder to 0 is supported.
+   * The layer index number of the host's video. The value range is [0, 100].0: (Default) The host's video is the bottom layer.100: The host's video is the top layer.If the value is less than 0 or greater than 100, ErrInvalidArgument error is returned.Setting zOrder to 0 is supported.
    */
   zOrder?: number;
   /**
-   * The transparency of the host's video. The value range is [0.0,1.0].
-   * 0.0: Completely transparent.1.0: (Default) Opaque.
+   * The transparency of the host's video. The value range is [0.0,1.0].0.0: Completely transparent.1.0: (Default) Opaque.
    */
   alpha?: number;
   /**
@@ -2718,6 +2764,10 @@ export class TranscodingVideoStream {
    */
   imageUrl?: string;
   /**
+   * @ignore
+   */
+  mediaPlayerId?: number;
+  /**
    * The horizontal displacement of the top-left corner of the video for the video mixing on the client relative to the top-left corner (origin) of the canvas for this video mixing.
    */
   x?: number;
@@ -2758,7 +2808,7 @@ export class LocalTranscoderConfiguration {
   /**
    * The video streams for the video mixing on the local client. See TranscodingVideoStream .
    */
-  VideoInputStreams?: TranscodingVideoStream[];
+  videoInputStreams?: TranscodingVideoStream[];
   /**
    * The encoding configuration of the mixed video stream after the video mixing on the local client. See VideoEncoderConfiguration .
    */
@@ -2767,6 +2817,40 @@ export class LocalTranscoderConfiguration {
    * @ignore
    */
   sync_with_primary_camera?: boolean;
+}
+
+/**
+ * @ignore
+ */
+export enum VideoTranscoderError {
+  /**
+   * @ignore
+   */
+  VtErrOk = 0,
+  /**
+   * @ignore
+   */
+  VtErrVideoSourceNotReady = 1,
+  /**
+   * @ignore
+   */
+  VtErrInvalidMediaSourceType = 2,
+  /**
+   * @ignore
+   */
+  VtErrInvalidImagePath = 3,
+  /**
+   * @ignore
+   */
+  VtErrUnsupportImageFormat = 4,
+  /**
+   * @ignore
+   */
+  VtErrInvalidLayout = 5,
+  /**
+   * @ignore
+   */
+  VtErrInternal = 20,
 }
 
 /**
@@ -3722,9 +3806,7 @@ export interface IAudioEncodedFrameObserver {
    *
    * @param samplesPerSec Recording sample rate (Hz).
    *
-   * @param channels The number of channels.
-   *  1: Mono.
-   *  2: Stereo. If the channel uses stereo, the data is interleaved.
+   * @param channels The number of channels.1: Mono.2: Stereo. If the channel uses stereo, the data is interleaved.
    *
    * @param samplesPerChannel The number of samples per channel in the audio frame.
    *
@@ -3746,9 +3828,7 @@ export interface IAudioEncodedFrameObserver {
    *
    * @param samplesPerSec Recording sample rate (Hz).
    *
-   * @param channels The number of channels.
-   *  1: Mono.
-   *  2: Stereo. If the channel uses stereo, the data is interleaved.
+   * @param channels The number of channels.1: Mono.2: Stereo. If the channel uses stereo, the data is interleaved.
    *
    * @param samplesPerChannel The number of samples per channel in the audio frame.
    *

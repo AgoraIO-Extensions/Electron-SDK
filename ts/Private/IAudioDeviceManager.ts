@@ -33,7 +33,7 @@ export abstract class IAudioDeviceManager {
   /**
    * Sets the audio playback device.
    *
-   * @param deviceId The ID of the specified audio playback device. You can get the device ID by calling enumeratePlaybackDevices . Plugging or unplugging the audio device does not change the value of deviceId.The maximum length is MaxDeviceIdLengthType .
+   * @param deviceId The ID of the specified audio playback device. You can get the device ID by calling enumeratePlaybackDevices . Connecting or disconnecting the audio device does not change the value of deviceId.The maximum length is MaxDeviceIdLengthType .
    *
    * @returns
    * 0: Success.< 0: Failure.
@@ -153,7 +153,7 @@ export abstract class IAudioDeviceManager {
   abstract stopPlaybackDeviceTest(): number;
 
   /**
-   * Starts the audio recording device test.
+   * Starts the audio capture device test.
    * This method tests whether the audio capture device works properly. After calling this method, the SDK triggers the onAudioVolumeIndication callback at the time interval set in this method, which reports uid = 0 and the volume information of the capturing device.Ensure that you call this method before joining a channel.
    *
    * @param indicationInterval The time interval (ms) at which the SDK triggers the onAudioVolumeIndication callback. Agora recommends a setting greater than 200 ms. This value must not be less than 10 ms; otherwise, you can not receive the onAudioVolumeIndication callback.

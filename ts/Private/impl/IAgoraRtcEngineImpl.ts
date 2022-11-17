@@ -30,6 +30,7 @@ import {
 } from '../IAgoraRtcEngine';
 import {
   VideoFormat,
+  CodecCapInfo,
   ChannelProfileType,
   ClientRoleType,
   ClientRoleOptions,
@@ -914,6 +915,15 @@ export function processIRtcEngineEventHandler(
         );
       }
       break;
+
+    case 'onLocalVideoTranscoderError':
+      if (handler.onLocalVideoTranscoderError !== undefined) {
+        handler.onLocalVideoTranscoderError(
+          jsonParams.stream,
+          jsonParams.error
+        );
+      }
+      break;
   }
 }
 
@@ -1150,6 +1160,18 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromGetErrorDescription(code: number): string {
     return 'RtcEngine_getErrorDescription';
+  }
+
+  queryCodecCapability(): CodecCapInfo[] {
+    const apiType = this.getApiTypeFromQueryCodecCapability();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    const codecInfo = jsonResults.codec_info;
+    return codecInfo;
+  }
+
+  protected getApiTypeFromQueryCodecCapability(): string {
+    return 'RtcEngine_queryCodecCapability';
   }
 
   joinChannel(
