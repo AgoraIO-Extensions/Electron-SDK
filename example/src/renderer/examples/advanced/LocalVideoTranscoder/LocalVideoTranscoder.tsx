@@ -309,11 +309,14 @@ export default class LocalVideoTranscoder
       height = 300;
 
     const streams: TranscodingVideoStream[] = [];
-    if (videoDeviceId.length) {
-      streams.push({
-        sourceType: MediaSourceType.PrimaryCameraSource,
-      });
-    }
+
+    streams.push(
+      ...videoDeviceId.map((value) => {
+        return {
+          sourceType: this._getVideoSourceTypeCamera(value) + 2,
+        };
+      })
+    );
 
     if (startScreenCapture) {
       streams.push({
