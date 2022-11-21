@@ -1,3 +1,17 @@
+## [4.0.1-xhs.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.1-xhs.1...v4.0.1-xhs.2) (2022-11-21)
+
+
+### Bug Fixes
+
+* add memeset _result in the construct function ([#910](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/910)) ([3f5baa0](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/3f5baa02ae99e9e233ae5a6f57d151cc27b3ab42))
+* add minus system version 10.10 for macOS ([#911](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/911)) ([e97f7df](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/e97f7dfa9db8e8335ab7b25ce2314a2550823b90))
+* issue of `LocalVideoTranscoder` for `SecondaryCameraSource` ([be2ecda](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/be2ecda1f6987011153b1746fa9a702520567381))
+
+
+### Features
+
+* support 4.0.1.3 ([a4c74ab](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/a4c74ab4a10c073685e5681075a820cb7f29f4f8))
+
 ## [4.0.1-xhs.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.1-rc.1...v4.0.1-xhs.1) (2022-10-21)
 
 
