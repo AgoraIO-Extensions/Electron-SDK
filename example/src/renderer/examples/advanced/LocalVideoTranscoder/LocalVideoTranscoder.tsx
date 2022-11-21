@@ -47,7 +47,7 @@ interface State extends BaseVideoComponentState {
   open: boolean;
   imageUrl: string;
   startLocalVideoTranscoder: boolean;
-  VideoInputStreams: TranscodingVideoStream[];
+  videoInputStreams: TranscodingVideoStream[];
 }
 
 export default class LocalVideoTranscoder
@@ -75,7 +75,7 @@ export default class LocalVideoTranscoder
       open: false,
       imageUrl: getResourcePath('png.png'),
       startLocalVideoTranscoder: false,
-      VideoInputStreams: [],
+      videoInputStreams: [],
     };
   }
 
@@ -205,12 +205,14 @@ export default class LocalVideoTranscoder
    */
   startScreenCapture = () => {
     const { targetSource } = this.state;
-    const isCaptureWindow =
-      targetSource.type ===
-      ScreenCaptureSourceType.ScreencapturesourcetypeWindow;
+    if (!targetSource) {
+      this.error(`targetSource is invalid`);
+    }
 
-    const res = this.engine?.startPrimaryScreenCapture({
-      isCaptureWindow: false,
+    this.engine?.startPrimaryScreenCapture({
+      isCaptureWindow:
+        targetSource.type ===
+        ScreenCaptureSourceType.ScreencapturesourcetypeWindow,
       screenRect: { width: 0, height: 0, x: 0, y: 0 },
       windowId: targetSource.sourceId,
       displayId: targetSource.sourceId,
@@ -322,7 +324,7 @@ export default class LocalVideoTranscoder
     if (open) {
       streams.push({
         sourceType: MediaSourceType.MediaPlayerSource,
-        imageUrl: this.player.getMediaPlayerId().toString(),
+        mediaPlayerId: this.player.getMediaPlayerId(),
       });
     }
 
@@ -352,7 +354,7 @@ export default class LocalVideoTranscoder
       value.height = height;
       value.zOrder = 1;
       value.alpha = 1;
-      value.mirror = true;
+      value.mirror = false;
     });
 
     return {
