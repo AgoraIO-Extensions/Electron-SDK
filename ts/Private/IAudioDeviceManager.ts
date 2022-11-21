@@ -93,7 +93,12 @@ export abstract class IAudioDeviceManager {
   abstract getRecordingDeviceInfo(): AudioDeviceInfo;
 
   /**
-   * @ignore
+   * Sets the volume of the audio recording device.
+   *
+   * @param volume  The volume of the audio recording device. The value range is [0,255].
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
    */
   abstract setRecordingDeviceVolume(volume: number): number;
 
@@ -103,12 +108,22 @@ export abstract class IAudioDeviceManager {
   abstract getRecordingDeviceVolume(): number;
 
   /**
-   * @ignore
+   * Sets the loopback device.
+   * The SDK uses the current playback device as the loopback device by default. If you want to specify another audio device as the loopback device, call this method, and set deviceId to the loopback device you want to specify.This method applies to Windows only.The scenarios where this method is applicable are as follows:Use app A to play music through a Bluetooth headset; when using app B for a video conference, play through the speakers.If the loopback device is set as the Bluetooth headset, the SDK publishes the music in app A to the remote end.If the loopback device is set as the speaker, the SDK does not publish the music in app A to the remote end.If you set the loopback device as the Bluetooth headset, and then use a wired headset to play the music in app A, you need to call this method again, set the loopback device as the wired headset, and the SDK continues to publish the music in app A to remote end.
+   *
+   * @param deviceId Specifies the loopback device of the SDK. You can get the device ID by calling enumeratePlaybackDevices . Connecting or disconnecting the audio device does not change the value of deviceId.The maximum length is MaxDeviceIdLengthType .
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
    */
   abstract setLoopbackDevice(deviceId: string): number;
 
   /**
-   * @ignore
+   * Gets the current loopback device.
+   * This method applies to Windows only.
+   *
+   * @returns
+   * The ID of the current loopback device.
    */
   abstract getLoopbackDevice(): string;
 
@@ -213,7 +228,13 @@ export abstract class IAudioDeviceManager {
   abstract followSystemRecordingDevice(enable: boolean): number;
 
   /**
-   * @ignore
+   * Sets whether the loopback device follows the system default playback device.
+   * This method applies to Windows only.
+   *
+   * @param enable Whether to follow the system default audio playback device:true: Follow. When the default playback device of the system is changed, the SDK immediately switches to the loopback device.false: Do not follow. The SDK switches the audio loopback device to the system default audio playback device only when the current audio playback device is disconnected.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
    */
   abstract followSystemLoopbackDevice(enable: boolean): number;
 
@@ -223,12 +244,20 @@ export abstract class IAudioDeviceManager {
   abstract release(): void;
 
   /**
-   * @ignore
+   * Gets the default audio playback device.
+   * This method is for Windows and macOS only.
+   *
+   * @returns
+   * The details about the default audio playback device. See AudioDeviceInfo .
    */
   abstract getPlaybackDefaultDevice(): AudioDeviceInfo;
 
   /**
-   * @ignore
+   * Gets the default audio capture device.
+   * This method is for Windows and macOS only.
+   *
+   * @returns
+   * The details about the default audio capture device. See AudioDeviceInfo .
    */
   abstract getRecordingDefaultDevice(): AudioDeviceInfo;
 }
