@@ -69,12 +69,7 @@ export default class VirtualBackground
     });
     this.engine.registerEventHandler(this);
 
-    this.engine?.enableExtension(
-      'agora_video_filters_segmentation',
-      'portrait_segmentation',
-      {},
-      true
-    );
+
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel

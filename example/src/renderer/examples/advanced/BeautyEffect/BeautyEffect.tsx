@@ -70,12 +70,6 @@ export default class BeautyEffect
     });
     this.engine.registerEventHandler(this);
 
-    this.engine?.enableExtension(
-      'agora_video_filters_clear_vision',
-      'clear_vision',
-      {},
-      true
-    );
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel

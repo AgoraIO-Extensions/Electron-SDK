@@ -9,6 +9,7 @@ import {
   LocalVideoStreamState,
   RenderModeType,
   RtcConnection,
+  RtcEngineContext,
   RtcStats,
   ScreenCaptureSourceInfo,
   UserOfflineReasonType,
@@ -117,10 +118,10 @@ export default class ScreenShare
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();
-
+    this.engine.setParameters("{\"engine.video.enable_hw_decoder\":\"true\"}");
     this.engine.setVideoEncoderConfiguration({
-      dimensions: {width: 1920, height: 1080},
-      frameRate: 10
+      dimensions: {width: 1280, height: 720},
+      frameRate: 30
     })
 
     // Start preview before joinChannel
@@ -274,6 +275,8 @@ export default class ScreenShare
       return;
     }
 
+    let rett = this.engine?.enableLoopbackRecording(true)
+    console.log(`enableLoopbackRecording ${rett}`)
     // publish media player stream
     this.engine?.joinChannelEx(
       token2,
@@ -303,6 +306,8 @@ export default class ScreenShare
   unpublishScreenCapture = () => {
     const { channelId, uid2 } = this.state;
     this.engine?.leaveChannelEx({ channelId, localUid: uid2 });
+    let rett = this.engine?.enableLoopbackRecording(false)
+    console.log(`enableLoopbackRecording leave ${rett}`)
   };
 
   /**
@@ -318,7 +323,7 @@ export default class ScreenShare
       uid: this.state.uid,
       x: 920,
       y: 0,
-      width: 1080,
+      width: 1280,
       height: 720,
       zOrder: 2
     }):console.log("no camera source");

@@ -84,7 +84,7 @@ export default class Extension
 
     this.engine?.loadExtensionProvider(path);
 
-    this.engine?.enableExtension(provider, extension, {}, true);
+    // this.engine?.enableExtension(provider, extension, {}, true);
     this.setState({ enableExtension: true });
   };
 
@@ -93,7 +93,7 @@ export default class Extension
    */
   disableExtension = () => {
     const { provider, extension } = this.state;
-    this.engine?.enableExtension(provider, extension, {}, false);
+    
     this.setState({ enableExtension: false });
   };
 
