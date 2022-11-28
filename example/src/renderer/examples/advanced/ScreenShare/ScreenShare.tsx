@@ -56,6 +56,7 @@ interface State extends BaseVideoComponentState {
   startScreenCapture: boolean;
   publishScreenCapture: boolean;
   startRtmpStreaming: boolean;
+  rtmpUrl: string;
 }
 
 export default class ScreenShare
@@ -91,7 +92,8 @@ export default class ScreenShare
       enableHighLight: false,
       startScreenCapture: false,
       publishScreenCapture: false,
-      startRtmpStreaming: true
+      startRtmpStreaming: true,
+      rtmpUrl: "rtmp://push.lxtest.agoramdn.com/live/xxxxx"
     };
   }
 
@@ -351,17 +353,17 @@ export default class ScreenShare
   protected startRtmpStreaming() {
     if (this.state.startRtmpStreaming) {
       let transcoding = this._generateLiveTranscoding();
-      let ret = this.engine.startRtmpStreamWithTranscoding("rtmp://push.lxtest.agoramdn.com/live/xxxxx", transcoding);
+      let ret = this.engine.startRtmpStreamWithTranscoding(this.state.rtmpUrl, transcoding);
       this.setState({ 
         startRtmpStreaming: false
       })
-      console.log(`startRtmpStreamWithTranscoding  ret  ${ret}`)
+      console.log(`startRtmpStreamWithTranscoding rtmpUrl: ${this.state.rtmpUrl}  ret  ${ret}`)
     } else {
-      let ret = this.engine.stopRtmpStream("rtmp://push.lxtest.agoramdn.com/live/xxxxx");
-      console.log(`stopRtmpStream  ret  ${ret}`)
+      let ret = this.engine.stopRtmpStream(this.state.rtmpUrl);
       this.setState({ 
         startRtmpStreaming: true
       })
+      console.log(`stopRtmpStream rtmpUrl: ${this.state.rtmpUrl}  ret  ${ret}`)
     }
   }
 
@@ -475,6 +477,7 @@ export default class ScreenShare
       highLightColor,
       enableHighLight,
       publishScreenCapture,
+      rtmpUrl
     } = this.state;
     return (
       <>
@@ -644,7 +647,7 @@ export default class ScreenShare
   }
 
   protected renderAction(): React.ReactNode {
-    const { startScreenCapture, publishScreenCapture, startRtmpStreaming } = this.state;
+    const { startScreenCapture, publishScreenCapture, startRtmpStreaming, rtmpUrl } = this.state;
     return (
       <>
         <AgoraButton
@@ -669,6 +672,15 @@ export default class ScreenShare
               ? this.unpublishScreenCapture
               : this.publishScreenCapture
           }
+        />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            console.log(text)
+            this.setState({
+              rtmpUrl: text
+            });
+          }}
+          placeholder={`rtmp://push.lxtest.agoramdn.com/live/xxxxx`}
         />
         <AgoraButton
           title={`${startRtmpStreaming ? 'Start' : 'Stop'} Rtmp`}
