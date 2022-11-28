@@ -200,6 +200,7 @@ export default class ScreenShare
       targetSource.type ===
       ScreenCaptureSourceType.ScreencapturesourcetypeScreen
     ) {
+      this.engine?.setScreenCaptureScenario(2)
       this.engine?.startScreenCaptureByDisplayId(
         targetSource.sourceId,
         {},
@@ -216,6 +217,7 @@ export default class ScreenShare
         }
       );
     } else {
+      this.engine?.setScreenCaptureScenario(2)
       this.engine?.startScreenCaptureByWindowId(
         targetSource.sourceId,
         {},
