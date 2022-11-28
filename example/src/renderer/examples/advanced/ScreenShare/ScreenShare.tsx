@@ -323,10 +323,10 @@ export default class ScreenShare
     let transcodingUsers: TranscodingUser[] = [];
     this.state.joinChannelSuccess ? transcodingUsers.push({
       uid: this.state.uid,
-      x: 920,
+      x: 1440,
       y: 0,
-      width: 1280,
-      height: 720,
+      width: 480,
+      height: 272,
       zOrder: 2
     }):console.log("no camera source");
 
@@ -676,6 +676,7 @@ export default class ScreenShare
         <AgoraTextInput
           onChangeText={(text) => {
             console.log(text)
+
             this.setState({
               rtmpUrl: text
             });
