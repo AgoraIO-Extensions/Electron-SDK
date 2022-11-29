@@ -147,7 +147,7 @@ export function processIRtcEngineEventHandler(
       }
       break;
 
-    case 'onAudioVolumeIndication':
+    case 'onAudioVolumeIndicationEx':
       if (handler.onAudioVolumeIndication !== undefined) {
         handler.onAudioVolumeIndication(
           jsonParams.connection,

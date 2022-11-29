@@ -23,7 +23,7 @@ NodeIrisEventHandler::~NodeIrisEventHandler() {
   for (auto it = _callbacks.begin(); it != _callbacks.end();) {
     auto item = it->second;
     auto ref = item->call_back_ref;
-    napi_delete_reference(item->env, ref);
+    NAPI_CALL_NORETURN(item->env, napi_delete_reference(item->env, ref));
     delete item;
     item = nullptr;
     _callbacks.erase(it++);
@@ -42,8 +42,8 @@ void NodeIrisEventHandler::addEvent(const std::string& eventName,
     _callbacks[eventName] = callback;
   }
 
-  napi_status status = napi_create_reference(
-      env, call_bcak, 1, &(_callbacks[eventName]->call_back_ref));
+  NAPI_CALL_NORETURN(env, napi_create_reference(
+      env, call_bcak, 1, &(_callbacks[eventName]->call_back_ref)));
 }
 
 void NodeIrisEventHandler::OnEvent(const char* event,
@@ -64,16 +64,15 @@ void NodeIrisEventHandler::OnEvent(const char* event,
             buffer_count);
 }
 
-void NodeIrisEventHandler::fireEvent(const char* callback_name,
-                                     const char* event,
-                                     const char* data,
-                                     const void** buffer,
-                                     unsigned int* length,
+void NodeIrisEventHandler::fireEvent(const char *callback_name,
+                                     const char *event, const char *data,
+                                     const void **buffer, unsigned int *length,
                                      unsigned int buffer_count) {
   std::string eventName = "";
   if (event) {
     eventName = event;
   }
+
   std::string eventData = "";
   if (data) {
     eventData = data;
@@ -101,44 +100,63 @@ void NodeIrisEventHandler::fireEvent(const char* callback_name,
       size_t argc = 5;
       napi_value args[5];
       napi_value result;
-      napi_status status;
-      status = napi_create_string_utf8(it->second->env, eventName.c_str(),
-                                       eventName.length(), &args[0]);
-      status = napi_create_string_utf8(it->second->env, eventData.c_str(),
-                                       eventData.length(), &args[1]);
-      status = napi_create_array(it->second->env, &args[2]);
+      NAPI_CALL_NORETURN(it->second->env,
+                         napi_create_string_utf8(it->second->env,
+                                                 eventName.c_str(),
+                                                 eventName.length(), &args[0]));
+      NAPI_CALL_NORETURN(it->second->env,
+                         napi_create_string_utf8(it->second->env,
+                                                 eventData.c_str(),
+                                                 eventData.length(), &args[1]));
+      NAPI_CALL_NORETURN(it->second->env,
+                         napi_create_array(it->second->env, &args[2]));
 
       std::vector<napi_value> buffer_array_item;
       buffer_array_item.resize(buffer_count);
       for (int i = 0; i < buffer_count; i++) {
-        napi_create_buffer_copy(it->second->env, buffer_lengths[i],
-                                buffer_array[i].data(), nullptr,
-                                &buffer_array_item[i]);
-        napi_set_element(it->second->env, args[2], i, buffer_array_item[i]);
+        NAPI_CALL_NORETURN(
+            it->second->env,
+            napi_create_buffer_copy(it->second->env, buffer_lengths[i],
+                                    buffer_array[i].data(), nullptr,
+                                    &buffer_array_item[i]));
+        NAPI_CALL_NORETURN(it->second->env,
+                           napi_set_element(it->second->env, args[2], i,
+                                            buffer_array_item[i]));
       }
 
-      status = napi_create_array(it->second->env, &args[3]);
+      NAPI_CALL_NORETURN(it->second->env,
+                         napi_create_array(it->second->env, &args[3]));
 
       std::vector<napi_value> buffer_length_item;
       buffer_length_item.resize(buffer_count);
       for (int i = 0; i < buffer_count; i++) {
-        napi_status status;
-        napi_create_uint32(it->second->env, buffer_lengths[i],
-                           &buffer_length_item[i]);
-        napi_set_element(it->second->env, args[3], i, buffer_length_item[i]);
+        NAPI_CALL_NORETURN(it->second->env,
+                           napi_create_uint32(it->second->env,
+                                              buffer_lengths[i],
+                                              &buffer_length_item[i]));
+        NAPI_CALL_NORETURN(it->second->env,
+                           napi_set_element(it->second->env, args[3], i,
+                                            buffer_length_item[i]));
       }
 
-      status = napi_create_uint32(it->second->env, buffer_count, &args[4]);
+      NAPI_CALL_NORETURN(
+          it->second->env,
+          napi_create_uint32(it->second->env, buffer_count, &args[4]));
 
       napi_value call_back_value;
-      status = napi_get_reference_value(
-          it->second->env, it->second->call_back_ref, &call_back_value);
+      NAPI_CALL_NORETURN(it->second->env,
+                         napi_get_reference_value(it->second->env,
+                                                  it->second->call_back_ref,
+                                                  &call_back_value));
 
       napi_value recv_value;
-      status = napi_get_undefined(it->second->env, &recv_value);
+      NAPI_CALL_NORETURN(it->second->env,
+                         napi_get_undefined(it->second->env, &recv_value));
 
-      status = napi_call_function(it->second->env, recv_value, call_back_value,
-                                  argc, args, &result);
+      NAPI_CALL_NORETURN(it->second->env,
+                         napi_call_function(it->second->env, recv_value,
+                                            call_back_value, argc, args,
+                                            &result));
     }
   });
 }
