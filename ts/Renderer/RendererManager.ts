@@ -26,14 +26,35 @@ import GlRenderer from './GlRenderer';
 import { IRenderer, RenderFailCallback } from './IRenderer';
 import { YUVCanvasRenderer } from './YUVCanvasRenderer';
 
+/**
+ * @ignore
+ */
 class RendererManager {
+  /**
+   * @ignore
+   */
   isRendering = false;
   renderFps: number;
+  /**
+   * @ignore
+   */
   videoFrameUpdateInterval?: NodeJS.Timer;
+  /**
+   * @ignore
+   */
   renderers: RenderMap;
+  /**
+   * @ignore
+   */
   renderMode: RENDER_MODE;
+  /**
+   * @ignore
+   */
   msgBridge: AgoraElectronBridge;
 
+  /**
+   * @ignore
+   */
   constructor() {
     this.renderFps = 10;
     this.renderers = new Map();
@@ -44,6 +65,11 @@ class RendererManager {
     this.msgBridge = AgoraEnv.AgoraElectronBridge;
   }
 
+  /**
+   * Registers an audio frame observer object.
+   *
+   * @param mode The use mode of the audio frame. See RawAudioFrameOpModeType .
+   */
   setRenderMode(mode: RENDER_MODE) {
     this.renderMode = mode;
     logInfo(
@@ -51,6 +77,9 @@ class RendererManager {
     );
   }
 
+  /**
+   * @ignore
+   */
   setFPS(fps: number) {
     this.renderFps = fps;
     this.restartRender();
@@ -62,6 +91,9 @@ class RendererManager {
     mirror: boolean = false
   ): void {
     if (!view) {
+      /**
+       * @ignore
+       */
       logError('setRenderOption: view not exist', view);
     }
     this.forEachStream(({ renders }) => {
@@ -80,6 +112,9 @@ class RendererManager {
       rendererOptions,
       videoSourceType,
     }: FormatRendererVideoConfig =
+      /**
+       * @ignore
+       */
       getDefaultRendererVideoConfig(rendererConfig);
 
     if (!rendererConfig.view) {
@@ -107,6 +142,9 @@ class RendererManager {
     try {
       gl =
         canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      /**
+       * @ignore
+       */
       logInfo('Your browser support webGL');
     } catch (e) {
       logWarn('Your browser may not support webGL');
