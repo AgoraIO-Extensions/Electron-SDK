@@ -82,8 +82,8 @@ export default class ScreenShare
       targetSource: undefined,
       width: 1920,
       height: 1080,
-      frameRate: 15,
-      bitrate: 0,
+      frameRate: 30,
+      bitrate: 4000,
       captureMouseCursor: true,
       windowFocus: false,
       excludeWindowList: [],
@@ -122,10 +122,11 @@ export default class ScreenShare
     this.engine.enableVideo();
     this.engine.setParameters("{\"engine.video.enable_hw_decoder\":\"true\"}");
     this.engine.setVideoEncoderConfiguration({
-      dimensions: {width: 1280, height: 720},
-      frameRate: 30
+      dimensions: {width: 960, height: 540},
+      frameRate: 30,
+      bitrate: 500
     })
-
+    
     // Start preview before joinChannel
     this.engine.startPreview();
     this.setState({ startPreview: true });
@@ -348,7 +349,7 @@ export default class ScreenShare
       videoFramerate: 30,
       userCount: transcodingUsers.length,
       transcodingUsers: transcodingUsers,
-      videoBitrate: 6000
+      videoBitrate: 4000
     };
   };
 
