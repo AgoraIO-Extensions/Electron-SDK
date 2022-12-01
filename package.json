@@ -158,7 +158,8 @@
     "build/",
     "dist/",
     "js/",
-    "types/"
+    "types/",
+    "ts/Private/ti/"
   ],
   "prettier": {
     "quoteProps": "consistent",
