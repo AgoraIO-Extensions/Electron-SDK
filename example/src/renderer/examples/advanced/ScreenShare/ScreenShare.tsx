@@ -156,6 +156,8 @@ export default class ScreenShare
     this.engine?.joinChannel(token, channelId, uid, {
       // Make myself as the broadcaster to send stream to remote
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+      autoSubscribeVideo: false,
+      autoSubscribeAudio: false
     });
   }
 
