@@ -57,6 +57,9 @@ interface State extends BaseVideoComponentState {
   publishScreenCapture: boolean;
   startRtmpStreaming: boolean;
   rtmpUrl: string;
+  cameraEncodeWidth: number;
+  cameraEncodeHeight: number;
+  cameraBitrate: number;
 }
 
 export default class ScreenShare
@@ -93,7 +96,11 @@ export default class ScreenShare
       startScreenCapture: false,
       publishScreenCapture: false,
       startRtmpStreaming: true,
-      rtmpUrl: "rtmp://push.lxtest.agoramdn.com/live/xxxxx"
+      rtmpUrl: "rtmp://push.lxtest.agoramdn.com/live/xxxxx",
+
+      cameraEncodeWidth: 960,
+      cameraEncodeHeight: 540,
+      cameraBitrate: 500
     };
   }
 
@@ -121,11 +128,11 @@ export default class ScreenShare
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();
     this.engine.setParameters("{\"engine.video.enable_hw_decoder\":\"true\"}");
-    this.engine.setVideoEncoderConfiguration({
-      dimensions: {width: 960, height: 540},
-      frameRate: 30,
-      bitrate: 500
-    })
+    // this.engine.setVideoEncoderConfiguration({
+    //   dimensions: {width: this.state.cameraEncodeWidth, height: this.state.cameraEncodeHeight},
+    //   frameRate: 30,
+    //   bitrate: 500
+    // })
     
     // Start preview before joinChannel
     this.engine.startPreview();
@@ -146,6 +153,12 @@ export default class ScreenShare
       this.error('uid is invalid');
       return;
     }
+
+    this.engine.setVideoEncoderConfiguration({
+      dimensions: {width: this.state.cameraEncodeWidth, height: this.state.cameraEncodeHeight},
+      frameRate: 30,
+      bitrate: this.state.cameraBitrate
+    })
 
     // start joining channel
     // 1. Users can only see each other after they join the
@@ -486,6 +499,36 @@ export default class ScreenShare
     } = this.state;
     return (
       <>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              cameraEncodeWidth: +text
+            });
+          }}
+          placeholder={`Camera Encode Width default 960`}
+        />
+
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              cameraEncodeHeight: +text
+            });
+          }}
+          placeholder={`Camera Encode Height default 540`}
+        />
+
+      <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              cameraBitrate: +text
+            });
+          }}
+          placeholder={`Camera Bitrate default 500`}
+        />
+
         <AgoraDropdown
           title={'targetSource'}
           items={sources.map((value) => {

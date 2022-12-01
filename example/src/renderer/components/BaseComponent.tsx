@@ -145,9 +145,6 @@ export abstract class BaseComponent<
           {this.renderChannel()}
           {configuration ? (
             <>
-              <AgoraDivider>
-                The Configuration of {this.constructor.name}
-              </AgoraDivider>
               {configuration}
             </>
           ) : undefined}
