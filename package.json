@@ -7,7 +7,6 @@
   "repository": "https://github.com/AgoraIO-Extensions/Electron-SDK",
   "author": "agora.io",
   "scripts": {
-    "install": "cross-env-shell gulp NPM_Install \\\"--INIT_CWD=$INIT_CWD\\\"",
     "totalBuild": "cross-env-shell gulp totalBuild \\\"--INIT_CWD=$INIT_CWD\\\"",
     "build": "cross-env-shell gulp build \\\"--INIT_CWD=$INIT_CWD\\\"",
     "clean": "cross-env-shell gulp clean \\\"--INIT_CWD=$INIT_CWD\\\"",
@@ -23,17 +22,18 @@
     "build_windows_x64_release": "cmake-js rebuild --arch=x64 --CDCMAKE_OSX_ARCHITECTURES=\"x86_64\" --CDCMAKE_BUILD_TYPE=Release",
     "build_linux_debug": "cmake-js rebuild --arch=x64 --CDCMAKE_BUILD_TYPE=Debug --CDCMAKE_CXX_FLAGS=-g -G \"Unix Makefiles\"",
     "build_linux_release": "cmake-js rebuild --arch=x64 --CDCMAKE_BUILD_TYPE=Release -G \"Unix Makefiles\"",
-    "changelog": "conventional-changelog -p angular -u -i CHANGELOG.md -s -r 10",
-    "release": "release-it",
     "test": "jest",
     "typescript": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "prepare": "cross-env-shell gulp NPM_Install \\\"--INIT_CWD=$INIT_CWD\\\"",
+    "release": "release-it",
     "example": "yarn --cwd example",
-    "bootstrap": "yarn example && yarn"
+    "bootstrap": "yarn example && yarn totalBuild && yarn patch-package && yarn ts_interface_builder && yarn link && yarn example link agora-electron-sdk",
+    "ts_interface_builder": "yarn ts-interface-builder ts/Private/*.ts -o ts/Private/ti/"
   },
   "agora_electron": {
-    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.1.0_DCG_Windows_Video_20221121_0207.zip",
-    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.1.0_DCG_Mac_Video_20221121_0207.zip",
+    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.1.0_DCG_Windows_Video_20221201_0711.zip",
+    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.1.0_DCG_Mac_Video_20221201_0715.zip",
     "no_symbol": true,
     "prebuilt": true
   },
@@ -53,6 +53,7 @@
     "minimist": "^1.2.5",
     "rimraf": "^3.0.0",
     "shelljs": "^0.8.4",
+    "ts-interface-checker": "^1.0.2",
     "winston": "^3.3.3",
     "yuv-buffer": "1.0.0",
     "yuv-canvas": "1.2.6"
@@ -82,8 +83,10 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^3.1.3",
     "husky": "4.2.5",
+    "patch-package": "^6.5.0",
     "prettier": "^2.0.5",
     "release-it": "^15.0.0",
+    "ts-interface-builder": "^0.3.3",
     "typescript": "^4.5.2"
   },
   "husky": {
