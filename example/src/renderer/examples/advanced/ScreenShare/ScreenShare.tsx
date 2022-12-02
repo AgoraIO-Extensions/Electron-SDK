@@ -265,7 +265,7 @@ export default class ScreenShare
       return;
     }
 
-    // publish media player stream
+    // publish screen share stream
     this.engine?.joinChannelEx(
       token2,
       { channelId, localUid: uid2 },
@@ -342,7 +342,12 @@ export default class ScreenShare
 
   onUserJoined(connection: RtcConnection, remoteUid: number, elapsed: number) {
     const { uid2 } = this.state;
-    if (connection.localUid === uid2 || remoteUid === uid2) return;
+    if (connection.localUid === uid2 || remoteUid === uid2) {
+      // ⚠️ mute the streams from screen sharing
+      this.engine?.muteRemoteAudioStream(uid2, true);
+      this.engine?.muteRemoteVideoStream(uid2, true);
+      return;
+    }
     super.onUserJoined(connection, remoteUid, elapsed);
   }
 
