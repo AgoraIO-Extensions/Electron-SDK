@@ -28,7 +28,7 @@
     "prepare": "cross-env-shell gulp NPM_Install \\\"--INIT_CWD=$INIT_CWD\\\"",
     "release": "release-it",
     "example": "yarn --cwd example",
-    "bootstrap": "yarn example && yarn totalBuild && yarn patch-package && yarn ts_interface_builder && yarn link && yarn example link agora-electron-sdk",
+    "bootstrap": "yarn example && yarn install && yarn patch-package && yarn ts_interface_builder && yarn totalBuild && yarn link && yarn example link agora-electron-sdk",
     "ts_interface_builder": "yarn ts-interface-builder ts/Private/*.ts -o ts/Private/ti/"
   },
   "agora_electron": {
