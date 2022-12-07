@@ -63,9 +63,11 @@ export const DeviceEventEmitter = new EventEmitter();
 
 const AgoraRtcNg = AgoraEnv.AgoraElectronBridge;
 AgoraRtcNg.OnEvent('call_back_with_buffer', (...params: any) => {
-  setTimeout(() => {
+  try {
     handleEvent(...params);
-  });
+  } catch (e) {
+    console.error(e);
+  }
 });
 
 /**
