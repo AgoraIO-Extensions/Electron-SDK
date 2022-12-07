@@ -62,7 +62,13 @@ import EventEmitter from './emitter/EventEmitter';
 export const DeviceEventEmitter = new EventEmitter();
 
 const AgoraRtcNg = AgoraEnv.AgoraElectronBridge;
-AgoraRtcNg.OnEvent('call_back_with_buffer', handleEvent);
+AgoraRtcNg.OnEvent('call_back_with_buffer', (...params: any) => {
+  try {
+    handleEvent(...params);
+  } catch (e) {
+    console.error(e);
+  }
+});
 
 /**
  * @internal
