@@ -60,6 +60,16 @@ interface State extends BaseVideoComponentState {
   cameraEncodeWidth: number;
   cameraEncodeHeight: number;
   cameraBitrate: number;
+  transcodingWidth: number;
+  transcodingHeight: number;
+  transcodingVideoFramerate: number;
+  transcodingVideoBitrate: number;
+
+  transcodingCameraSourceX: number;
+  transcodingCameraSourceY: number;
+  transcodingCameraSourceWidth: number;
+  transcodingCameraSourceHeight: number;
+  transcodingCameraSourceZorder: number;
 }
 
 export default class ScreenShare
@@ -100,10 +110,20 @@ export default class ScreenShare
 
       cameraEncodeWidth: 960,
       cameraEncodeHeight: 540,
-      cameraBitrate: 500
+      cameraBitrate: 500,
+
+      transcodingWidth: 1920,
+      transcodingHeight: 1080,
+      transcodingVideoFramerate: 30,
+      transcodingVideoBitrate: 4000,
+
+      transcodingCameraSourceX: 1440,
+      transcodingCameraSourceY: 0,
+      transcodingCameraSourceWidth: 480,
+      transcodingCameraSourceHeight: 272,
+      transcodingCameraSourceZorder: 2
     };
   }
-
   /**
    * Step 1: initRtcEngine
    */
@@ -341,11 +361,11 @@ export default class ScreenShare
     let transcodingUsers: TranscodingUser[] = [];
     this.state.joinChannelSuccess ? transcodingUsers.push({
       uid: this.state.uid,
-      x: 1440,
-      y: 0,
-      width: 480,
-      height: 272,
-      zOrder: 2
+      x: this.state.transcodingCameraSourceX,
+      y: this.state.transcodingCameraSourceY,
+      width: this.state.transcodingCameraSourceWidth,
+      height: this.state.transcodingCameraSourceHeight,
+      zOrder: this.state.transcodingCameraSourceZorder
     }):console.log("no camera source");
 
     this.state.startScreenCapture ? transcodingUsers.push({
@@ -359,12 +379,12 @@ export default class ScreenShare
 
 
     return {
-      width: 1920,
-      height: 1080,
-      videoFramerate: 30,
+      width: this.state.transcodingWidth,
+      height: this.state.transcodingHeight,
+      videoFramerate: this.state.transcodingVideoFramerate,
       userCount: transcodingUsers.length,
       transcodingUsers: transcodingUsers,
-      videoBitrate: 4000
+      videoBitrate: this.state.transcodingVideoBitrate
     };
   };
 
@@ -375,7 +395,7 @@ export default class ScreenShare
       this.setState({ 
         startRtmpStreaming: false
       })
-      console.log(`startRtmpStreamWithTranscoding rtmpUrl: ${this.state.rtmpUrl}  ret  ${ret}`)
+      console.log(`startRtmpStreamWithTranscoding rtmpUrl: ${this.state.rtmpUrl}  ret  ${ret}, transcoding ${JSON.stringify(transcoding)}`)
     } else {
       let ret = this.engine.stopRtmpStream(this.state.rtmpUrl);
       this.setState({ 
@@ -721,6 +741,98 @@ export default class ScreenShare
               : this.publishScreenCapture
           }
         />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            console.log(text)
+
+            this.setState({
+              transcodingWidth: +text
+            });
+          }}
+          placeholder={`Transcoding Width ${this.state.transcodingWidth}`}
+        />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            console.log(text)
+
+            this.setState({
+              transcodingHeight: +text
+            });
+          }}
+          placeholder={`Transcoding Height ${this.state.transcodingHeight}`}
+        />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            console.log(text)
+
+            this.setState({
+              transcodingVideoFramerate: +text
+            });
+          }}
+          placeholder={`Transcoding VideoFramerate ${this.state.transcodingVideoFramerate}`}
+        />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            console.log(text)
+
+            this.setState({
+              transcodingVideoBitrate: +text
+            });
+          }}
+          placeholder={`Transcoding VideoBitrate ${this.state.transcodingVideoBitrate}`}
+        />
+
+        <AgoraTextInput
+          onChangeText={(text) => {
+            console.log(text)
+
+            this.setState({
+              transcodingCameraSourceX: +text
+            });
+          }}
+          placeholder={`Transcoding CameraSourceX ${this.state.transcodingCameraSourceX}`}
+        />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            console.log(text)
+
+            this.setState({
+              transcodingCameraSourceY: +text
+            });
+          }}
+          placeholder={`Transcoding CameraSourceY ${this.state.transcodingCameraSourceY}`}
+        />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            console.log(text)
+
+            this.setState({
+              transcodingCameraSourceWidth: +text
+            });
+          }}
+          placeholder={`Transcoding CameraSourceWidth ${this.state.transcodingCameraSourceWidth}`}
+        />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            console.log(text)
+
+            this.setState({
+              transcodingCameraSourceHeight: +text
+            });
+          }}
+          placeholder={`Transcoding CameraSourceHeight ${this.state.transcodingCameraSourceHeight}`}
+        />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            console.log(text)
+
+            this.setState({
+              transcodingCameraSourceZorder: +text
+            });
+          }}
+          placeholder={`Transcoding CameraSourceZorder ${this.state.transcodingCameraSourceZorder}`}
+        />
+
         <AgoraTextInput
           onChangeText={(text) => {
             console.log(text)
