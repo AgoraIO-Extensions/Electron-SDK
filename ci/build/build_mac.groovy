@@ -56,7 +56,7 @@ def doPublish(buildVariables) {
                     {
                         "msgtype": "text",
                         "text": {
-                            "content": \"${env.NOTIFICATION_CONTENT}\n${artifactoryUrls.find { it.contains('demo') }}\"
+                            "content": \"${System.getenv()['NOTIFICATION_CONTENT']}\n${artifactoryUrls.find { it.contains('demo') }}\"
                         }
                     }
                     """
@@ -65,7 +65,7 @@ def doPublish(buildVariables) {
                     contentType: 'APPLICATION_JSON_UTF8',
                     ignoreSslErrors: true, responseHandle: 'STRING',
                     requestBody: payload1,
-                    url: "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${env.NOTIFICATION_KEY}"
+                    url: "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${System.getenv()['NOTIFICATION_KEY']}"
     }
     archiveArtifacts(artifacts: "package_urls", allowEmptyArchive:true)
     sh "rm -rf *.zip || true"
