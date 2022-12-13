@@ -240,9 +240,9 @@ endfunction(build_target_agora_node_ext)
 
 function(copy_library)
   #copy native library
-  file(COPY ${AGORA_RTC_SDK_LIBRARY} DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+  file(COPY ${AGORA_RTC_SDK_LIBRARY} DESTINATION ${OUTPUT_DIRECTORY})
   #copy iris library
-  file(COPY ${AGORA_IRIS_SDK_LIBRARY} DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+  file(COPY ${AGORA_IRIS_SDK_LIBRARY} DESTINATION ${OUTPUT_DIRECTORY})
 endfunction(copy_library)
 
 build_target_agora_node_ext()
