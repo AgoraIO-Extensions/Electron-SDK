@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "engines": {
-    "node": "16"
+    "node": "14"
   },
   "scripts": {
     "start": "electron-webpack dev",
@@ -88,7 +88,7 @@
     "electron-builder": "^23.1.0",
     "electron-webpack": "^2.8.2",
     "electron-webpack-ts": "^4.0.1",
-    "node-sass": "^6.0.0",
+    "node-sass": "^5.0.0",
     "react-refresh": "^0.13.0",
     "sass-loader": "~10.2.1",
     "style-loader": "^2.0.0",
