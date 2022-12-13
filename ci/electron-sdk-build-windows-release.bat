@@ -3,7 +3,7 @@ dir
 call npm -v
 call node -v
 call npm config list
-if %1 == ia32 (
+if %1 == x86 (
     echo sdk_ia32
     call npm install --verbose --agora_electron_sdk_pre_built=false  --agora_electron_sdk_arch=ia32
 )
