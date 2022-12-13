@@ -8,11 +8,11 @@ buildUtils = new agora.build.BuildUtils()
 compileConfig = [
     "sourceDir": "electron-sdk",
     "non-publish": [
-        "command": "./.ci/build/build_windows.bat",
+        "command": "./ci/build/build_windows.bat",
         "extraArgs": "",
     ],
     "publish": [
-        "command": "./.ci/build/build_windows.bat",
+        "command": "./ci/build/build_windows.bat",
         "extraArgs": "",
     ]
 ]

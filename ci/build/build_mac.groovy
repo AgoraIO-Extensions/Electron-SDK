@@ -8,11 +8,11 @@ buildUtils = new agora.build.BuildUtils()
 compileConfig = [
     "sourceDir": "electron-sdk",
     "non-publish": [
-        "command": "./.ci/build/build_mac.sh",
+        "command": "./ci/build/build_mac.sh",
         "extraArgs": "",
     ],
     "publish": [
-        "command": "./.ci/build/build_mac.sh",
+        "command": "./ci/build/build_mac.sh",
         "extraArgs": "",
     ]
 ]
