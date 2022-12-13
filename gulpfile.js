@@ -25,7 +25,10 @@ const wrapDownloadPreBuild = async (cb) => {
 };
 
 let NPM_Install = config.prebuilt ? wrapDownloadPreBuild : totalBuild;
-if (process.env.npm_config_yarn_path.indexOf('scripts/bootstrap.js') !== -1) {
+if (
+  typeof process.env.npm_config_yarn_path === 'string' &&
+  process.env.npm_config_yarn_path.indexOf('scripts/bootstrap.js') !== -1
+) {
   NPM_Install = async () => {
     logger.warn('Run by `scripts/bootstrap.js`, skip `NPM_Install`');
   };
