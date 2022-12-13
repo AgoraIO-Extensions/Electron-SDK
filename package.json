@@ -32,8 +32,8 @@
     "ts_interface_builder": "yarn ts-interface-builder ts/Private/*.ts -o ts/Private/ti/"
   },
   "agora_electron": {
-    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.1.0_DCG_Windows_Video_20221201_0711.zip",
-    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.1.0_DCG_Mac_Video_20221201_0715.zip",
+    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.1.0_DCG_Windows_Video_20221209_1227.zip",
+    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.1.0_DCG_Mac_Video_20221209_1233.zip",
     "no_symbol": true,
     "prebuilt": true
   },
