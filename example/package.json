@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "license": "MIT",
   "engines": {
-    "node": "14"
+    "node": "16"
   },
   "scripts": {
-    "dev": "electron-webpack dev",
+    "start": "electron-webpack dev",
     "compile": "electron-webpack",
     "dist": "yarn compile && electron-builder",
     "dist:mac": "yarn dist --dir -c.compression=store -c.mac.identity=null",
@@ -88,7 +88,7 @@
     "electron-builder": "^23.1.0",
     "electron-webpack": "^2.8.2",
     "electron-webpack-ts": "^4.0.1",
-    "node-sass": "^5.0.0",
+    "node-sass": "^6.0.0",
     "react-refresh": "^0.13.0",
     "sass-loader": "~10.2.1",
     "style-loader": "^2.0.0",
