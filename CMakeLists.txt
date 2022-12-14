@@ -64,7 +64,7 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
           ${CMAKE_CURRENT_SOURCE_DIR}/iris/DCG/Agora_Native_SDK_for_Mac_FULL/libs
           )
   # native rtc sdk library
-  file(GLOB AGORA_RTC_SDK_LIBRARY
+  set(AGORA_RTC_SDK_LIBRARY
           ${AGORA_RTC_SDK_PATH}/*.framework
           )
 
@@ -73,7 +73,7 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
           ${CMAKE_CURRENT_SOURCE_DIR}/iris/MAC/Release
           )
   # iris sdk library
-  file(GLOB AGORA_IRIS_SDK_LIBRARY
+  set(AGORA_IRIS_SDK_LIBRARY
           ${AGORA_IRIS_SDK_PATH}/*.framework
           )
 
@@ -100,18 +100,9 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
   set(AGORA_RTC_SDK_PATH
           ${CMAKE_CURRENT_SOURCE_DIR}/iris/DCG)
 
-  file(GLOB AGORA_RTC_SDK_LIBRARY
+  set(AGORA_RTC_SDK_LIBRARY
           ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_FULL/sdk/${AGORA_RTC_PROJECT_ARCH}/*.dll
           )
-  #if (${AGORA_RTC_PROJECT_ARCH} STREQUAL "x86")
-  #    file(GLOB AGORA_RTC_SDK_LIBRARY
-  #        ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_x86_rel.v3.8.201.2_65934_20220704_1631_full_216487/rtc/sdk/*.dll
-  #        )
-  #elseif (${AGORA_RTC_PROJECT_ARCH} STREQUAL "x86_64")
-  #    file(GLOB AGORA_RTC_SDK_LIBRARY
-  #        ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_x64_rel.v3.8.201.2_65935_20220704_1632_full_216486/rtc/sdk/*.dll
-  #        )
-  #endif ()
 
   # iris sdk path
   set(AGORA_IRIS_SDK_PATH
@@ -120,7 +111,7 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
   file(GLOB AGORA_IRIS_SDK_LIB
           ${AGORA_IRIS_SDK_PATH}/${AGORA_DCG_SDK_ARCH_FILE_NAME}/*.lib
           )
-  file(GLOB AGORA_IRIS_SDK_LIBRARY
+  set(AGORA_IRIS_SDK_LIBRARY
           ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/*.dll
           )
 
@@ -146,7 +137,7 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
           ${CMAKE_CURRENT_SOURCE_DIR}/iris/RTC/sdk
           )
 
-  file(GLOB AGORA_RTC_SDK_LIBRARY
+  set(AGORA_RTC_SDK_LIBRARY
           ${AGORA_RTC_SDK_PATH}/x86_64/*.so
           )
 
@@ -154,7 +145,7 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   set(AGORA_IRIS_SDK_PATH
           ${CMAKE_CURRENT_SOURCE_DIR}/iris
           )
-  file(GLOB AGORA_IRIS_SDK_LIBRARY
+  set(AGORA_IRIS_SDK_LIBRARY
           ${AGORA_IRIS_SDK_PATH}/x86_64/*
           )
   # iris sdk include file
@@ -240,10 +231,16 @@ function(build_target_agora_node_ext)
 endfunction(build_target_agora_node_ext)
 
 function(copy_library)
-  #copy native library
-  file(COPY ${AGORA_RTC_SDK_LIBRARY} DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-  #copy iris library
-  file(COPY ${AGORA_IRIS_SDK_LIBRARY} DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+  add_custom_command(
+          TARGET ${AGORA_NODE_EXT_NAME}
+          POST_BUILD
+          COMMAND cp -RP
+          "${AGORA_RTC_SDK_LIBRARY}"
+          "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/"
+          COMMAND cp -RP
+          "${AGORA_IRIS_SDK_LIBRARY}"
+          "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/"
+  )
 endfunction(copy_library)
 
 build_target_agora_node_ext()
