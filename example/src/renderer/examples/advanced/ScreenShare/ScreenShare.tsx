@@ -573,12 +573,30 @@ export default class ScreenShare
             />
             <AgoraDivider />
             <SketchPicker
-              onChangeComplete={({ hex }) => {
+              onChangeComplete={(color) => {
+                const { a, r, g, b } = color.rgb;
+                const argbHex =
+                  `${((a * 255) | (1 << 8)).toString(16).slice(1)}` +
+                  `${(r | (1 << 8)).toString(16).slice(1)}` +
+                  `${(g | (1 << 8)).toString(16).slice(1)}` +
+                  `${(b | (1 << 8)).toString(16).slice(1)}`;
+                console.log(
+                  'onChangeComplete',
+                  color.hex,
+                  `#${argbHex}`,
+                  +`0x${argbHex}`,
+                  color
+                );
                 this.setState({
-                  highLightColor: +hex.replace('#', '0x'),
+                  highLightColor: +`0x${argbHex}`,
                 });
               }}
-              color={`#${highLightColor?.toString(16)}`}
+              color={(function () {
+                const argb = highLightColor?.toString(16);
+                const rgba = `${argb.slice(2)}` + `${argb.slice(0, 2)}`;
+                console.log('argb', `#${argb}`, 'rgba', `#${rgba}`);
+                return `#${rgba}`;
+              })()}
             />
           </>
         ) : undefined}
