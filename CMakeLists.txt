@@ -100,7 +100,7 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
   set(AGORA_RTC_SDK_PATH
           ${CMAKE_CURRENT_SOURCE_DIR}/iris/DCG)
 
-  set(AGORA_RTC_SDK_LIBRARY
+  file(GLOB AGORA_RTC_SDK_LIBRARY
           ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_FULL/sdk/${AGORA_RTC_PROJECT_ARCH}/*.dll
           )
 
@@ -111,7 +111,7 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
   file(GLOB AGORA_IRIS_SDK_LIB
           ${AGORA_IRIS_SDK_PATH}/${AGORA_DCG_SDK_ARCH_FILE_NAME}/*.lib
           )
-  set(AGORA_IRIS_SDK_LIBRARY
+  file(GLOB AGORA_IRIS_SDK_LIBRARY
           ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/*.dll
           )
 
@@ -231,16 +231,29 @@ function(build_target_agora_node_ext)
 endfunction(build_target_agora_node_ext)
 
 function(copy_library)
-  add_custom_command(
-          TARGET ${AGORA_NODE_EXT_NAME}
-          POST_BUILD
-          COMMAND cp -RP
-          "${AGORA_RTC_SDK_LIBRARY}"
-          "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/"
-          COMMAND cp -RP
-          "${AGORA_IRIS_SDK_LIBRARY}"
-          "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/"
-  )
+  if (WIN32)
+    add_custom_command(
+            TARGET ${AGORA_NODE_EXT_NAME}
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            ${AGORA_RTC_SDK_LIBRARY}
+            "$<TARGET_FILE_DIR:${AGORA_NODE_EXT_NAME}>/"
+            COMMAND ${CMAKE_COMMAND} -E copy
+            ${AGORA_IRIS_SDK_LIBRARY}
+            "$<TARGET_FILE_DIR:${AGORA_NODE_EXT_NAME}>/"
+    )
+  else ()
+    add_custom_command(
+            TARGET ${AGORA_NODE_EXT_NAME}
+            POST_BUILD
+            COMMAND cp -RP
+            "${AGORA_RTC_SDK_LIBRARY}"
+            "$<TARGET_FILE_DIR:${AGORA_NODE_EXT_NAME}>/"
+            COMMAND cp -RP
+            "${AGORA_IRIS_SDK_LIBRARY}"
+            "$<TARGET_FILE_DIR:${AGORA_NODE_EXT_NAME}>/"
+    )
+  endif ()
 endfunction(copy_library)
 
 build_target_agora_node_ext()
