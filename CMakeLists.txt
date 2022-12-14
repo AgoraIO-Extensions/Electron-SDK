@@ -89,8 +89,7 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
   if (${CMAKE_OSX_ARCHITECTURES} STREQUAL "i386")
     set(AGORA_RTC_PROJECT_ARCH "x86")
     set(AGORA_IRIS_PROJECT_ARCH "Win32")
-    set(AGORA_DCG_SDK_ARCH_FILE_NAME
-            "Win32/Release")
+    set(AGORA_DCG_SDK_ARCH_FILE_NAME "Win32/Release")
   elseif (${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86_64")
     set(AGORA_RTC_PROJECT_ARCH "x86_64")
     set(AGORA_IRIS_PROJECT_ARCH "x64")
@@ -231,8 +230,10 @@ function(build_target_agora_node_ext)
           ${AGORA_IRIS_SDK_HEADER_FILE_DIR}
           )
   set_target_properties(${AGORA_NODE_EXT_NAME} PROPERTIES
-          LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIRECTORY}
-          PDB_OUTPUT_DIRECTORY ${OUTPUT_DIRECTORY}
+          ARCHIVE_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}"
+          LIBRARY_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}"
+          RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}"
+          PDB_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}"
           PREFIX ""
           SUFFIX ".node"
           )
@@ -240,9 +241,9 @@ endfunction(build_target_agora_node_ext)
 
 function(copy_library)
   #copy native library
-  file(COPY ${AGORA_RTC_SDK_LIBRARY} DESTINATION ${OUTPUT_DIRECTORY})
+  file(COPY ${AGORA_RTC_SDK_LIBRARY} DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
   #copy iris library
-  file(COPY ${AGORA_IRIS_SDK_LIBRARY} DESTINATION ${OUTPUT_DIRECTORY})
+  file(COPY ${AGORA_IRIS_SDK_LIBRARY} DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 endfunction(copy_library)
 
 build_target_agora_node_ext()
