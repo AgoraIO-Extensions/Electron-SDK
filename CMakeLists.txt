@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 project(agora-electron-sdk)
 
@@ -258,5 +258,3 @@ endfunction(copy_library)
 
 build_target_agora_node_ext()
 copy_library()
-
-add_definitions(-DNAPI_VERSION=3)
