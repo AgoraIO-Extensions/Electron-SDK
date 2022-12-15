@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "install": "npm run rebuild",
+    "postinstall": "npm run rebuild",
     "start": "electron-webpack dev",
     "compile": "electron-webpack",
-    "rebuild": "electron-rebuild -f -m node_modules/ref-napi",
+    "rebuild": "electron-rebuild -f -o ref-napi",
     "dist": "yarn compile && electron-builder",
     "dist:mac": "yarn dist --dir -c.compression=store -c.mac.identity=null",
     "dist:win32": "yarn compile && electron-builder --publish never --win --ia32",
