@@ -1,3 +1,5 @@
+## [4.0.1-xhs.3](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.1-xhs.2...v4.0.1-xhs.3) (2022-12-16)
+
 ## [4.0.1-xhs.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.1-xhs.1...v4.0.1-xhs.2) (2022-11-21)
 
 
