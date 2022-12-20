@@ -5,6 +5,7 @@ import {
 } from '../IAgoraRtcEngine';
 import { IAudioSpectrumObserver } from '../AgoraMediaBase';
 import { IAudioEncodedFrameObserver } from '../AgoraBase';
+import { EmitterSubscription } from '../internal/emitter/EventEmitter';
 
 export type IRtcEngineEvent = IRtcEngineEventHandler &
   IDirectCdnStreamingEventHandler &
@@ -14,6 +15,10 @@ export type IRtcEngineEvent = IRtcEngineEventHandler &
 
 declare module '../IAgoraRtcEngine' {
   interface IRtcEngine {
+    _addListenerPreCheck<EventType extends keyof IRtcEngineEvent>(
+      eventType: EventType
+    ): boolean;
+
     /**
      * Adds one IRtcEngineEvent listener.
      * After calling this method, you can listen for the corresponding events in the IRtcEngine object and obtain data through IRtcEngineEvent. Depending on your project needs, you can add multiple listeners for the same event.
@@ -28,7 +33,7 @@ declare module '../IAgoraRtcEngine' {
     addListener<EventType extends keyof IRtcEngineEvent>(
       eventType: EventType,
       listener: IRtcEngineEvent[EventType]
-    ): void;
+    ): EmitterSubscription;
 
     /**
      * Removes the specified IRtcEngineEvent listener.

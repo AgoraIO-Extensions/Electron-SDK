@@ -80,6 +80,7 @@ export default class DeviceManager
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
+      logConfig: { filePath: Config.SDKLogPath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
@@ -129,22 +130,22 @@ export default class DeviceManager
    */
   enumerateDevices = () => {
     const playbackDevices = this.engine
-      .getAudioDeviceManager()
+      ?.getAudioDeviceManager()
       .enumeratePlaybackDevices();
     const recordingDevices = this.engine
-      .getAudioDeviceManager()
+      ?.getAudioDeviceManager()
       .enumerateRecordingDevices();
     const videoDevices = this.engine
-      .getVideoDeviceManager()
+      ?.getVideoDeviceManager()
       .enumerateVideoDevices();
 
     this.setState({
       playbackDevices,
-      playbackDeviceId: playbackDevices[0].deviceId,
+      playbackDeviceId: playbackDevices?.at(0)?.deviceId,
       recordingDevices,
-      recordingDeviceId: recordingDevices[0].deviceId,
+      recordingDeviceId: recordingDevices?.at(0)?.deviceId,
       videoDevices,
-      videoDeviceId: videoDevices[0].deviceId,
+      videoDeviceId: videoDevices?.at(0)?.deviceId,
     });
   };
 
@@ -154,9 +155,14 @@ export default class DeviceManager
   setDevice = () => {
     const { playbackDeviceId, recordingDeviceId, videoDeviceId } = this.state;
 
-    this.engine.getAudioDeviceManager().setPlaybackDevice(playbackDeviceId);
-    this.engine.getAudioDeviceManager().setRecordingDevice(recordingDeviceId);
-    this.engine.getVideoDeviceManager().setDevice(videoDeviceId);
+    if (playbackDeviceId)
+      this.engine?.getAudioDeviceManager().setPlaybackDevice(playbackDeviceId);
+    if (recordingDeviceId)
+      this.engine
+        ?.getAudioDeviceManager()
+        .setRecordingDevice(recordingDeviceId);
+    if (videoDeviceId)
+      this.engine?.getVideoDeviceManager().setDevice(videoDeviceId);
   };
 
   /**
@@ -165,10 +171,10 @@ export default class DeviceManager
   getDeviceMute = () => {
     this.setState({
       playbackDeviceMute: this.engine
-        .getAudioDeviceManager()
+        ?.getAudioDeviceManager()
         .getPlaybackDeviceMute(),
       recordingDeviceMute: this.engine
-        .getAudioDeviceManager()
+        ?.getAudioDeviceManager()
         .getRecordingDeviceMute(),
     });
   };
@@ -179,11 +185,11 @@ export default class DeviceManager
   setDeviceMute = () => {
     const { playbackDeviceMute, recordingDeviceMute } = this.state;
     this.engine
-      .getAudioDeviceManager()
-      .setPlaybackDeviceMute(playbackDeviceMute);
+      ?.getAudioDeviceManager()
+      .setPlaybackDeviceMute(playbackDeviceMute!);
     this.engine
-      .getAudioDeviceManager()
-      .setRecordingDeviceMute(recordingDeviceMute);
+      ?.getAudioDeviceManager()
+      .setRecordingDeviceMute(recordingDeviceMute!);
   };
 
   /**
@@ -192,10 +198,10 @@ export default class DeviceManager
   getDeviceVolume = () => {
     this.setState({
       playbackDeviceVolume: this.engine
-        .getAudioDeviceManager()
+        ?.getAudioDeviceManager()
         .getPlaybackDeviceVolume(),
       recordingDeviceVolume: this.engine
-        .getAudioDeviceManager()
+        ?.getAudioDeviceManager()
         .getRecordingDeviceVolume(),
     });
   };
@@ -206,11 +212,11 @@ export default class DeviceManager
   setDeviceVolume = () => {
     const { playbackDeviceVolume, recordingDeviceVolume } = this.state;
     this.engine
-      .getAudioDeviceManager()
-      .setPlaybackDeviceVolume(playbackDeviceVolume);
+      ?.getAudioDeviceManager()
+      .setPlaybackDeviceVolume(playbackDeviceVolume!);
     this.engine
-      .getAudioDeviceManager()
-      .setRecordingDeviceVolume(recordingDeviceVolume);
+      ?.getAudioDeviceManager()
+      .setRecordingDeviceVolume(recordingDeviceVolume!);
   };
 
   /**
@@ -329,48 +335,48 @@ export default class DeviceManager
       <>
         <AgoraDropdown
           title={'playbackDeviceId'}
-          items={playbackDevices.map((value) => {
+          items={playbackDevices?.map((value) => {
             return {
-              value: value.deviceId,
-              label: value.deviceName,
+              value: value.deviceId!,
+              label: value.deviceName!,
             };
           })}
           value={playbackDeviceId}
           onValueChange={(value, index) => {
             this.setState({
-              playbackDeviceId: playbackDevices[index].deviceId,
+              playbackDeviceId: playbackDevices?.at(index)?.deviceId,
             });
           }}
         />
         <AgoraDivider />
         <AgoraDropdown
           title={'recordingDeviceId'}
-          items={recordingDevices.map((value) => {
+          items={recordingDevices?.map((value) => {
             return {
-              value: value.deviceId,
-              label: value.deviceName,
+              value: value.deviceId!,
+              label: value.deviceName!,
             };
           })}
           value={recordingDeviceId}
           onValueChange={(value, index) => {
             this.setState({
-              recordingDeviceId: recordingDevices[index].deviceId,
+              recordingDeviceId: recordingDevices?.at(index)?.deviceId,
             });
           }}
         />
         <AgoraDivider />
         <AgoraDropdown
           title={'videoDeviceId'}
-          items={videoDevices.map((value) => {
+          items={videoDevices?.map((value) => {
             return {
-              value: value.deviceId,
-              label: value.deviceName,
+              value: value.deviceId!,
+              label: value.deviceName!,
             };
           })}
           value={videoDeviceId}
           onValueChange={(value, index) => {
             this.setState({
-              videoDeviceId: videoDevices[index].deviceId,
+              videoDeviceId: videoDevices?.at(index)?.deviceId,
             });
           }}
         />

@@ -1,6 +1,5 @@
 import { VideoSourceType } from '../Private/AgoraBase';
 import { RenderModeType } from '../Private/AgoraMediaBase';
-import { getBridge } from '../Private/internal/IrisApiEngine';
 import {
   AgoraElectronBridge,
   Channel,
@@ -27,14 +26,35 @@ import GlRenderer from './GlRenderer';
 import { IRenderer, RenderFailCallback } from './IRenderer';
 import { YUVCanvasRenderer } from './YUVCanvasRenderer';
 
+/**
+ * @ignore
+ */
 class RendererManager {
+  /**
+   * @ignore
+   */
   isRendering = false;
   renderFps: number;
+  /**
+   * @ignore
+   */
   videoFrameUpdateInterval?: NodeJS.Timer;
+  /**
+   * @ignore
+   */
   renderers: RenderMap;
+  /**
+   * @ignore
+   */
   renderMode: RENDER_MODE;
+  /**
+   * @ignore
+   */
   msgBridge: AgoraElectronBridge;
 
+  /**
+   * @ignore
+   */
   constructor() {
     this.renderFps = 10;
     this.renderers = new Map();
@@ -42,14 +62,24 @@ class RendererManager {
       ? RENDER_MODE.WEBGL
       : RENDER_MODE.SOFTWARE;
 
-    this.msgBridge = getBridge();
+    this.msgBridge = AgoraEnv.AgoraElectronBridge;
   }
+
+  /**
+   * Registers an audio frame observer object.
+   *
+   * @param mode The use mode of the audio frame. See RawAudioFrameOpModeType .
+   */
   setRenderMode(mode: RENDER_MODE) {
     this.renderMode = mode;
     logInfo(
       'setRenderMode:  new render mode will take effect only if new view bind to render'
     );
   }
+
+  /**
+   * @ignore
+   */
   setFPS(fps: number) {
     this.renderFps = fps;
     this.restartRender();
@@ -61,6 +91,9 @@ class RendererManager {
     mirror: boolean = false
   ): void {
     if (!view) {
+      /**
+       * @ignore
+       */
       logError('setRenderOption: view not exist', view);
     }
     this.forEachStream(({ renders }) => {
@@ -71,18 +104,24 @@ class RendererManager {
       });
     });
   }
-  public setRenderOptionByConfig(rendererConfig: RendererVideoConfig) {
+
+  public setRenderOptionByConfig(rendererConfig: RendererVideoConfig): number {
     const {
       uid,
       channelId,
       rendererOptions,
       videoSourceType,
     }: FormatRendererVideoConfig =
+      /**
+       * @ignore
+       */
       getDefaultRendererVideoConfig(rendererConfig);
 
     if (!rendererConfig.view) {
       logError('setRenderOptionByView: view not exist');
+      return -1;
     }
+
     const renderList = this.getRenderers({ uid, channelId, videoSourceType });
     renderList
       ? renderList
@@ -93,7 +132,9 @@ class RendererManager {
       : logWarn(
           `RenderStreamType: ${videoSourceType} channelId:${channelId} uid:${uid} have no render view, you need to call this api after setView`
         );
+    return 0;
   }
+
   public checkWebglEnv(): boolean {
     let gl;
     const canvas = document.createElement('canvas');
@@ -101,6 +142,9 @@ class RendererManager {
     try {
       gl =
         canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      /**
+       * @ignore
+       */
       logInfo('Your browser support webGL');
     } catch (e) {
       logWarn('Your browser may not support webGL');
@@ -114,7 +158,7 @@ class RendererManager {
     }
   }
 
-  public setupVideo(rendererVideoConfig: RendererVideoConfig): void {
+  public setupVideo(rendererVideoConfig: RendererVideoConfig): number {
     const formatConfig = getDefaultRendererVideoConfig(rendererVideoConfig);
 
     const { uid, channelId, videoSourceType, rendererOptions, view } =
@@ -127,7 +171,7 @@ class RendererManager {
         channelId,
         uid
       );
-      return;
+      return -1;
     }
 
     // ensure a render to RenderMap
@@ -145,6 +189,7 @@ class RendererManager {
 
     // enable render
     this.enableRender(true);
+    return 0;
   }
 
   public setupLocalVideo(rendererConfig: RendererVideoConfig): number {
@@ -197,6 +242,7 @@ class RendererManager {
       });
     });
   }
+
   public destroyRenderersByConfig(
     videoSourceType: VideoSourceType,
     channelId?: Channel,
@@ -235,6 +281,7 @@ class RendererManager {
     );
     renderMap.clear();
   }
+
   clear(): void {
     this.stopRender();
     this.removeAllRenderer();
@@ -310,10 +357,6 @@ class RendererManager {
       }
     };
     this.videoFrameUpdateInterval = setInterval(() => {
-      if (!AgoraEnv.isInitializeEngine) {
-        logDebug('rtcEngine is not initialize');
-        return;
-      }
       this.forEachStream(renderFunc);
     }, 1000 / this.renderFps);
   }
@@ -333,6 +376,7 @@ class RendererManager {
       logInfo(`restartRender: Fps: ${this.renderFps} restartInterval`);
     }
   }
+
   private createRenderer(failCallback?: RenderFailCallback): IRenderer {
     if (this.renderMode === RENDER_MODE.SOFTWARE) {
       return new YUVCanvasRenderer();
@@ -340,6 +384,7 @@ class RendererManager {
       return new GlRenderer(failCallback);
     }
   }
+
   private getRender({
     videoSourceType,
     channelId,
@@ -347,6 +392,7 @@ class RendererManager {
   }: VideoFrameCacheConfig) {
     return this.renderers.get(videoSourceType)?.get(channelId)?.get(uid);
   }
+
   private getRenderers({
     videoSourceType,
     channelId,
@@ -474,6 +520,7 @@ class RendererManager {
     }
     return channelMap;
   }
+
   private resizeShareVideoFrame(
     videoSourceType: VideoSourceType,
     channelId: string,
@@ -499,7 +546,7 @@ class RendererManager {
   ): void {
     let rendererConfigMap = this.ensureRendererConfig(config);
     rendererConfigMap
-      ? //@ts-ignore
+      ? // @ts-ignore
         Object.assign(rendererConfigMap.get(config.uid), {
           shareVideoFrame,
         })

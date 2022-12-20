@@ -1,8 +1,8 @@
-const { series } = require('gulp');
+const gulp = require('gulp');
 const syncLib = require('./scripts/synclib');
 const build = require('./scripts/build');
 const getConfig = require('./scripts/getConfig');
-const dowmloadPrebuild = require('./scripts/dowmloadPrebuild');
+const downloadPrebuild = require('./scripts/downloadPrebuild');
 const { cleanBuildDir, cleanJSDir, cleanIrisDir } = require('./scripts/clean');
 const buildJS = require('./scripts/buildJS');
 const logger = require('./scripts/logger');
@@ -18,13 +18,17 @@ const clean = async (cb) => {
   cb();
 };
 
-const totalBuild = series(clean, syncLib, build, buildJS);
+const totalBuild = gulp.series(clean, syncLib, build, buildJS);
 
 const wrapDownloadPreBuild = async (cb) => {
-  dowmloadPrebuild(cb);
+  await downloadPrebuild(cb);
 };
 
-const NPM_Install = config.prebuilt ? wrapDownloadPreBuild : totalBuild;
+const NPM_Install = config.prebuilt
+  ? wrapDownloadPreBuild
+  : async () => {
+      logger.warn('config prebuilt is false, skip `NPM_Install`');
+    };
 
 exports.syncLib = syncLib;
 exports.clean = clean;
@@ -34,5 +38,5 @@ exports.zipBuild = zipBuild;
 exports.totalBuild = totalBuild;
 exports.NPM_Install = NPM_Install;
 
-exports.dowmloadPrebuild = dowmloadPrebuild;
+exports.downloadPrebuild = downloadPrebuild;
 exports.default = totalBuild;

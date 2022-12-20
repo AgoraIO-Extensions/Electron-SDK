@@ -16,8 +16,7 @@ const config = {
   channelId: 'testdcg',
   uid: 0,
   pluginPath: '',
-  nativeSDKLogPath: './Agora_SDK.log',
-  addonLogPath: './Agora_SDK_Addon.log',
+  SDKLogPath: './agorasdk.log',
 };
 
 export default config;

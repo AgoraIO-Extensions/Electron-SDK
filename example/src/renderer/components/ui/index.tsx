@@ -215,11 +215,12 @@ export const AgoraDropdown = (
       <AgoraText children={title} />
       <Dropdown
         {...others}
+        overlayStyle={{ overflow: 'scroll', maxHeight: window.innerHeight }}
         disabled={enabled === undefined ? false : !enabled}
         overlay={
           <Menu
             selectable={true}
-            items={_items.map(({ label, value }) => ({
+            items={_items?.map(({ label, value }) => ({
               label,
               key: value,
             }))}
@@ -235,11 +236,11 @@ export const AgoraDropdown = (
               } else {
                 key = info.key;
               }
-              const index = _items.findIndex(({ value }) => {
+              const index = _items?.findIndex(({ value }) => {
                 return value === key;
               });
               setValue(key);
-              props.onValueChange?.call(this, key, index);
+              props.onValueChange?.call(this, key, index ?? -1);
             }}
             onDeselect={(info) => {
               let key;
@@ -248,11 +249,11 @@ export const AgoraDropdown = (
               } else {
                 key = info.key;
               }
-              const index = _items.findIndex(({ value }) => {
+              const index = _items?.findIndex(({ value }) => {
                 return value === key;
               });
               setValue(key);
-              props.onValueChange?.call(this, key, index);
+              props.onValueChange?.call(this, key, index ?? -1);
             }}
           />
         }
@@ -262,12 +263,12 @@ export const AgoraDropdown = (
             ? _value
                 ?.map(
                   (v) =>
-                    _items.find((item) => {
+                    _items?.find((item) => {
                       return v === item.value;
                     })?.label
                 )
                 ?.toString()
-            : _items.find((item) => {
+            : _items?.find((item) => {
                 return _value === item.value;
               })?.label}
           <DownOutlined />

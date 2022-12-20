@@ -67,6 +67,7 @@ export default class JoinMultipleChannel
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
     this.engine.initialize({
       appId,
+      logConfig: { filePath: Config.SDKLogPath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });

@@ -103,6 +103,7 @@ export default class ScreenShare
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
     this.engine.initialize({
       appId,
+      logConfig: { filePath: Config.SDKLogPath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
@@ -156,7 +157,7 @@ export default class ScreenShare
     );
     this.setState({
       sources,
-      targetSource: sources[0],
+      targetSource: sources?.at(0),
     });
   };
 
@@ -264,7 +265,7 @@ export default class ScreenShare
       return;
     }
 
-    // publish media player stream
+    // publish screen share stream
     this.engine?.joinChannelEx(
       token2,
       { channelId, localUid: uid2 },
@@ -341,7 +342,12 @@ export default class ScreenShare
 
   onUserJoined(connection: RtcConnection, remoteUid: number, elapsed: number) {
     const { uid2 } = this.state;
-    if (connection.localUid === uid2 || remoteUid === uid2) return;
+    if (connection.localUid === uid2 || remoteUid === uid2) {
+      // ⚠️ mute the streams from screen sharing
+      this.engine?.muteRemoteAudioStream(uid2, true);
+      this.engine?.muteRemoteVideoStream(uid2, true);
+      return;
+    }
     super.onUserJoined(connection, remoteUid, elapsed);
   }
 
@@ -417,15 +423,15 @@ export default class ScreenShare
       <>
         <AgoraDropdown
           title={'targetSource'}
-          items={sources.map((value) => {
+          items={sources?.map((value) => {
             return {
-              value: value.sourceId,
-              label: value.sourceName,
+              value: value.sourceId!,
+              label: value.sourceName!,
             };
           })}
           value={targetSource?.sourceId}
           onValueChange={(value, index) => {
-            this.setState({ targetSource: sources[index] });
+            this.setState({ targetSource: sources?.at(index) });
           }}
         />
         {targetSource ? (
@@ -514,15 +520,15 @@ export default class ScreenShare
             <AgoraDropdown
               title={'excludeWindowList'}
               items={sources
-                .filter(
+                ?.filter(
                   (value) =>
                     value.type ===
                     ScreenCaptureSourceType.ScreencapturesourcetypeWindow
                 )
                 .map((value) => {
                   return {
-                    value: value.sourceId,
-                    label: value.sourceName,
+                    value: value.sourceId!,
+                    label: value.sourceName!,
                   };
                 })}
               value={excludeWindowList}
@@ -567,12 +573,30 @@ export default class ScreenShare
             />
             <AgoraDivider />
             <SketchPicker
-              onChangeComplete={({ hex }) => {
+              onChangeComplete={(color) => {
+                const { a, r, g, b } = color.rgb;
+                const argbHex =
+                  `${((a * 255) | (1 << 8)).toString(16).slice(1)}` +
+                  `${(r | (1 << 8)).toString(16).slice(1)}` +
+                  `${(g | (1 << 8)).toString(16).slice(1)}` +
+                  `${(b | (1 << 8)).toString(16).slice(1)}`;
+                console.log(
+                  'onChangeComplete',
+                  color.hex,
+                  `#${argbHex}`,
+                  +`0x${argbHex}`,
+                  color
+                );
                 this.setState({
-                  highLightColor: +hex.replace('#', '0x'),
+                  highLightColor: +`0x${argbHex}`,
                 });
               }}
-              color={`#${highLightColor?.toString(16)}`}
+              color={(function () {
+                const argb = highLightColor?.toString(16);
+                const rgba = `${argb.slice(2)}` + `${argb.slice(0, 2)}`;
+                console.log('argb', `#${argb}`, 'rgba', `#${rgba}`);
+                return `#${rgba}`;
+              })()}
             />
           </>
         ) : undefined}
