@@ -25,17 +25,15 @@
     "test": "jest",
     "typescript": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "install": "cross-env-shell gulp NPM_Install \\\"--INIT_CWD=$INIT_CWD\\\"",
+    "prepare": "cross-env-shell gulp NPM_Install \\\"--INIT_CWD=$INIT_CWD\\\"",
     "release": "release-it",
     "example": "yarn --cwd example",
     "bootstrap": "yarn example && yarn install && yarn patch-package && yarn ts_interface_builder && yarn totalBuild && yarn link && yarn example link agora-electron-sdk",
-    "ts_interface_builder": "yarn ts-interface-builder ts/Private/*.ts -o ts/Private/ti/"
+    "ts_interface_builder": "ts-interface-builder ts/Private/*.ts -o ts/Private/ti/"
   },
   "agora_electron": {
     "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.1.0_DCG_Windows_Video_20221220_0216.zip",
-    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.1.0_DCG_Mac_Video_20221220_0221.zip",
-    "no_symbol": true,
-    "prebuilt": true
+    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.1.0_DCG_Mac_Video_20221220_0221.zip"
   },
   "dependencies": {
     "bindings": "1.2.1",
