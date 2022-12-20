@@ -8,7 +8,8 @@ rm -rf tmp
 # npm install --verbose
 #
 # Example 2
-npm install --agora_electron_sdk_pre_built=false
+npm install --verbose --agora_electron_sdk_pre_built=false
+npm run totalBuild --verbose
 npm run zipBuild
 #
 # Example 3
