@@ -70,6 +70,7 @@ export default class MediaPlayer
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
+      logConfig: { filePath: Config.SDKLogPath },
     });
     this.engine.registerEventHandler(this);
 
@@ -101,7 +102,7 @@ export default class MediaPlayer
    */
   play = () => {
     const { position, duration } = this.state;
-    if (position === duration) {
+    if (position === duration && duration !== 0) {
       this.player?.seek(0);
     } else {
       this.player?.play();
@@ -221,9 +222,14 @@ export default class MediaPlayer
         break;
       case MediaPlayerState.PlayerStateOpening:
         break;
-      case MediaPlayerState.PlayerStateOpenCompleted:
-        this.setState({ open: true, duration: this.player?.getDuration()! });
+      case MediaPlayerState.PlayerStateOpenCompleted: {
+        const duration = this.player?.getDuration()!;
+        this.setState({
+          open: true,
+          duration: duration < 0 ? 0 : duration,
+        });
         break;
+      }
       case MediaPlayerState.PlayerStatePlaying:
         this.setState({ play: true, pause: false });
         break;
@@ -334,13 +340,12 @@ export default class MediaPlayer
           title={'set Loop Count'}
           onPress={this.setLoopCount}
         />
-        <AgoraDivider />
       </>
     );
   }
 
   protected renderUsers(): React.ReactNode {
-    const { open, channelId, uid } = this.state;
+    const { open } = this.state;
     return (
       <>
         {open ? (
@@ -349,7 +354,6 @@ export default class MediaPlayer
               uid: this.player?.getMediaPlayerId(),
               sourceType: VideoSourceType.VideoSourceMediaPlayer,
             }}
-            connection={{ channelId, localUid: uid }}
           />
         ) : undefined}
       </>

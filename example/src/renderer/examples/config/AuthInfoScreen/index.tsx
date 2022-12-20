@@ -29,8 +29,7 @@ const onFinish = (values: any) => {
   config.uid = +values.uid;
   config.pluginPath = values.pluginPath;
 
-  config.addonLogPath = values.addonLogPath;
-  config.nativeSDKLogPath = values.nativeSDKLogPath;
+  config.SDKLogPath = values.SDKLogPath;
 
   config.enableSDKLogging = values.enableSDKDebugLogging;
   config.enableSDKDebugLogging = values.enableSDKLogging;
@@ -122,19 +121,7 @@ const AuthInfoScreen = () => {
             </Form.Item>
             <Form.Item
               label="Native SDK Log Path"
-              name="nativeSDKLogPath"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input log path',
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              label="Addon Log Path"
-              name="addonLogPath"
+              name="SDKLogPath"
               rules={[
                 {
                   required: true,

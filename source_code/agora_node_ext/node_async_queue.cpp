@@ -10,6 +10,7 @@
 namespace agora {
 namespace rtc {
 namespace electron {
+
 node_async_call node_async_call::s_instance_;
 
 node_async_call::node_async_call() {
@@ -18,7 +19,8 @@ node_async_call::node_async_call() {
       std::bind(&node_async_call::run_task, this, std::placeholders::_1)));
 }
 
-node_async_call::~node_async_call() {}
-}  // namespace electron
-}  // namespace rtc
-}  // namespace agora
+node_async_call::~node_async_call() = default;
+
+}// namespace electron
+}// namespace rtc
+}// namespace agora

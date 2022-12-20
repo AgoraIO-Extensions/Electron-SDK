@@ -1,12 +1,10 @@
-## [4.0.1-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.1-rc.1...v4.0.1-rc.2) (2022-11-10)
+# [4.1.0-rc.4](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.1.0-rc.3...v4.1.0-rc.4) (2022-12-20)
 
+# [4.1.0-rc.3](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.1.0-rc.2...v4.1.0-rc.3) (2022-12-20)
 
-### Bug Fixes
+# [4.1.0-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.1.0-rc.1...v4.1.0-rc.2) (2022-12-20)
 
-* add memeset _result in the construct function ([#910](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/910)) ([449cd3f](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/449cd3f5df4a9b256c9612468421631173b575e7))
-* add minus system version 10.10 for macOS ([#911](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/911)) ([4178038](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/4178038501ff47eb2efb47d3d495a58e0c1fefdc))
-
-## [4.0.1-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.0...v4.0.1-rc.1) (2022-10-21)
+# [4.1.0-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.0...v4.1.0-rc.1) (2022-12-20)
 
 
 ### Bug Fixes
@@ -15,7 +13,16 @@
 * `getPlaybackDeviceInfo` and `getRecordingDeviceInfo` issue ([6517c6c](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/6517c6cd96539e4556ca01f3b10376c3ccdab50a))
 * `LocalTranscoderConfiguration` json parse issue #EP-172 ([45cbfe3](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/45cbfe3c04a493a3e888afde6f4bdff898e4ea5d)), closes [#EP-172](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/EP-172)
 * add `setDualStreamMode` method ([9f18cfc](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/9f18cfcdefbea4cb7a3c1948d0e6a0c911a5016a))
+* c++ compile error ([598d04a](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/598d04a2c770fb56f76ecb6e3599fd1407c47f3d))
+* js exception in callback will cause c++ crash #jira/CSD-50832 ([#931](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/931)) ([0e1aaca](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/0e1aacad103f024d4ea1a5d768a88fbbebd1911c))
 * the event which named contains `Ex` not triggered issue (such as `onTokenPrivilegeWillExpire`) ([#892](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/892)) ([abe8b55](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/abe8b55f09c8af23cb9f578c0643d176852cbe11))
+
+
+### Features
+
+* add `getPlaybackDefaultDevice` and `getRecordingDefaultDevice` ([a6d5501](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/a6d5501860d1ebde57b1dc4463dfd86bbf306463))
+* MusicContentEventHandler ([#907](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/907)) ([cd14d67](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/cd14d6726819343495cc671fad688258ab317e14))
+* support 4.1.0 iris ([#885](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/885)) ([741f024](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/741f0242d7d23c9f92ab10dd1d37acee6a49b400))
 
 # [4.0.0](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.0-rc.3...v4.0.0) (2022-09-28)
 

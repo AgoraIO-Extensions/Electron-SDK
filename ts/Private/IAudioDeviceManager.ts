@@ -33,7 +33,7 @@ export abstract class IAudioDeviceManager {
   /**
    * Sets the audio playback device.
    *
-   * @param deviceId The ID of the specified audio playback device. You can get the device ID by calling enumeratePlaybackDevices . Plugging or unplugging the audio device does not change the value of deviceId.The maximum length is MaxDeviceIdLengthType .
+   * @param deviceId The ID of the specified audio playback device. You can get the device ID by calling enumeratePlaybackDevices . Connecting or disconnecting the audio device does not change the value of deviceId.The maximum length is MaxDeviceIdLengthType .
    *
    * @returns
    * 0: Success.< 0: Failure.
@@ -57,7 +57,12 @@ export abstract class IAudioDeviceManager {
   abstract getPlaybackDeviceInfo(): AudioDeviceInfo;
 
   /**
-   * @ignore
+   * Sets the volume of the audio recording device.
+   *
+   * @param volume  The volume of the audio recording device. The value range is [0,255].
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
    */
   abstract setPlaybackDeviceVolume(volume: number): number;
 
@@ -93,7 +98,12 @@ export abstract class IAudioDeviceManager {
   abstract getRecordingDeviceInfo(): AudioDeviceInfo;
 
   /**
-   * @ignore
+   * Sets the volume of the audio recording device.
+   *
+   * @param volume  The volume of the audio recording device. The value range is [0,255].
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
    */
   abstract setRecordingDeviceVolume(volume: number): number;
 
@@ -103,7 +113,33 @@ export abstract class IAudioDeviceManager {
   abstract getRecordingDeviceVolume(): number;
 
   /**
-   * @ignore
+   * Sets the loopback device.
+   * The SDK uses the current playback device as the loopback device by default. If you want to specify another audio device as the loopback device, call this method, and set deviceId to the loopback device you want to specify.This method applies to Windows only.The scenarios where this method is applicable are as follows:Use app A to play music through a Bluetooth headset; when using app B for a video conference, play through the speakers.If the loopback device is set as the Bluetooth headset, the SDK publishes the music in app A to the remote end.If the loopback device is set as the speaker, the SDK does not publish the music in app A to the remote end.If you set the loopback device as the Bluetooth headset, and then use a wired headset to play the music in app A, you need to call this method again, set the loopback device as the wired headset, and the SDK continues to publish the music in app A to remote end.
+   *
+   * @param deviceId Specifies the loopback device of the SDK. You can get the device ID by calling enumeratePlaybackDevices . Connecting or disconnecting the audio device does not change the value of deviceId.The maximum length is MaxDeviceIdLengthType .
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
+  abstract setLoopbackDevice(deviceId: string): number;
+
+  /**
+   * Gets the current loopback device.
+   * This method applies to Windows only.
+   *
+   * @returns
+   * The ID of the current loopback device.
+   */
+  abstract getLoopbackDevice(): string;
+
+  /**
+   * Stops or resumes publishing the local video stream.
+   * A successful call of this method triggers the onUserMuteVideo callback on the remote client.This method executes faster than the enableLocalVideo (false) method, which controls the sending of the local video stream.This method does not affect any ongoing video recording, because it does not disable the camera.
+   *
+   * @param mute Whether to stop publishing the local video stream.true: Stop publishing the local video stream.false: (Default) Publish the local video stream.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
    */
   abstract setPlaybackDeviceMute(mute: boolean): number;
 
@@ -113,7 +149,13 @@ export abstract class IAudioDeviceManager {
   abstract getPlaybackDeviceMute(): boolean;
 
   /**
-   * @ignore
+   * Stops or resumes publishing the local video stream.
+   * A successful call of this method triggers the onUserMuteVideo callback on the remote client.This method executes faster than the enableLocalVideo (false) method, which controls the sending of the local video stream.This method does not affect any ongoing video recording, because it does not disable the camera.
+   *
+   * @param mute Whether to stop publishing the local video stream.true: Stop publishing the local video stream.false: (Default) Publish the local video stream.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
    */
   abstract setRecordingDeviceMute(mute: boolean): number;
 
@@ -143,8 +185,8 @@ export abstract class IAudioDeviceManager {
   abstract stopPlaybackDeviceTest(): number;
 
   /**
-   * Starts the audio recording device test.
-   * This method tests whether the audio capture device works properly. After calling this method, the SDK triggers the onAudioVolumeIndication callback at the time interval set in this method, which reports uid = 0 and the volume information of the capturing device.Ensure that you call this method before joining a channel.
+   * Starts the audio capture device test.
+   * This method tests whether the audio capture device works properly. After calling this method, the SDK triggers the onAudioVolumeIndication callback at the time interval set in this method, which reports uid = 0 and the volume information of the capturing device.This method is for Windows and macOS only.Ensure that you call this method before joining a channel.
    *
    * @param indicationInterval The time interval (ms) at which the SDK triggers the onAudioVolumeIndication callback. Agora recommends a setting greater than 200 ms. This value must not be less than 10 ms; otherwise, you can not receive the onAudioVolumeIndication callback.
    *
@@ -203,7 +245,36 @@ export abstract class IAudioDeviceManager {
   abstract followSystemRecordingDevice(enable: boolean): number;
 
   /**
+   * Sets whether the loopback device follows the system default playback device.
+   * This method applies to Windows only.
+   *
+   * @param enable Whether to follow the system default audio playback device:true: Follow. When the default playback device of the system is changed, the SDK immediately switches to the loopback device.false: Do not follow. The SDK switches the audio loopback device to the system default audio playback device only when the current audio playback device is disconnected.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
+  abstract followSystemLoopbackDevice(enable: boolean): number;
+
+  /**
    * Releases all the resources occupied by the IAudioDeviceManager object.
    */
   abstract release(): void;
+
+  /**
+   * Gets the default audio playback device.
+   * This method is for Windows and macOS only.
+   *
+   * @returns
+   * The details about the default audio playback device. See AudioDeviceInfo .
+   */
+  abstract getPlaybackDefaultDevice(): AudioDeviceInfo;
+
+  /**
+   * Gets the default audio capture device.
+   * This method is for Windows and macOS only.
+   *
+   * @returns
+   * The details about the default audio capture device. See AudioDeviceInfo .
+   */
+  abstract getRecordingDefaultDevice(): AudioDeviceInfo;
 }

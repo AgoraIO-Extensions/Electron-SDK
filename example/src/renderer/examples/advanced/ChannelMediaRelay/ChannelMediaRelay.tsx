@@ -60,6 +60,7 @@ export default class ChannelMediaRelay
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
+      logConfig: { filePath: Config.SDKLogPath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
@@ -227,7 +228,6 @@ export default class ChannelMediaRelay
           value={destChannelNames.join(' ')}
         />
         <AgoraText>{`destCount: ${destChannelNames.length}`}</AgoraText>
-        <AgoraDivider />
       </>
     );
   }

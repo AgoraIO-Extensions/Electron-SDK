@@ -208,7 +208,7 @@ export abstract class BaseComponent<
                     column: 4,
                   }
             }
-            dataSource={[0, ...remoteUsers]}
+            dataSource={[0, ...(remoteUsers ?? [])]}
             renderItem={(item) => {
               return this.renderVideo(item, channelId);
             }}

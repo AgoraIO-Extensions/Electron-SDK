@@ -26,6 +26,8 @@ import VideoEncoderConfiguration from './VideoEncoderConfiguration/VideoEncoderC
 import Extension from './Extension/Extension';
 import LocalSpatialAudioEngine from './LocalSpatialAudioEngine/LocalSpatialAudioEngine';
 import DeviceManager from './DeviceManager/DeviceManager';
+import MusicContentCenter from './MusicContentCenter/MusicContentCenter';
+import ProcessVideoRawData from './ProcessVideoRawData/ProcessVideoRawData';
 
 const advanceRoute = [
   { path: '/AudioMixing', component: AudioMixing, title: 'AudioMixing' },
@@ -75,7 +77,17 @@ const advanceRoute = [
   },
   { path: '/MediaPlayer', component: MediaPlayer, title: 'MediaPlayer' },
   { path: '/MediaRecorder', component: MediaRecorder, title: 'MediaRecorder' },
+  {
+    path: '/MusicContentCenter',
+    component: MusicContentCenter,
+    title: 'MusicContentCenter',
+  },
   { path: '/PlayEffect', component: PlayEffect, title: 'PlayEffect' },
+  {
+    path: '/ProcessVideoRawData',
+    component: ProcessVideoRawData,
+    title: 'ProcessVideoRawData',
+  },
   {
     path: '/PushVideoFrame',
     component: PushVideoFrame,

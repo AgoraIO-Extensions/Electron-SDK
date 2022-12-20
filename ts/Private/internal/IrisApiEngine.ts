@@ -1,7 +1,7 @@
-import { EventEmitter } from 'events';
+const JSON = require('json-bigint');
+import { AgoraEnv } from '../../Utils';
 
-import { AgoraElectronBridge, Result } from '../../Types';
-import { AgoraEnv, logDebug, parseJSON } from '../../Utils';
+import { IAudioEncodedFrameObserver } from '../AgoraBase';
 import {
   AudioFrame,
   AudioPcmFrame,
@@ -13,16 +13,19 @@ import {
   VideoFrame,
 } from '../AgoraMediaBase';
 import {
-  IMediaPlayer,
-  IMediaPlayerAudioFrameObserver,
-  IMediaPlayerVideoFrameObserver,
-} from '../IAgoraMediaPlayer';
-import {
   IDirectCdnStreamingEventHandler,
   IMetadataObserver,
   IRtcEngineEventHandler,
   Metadata,
 } from '../IAgoraRtcEngine';
+import {
+  IMediaPlayer,
+  IMediaPlayerAudioFrameObserver,
+  IMediaPlayerVideoFrameObserver,
+} from '../IAgoraMediaPlayer';
+import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
+import { IMusicContentCenterEventHandler } from '../IAgoraMusicContentCenter';
+
 import { processIAudioEncodedFrameObserver } from '../impl/AgoraBaseImpl';
 import {
   processIAudioFrameObserver,
@@ -33,60 +36,54 @@ import {
   processIVideoFrameObserver,
 } from '../impl/AgoraMediaBaseImpl';
 import {
-  processIMediaPlayerAudioFrameObserver,
-  processIMediaPlayerVideoFrameObserver,
-} from '../impl/IAgoraMediaPlayerImpl';
-import { processIMediaPlayerSourceObserver } from '../impl/IAgoraMediaPlayerSourceImpl';
-import {
   processIDirectCdnStreamingEventHandler,
   processIMetadataObserver,
   processIRtcEngineEventHandler,
 } from '../impl/IAgoraRtcEngineImpl';
-import { IAudioEncodedFrameObserver } from '../AgoraBase';
-import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
-import { MediaPlayerInternal } from './MediaPlayerInternal';
+import {
+  processIMediaPlayerAudioFrameObserver,
+  processIMediaPlayerVideoFrameObserver,
+} from '../impl/IAgoraMediaPlayerImpl';
+import { processIMediaPlayerSourceObserver } from '../impl/IAgoraMediaPlayerSourceImpl';
+import { processIMusicContentCenterEventHandler } from '../impl/IAgoraMusicContentCenterImpl';
+
 import { MediaEngineInternal } from './MediaEngineInternal';
-import { RtcEngineExInternal } from './RtcEngineExInternal';
+import { MediaPlayerInternal } from './MediaPlayerInternal';
 import { MediaRecorderInternal } from './MediaRecorderInternal';
+import {
+  MusicCollectionInternal,
+  MusicContentCenterInternal,
+} from './MusicContentCenterInternal';
+import { RtcEngineExInternal } from './RtcEngineExInternal';
 
-const agora = require('../../../build/Release/agora_node_ext');
+import EventEmitter from './emitter/EventEmitter';
 
+// @ts-ignore
 export const DeviceEventEmitter = new EventEmitter();
 
-export const getBridge = (): AgoraElectronBridge => {
-  let bridge = AgoraEnv.AgoraElectronBridge;
-  if (!bridge) {
-    bridge = new agora.AgoraElectronBridge();
-    bridge!.sendMsg = sendMsg;
-    AgoraEnv.AgoraElectronBridge = bridge;
+const AgoraRtcNg = AgoraEnv.AgoraElectronBridge;
+AgoraRtcNg.OnEvent('call_back_with_buffer', (...params: any) => {
+  try {
+    handleEvent(...params);
+  } catch (e) {
+    console.error(e);
   }
-  return bridge!;
-};
+});
 
-const sendMsg = (
-  funcName: string,
-  params: any,
-  buffer?: (Uint8Array | undefined)[],
-  bufferCount = 0
-): Result => {
-  const irisReturnValue = getBridge().CallApi(
-    funcName,
-    JSON.stringify(params),
-    buffer,
-    bufferCount
-  );
-  logDebug(
-    'sendMsg',
-    'funcName',
-    funcName,
-    'params',
-    params,
-    'irisReturnValue',
-    irisReturnValue
-  );
+/**
+ * @internal
+ */
+export function setDebuggable(flag: boolean) {
+  AgoraEnv.enableLogging = flag;
+  AgoraEnv.enableDebugLogging = flag;
+}
 
-  return parseJSON(irisReturnValue.callApiResult);
-};
+/**
+ * @internal
+ */
+export function isDebuggable() {
+  return AgoraEnv.enableLogging && AgoraEnv.enableDebugLogging;
+}
 
 /**
  * @internal
@@ -112,6 +109,7 @@ export type EventProcessor = {
         | IMetadataObserver
         | IDirectCdnStreamingEventHandler
         | IRtcEngineEventHandler
+        | IMusicContentCenterEventHandler
       )[];
 };
 
@@ -120,6 +118,7 @@ export enum EVENT_TYPE {
   IMediaPlayer,
   IMediaRecorder,
   IRtcEngine,
+  IMusicContentCenter,
 }
 
 /**
@@ -153,7 +152,7 @@ export const EVENT_PROCESSORS = {
     handlers: () => MediaEngineInternal._video_frame_observers,
   },
   IAudioSpectrumObserver: {
-    suffix: 'RtcEngine_AudioSpectrumObserver_',
+    suffix: 'AudioSpectrumObserver_',
     type: EVENT_TYPE.IRtcEngine,
     func: [processIAudioSpectrumObserver],
     preprocess: (event: string, data: any, buffers: Uint8Array[]) => {
@@ -161,10 +160,13 @@ export const EVENT_PROCESSORS = {
       //   (data.data as AudioSpectrumData).audioSpectrumData = buffers[0];
       // }
     },
-    handlers: () => RtcEngineExInternal._audio_spectrum_observers,
+    handlers: (data: any) =>
+      data.playerId === 0
+        ? RtcEngineExInternal._audio_spectrum_observers
+        : undefined,
   },
   IMediaPlayerAudioSpectrumObserver: {
-    suffix: 'MediaPlayer_AudioSpectrumObserver_',
+    suffix: 'AudioSpectrumObserver_',
     type: EVENT_TYPE.IMediaPlayer,
     func: [processIAudioSpectrumObserver],
     preprocess: (event: string, data: any, buffers: Uint8Array[]) => {
@@ -173,7 +175,9 @@ export const EVENT_PROCESSORS = {
       // }
     },
     handlers: (data: any) =>
-      MediaPlayerInternal._audio_spectrum_observers.get(data.playerId),
+      data.playerId !== 0
+        ? MediaPlayerInternal._audio_spectrum_observers.get(data.playerId)
+        : undefined,
   },
   IAudioEncodedFrameObserver: {
     suffix: 'AudioEncodedFrameObserver_',
@@ -184,7 +188,7 @@ export const EVENT_PROCESSORS = {
         case 'OnRecordAudioEncodedFrame':
         case 'OnPlaybackAudioEncodedFrame':
         case 'OnMixedAudioEncodedFrame':
-          (data.frameBuffer as Uint8Array) = buffers[0];
+          data.frameBuffer = buffers[0];
           break;
       }
     },
@@ -196,8 +200,8 @@ export const EVENT_PROCESSORS = {
     func: [processIVideoEncodedFrameObserver],
     preprocess: (event: string, data: any, buffers: Uint8Array[]) => {
       switch (event) {
-        case 'OnEncodedVideoFrameReceived':
-          (data.imageBuffer as Uint8Array) = buffers[0];
+        case 'onEncodedVideoFrameReceived':
+          data.imageBuffer = buffers[0];
           break;
       }
     },
@@ -216,7 +220,7 @@ export const EVENT_PROCESSORS = {
     func: [processIMediaPlayerAudioFrameObserver],
     preprocess: (event: string, data: any, buffers: Uint8Array[]) => {
       if (data.frame) {
-        (data.frame as AudioPcmFrame).data_ = Array.from(buffers[0]);
+        (data.frame as AudioPcmFrame).data_ = Array.from(buffers[0] ?? []);
       }
     },
     handlers: (data: any) =>
@@ -261,16 +265,16 @@ export const EVENT_PROCESSORS = {
           break;
       }
     },
-    handlers: () => RtcEngineExInternal._handlers,
+    handlers: () => RtcEngineExInternal._metadata_observer,
   },
   IDirectCdnStreamingEventHandler: {
     suffix: 'DirectCdnStreamingEventHandler_',
     type: EVENT_TYPE.IRtcEngine,
     func: [processIDirectCdnStreamingEventHandler],
-    handlers: () => RtcEngineExInternal._handlers,
+    handlers: () => RtcEngineExInternal._direct_cdn_streaming_event_handler,
   },
   IRtcEngineEventHandler: {
-    suffix: '',
+    suffix: 'RtcEngineEventHandler_',
     type: EVENT_TYPE.IRtcEngine,
     func: [processIRtcEngineEventHandler],
     preprocess: (event: string, data: any, buffers: Uint8Array[]) => {
@@ -281,38 +285,47 @@ export const EVENT_PROCESSORS = {
           break;
       }
     },
-    handlers: () => RtcEngineExInternal._handlers,
+    handlers: () => RtcEngineExInternal._event_handlers,
+  },
+  IMusicContentCenterEventHandler: {
+    suffix: 'MusicContentCenterEventHandler_',
+    type: EVENT_TYPE.IMusicContentCenter,
+    func: [processIMusicContentCenterEventHandler],
+    preprocess: (event: string, data: any, buffers: Uint8Array[]) => {
+      switch (event) {
+        case 'onMusicCollectionResult': {
+          const result = data.result;
+          data.result = new MusicCollectionInternal(result);
+          break;
+        }
+      }
+    },
+    handlers: () => MusicContentCenterInternal._event_handlers,
   },
 };
 
-/**
- * @internal
- */
-export function handleEvent(
-  event: string,
-  data: string,
-  buffer: Uint8Array[],
-  bufferLength: number[],
-  bufferCount: number
-) {
-  logDebug(
-    'event',
-    event,
-    'data',
-    data,
-    'buffer',
-    buffer,
-    'bufferLength',
-    bufferLength,
-    'bufferCount',
-    bufferCount
-  );
+function handleEvent(...[event, data, buffers]: any) {
+  if (isDebuggable()) {
+    console.info('onEvent', event, data, buffers);
+  }
+
+  let _data: any;
+  try {
+    _data = JSON.parse(data) ?? {};
+  } catch (e) {
+    _data = {};
+  }
+
   let _event: string = event;
   let processor: EventProcessor = EVENT_PROCESSORS.IRtcEngineEventHandler;
+
   Object.values(EVENT_PROCESSORS).some((it) => {
     // @ts-ignore
     const p = it as EventProcessor;
-    if (_event.startsWith(p.suffix)) {
+    if (
+      _event.startsWith(p.suffix) &&
+      processor.handlers(_data) !== undefined
+    ) {
       processor = p;
       const reg = new RegExp(`^${processor.suffix}`, 'g');
       _event = _event.replace(reg, '');
@@ -320,19 +333,13 @@ export function handleEvent(
     }
     return false;
   });
-  let _data: any;
-  try {
-    _data = JSON.parse(data) ?? {};
-  } catch (e) {
-    _data = {};
-  }
-  const buffers: Uint8Array[] = buffer;
 
   if (_event.endsWith('Ex')) {
     _event = _event.replace(/Ex$/g, '');
   }
 
-  if (processor.preprocess) processor.preprocess!(_event, _data, buffers);
+  const _buffers: Uint8Array[] = buffers;
+  if (processor.preprocess) processor.preprocess!(_event, _data, _buffers);
 
   processor.handlers(_data)?.map((value) => {
     if (value) {
@@ -348,28 +355,118 @@ export function handleEvent(
 /**
  * @internal
  */
-export function callIrisApi(
-  funcName: string,
-  params: any,
-  buffer?: (Uint8Array | undefined)[],
-  bufferCount: number = 0
-): any {
-  const isMediaPlayer = funcName.startsWith('MediaPlayer_');
-  if (isMediaPlayer) {
-    // @ts-ignore
-    params.mediaPlayerId = (this as IMediaPlayer).getMediaPlayerId();
-    const json = params.toJSON?.call();
-    params.toJSON = function () {
-      return { ...json, playerId: params.mediaPlayerId };
-    };
-  } else if (funcName === 'RtcEngine_destroyMediaPlayer') {
-    // @ts-ignore
-    params.mediaPlayerId = params.media_player.getMediaPlayerId();
-    params.toJSON = function () {
-      return { playerId: params.mediaPlayerId };
-    };
+export function callIrisApi<T>(funcName: string, params: any): any {
+  try {
+    const buffers: Uint8Array[] = [];
+
+    if (funcName.startsWith('MediaEngine_')) {
+      switch (funcName) {
+        case 'MediaEngine_pushAudioFrame':
+        case 'MediaEngine_pushCaptureAudioFrame':
+        case 'MediaEngine_pushReverseAudioFrame':
+        case 'MediaEngine_pushDirectAudioFrame':
+          // frame.buffer
+          buffers.push(params.frame.buffer);
+          break;
+        case 'MediaEngine_pushVideoFrame':
+          // frame.buffer
+          buffers.push(params.frame.buffer);
+          // frame.eglContext
+          buffers.push(Buffer.from(''));
+          // frame.metadata_buffer
+          buffers.push(Buffer.from(''));
+          break;
+        case 'MediaEngine_pushEncodedVideoImage':
+          // imageBuffer
+          buffers.push(params.imageBuffer);
+          break;
+      }
+    } else if (
+      funcName.startsWith('MediaPlayer_') ||
+      funcName.startsWith('MusicPlayer_')
+    ) {
+      // @ts-ignore
+      params.mediaPlayerId = (this as IMediaPlayer).getMediaPlayerId();
+      const json = params.toJSON?.call();
+      params.toJSON = function () {
+        return { ...json, playerId: params.mediaPlayerId };
+      };
+    } else if (funcName.startsWith('RtcEngine_')) {
+      switch (funcName) {
+        case 'RtcEngine_initialize':
+          AgoraRtcNg.InitializeEnv();
+          break;
+        case 'RtcEngine_release':
+          AgoraRtcNg.CallApi(
+            funcName,
+            JSON.stringify(params),
+            buffers,
+            buffers.length
+          );
+          AgoraRtcNg.ReleaseEnv();
+          return;
+        case 'RtcEngine_sendMetaData':
+          // metadata.buffer
+          buffers.push(params.metadata.buffer);
+          break;
+        case 'RtcEngine_sendStreamMessage':
+        case 'RtcEngine_sendStreamMessageEx':
+          // data
+          buffers.push(params.data);
+          break;
+        case 'RtcEngine_destroyMediaPlayer':
+          // @ts-ignore
+          params.mediaPlayerId = params.media_player.getMediaPlayerId();
+          params.toJSON = function () {
+            return { playerId: params.mediaPlayerId };
+          };
+          break;
+      }
+    }
+
+    let { callApiReturnCode, callApiResult } = AgoraRtcNg.CallApi(
+      funcName,
+      JSON.stringify(params),
+      buffers,
+      buffers.length
+    );
+    let ret = callApiResult;
+    if (ret !== undefined && ret !== null && ret !== '') {
+      ret = JSON.parse(ret);
+      if (isDebuggable()) {
+        if (typeof ret.result === 'number' && ret.result < 0) {
+          console.error('callApi', funcName, JSON.stringify(params), ret);
+        } else {
+          console.debug('callApi', funcName, JSON.stringify(params), ret);
+        }
+      }
+      return ret;
+    } else {
+      if (isDebuggable()) {
+        console.error(
+          'callApi',
+          funcName,
+          JSON.stringify(params),
+          callApiReturnCode
+        );
+      } else {
+        console.warn(
+          'callApi',
+          funcName,
+          JSON.stringify(params),
+          callApiReturnCode
+        );
+      }
+      return { result: callApiReturnCode };
+    }
+  } catch (e) {
+    if (isDebuggable()) {
+      console.error('callApi', funcName, JSON.stringify(params), e);
+    } else {
+      console.warn('callApi', funcName, JSON.stringify(params), e);
+    }
+    return {};
   }
-  return sendMsg(funcName, params, buffer, bufferCount);
 }
 
 /**
