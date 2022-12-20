@@ -11,6 +11,7 @@ export * from './Private/IAgoraMediaEngine';
 export * from './Private/IAgoraMediaPlayer';
 export * from './Private/IAgoraMediaPlayerSource';
 export * from './Private/IAgoraMediaRecorder';
+export * from './Private/IAgoraMusicContentCenter';
 export * from './Private/IAgoraRhythmPlayer';
 export * from './Private/IAgoraRtcEngine';
 export * from './Private/IAgoraRtcEngineEx';

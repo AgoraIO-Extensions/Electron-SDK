@@ -22,4 +22,24 @@ export class AudioDeviceManagerInternal extends IAudioDeviceManagerImpl {
       deviceName: jsonResults.deviceName,
     };
   }
+
+  getPlaybackDefaultDevice(): AudioDeviceInfo {
+    const apiType = this.getApiTypeFromGetPlaybackDefaultDevice();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return {
+      deviceId: jsonResults.deviceId,
+      deviceName: jsonResults.deviceName,
+    };
+  }
+
+  getRecordingDefaultDevice(): AudioDeviceInfo {
+    const apiType = this.getApiTypeFromGetRecordingDefaultDevice();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return {
+      deviceId: jsonResults.deviceId,
+      deviceName: jsonResults.deviceName,
+    };
+  }
 }

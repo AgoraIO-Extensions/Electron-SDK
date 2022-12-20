@@ -9,7 +9,7 @@ const build = async (cb) => {
   let scriptStr;
   switch (getOS()) {
     case 'mac':
-      scriptStr = debug ? 'build_mac_xcode' : 'build_mac';
+      scriptStr = debug ? 'build_mac_debug' : 'build_mac_release';
       break;
     case 'win32':
       if (arch === 'x64') {

@@ -1,8 +1,9 @@
 import {
   IAudioFrameObserver,
-  IVideoFrameObserver,
   IVideoEncodedFrameObserver,
+  IVideoFrameObserver,
 } from '../AgoraMediaBase';
+import { EmitterSubscription } from '../internal/emitter/EventEmitter';
 
 export type IMediaEngineEvent = IAudioFrameObserver &
   IVideoFrameObserver &
@@ -10,6 +11,10 @@ export type IMediaEngineEvent = IAudioFrameObserver &
 
 declare module '../IAgoraMediaEngine' {
   interface IMediaEngine {
+    _addListenerPreCheck<EventType extends keyof IMediaEngineEvent>(
+      eventType: EventType
+    ): boolean;
+
     /**
      * Adds one IMediaEngineEvent listener.
      * After calling this method, you can listen for the corresponding events in the IMediaEngine object and obtain data through IMediaEngineEvent. Depending on your project needs, you can add multiple listeners for the same event.
@@ -24,7 +29,7 @@ declare module '../IAgoraMediaEngine' {
     addListener<EventType extends keyof IMediaEngineEvent>(
       eventType: EventType,
       listener: IMediaEngineEvent[EventType]
-    ): void;
+    ): EmitterSubscription;
 
     /**
      * Removes the specified IMediaEngineEvent listener.

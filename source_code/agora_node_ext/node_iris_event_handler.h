@@ -5,17 +5,15 @@
  * @Last Modified time: 2022-07-29 10:08:04
  */
 #pragma once
-#include <unordered_map>
-#include "iris_event_handler.h"
+#include "iris_module.h"
 #include "node_api_header.h"
 #include "node_async_queue.h"
 #include "node_base.h"
+#include <unordered_map>
 
 namespace agora {
 namespace rtc {
 namespace electron {
-enum CallBackModule { RTC = 0, MPK, OBSERVER };
-
 typedef struct NodeEventCallback {
   napi_env env;
   napi_ref call_back_ref;
@@ -25,39 +23,21 @@ class AgoraElectronBridge;
 class NodeIrisEventHandler : public iris::IrisEventHandler {
  public:
   NodeIrisEventHandler();
-  virtual ~NodeIrisEventHandler();
+  ~NodeIrisEventHandler() override;
 
-  // virtual void OnEvent(const char* event, const char* data) override;
+  void OnEvent(EventParam *param) override;
 
-  virtual void OnEvent(const char* event,
-                       const char* data,
-                       const void** buffer,
-                       unsigned int* length,
-                       unsigned int buffer_count) override;
-
-  virtual void OnEvent(const char* event,
-                       const char* data,
-                       char result[kBasicResultLength],
-                       const void** buffer,
-                       unsigned int* length,
-                       unsigned int buffer_count) override;
-
-  void fireEvent(const char* callback_name,
-                 const char* event,
-                 const char* data,
-                 const void** buffer,
-                 unsigned int* length,
+  void fireEvent(const char *callback_name, const char *event, const char *data,
+                 void **buffer, unsigned int *length,
                  unsigned int buffer_count);
 
-  void addEvent(const std::string& eventName,
-                napi_env& env,
-                napi_value& call_bcak,
-                napi_value& global);
+  void addEvent(const std::string &eventName, napi_env &env,
+                napi_value &call_bcak, napi_value &global);
 
  private:
-  std::unordered_map<std::string, EventCallback*> _callbacks;
-  const char * _callback_key = "call_back_with_buffer";
+  std::unordered_map<std::string, EventCallback *> _callbacks;
+  const char *_callback_key = "call_back_with_buffer";
 };
-}  // namespace electron
-}  // namespace rtc
-}  // namespace agora
+}// namespace electron
+}// namespace rtc
+}// namespace agora
