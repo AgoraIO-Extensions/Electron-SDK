@@ -25,10 +25,10 @@
     "test": "jest",
     "typescript": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "prepare": "cross-env-shell gulp NPM_Install \\\"--INIT_CWD=$INIT_CWD\\\"",
+    "install": "cross-env-shell gulp NPM_Install \\\"--INIT_CWD=$INIT_CWD\\\"",
     "release": "release-it",
     "example": "yarn --cwd example",
-    "bootstrap": "yarn example && yarn install && yarn patch-package && yarn ts_interface_builder && yarn totalBuild && yarn link && yarn example link agora-electron-sdk",
+    "bootstrap": "yarn config set agora-electron-sdk-pre-built 0 && yarn example && yarn install && yarn patch-package && yarn ts_interface_builder && yarn totalBuild && yarn link && yarn example link agora-electron-sdk && yarn config delete agora-electron-sdk-pre-built",
     "ts_interface_builder": "ts-interface-builder ts/Private/*.ts -o ts/Private/ti/"
   },
   "agora_electron": {
