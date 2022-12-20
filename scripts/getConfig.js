@@ -45,15 +45,15 @@ const getConfig = () => {
     },
   } = process;
 
-  const config = minimist(argv.slice(2), {
+  let config = minimist(argv.slice(2), {
     boolean: ['prebuilt', 'debug', 'silent', 'no_symbol'],
     string: ['arch', 'platform'],
     default: { ...getArgvFromPkgJson() },
   });
 
   //argv from ci/npm_config
-  if (npm_config_agora_electron_sdk_pre_built !== undefined) {
-    config.prebuilt = !!npm_config_agora_electron_sdk_pre_built;
+  if (npm_config_agora_electron_sdk_pre_built) {
+    config.prebuilt = !!JSON.parse(npm_config_agora_electron_sdk_pre_built);
   }
 
   if (npm_config_agora_electron_sdk_platform !== undefined) {
