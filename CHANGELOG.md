@@ -1,3 +1,10 @@
+# [4.1.0](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.1-rc.2...v4.1.0) (2022-12-20)
+
+
+### Features
+
+* support 4.1.0 ([47003ec](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/47003ec9e67064fa0df864d92bb7b68de690c9f3)), closes [#885](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/885) [#893](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/893) [#897](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/897) [#903](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/903) [#904](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/904) [#907](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/907) [#912](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/912) [#926](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/926) [#931](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/931) [#934](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/934)
+
 # [4.1.0-rc.4](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.1.0-rc.3...v4.1.0-rc.4) (2022-12-20)
 
 # [4.1.0-rc.3](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.1.0-rc.2...v4.1.0-rc.3) (2022-12-20)
