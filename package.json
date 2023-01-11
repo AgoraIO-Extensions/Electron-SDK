@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "3.4.11-build.1228",
+  "version": "3.4.11-build.111",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -68,7 +68,7 @@
     "url": "git+https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron.git"
   },
   "agora_electron": {
-    "lib_sdk_win": "http://192.168.99.149:8086/v3.4.11/AgoraSDK/Windows/testing/Agora_Native_SDK_for_Windows_v3.4.11_FULL_20211119_5932_139507.zip",
+    "lib_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_v3.4.11.122_FULL_20230110_9243_252385.zip",
     "lib_sdk_mac": "http://192.168.99.149:8086/v3.4.11/AgoraSDK/Mac/Agora_Native_SDK_for_Mac_v3.4.11_FULL_20211119_1649_139515.zip"
   },
   "keywords": [
