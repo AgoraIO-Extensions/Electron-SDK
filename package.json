@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "2.9.106-rc.243-build.111",
+  "version": "2.9.106-rc.243-build.419",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -65,12 +65,10 @@
   },
   "agora_electron": {
     "libUrl": {
-      "win": "http://192.168.99.149:8086/v2.9.106.243/AgoraSDK/Windows/testing(x86_release)/Agora_Native_SDK_for_Windows(x86)_v2.9.106.243_20220121_FULL_2991.zip",
-      "win64": "http://192.168.99.149:8086/v2.9.106.243/AgoraSDK/Windows/testing(x64_release)/Agora_Native_SDK_for_Windows(x64)_v2.9.106.243_20220121_FULL_2877.zip",
+      "win": "https://release.agoralab.co/disk/v2.9.106.243/AgoraSDK/Windows/testing%28x86_release%29/Agora_Native_SDK_for_Windows%28x86%29_v2.9.106.243_pdb_20220121_2991.zip",
+      "win64": "https://release.agoralab.co/disk/v2.9.106.243/AgoraSDK/Windows/testing%28x64_release%29/Agora_Native_SDK_for_Windows%28x64%29_v2.9.106.243_pdb_20220121_2877.zip",
       "mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v2_9_106_239_FULL_20210916_3717.zip"
-    },
-    "lib_sdk_win": "https://release.agoralab.co/disk/v2.9.106.243/AgoraSDK/Windows/testing%28x86_release%29/Agora_Native_SDK_for_Windows%28x86%29_v2.9.106.243_pdb_20220121_2991.zip",
-    "lib_sdk_win64": "https://release.agoralab.co/disk/v2.9.106.243/AgoraSDK/Windows/testing%28x64_release%29/Agora_Native_SDK_for_Windows%28x64%29_v2.9.106.243_pdb_20220121_2877.zip"
+    }
   },
   "keywords": [
     "electron",
