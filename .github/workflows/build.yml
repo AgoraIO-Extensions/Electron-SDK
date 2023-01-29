@@ -17,7 +17,8 @@ jobs:
         with:
           node-version: '16'
           cache: 'yarn'
-      - run: |
+      - name: Yarn
+        run: |
           npm_config_arch=${{ matrix.arch }} yarn
           
       - name: Prebuild
@@ -27,7 +28,7 @@ jobs:
   build-windows:
     strategy:
       matrix:
-        arch: [x86, x64]
+        arch: [ia32, x64]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
@@ -36,8 +37,10 @@ jobs:
         with:
           node-version: '16'
           cache: 'yarn'
-      - run: |
-          npm_config_arch=${{ matrix.arch }} yarn
+      - name: Yarn
+        run: |
+          set npm_config_arch=${{ matrix.arch }} 
+          yarn
           
       - name: Prebuild
         run: |
