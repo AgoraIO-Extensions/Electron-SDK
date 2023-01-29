@@ -1,1 +1,42 @@
-
+name: Build Addon
+run-name: ${{ github.actor }} triggered this job
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+jobs:
+  build-macos:
+    strategy:
+      matrix:
+        arch: [x64, arm64]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'yarn'
+      - run: yarn
+          
+      - name: Prebuild
+        run: |
+          yarn prebuild -a ${{ matrix.arch }} -u ${{ secrets.GH_TOKEN }}
+    
+  build-windows:
+    strategy:
+      matrix:
+        arch: [x86, x64]
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'yarn'
+      - run: yarn
+          
+      - name: Prebuild
+        run: |
+          yarn prebuild -a ${{ matrix.arch }} -u ${{ secrets.GH_TOKEN }}
