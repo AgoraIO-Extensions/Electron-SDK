@@ -25,7 +25,7 @@ elseif (UNIX)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -fPIC")
 endif ()
 
-message(STATUS "CMAKE_JS_INC ${CMAKE_JS_INC}")
+message(STATUS "CMAKE_JS ${CMAKE_JS_INC} ${CMAKE_JS_SRC} ${CMAKE_JS_LIB}")
 include_directories(${CMAKE_JS_INC})
 
 set(AGORA_NODE_EXT_NAME agora_node_ext)
@@ -39,12 +39,12 @@ if (APPLE)
 
   set(AGORA_RTC_SDK_PATH ${IRIS_ROOT_PATH}/DCG/Agora_Native_SDK_for_Mac_FULL/libs)
 elseif (WIN32)
-  if (${CMAKE_OSX_ARCHITECTURES} STREQUAL "i386")
-    set(AGORA_RTC_PROJECT_ARCH "x86")
-    set(AGORA_IRIS_PROJECT_ARCH "Win32")
-  elseif (${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86_64")
+  if (CMAKE_SIZEOF_VOID_P MATCHES 8)
     set(AGORA_RTC_PROJECT_ARCH "x86_64")
     set(AGORA_IRIS_PROJECT_ARCH "x64")
+  else ()
+    set(AGORA_RTC_PROJECT_ARCH "x86")
+    set(AGORA_IRIS_PROJECT_ARCH "Win32")
   endif ()
 
   set(AGORA_RTC_SDK_PATH ${IRIS_ROOT_PATH}/DCG/Agora_Native_SDK_for_Windows_FULL/sdk/${AGORA_RTC_PROJECT_ARCH})
@@ -53,12 +53,14 @@ endif ()
 set(AGORA_IRIS_SDK_PATH ${IRIS_ROOT_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release)
 
 if (APPLE)
+  set(AGORA_RTC_SDK_BIN ${AGORA_RTC_SDK_PATH}/*.framework)
+  set(AGORA_IRIS_SDK_BIN ${AGORA_IRIS_SDK_PATH}/*.framework)
   set(AGORA_IRIS_SDK_HEADER_FILE_DIR ${AGORA_IRIS_SDK_PATH}/AgoraRtcWrapper.framework/Headers)
-
   set(AGORA_IRIS_SDK_LINK "-framework AgoraRtcWrapper")
 elseif (WIN32)
+  file(GLOB AGORA_RTC_SDK_BIN ${AGORA_RTC_SDK_PATH}/*.dll)
+  file(GLOB AGORA_IRIS_SDK_BIN ${AGORA_IRIS_SDK_PATH}/*.dll)
   set(AGORA_IRIS_SDK_HEADER_FILE_DIR ${AGORA_IRIS_SDK_PATH}/../include)
-
   set(AGORA_IRIS_SDK_LINK ${AGORA_IRIS_SDK_PATH}/AgoraRtcWrapper.lib)
 endif ()
 
@@ -73,9 +75,11 @@ file(GLOB SOURCE_FILE
 
 add_library(${AGORA_NODE_EXT_NAME} SHARED
         ${SOURCE_FILE}
+        ${CMAKE_JS_SRC}
         )
 target_link_libraries(${AGORA_NODE_EXT_NAME}
         ${AGORA_IRIS_SDK_LINK}
+        ${CMAKE_JS_LIB}
         )
 
 target_include_directories(${AGORA_NODE_EXT_NAME} PUBLIC
@@ -90,7 +94,7 @@ set_target_properties(${AGORA_NODE_EXT_NAME} PROPERTIES
         PREFIX ""
         SUFFIX ".node"
         )
-if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+if (APPLE)
   set_target_properties(${AGORA_NODE_EXT_NAME} PROPERTIES
           CXX_VISIBILITY_PRESET hidden
           LINK_FLAGS "-Wl -F ${AGORA_RTC_SDK_PATH} -F ${AGORA_IRIS_SDK_PATH} -rpath @loader_path"
@@ -103,10 +107,10 @@ function(copy_library)
             TARGET ${AGORA_NODE_EXT_NAME}
             POST_BUILD
             COMMAND cp -RP
-            ${AGORA_RTC_SDK_PATH}/*.framework
+            ${AGORA_RTC_SDK_BIN}
             "$<TARGET_FILE_DIR:${AGORA_NODE_EXT_NAME}>/"
             COMMAND cp -RP
-            ${AGORA_IRIS_SDK_PATH}/*.framework
+            ${AGORA_IRIS_SDK_BIN}
             "$<TARGET_FILE_DIR:${AGORA_NODE_EXT_NAME}>/"
             COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/scripts/remove-arch.sh
             "$<TARGET_FILE_DIR:${AGORA_NODE_EXT_NAME}>/"
@@ -117,10 +121,10 @@ function(copy_library)
             TARGET ${AGORA_NODE_EXT_NAME}
             POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy
-            ${AGORA_RTC_SDK_PATH}/*.dll
+            ${AGORA_RTC_SDK_BIN}
             "$<TARGET_FILE_DIR:${AGORA_NODE_EXT_NAME}>/"
             COMMAND ${CMAKE_COMMAND} -E copy
-            ${AGORA_IRIS_SDK_PATH}/*.dll
+            ${AGORA_IRIS_SDK_BIN}
             "$<TARGET_FILE_DIR:${AGORA_NODE_EXT_NAME}>/"
     )
   endif ()
