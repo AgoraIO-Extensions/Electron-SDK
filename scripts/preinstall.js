@@ -22,6 +22,7 @@ let bar = undefined;
 download(url, '.iris', {
   extract: true,
   strip: 0,
+  filter: (file) => !file.path.endsWith('/'),
   map: (file) => {
     console.log('  unzipping ', file.path);
     return file;
