@@ -1,0 +1,4 @@
+runtime=napi
+preinstall=scripts/preinstall.js
+backend=cmake-js
+include-regex='\.(node|framework|dll)$'

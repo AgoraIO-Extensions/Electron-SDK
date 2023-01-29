@@ -14,9 +14,8 @@ peer.log
 peer.pid
 nohup.out
 .version-cache
-js/
+lib/
 docs/
-types/
 package-lock.json
-iris/
+.iris/
 source_code/iris

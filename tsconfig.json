@@ -1,17 +1,21 @@
 {
   "compilerOptions": {
-    "outDir": "./js",
+    "strict": true,
+    "allowJs": true,
+    "declaration": true,
+    "declarationDir": "lib/typescript",
+    "outDir": "lib/commonjs",
     "baseUrl": ".",
     "target": "es2015",
-    "strict": true,
     "module": "commonjs",
     "esModuleInterop": true,
-    "declaration": true,
-    "allowJs": true,
     "moduleResolution": "node",
-    "lib": ["es2015", "dom"],
-    "types": ["node"],
-    "typeRoots": ["node_modules/@types"],
+    "types": [
+      "node"
+    ],
+    "typeRoots": [
+      "node_modules/@types"
+    ]
   },
   "include": [
     "./ts/**/*"
