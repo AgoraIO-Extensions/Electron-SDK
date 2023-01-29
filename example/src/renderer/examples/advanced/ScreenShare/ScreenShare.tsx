@@ -13,6 +13,7 @@ import {
   ScreenCaptureSourceInfo,
   UserOfflineReasonType,
   VideoSourceType,
+  ScreenCaptureSourceType,
 } from 'agora-electron-sdk';
 import { SketchPicker } from 'react-color';
 
@@ -34,7 +35,6 @@ import {
 } from '../../../components/ui';
 import RtcSurfaceView from '../../../components/RtcSurfaceView';
 import { rgbImageBufferToBase64 } from '../../../utils/base64';
-import { ScreenCaptureSourceType } from '../../../../../../ts/Private/IAgoraRtcEngine';
 
 interface State extends BaseVideoComponentState {
   token2: string;
