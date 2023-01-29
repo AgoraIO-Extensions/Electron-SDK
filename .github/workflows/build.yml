@@ -17,7 +17,8 @@ jobs:
         with:
           node-version: '16'
           cache: 'yarn'
-      - run: yarn
+      - run: |
+          npm_config_arch=${{ matrix.arch }} yarn
           
       - name: Prebuild
         run: |
@@ -35,7 +36,8 @@ jobs:
         with:
           node-version: '16'
           cache: 'yarn'
-      - run: yarn
+      - run: |
+          npm_config_arch=${{ matrix.arch }} yarn
           
       - name: Prebuild
         run: |
