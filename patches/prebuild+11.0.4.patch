@@ -1,0 +1,49 @@
+diff --git a/node_modules/prebuild/pack.js b/node_modules/prebuild/pack.js
+index 7552a4d..fd0e381 100644
+--- a/node_modules/prebuild/pack.js
++++ b/node_modules/prebuild/pack.js
+@@ -4,12 +4,20 @@ var path = require('path')
+ var mkdirp = require('mkdirp')
+ var tar = require('tar-stream')
+ var zlib = require('zlib')
++var { exec } = require('shelljs')
+ 
+ function mode (octal) {
+   return parseInt(octal, 8)
+ }
+ 
+ function pack (filenames, tarPath, cb) {
++  var command = command = 'tar -czf'
++  var {code, stderr} = exec(`${command} ${tarPath} ${filenames.join(' ')}`)
++  if (code !== 0) {
++    cb(stderr)
++  }
++  return
++
+   mkdirp(path.dirname(tarPath), function () {
+     if (!Array.isArray(filenames)) {
+       filenames = [filenames]
+diff --git a/node_modules/prebuild/rc.js b/node_modules/prebuild/rc.js
+index 822f672..20dba1a 100644
+--- a/node_modules/prebuild/rc.js
++++ b/node_modules/prebuild/rc.js
+@@ -3,14 +3,16 @@ var targets = require('node-abi').supportedTargets
+ var detectLibc = require('detect-libc')
+ var napi = require('napi-build-utils')
+ 
+-var libc = process.env.LIBC || (detectLibc.isNonGlibcLinuxSync() && detectLibc.familySync()) || ''
++var env = process.env
++
++var libc = env.LIBC || (detectLibc.isNonGlibcLinuxSync() && detectLibc.familySync()) || ''
+ 
+ var rc = require('rc')('prebuild', {
+   target: process.versions.node,
+   runtime: 'node',
+-  arch: process.arch,
++  arch: env.npm_config_arch || process.arch,
+   libc: libc,
+-  platform: process.platform,
++  platform: env.npm_config_platform || process.platform,
+   all: false,
+   force: false,
+   debug: false,

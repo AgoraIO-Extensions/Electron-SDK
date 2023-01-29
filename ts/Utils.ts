@@ -190,7 +190,7 @@ function copyProperties<T>(target: T, source: any) {
   }
 }
 
-const agora = require('../build/Release/agora_node_ext');
+const agora = require('bindings')('agora_node_ext.node');
 
 /**
  * @ignore
