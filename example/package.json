@@ -76,6 +76,7 @@
     }
   },
   "dependencies": {
+    "agora-electron-sdk": "latest",
     "antd": "^4.20.3",
     "ffi-napi": "^4.0.3",
     "history": "^5.0.0",
@@ -86,9 +87,6 @@
     "recharts": "^2.1.13",
     "ref-napi": "^3.0.3",
     "source-map-support": "^0.5.16"
-  },
-  "optionalDependencies": {
-    "agora-electron-sdk": "latest"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.16.7",
