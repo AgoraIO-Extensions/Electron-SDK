@@ -38,13 +38,9 @@ jobs:
         with:
           node-version: '16'
 
-      - uses: nick-fields/retry@v2
-        with:
-          timeout_seconds: 600000
-          max_attempts: 3
-          retry_on: error
-          command: |
-            $Env:npm_config_arch="${{ matrix.arch }}";yarn
+      - name: Yarn
+        run: |
+          $Env:npm_config_arch="${{ matrix.arch }}";yarn
           
       - name: Prebuild
         run: |
