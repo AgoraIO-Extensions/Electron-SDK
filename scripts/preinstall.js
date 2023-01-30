@@ -22,6 +22,7 @@ let bar = undefined;
 download(url, '.iris', {
   extract: true,
   strip: 0,
+  // fix unzip error https://github.com/kevva/decompress/issues/46
   filter: (file) => !file.path.endsWith('/'),
   map: (file) => {
     console.log('  unzipping ', file.path);
