@@ -16,6 +16,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
+          cache: 'yarn'
 
       - name: Yarn
         run: |
@@ -37,9 +38,12 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Yarn
-        run: |
-          $Env:npm_config_arch="${{ matrix.arch }}";yarn
+      - uses: nick-fields/retry@v2
+        with:
+          max_attempts: 3
+          retry_on: error
+          command: |
+            $Env:npm_config_arch="${{ matrix.arch }}";yarn
           
       - name: Prebuild
         run: |
