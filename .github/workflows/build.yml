@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
-          cache: 'yarn'
+
       - name: Yarn
         run: |
           npm_config_arch=${{ matrix.arch }} yarn
@@ -36,7 +36,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
-          cache: 'yarn'
+
       - name: Yarn
         run: |
           $Env:npm_config_arch="${{ matrix.arch }}";yarn
