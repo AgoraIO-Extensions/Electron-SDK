@@ -16,15 +16,15 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
-          cache: 'yarn'
+          cache: 'npm'
 
-      - name: Yarn
+      - name: Npm
         run: |
-          npm_config_arch=${{ matrix.arch }} yarn
+          npm i --arch=${{ matrix.arch }}
           
       - name: Prebuild
         run: |
-          yarn prebuild -a ${{ matrix.arch }} -u ${{ secrets.GH_TOKEN }}
+          npm run prebuild -a ${{ matrix.arch }} -u ${{ secrets.GH_TOKEN }}
     
   build-windows:
     strategy:
@@ -37,12 +37,12 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
-          cache: 'yarn'
+          cache: 'npm'
 
-      - name: Yarn
+      - name: Npm
         run: |
-          $Env:npm_config_arch="${{ matrix.arch }}";yarn
+          npm i --arch=${{ matrix.arch }}
           
       - name: Prebuild
         run: |
-          yarn prebuild -a ${{ matrix.arch }} -u ${{ secrets.GH_TOKEN }}
+          npm run prebuild -a ${{ matrix.arch }} -u ${{ secrets.GH_TOKEN }}
