@@ -24,7 +24,7 @@ jobs:
           
       - name: Prebuild
         run: |
-          npm run prebuild -a ${{ matrix.arch }} -u ${{ secrets.GH_TOKEN }}
+          prebuild -a ${{ matrix.arch }} -u ${{ secrets.GH_TOKEN }}
     
   build-windows:
     strategy:
@@ -45,4 +45,4 @@ jobs:
           
       - name: Prebuild
         run: |
-          npm run prebuild -a ${{ matrix.arch }} -u ${{ secrets.GH_TOKEN }}
+          prebuild -a ${{ matrix.arch }} -u ${{ secrets.GH_TOKEN }}
