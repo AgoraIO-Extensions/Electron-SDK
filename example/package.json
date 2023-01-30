@@ -3,29 +3,35 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "postinstall": "npm run rebuild",
-    "start": "electron-webpack dev",
     "compile": "electron-webpack",
-    "rebuild": "electron-rebuild -f -o ref-napi",
+    "dev": "electron-webpack dev",
     "dist": "yarn compile && electron-builder",
-    "dist:mac": "yarn dist --dir -c.compression=store -c.mac.identity=null",
-    "dist:win32": "yarn compile && electron-builder --publish never --win --ia32",
-    "dist:win64": "yarn compile && electron-builder --publish never --win --x64",
+    "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null",
+    "dist:mac": "yarn dist --mac",
+    "dist:win32": "yarn dist --win --ia32",
+    "dist:win64": "yarn dist --win --x64",
+    "postinstall": "electron-builder install-app-deps",
+    "start": "electron-webpack dev",
     "switchEnv:win32": "cd .. && @powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./ci/packager-win.ps1 1 switchEnv",
     "switchEnv:win64": "cd .. && @powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./ci/packager-win.ps1 2 switchEnv"
   },
   "build": {
-    "asar": false,
-    "buildDependenciesFromSource": true,
     "productName": "Agora-Electron-API-Example",
     "appId": "agora.io.ElectronApiExample",
+    "asar": false,
     "files": [
-      "!*.log"
+      "dist",
+      "node_modules",
+      "package.json"
     ],
     "mac": {
-      "target": [
-        "dir"
-      ],
+      "target": {
+        "target": "default",
+        "arch": [
+          "arm64",
+          "x64"
+        ]
+      },
       "type": "distribution",
       "hardenedRuntime": true,
       "entitlements": "assets/entitlements.mac.plist",
@@ -48,7 +54,7 @@
     },
     "win": {
       "target": [
-        "zip"
+        "nsis"
       ]
     },
     "linux": {
@@ -62,7 +68,12 @@
     },
     "extraResources": [
       "./extraResources/**"
-    ]
+    ],
+    "publish": {
+      "provider": "github",
+      "owner": "AgoraIO-Extensions",
+      "repo": "Electron-SDK"
+    }
   },
   "dependencies": {
     "antd": "^4.20.3",
@@ -75,6 +86,9 @@
     "recharts": "^2.1.13",
     "ref-napi": "^3.0.3",
     "source-map-support": "^0.5.16"
+  },
+  "optionalDependencies": {
+    "agora-electron-sdk": "latest"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.16.7",
