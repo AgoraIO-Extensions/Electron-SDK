@@ -10,7 +10,7 @@
     "postinstall": "patch-package",
     "prepublishOnly": "yarn typescript",
     "test": "prebuild-ci",
-    "typescript": "tsc --noEmit",
+    "typescript": "ts-interface-builder ts/Private/*.ts -o ts/Private/ti/ && tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "install": "prebuild-install -r napi --verbose || prebuild",
     "release": "release-it",
