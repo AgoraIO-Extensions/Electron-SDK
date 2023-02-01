@@ -56,7 +56,7 @@ def doPublish(buildVariables) {
                     {
                         "msgtype": "text",
                         "text": {
-                            "content": \"${env.NOTIFICATION_CONTENT}\n${artifactoryUrls.find { it.contains('demo') }}\"
+                            "content": \"${env.NOTIFICATION_CONTENT}\n${artifactoryUrls.find { it.startsWith('http') && it.contains('demo') }}\"
                         }
                     }
                     """
