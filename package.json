@@ -32,8 +32,8 @@
     "bootstrap": "yarn example && yarn"
   },
   "agora_electron": {
-    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.0.0.122_DCG_Windows_Video_20221121_0703.zip",
-    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.0.0.122_DCG_Mac_Video_20221121_0703.zip",
+    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.0.0.123_DCG_Windows_Video_20230201_0718.zip",
+    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.0.0.123_DCG_Mac_Video_20230201_0718.zip",
     "no_symbol": true,
     "prebuilt": true
   },
