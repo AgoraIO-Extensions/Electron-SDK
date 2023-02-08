@@ -185,7 +185,7 @@ export abstract class IBaseSpatialAudioEngine {
    * @returns
    * 0: Success.< 0: Failure.
    */
-  abstract setZones(zones: SpatialAudioZone, zoneCount: number): number;
+  abstract setZones(zones: SpatialAudioZone[], zoneCount: number): number;
 
   /**
    * Sets the sound attenuation properties of the media player.
