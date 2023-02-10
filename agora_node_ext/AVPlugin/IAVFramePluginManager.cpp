@@ -16,13 +16,14 @@ bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame& videoFrame) {
   memcpy(u_buffer, videoFrame.uBuffer, videoFrame.yStride * videoFrame.height/4);
   memcpy(v_buffer, videoFrame.vBuffer, videoFrame.yStride * videoFrame.height/4);
   agora::rtc::node_async_call::async_call([this, videoFrame, y_buffer, u_buffer, v_buffer] {
-    videoFrame.yBuffer = y_buffer;
-    videoFrame.uBuffer = u_buffer;
-    videoFrame.vBuffer = v_buffer;
+    VideoFrame frame = videoFrame;
+    frame.yBuffer = y_buffer;
+    frame.uBuffer = u_buffer;
+    frame.vBuffer = v_buffer;
     for (auto const& element : m_mapPlugins) {
     if (element.second.enabled) {
       element.second.instance->onPluginCaptureVideoFrame(
-          (VideoPluginFrame*)&videoFrame);
+          (VideoPluginFrame*)&frame);
     }
     free(y_buffer);
     free(u_buffer);
