@@ -12,9 +12,9 @@ bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame& videoFrame) {
   void *y_buffer = malloc(videoFrame.yStride * videoFrame.height);
   void *u_buffer = malloc(videoFrame.yStride * videoFrame.height/4);
   void *v_buffer = malloc(videoFrame.yStride * videoFrame.height/4);
-  memcpy(y_buffer, videoFrame.yBuffer, videoFrame.yStride * videoFrame.height);
-  memcpy(u_buffer, videoFrame.uBuffer, videoFrame.yStride * videoFrame.height/4);
-  memcpy(v_buffer, videoFrame.vBuffer, videoFrame.yStride * videoFrame.height/4);
+//  memcpy(y_buffer, videoFrame.yBuffer, videoFrame.yStride * videoFrame.height);
+//  memcpy(u_buffer, videoFrame.uBuffer, videoFrame.yStride * videoFrame.height/4);
+//  memcpy(v_buffer, videoFrame.vBuffer, videoFrame.yStride * videoFrame.height/4);
   std::thread thread([this, videoFrame, y_buffer, u_buffer, v_buffer] {
     VideoFrame frame = videoFrame;
     frame.yBuffer = y_buffer;
