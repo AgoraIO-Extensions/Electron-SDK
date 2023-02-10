@@ -2,7 +2,7 @@
 #include "IAVFramePlugin.h"
 #include <stdint.h>
 #include <stdio.h>
-#include "../node_async_queue.h"
+#include <thread>
 
 IAVFramePluginManager::IAVFramePluginManager() {}
 
@@ -15,22 +15,23 @@ bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame& videoFrame) {
   memcpy(y_buffer, videoFrame.yBuffer, videoFrame.yStride * videoFrame.height);
   memcpy(u_buffer, videoFrame.uBuffer, videoFrame.yStride * videoFrame.height/4);
   memcpy(v_buffer, videoFrame.vBuffer, videoFrame.yStride * videoFrame.height/4);
-  agora::rtc::node_async_call::async_call([this, videoFrame, y_buffer, u_buffer, v_buffer] {
+  std::thread thread([this, videoFrame, y_buffer, u_buffer, v_buffer] {
     VideoFrame frame = videoFrame;
     frame.yBuffer = y_buffer;
     frame.uBuffer = u_buffer;
     frame.vBuffer = v_buffer;
     for (auto const& element : m_mapPlugins) {
-    if (element.second.enabled) {
-      element.second.instance->onPluginCaptureVideoFrame(
-          (VideoPluginFrame*)&frame);
+      if (element.second.enabled) {
+        element.second.instance->onPluginCaptureVideoFrame(
+            (VideoPluginFrame*)&frame);
+      }
     }
     free(y_buffer);
     free(u_buffer);
     free(v_buffer);
-  }
   });
-    return true;
+  thread.join();
+  return true;
 }
 
 bool IAVFramePluginManager::onRenderVideoFrame(unsigned int uid, VideoFrame& videoFrame)
