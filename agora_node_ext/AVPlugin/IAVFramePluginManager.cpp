@@ -2,22 +2,33 @@
 #include "IAVFramePlugin.h"
 #include <stdint.h>
 #include <stdio.h>
+#include "node_async_queue.h"
 
-IAVFramePluginManager::IAVFramePluginManager()
-{
-}
+IAVFramePluginManager::IAVFramePluginManager() {}
 
-IAVFramePluginManager::~IAVFramePluginManager()
-{
-}
+IAVFramePluginManager::~IAVFramePluginManager() {}
 
-bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame& videoFrame)
-{
+bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame& videoFrame) {
+  void *y_buffer = malloc(videoFrame.yStride * videoFrame.height);
+  void *u_buffer = malloc(videoFrame.yStride * videoFrame.height/4);
+  void *v_buffer = malloc(videoFrame.yStride * videoFrame.height/4);
+  memcpy(y_buffer, videoFrame.yBuffer, videoFrame.yStride * videoFrame.height);
+  memcpy(u_buffer, videoFrame.uBuffer, videoFrame.yStride * videoFrame.height/4);
+  memcpy(v_buffer, videoFrame.vBuffer, videoFrame.yStride * videoFrame.height/4);
+  node_async_call::async_call([this, videoFrame, y_buffer, u_buffer, v_buffer] {
+    videoFrame.yBuffer = y_buffer;
+    videoFrame.uBuffer = u_buffer;
+    videoFrame.vBuffer = v_buffer;
     for (auto const& element : m_mapPlugins) {
-        if(element.second.enabled) {
-            element.second.instance->onPluginCaptureVideoFrame((VideoPluginFrame*)&videoFrame);
-        }
+    if (element.second.enabled) {
+      element.second.instance->onPluginCaptureVideoFrame(
+          (VideoPluginFrame*)&videoFrame);
     }
+    free(y_buffer);
+    free(u_buffer);
+    free(v_buffer);
+  }
+  });
     return true;
 }
 
