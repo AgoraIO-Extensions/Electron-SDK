@@ -15,7 +15,7 @@ bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame& videoFrame) {
   memcpy(y_buffer, videoFrame.yBuffer, videoFrame.yStride * videoFrame.height);
   memcpy(u_buffer, videoFrame.uBuffer, videoFrame.yStride * videoFrame.height/4);
   memcpy(v_buffer, videoFrame.vBuffer, videoFrame.yStride * videoFrame.height/4);
-  node_async_call::async_call([this, videoFrame, y_buffer, u_buffer, v_buffer] {
+  agora::rtc::node_async_call::async_call([this, videoFrame, y_buffer, u_buffer, v_buffer] {
     videoFrame.yBuffer = y_buffer;
     videoFrame.uBuffer = u_buffer;
     videoFrame.vBuffer = v_buffer;
