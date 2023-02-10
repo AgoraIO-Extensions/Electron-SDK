@@ -2,7 +2,7 @@
 #include "IAVFramePlugin.h"
 #include <stdint.h>
 #include <stdio.h>
-#include "node_async_queue.h"
+#include "../node_async_queue.h"
 
 IAVFramePluginManager::IAVFramePluginManager() {}
 
