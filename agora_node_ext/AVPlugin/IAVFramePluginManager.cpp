@@ -7,13 +7,50 @@ IAVFramePluginManager::IAVFramePluginManager() {}
 
 IAVFramePluginManager::~IAVFramePluginManager() {}
 
+IAVFramePluginManager::IAVFramePluginManager() {
+#ifdef _WIN32
+  m_onFrame = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+  m_doneFrame = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+  m_thread = std::thread([this] {
+    while (!m_stop) {
+      ::WaitForSingleObject(m_onFrame, INFINITE);
+      for (auto const& element : m_mapPlugins) {
+        if (element.second.enabled && m_pFrame) {
+          element.second.instance->onPluginCaptureVideoFrame(
+              (VideoPluginFrame*)m_pFrame);
+        }
+      }
+      ::SetEvent(m_doneFrame);
+    }
+  });
+#endif
+}
+
+IAVFramePluginManager::~IAVFramePluginManager() {
+#ifdef _WIN32
+  m_pFrame = NULL;
+  m_stop = true;
+  ::SetEvent(m_onFrame);
+  m_thread.join();
+  ::CloseHandle(m_onFrame);
+  ::CloseHandle(m_doneFrame);
+#endif
+}
+
 bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame& videoFrame) {
+#ifdef _WIN32
+  std::lock_guard<std::mutex> _(m_lock);
+  m_pFrame = &videoFrame;
+  ::SetEvent(m_onFrame);
+  ::WaitForSingleObject(m_doneFrame, INFINITE);
+#else
   for (auto const& element : m_mapPlugins) {
     if (element.second.enabled) {
-      element.second.instance->onPluginCaptureVideoFrame(
+        element.second.instance->onPluginCaptureVideoFrame(
           (VideoPluginFrame*)&videoFrame);
     }
   }
+#endif
   return true;
 }
 
@@ -111,22 +148,22 @@ void IAVFramePluginManager::registerPlugin(agora_plugin_info& plugin) {
 }
 
 void IAVFramePluginManager::unregisterPlugin(std::string& pluginId) {
-  auto iter = m_mapPlugins.find(pluginId);
-  if (iter != m_mapPlugins.end()) {
-    // free plugin instance
-    if (iter->second.instance) {
-      iter->second.instance->release();
-    }
-    // unload libs
-    if (iter->second.pluginModule) {
+    auto iter = m_mapPlugins.find(pluginId);
+    if (iter != m_mapPlugins.end()) {
+        // free plugin instance
+        if (iter->second.instance) {
+            iter->second.instance->release();
+        }
+        // unload libs
+        if (iter->second.pluginModule) {
 #ifdef WIN32
-      FreeLibrary((HMODULE)(iter->second.pluginModule));
+          // FreeLibrary((HMODULE)(iter->second.pluginModule));
 #else
-      dlclose(iter->second.pluginModule);
+          dlclose(iter->second.pluginModule);
 #endif
+        }
+        m_mapPlugins.erase(iter);
     }
-    m_mapPlugins.erase(iter);
-  }
 }
 
 bool IAVFramePluginManager::hasPlugin(std::string& pluginId) {
@@ -169,7 +206,7 @@ int IAVFramePluginManager::release() {
     // unload libs
     if (element.second.pluginModule) {
 #ifdef WIN32
-      FreeLibrary((HMODULE)(element.second.pluginModule));
+      // FreeLibrary((HMODULE)(element.second.pluginModule));
 #else
       dlclose(element.second.pluginModule);
 #endif

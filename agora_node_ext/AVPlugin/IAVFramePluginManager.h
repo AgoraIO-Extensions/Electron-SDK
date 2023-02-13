@@ -4,6 +4,10 @@
 #include <node.h>
 #include <map>
 #include <string>
+#include <map>
+#include <thread>
+#include <mutex>
+#include <node.h>
 #ifdef _WIN32
 #include <Windows.h>
 #elif defined(__APPLE__)
@@ -40,14 +44,20 @@ class IAVFramePluginManager : public agora::media::IVideoFrameObserver,
   virtual bool onReceiveAudioPacket(Packet& packet);
   virtual bool onReceiveVideoPacket(Packet& packet);
 
-  void registerPlugin(agora_plugin_info& plugin);
-  void unregisterPlugin(std::string& pluginId);
-  bool hasPlugin(std::string& pluginId);
-  bool enablePlugin(std::string& pluginId, bool enabled);
-  bool getPlugin(std::string& pluginId, agora_plugin_info& pluginInfo);
-  std::vector<std::string> getPlugins();
-  int release();
-
- private:
-  std::map<std::string, agora_plugin_info> m_mapPlugins;
+    void registerPlugin(agora_plugin_info& plugin);
+    void unregisterPlugin(std::string& pluginId);
+    bool hasPlugin(std::string& pluginId);
+    bool enablePlugin(std::string& pluginId, bool enabled);
+    bool getPlugin(std::string& pluginId, agora_plugin_info& pluginInfo);
+    std::vector<std::string> getPlugins();
+    int release();
+private:
+    std::map<std::string, agora_plugin_info> m_mapPlugins;
+#ifdef _WIN32
+    bool m_stop = false;
+    std::thread m_thread;
+    std::mutex m_lock;
+    agora::media::IVideoFrameObserver::VideoFrame* m_pFrame = NULL;
+    HANDLE m_onFrame = NULL, m_doneFrame = NULL;
+#endif
 };
