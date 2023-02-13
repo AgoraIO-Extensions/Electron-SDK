@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include <thread>
+#include <mutex>
 #include <node.h>
 #ifdef _WIN32
 #include <Windows.h>
@@ -48,6 +49,7 @@ private:
 #ifdef _WIN32
     bool m_stop = false;
     std::thread m_thread;
+    std::mutex m_lock;
     agora::media::IVideoFrameObserver::VideoFrame* m_pFrame = NULL;
     HANDLE m_onFrame = NULL, m_doneFrame = NULL;
 #endif

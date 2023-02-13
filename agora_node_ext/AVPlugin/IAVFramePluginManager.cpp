@@ -35,6 +35,7 @@ IAVFramePluginManager::~IAVFramePluginManager() {
 
 bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame& videoFrame) {
 #ifdef _WIN32
+  std::lock_guard<std::mutex> _(m_lock);
   m_pFrame = &videoFrame;
   ::SetEvent(m_onFrame);
   ::WaitForSingleObject(m_doneFrame, INFINITE);

@@ -5008,7 +5008,7 @@ namespace agora {
                 READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
                 CHECK_PLUGIN_INFO_EXIST(pEngine, pluginId); //not exist
 
-                pEngine->m_avPluginManager->unregisterPlugin(pluginId);
+                //pEngine->m_avPluginManager->unregisterPlugin(pluginId);
                 result = 0;
             } while (false);
             napi_set_int_result(args, result);
