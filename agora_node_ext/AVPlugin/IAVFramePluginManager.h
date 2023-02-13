@@ -2,6 +2,7 @@
 #include <IAgoraMediaEngine.h>
 #include <string>
 #include <map>
+#include <thread>
 #include <node.h>
 #ifdef _WIN32
 #include <Windows.h>
@@ -44,4 +45,10 @@ public:
     int release();
 private:
     std::map<std::string, agora_plugin_info> m_mapPlugins;
+#ifdef _WIN32
+    bool m_stop = false;
+    std::thread m_thread;
+    agora::media::IVideoFrameObserver::VideoFrame* m_pFrame = NULL;
+    HANDLE m_onFrame = NULL, m_doneFrame = NULL;
+#endif
 };

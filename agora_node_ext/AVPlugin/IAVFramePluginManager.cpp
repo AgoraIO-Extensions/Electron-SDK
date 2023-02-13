@@ -2,44 +2,49 @@
 #include "IAVFramePlugin.h"
 #include <stdint.h>
 #include <stdio.h>
-#include <thread>
-
-static bool s_stop = false;
-static std::thread s_thread;
-static agora::media::IVideoFrameObserver::VideoFrame* sp_frame;
-static HANDLE s_on_frame, s_done_frame;
 
 IAVFramePluginManager::IAVFramePluginManager() {
-  s_stop = false;
-  s_on_frame = ::CreateEvent(NULL, FALSE, FALSE, NULL);
-  s_done_frame = ::CreateEvent(NULL, FALSE, FALSE, NULL);
-  s_thread = std::thread([this] {
-    while (!s_stop) {
-      ::WaitForSingleObject(s_on_frame, INFINITE);
+#ifdef _WIN32
+  m_onFrame = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+  m_doneFrame = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+  m_thread = std::thread([this] {
+    while (!m_stop) {
+      ::WaitForSingleObject(m_onFrame, INFINITE);
       for (auto const& element : m_mapPlugins) {
-        if (element.second.enabled && sp_frame) {
+        if (element.second.enabled && m_pFrame) {
           element.second.instance->onPluginCaptureVideoFrame(
-              (VideoPluginFrame*)sp_frame);
+              (VideoPluginFrame*)m_pFrame);
         }
       }
-      ::SetEvent(s_done_frame);
+      ::SetEvent(m_doneFrame);
     }
   });
+#endif
 }
 
 IAVFramePluginManager::~IAVFramePluginManager() {
-  sp_frame = NULL;
-  s_stop = true;
-  ::SetEvent(s_on_frame);
-  s_thread.join();
-  ::CloseHandle(s_on_frame);
-  ::CloseHandle(s_done_frame);
+#ifdef _WIN32
+  m_pFrame = NULL;
+  m_stop = true;
+  ::SetEvent(m_onFrame);
+  m_thread.join();
+  ::CloseHandle(m_onFrame);
+  ::CloseHandle(m_doneFrame);
+#endif
 }
 
 bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame& videoFrame) {
-  sp_frame = &videoFrame;
-  ::SetEvent(s_on_frame);
-  ::WaitForSingleObject(s_done_frame, INFINITE);
+#ifdef _WIN32
+  m_pFrame = &videoFrame;
+  ::SetEvent(m_onFrame);
+  ::WaitForSingleObject(m_doneFrame, INFINITE);
+#else
+  for (auto const& element : m_mapPlugins) {
+    if(element.second.enabled) {
+        element.second.instance->onPluginCaptureVideoFrame((VideoPluginFrame*)&videoFrame);
+    }
+  }
+#endif
   return true;
 }
 
@@ -109,7 +114,7 @@ void IAVFramePluginManager::unregisterPlugin(std::string& pluginId)
         }
         //unload libs
         if(iter->second.pluginModule) {
-            #ifdef WIN32
+            #ifdef _WIN32
                 //FreeLibrary((HMODULE)(iter->second.pluginModule));
             #else
                 dlclose(iter->second.pluginModule);
@@ -164,7 +169,7 @@ int IAVFramePluginManager::release()
         }
         //unload libs
         if(element.second.pluginModule) {
-            #ifdef WIN32
+            #ifdef _WIN32
                 //FreeLibrary((HMODULE)(element.second.pluginModule));
             #else
                 dlclose(element.second.pluginModule);
