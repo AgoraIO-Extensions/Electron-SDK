@@ -4,33 +4,42 @@
 #include <stdio.h>
 #include <thread>
 
-IAVFramePluginManager::IAVFramePluginManager() {}
+static bool s_stop = false;
+static std::thread s_thread;
+static agora::media::IVideoFrameObserver::VideoFrame* sp_frame;
+static HANDLE s_on_frame, s_done_frame;
 
-IAVFramePluginManager::~IAVFramePluginManager() {}
+IAVFramePluginManager::IAVFramePluginManager() {
+  s_stop = false;
+  s_on_frame = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+  s_done_frame = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+  s_thread = std::thread([this] {
+    while (!s_stop) {
+      ::WaitForSingleObject(s_on_frame, INFINITE);
+      for (auto const& element : m_mapPlugins) {
+        if (element.second.enabled && sp_frame) {
+          element.second.instance->onPluginCaptureVideoFrame(
+              (VideoPluginFrame*)sp_frame);
+        }
+      }
+      ::SetEvent(s_done_frame);
+    }
+  });
+}
+
+IAVFramePluginManager::~IAVFramePluginManager() {
+  sp_frame = NULL;
+  s_stop = true;
+  ::SetEvent(s_on_frame);
+  s_thread.join();
+  ::CloseHandle(s_on_frame);
+  ::CloseHandle(s_done_frame);
+}
 
 bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame& videoFrame) {
-  void *y_buffer = malloc(videoFrame.yStride * videoFrame.height);
-  void *u_buffer = malloc(videoFrame.yStride * videoFrame.height/4);
-  void *v_buffer = malloc(videoFrame.yStride * videoFrame.height/4);
-//  memcpy(y_buffer, videoFrame.yBuffer, videoFrame.yStride * videoFrame.height);
-//  memcpy(u_buffer, videoFrame.uBuffer, videoFrame.yStride * videoFrame.height/4);
-//  memcpy(v_buffer, videoFrame.vBuffer, videoFrame.yStride * videoFrame.height/4);
-  std::thread thread([this, videoFrame, y_buffer, u_buffer, v_buffer] {
-    VideoFrame frame = videoFrame;
-    frame.yBuffer = y_buffer;
-    frame.uBuffer = u_buffer;
-    frame.vBuffer = v_buffer;
-    for (auto const& element : m_mapPlugins) {
-      if (element.second.enabled) {
-        element.second.instance->onPluginCaptureVideoFrame(
-            (VideoPluginFrame*)&frame);
-      }
-    }
-    free(y_buffer);
-    free(u_buffer);
-    free(v_buffer);
-  });
-  thread.join();
+  sp_frame = &videoFrame;
+  ::SetEvent(s_on_frame);
+  ::WaitForSingleObject(s_done_frame, INFINITE);
   return true;
 }
 
@@ -101,7 +110,7 @@ void IAVFramePluginManager::unregisterPlugin(std::string& pluginId)
         //unload libs
         if(iter->second.pluginModule) {
             #ifdef WIN32
-                FreeLibrary((HMODULE)(iter->second.pluginModule));
+                //FreeLibrary((HMODULE)(iter->second.pluginModule));
             #else
                 dlclose(iter->second.pluginModule);
             #endif
@@ -156,7 +165,7 @@ int IAVFramePluginManager::release()
         //unload libs
         if(element.second.pluginModule) {
             #ifdef WIN32
-                FreeLibrary((HMODULE)(element.second.pluginModule));
+                //FreeLibrary((HMODULE)(element.second.pluginModule));
             #else
                 dlclose(element.second.pluginModule);
             #endif
