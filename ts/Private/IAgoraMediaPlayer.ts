@@ -30,6 +30,7 @@ export abstract class IMediaPlayer {
    * This method is called asynchronously.If you need to play a media file, make sure you receive the onPlayerSourceStateChanged callback reporting PlayerStateOpenCompleted before calling the play method to play the file.
    *
    * @param url The path of the media file. Both local path and online path are supported.On the Android platform, if you need to open a file in URI format, use open .
+   *
    * @param startPos The starting position (ms) for playback. Default value is 0.
    *
    * @returns
@@ -177,6 +178,7 @@ export abstract class IMediaPlayer {
    * The media player supports setting private options by key and value. Under normal circumstances, you do not need to know the private option settings, and just use the default option settings.Ensure that you call this method before open .If you need to push streams with SEI into the CDN, callsetPlayerOptionInInt ("sei_data_with_uuid", 1); otherwise, the loss of SEI might occurs.
    *
    * @param key The key of the option.
+   *
    * @param value The value of the key.
    *
    * @returns
@@ -185,14 +187,7 @@ export abstract class IMediaPlayer {
   abstract setPlayerOptionInInt(key: string, value: number): number;
 
   /**
-   * Sets the private options for the media player.
-   * The media player supports setting private options by key and value. Under normal circumstances, you do not need to know the private option settings, and just use the default option settings.Ensure that you call this method before open .If you need to push streams with SEI into the CDN, callsetPlayerOptionInInt ("sei_data_with_uuid", 1); otherwise, the loss of SEI might occurs.
-   *
-   * @param key The key of the option.
-   * @param value The value of the key.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
+   * @ignore
    */
   abstract setPlayerOptionInString(key: string, value: string): number;
 
@@ -207,13 +202,7 @@ export abstract class IMediaPlayer {
   abstract selectInternalSubtitle(index: number): number;
 
   /**
-   * Stops pushing media streams to a CDN.
-   * You can call this method to stop the live stream on the specified CDN address. This method can stop pushing media streams to only one CDN address at a time, so if you need to stop pushing streams to multiple addresses, call this method multiple times.After you call this method, the SDK triggers the onRtmpStreamingStateChanged callback on the local client to report the state of the streaming.
-   *
-   * @param url The address of media push. The format is RTMP or RTMPS. The character length cannot exceed 1024 bytes. Special characters such as Chinese characters are not supported.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
+   * @ignore
    */
   abstract setExternalSubtitle(url: string): number;
 
@@ -281,9 +270,10 @@ export abstract class IMediaPlayer {
   abstract getPublishSignalVolume(): number;
 
   /**
-   * Destroys a video renderer object.
+   * Sets the view.
    *
-   * @param view The HTMLElement object to be destroyed.
+   * @returns
+   * 0: Success.< 0: Failure.
    */
   abstract setView(view: any): number;
 
@@ -330,12 +320,7 @@ export abstract class IMediaPlayer {
   ): number;
 
   /**
-   * Unregisters an audio observer.
-   *
-   * @param observer The audio observer. See IMediaPlayerAudioFrameObserver .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
+   * @ignore
    */
   abstract unregisterMediaPlayerAudioSpectrumObserver(
     observer: IAudioSpectrumObserver
@@ -402,6 +387,7 @@ export abstract class IMediaPlayer {
    * You can call this method to switch the media resource to be played according to the current network status. For example:When the network is poor, the media resource to be played is switched to a media resource address with a lower bitrate.When the network is good, the media resource to be played is switched to a media resource address with a higher bitrate.After calling this method, if you receive the onPlayerEvent event in the PlayerEventSwitchComplete callback, the switch is successful; If you receive the onPlayerEvent event in the PlayerEventSwitchError callback, the switch fails.Ensure that you call this method after open .To ensure normal playback, pay attention to the following when calling this method:Do not call this method when playback is paused.Do not call the seek method during switching.Before switching the media resource, make sure that the playback position does not exceed the total duration of the media resource to be switched.
    *
    * @param src The URL of the media resource.
+   *
    * @param syncPts Whether to synchronize the playback position (ms) before and after the switch:true: Synchronize the playback position before and after the switch.false: (Default) Do not synchronize the playback position before and after the switch.Make sure to set this parameter as false if you need to play live streams, or the switch fails. If you need to play on-demand streams, you can set the value of this parameter according to your scenarios.
    *
    * @returns
@@ -414,6 +400,7 @@ export abstract class IMediaPlayer {
    * You can call this method to preload a media resource into the playlist. If you need to preload multiple media resources, you can call this method multiple times.After calling this method, if you receive the PlayerPreloadEventComplete event in the onPreloadEvent callback, the preload is successful; If you receive the PlayerPreloadEventError event in the onPreloadEvent callback, the preload fails.If the preload is successful and you want to play the media resource, call playPreloadedSrc ; if you want to clear the playlist, call stop .Agora does not support preloading duplicate media resources to the playlist. However, you can preload the media resources that are being played to the playlist again.
    *
    * @param src The URL of the media resource.
+   *
    * @param startPos The starting position (ms) for playing after the media resource is preloaded to the playlist. When preloading a live stream, set this parameter to 0.
    *
    * @returns
@@ -446,8 +433,6 @@ export abstract class IMediaPlayer {
   /**
    * Enables or disables the spatial audio effect for the media player.
    * After successfully setting the spatial audio effect parameters of the media player, the SDK enables the spatial audio effect for the media player, and the local user can hear the media resources with a sense of space.If you need to disable the spatial audio effect for the media player, set the params parameter to null.
-   *
-   * @param params The spatial audio effect parameters of the media player. See SpatialAudioParams for details.
    *
    * @returns
    * 0: Success.< 0: Failure.
@@ -529,7 +514,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure. See MediaPlayerError .
+   * < 0: Failure. See MediaPlayerError .
    */
   abstract removeOldCache(): number;
 
@@ -540,8 +525,7 @@ export abstract class IMediaPlayerCacheManager {
    * @param uri The URI (Uniform Resource Identifier) of the media file to be deleted.
    *
    * @returns
-   * 0: Success.
-   *  < 0: Failure. See MediaPlayerError .
+   * 0: Success.< 0: Failure. See MediaPlayerError .
    */
   abstract removeCacheByUri(uri: string): number;
 
@@ -552,7 +536,8 @@ export abstract class IMediaPlayerCacheManager {
    * @param path The absolute path of the media files to be cached. Ensure that the directory for the media files exists and is writable.
    *
    * @returns
-   * 0: Success.< 0: Failure. See MediaPlayerError .
+   * 0: Success.
+   * < 0: Failure. See MediaPlayerError .
    */
   abstract setCacheDir(path: string): number;
 
@@ -563,7 +548,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure. See MediaPlayerError .
+   * < 0: Failure. See MediaPlayerError .
    */
   abstract setMaxCacheFileCount(count: number): number;
 
@@ -573,8 +558,7 @@ export abstract class IMediaPlayerCacheManager {
    * @param cacheSize The maximum size (bytes) of the aggregate storage space for cached media files. The default value is 1 GB.
    *
    * @returns
-   * 0: Success.
-   *  < 0: Failure. See MediaPlayerError .
+   * 0: Success.< 0: Failure. See MediaPlayerError .
    */
   abstract setMaxCacheFileSize(cacheSize: number): number;
 
@@ -586,7 +570,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure. See MediaPlayerError .
+   * < 0: Failure. See MediaPlayerError .
    */
   abstract enableAutoRemoveCache(enable: boolean): number;
 

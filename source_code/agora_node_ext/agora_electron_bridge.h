@@ -40,6 +40,7 @@ class AgoraElectronBridge {
   static napi_value ReleaseEnv(napi_env env, napi_callback_info info);
 
   void OnApiError(const char *errorMessage);
+  void Init();
   void Release();
 
  private:
