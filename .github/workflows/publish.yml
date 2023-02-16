@@ -24,7 +24,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
             node-version: '16'
-      - run: yarn
+      - run: npm i
       
       - name: Setup NPM auth token
         run: |
