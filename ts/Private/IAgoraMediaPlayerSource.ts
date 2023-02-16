@@ -16,6 +16,7 @@ export interface IMediaPlayerSourceObserver {
    * When the state of the media player changes, the SDK triggers this callback to report the current playback state.
    *
    * @param state The playback state, see MediaPlayerState .
+   *
    * @param ec The error code. See MediaPlayerError .
    */
   onPlayerSourceStateChanged?(
@@ -36,7 +37,9 @@ export interface IMediaPlayerSourceObserver {
    * After calling the seek method, the SDK triggers the callback to report the results of the seek operation.
    *
    * @param eventCode The playback event. See MediaPlayerEvent .
+   *
    * @param elapsedTime The time (ms) when the event occurs.
+   *
    * @param message Information about the event.
    */
   onPlayerEvent?(
@@ -50,6 +53,7 @@ export interface IMediaPlayerSourceObserver {
    * The callback occurs when the player receives the media metadata and reports the detailed information of the media metadata.
    *
    * @param data The detailed data of the media metadata.
+   *
    * @param length The data length (bytes).
    */
   onMetaData?(data: Uint8Array, length: number): void;
@@ -66,6 +70,7 @@ export interface IMediaPlayerSourceObserver {
    * Reports the events of preloaded media resources.
    *
    * @param src The URL of the media resource.
+   *
    * @param event Events that occur when media resources are preloaded. See PlayerPreloadEvent .
    */
   onPreloadEvent?(src: string, event: PlayerPreloadEvent): void;
@@ -84,6 +89,7 @@ export interface IMediaPlayerSourceObserver {
    * Occurs when the video bitrate of the media resource changes.
    *
    * @param from Information about the video bitrate of the media resource being played. See SrcInfo .
+   *
    * @param to Information about the changed video bitrate of media resource being played. See SrcInfo .
    */
   onPlayerSrcInfoChanged?(from: SrcInfo, to: SrcInfo): void;
