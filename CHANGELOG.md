@@ -1,3 +1,7 @@
+
+
+## [4.1.1-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.1.0...v4.1.1-rc.1) (2023-02-16)
+
 # [4.1.0](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.1-rc.2...v4.1.0) (2022-12-20)
 
 
@@ -152,6 +156,3 @@
 ### Features
 
 * **add ci for changelog:** use husky conventional-changelog-cli @commitlint/config-conventional ([e1facd9](https://github.com/AgoraIO-Community/electron-agora-rtc-ng/commit/e1facd9244b6eb18e503493f9cc14af99f09938b))
-
-
-
