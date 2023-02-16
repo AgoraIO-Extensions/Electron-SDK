@@ -46,7 +46,7 @@ export const IRtcEngineEventHandler = t.iface([], {
   "onCameraReady": t.opt(t.func("void")),
   "onCameraFocusAreaChanged": t.opt(t.func("void", t.param("x", "number"), t.param("y", "number"), t.param("width", "number"), t.param("height", "number"))),
   "onCameraExposureAreaChanged": t.opt(t.func("void", t.param("x", "number"), t.param("y", "number"), t.param("width", "number"), t.param("height", "number"))),
-  "onFacePositionChanged": t.opt(t.func("void", t.param("imageWidth", "number"), t.param("imageHeight", "number"), t.param("vecRectangle", "Rectangle"), t.param("vecDistance", "number"), t.param("numFaces", "number"))),
+  "onFacePositionChanged": t.opt(t.func("void", t.param("imageWidth", "number"), t.param("imageHeight", "number"), t.param("vecRectangle", t.array("Rectangle")), t.param("vecDistance", t.array("number")), t.param("numFaces", "number"))),
   "onVideoStopped": t.opt(t.func("void")),
   "onAudioMixingStateChanged": t.opt(t.func("void", t.param("state", "AudioMixingStateType"), t.param("reason", "AudioMixingReasonType"))),
   "onRhythmPlayerStateChanged": t.opt(t.func("void", t.param("state", "RhythmPlayerStateType"), t.param("errorCode", "RhythmPlayerErrorType"))),
@@ -97,6 +97,7 @@ export const IRtcEngineEventHandler = t.iface([], {
   "onExtensionStopped": t.opt(t.func("void", t.param("provider", "string"), t.param("extension", "string"))),
   "onExtensionError": t.opt(t.func("void", t.param("provider", "string"), t.param("extension", "string"), t.param("error", "number"), t.param("message", "string"))),
   "onUserAccountUpdated": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("remoteUid", "number"), t.param("userAccount", "string"))),
+  "onVideoRenderingTracingResult": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("uid", "number"), t.param("currentEvent", "MediaTraceEvent"), t.param("tracingInfo", "VideoRenderingTracingInfo"))),
 });
 
 export const IMetadataObserver = t.iface([], {

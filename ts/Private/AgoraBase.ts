@@ -1066,7 +1066,7 @@ export enum VideoStreamType {
  */
 export class VideoSubscriptionOptions {
   /**
-   * The video stream type that you want to subscribe to. The default value is VideoStreamHigh, indicating that the high-quality video streams are subscribed. See VideoStreamType .
+   * @ignore
    */
   type?: VideoStreamType;
   /**
@@ -1198,7 +1198,7 @@ export class VideoEncoderConfiguration {
    */
   codecType?: VideoCodecType;
   /**
-   * The dimensions of the encoded video (px). See VideoDimensions . This parameter measures the video encoding quality in the format of length × width. The default value is 640 × 360. You can set a custom value.
+   * The dimensions of the encoded video (px). See VideoDimensions . This parameter measures the video encoding quality in the format of length × width. The default value is 960 × 540. You can set a custom value.
    */
   dimensions?: VideoDimensions;
   /**
@@ -1222,7 +1222,7 @@ export class VideoEncoderConfiguration {
    */
   degradationPreference?: DegradationPreference;
   /**
-   * Sets the mirror mode of the published local video stream. It only affects the video that the remote user sees. See VideoMirrorModeType .By default, the video is not mirrored.
+   * By default, the video is not mirrored.
    */
   mirrorMode?: VideoMirrorModeType;
   /**
@@ -2675,7 +2675,7 @@ export class LiveTranscoding {
    */
   videoFramerate?: number;
   /**
-   * DeprecatedThis parameter is deprecated.Latency mode:true: Low latency with unassured quality.false: (Default) High latency with assured quality.
+   * DeprecatedThis member is deprecated.Latency mode:true: Low latency with unassured quality.false: (Default) High latency with assured quality.
    */
   lowLatency?: boolean;
   /**
@@ -2707,7 +2707,7 @@ export class LiveTranscoding {
    */
   transcodingExtraInfo?: string;
   /**
-   * DeprecatedThis parameter is deprecated.The metadata sent to the CDN client.
+   * DeprecatedObsolete and not recommended for use.The metadata sent to the CDN client.
    */
   metadata?: string;
   /**
@@ -2933,11 +2933,11 @@ export enum ConnectionChangedReasonType {
    */
   ConnectionChangedInvalidAppId = 6,
   /**
-   * 7: The connection failed since channel name is not valid. Please rejoin the channel with a valid channel name.
+   * 7: The connection failed since channel name is not valid. Rejoin the channel with a valid channel name.
    */
   ConnectionChangedInvalidChannelName = 7,
   /**
-   * 8: The connection failed because the token is not valid. Typical reasons include:The App Certificate for the project is enabled in Agora Console, but you do not use a token when joining the channel. If you enable the App Certificate, you must use a token to join the channel.The uid specified when calling joinChannel [2/2] to join the channel is inconsistent with the uid passed in when generating the token.
+   * 8: The connection failed because the token is not valid. Possible reasons are as follows:The App Certificate for the project is enabled in Agora Console, but you do not use a token when joining the channel. If you enable the App Certificate, you must use a token to join the channel.The uid specified when calling joinChannel [2/2] to join the channel is inconsistent with the uid passed in when generating the token.
    */
   ConnectionChangedInvalidToken = 8,
   /**
@@ -2945,7 +2945,7 @@ export enum ConnectionChangedReasonType {
    */
   ConnectionChangedTokenExpired = 9,
   /**
-   * 10: The connection is rejected by server. Typical reasons include:The user is already in the channel and still calls a method, for example, joinChannel [2/2], to join the channel. Stop calling this method to clear this error.The user tries to join the channel when conducting a pre-call test. The user needs to call the channel after the call test ends.
+   * 10: The connection is rejected by server. Possible reasons are as follows:The user is already in the channel and still calls a method, for example, joinChannel [2/2], to join the channel. Stop calling this method to clear this error.The user tries to join a channel while a test call is in progress. The user needs to join the channel after the call test ends.
    */
   ConnectionChangedRejectedByServer = 10,
   /**
@@ -2965,7 +2965,7 @@ export enum ConnectionChangedReasonType {
    */
   ConnectionChangedKeepAliveTimeout = 14,
   /**
-   * 15: The SDK has rejoined the channel successfully.
+   * 15: The user has rejoined the channel successfully.
    */
   ConnectionChangedRejoinSuccess = 15,
   /**
@@ -2991,7 +2991,7 @@ export enum ConnectionChangedReasonType {
   /**
    * @ignore
    */
-  ConnectionChangedLicenseVerifyFailed = 21,
+  ConnectionChangedLicenseValidationFailure = 21,
 }
 
 /**
@@ -3143,7 +3143,7 @@ export class VideoCanvas {
    */
   mirrorMode?: VideoMirrorModeType;
   /**
-   * Setting mode of the view. See VideoViewSetupMode .
+   * @ignore
    */
   setupMode?: VideoViewSetupMode;
   /**
@@ -3155,7 +3155,7 @@ export class VideoCanvas {
    */
   mediaPlayerId?: number;
   /**
-   * (Android and iOS only) (Optional) The display area for the video frame. See Rectangle . width and height represent the video pixel width and height of the area. The default value is null (width or height is 0), which means that the actual resolution of the video frame is displayed.
+   * @ignore
    */
   cropArea?: Rectangle;
 }
@@ -3618,15 +3618,15 @@ export class ScreenCaptureParameters {
    */
   excludeWindowCount?: number;
   /**
-   * (For macOS and Windows only) The width (px) of the border. The default value is 5, and the value range is (0, 50].This parameter only takes effect when highLighted is set to true.
+   * The width (px) of the border. The default value is 5, and the value range is (0, 50].This parameter only takes effect when highLighted is set to true.
    */
   highLightWidth?: number;
   /**
-   * (For macOS and Windows only) On Windows platforms, the color of the border in ARGB format. The default value is 0xFF8CBF26.
+   * On macOS, COLOR_CLASS refers to NSColor.
    */
   highLightColor?: number;
   /**
-   * (For macOS and Windows only) Whether to place a border around the shared window or screen:true: Place a border.false: (Default) Do not place a border.When you share a part of a window or screen, the SDK places a border around the entire window or screen if you set this parameter to true.
+   * Whether to place a border around the shared window or screen:true: Place a border.false: (Default) Do not place a border.When you share a part of a window or screen, the SDK places a border around the entire window or screen if you set this parameter to true.
    */
   enableHighLight?: boolean;
 }
@@ -3695,12 +3695,12 @@ export enum AudioEncodedFrameObserverPosition {
 export class AudioRecordingConfiguration {
   /**
    * The absolute path (including the filename extensions) of the recording file. For example: C:\music\audio.mp4.
-   *  Ensure that the path for the recording file exists and is writable.
+   * Ensure that the path for the recording file exists and is writable.
    */
   filePath?: string;
   /**
    * Whether to encode the audio data:
-   *  true: Encode audio data in AAC.false: (Default) Do not encode audio data, but save the recorded audio data directly.
+   * true: Encode audio data in AAC.false: (Default) Do not encode audio data, but save the recorded audio data directly.
    */
   encode?: boolean;
   /**
@@ -3746,8 +3746,11 @@ export interface IAudioEncodedFrameObserver {
    * @param channels The number of channels.
    *  1: Mono.
    *  2: Stereo. If the channel uses stereo, the data is interleaved.
+   *
    * @param frameBuffer The audio buffer.
+   *
    * @param length The data length (byte).
+   *
    * @param audioEncodedFrameInfo Audio information after encoding. See EncodedAudioFrameInfo .
    */
   onRecordAudioEncodedFrame?(
@@ -3761,12 +3764,15 @@ export interface IAudioEncodedFrameObserver {
    * After calling registerAudioEncodedFrameObserver and setting the encoded audio as AudioEncodedFrameObserverPositionPlayback, you can get encoded audio data of all remote users through this callback.
    *
    * @param samplesPerSec Recording sample rate (Hz).
-   * @param channels The number of channels.
-   *  1: Mono.
-   *  2: Stereo. If the channel uses stereo, the data is interleaved.
+   *
+   * @param channels The number of channels.1: Mono.2: Stereo. If the channel uses stereo, the data is interleaved.
+   *
    * @param samplesPerChannel The number of samples per channel in the audio frame.
+   *
    * @param frameBuffer The audio buffer.
+   *
    * @param length The data length (byte).
+   *
    * @param audioEncodedFrameInfo Audio information after encoding. See EncodedAudioFrameInfo .
    */
   onPlaybackAudioEncodedFrame?(
@@ -3780,10 +3786,17 @@ export interface IAudioEncodedFrameObserver {
    * After calling registerAudioEncodedFrameObserver and setting the audio profile as AudioEncodedFrameObserverPositionMixed, you can get the mixed and encoded audio data of the local and all remote users through this callback.
    *
    * @param samplesPerSec Recording sample rate (Hz).
-   * @param channels The number of channels.1: Mono.2: Stereo. If the channel uses stereo, the data is interleaved.
+   *
+   * @param channels The number of channels.
+   *  1: Mono.
+   *  2: Stereo. If the channel uses stereo, the data is interleaved.
+   *
    * @param samplesPerChannel The number of samples per channel in the audio frame.
+   *
    * @param frameBuffer The audio buffer.
+   *
    * @param length The data length (byte).
+   *
    * @param audioEncodedFrameInfo Audio information after encoding. See EncodedAudioFrameInfo .
    */
   onMixedAudioEncodedFrame?(
@@ -4026,19 +4039,19 @@ export class ChannelMediaInfo {
 }
 
 /**
- * Configuration information of relaying media streams across channels.
+ * Configuration of cross channel media relay.
  */
 export class ChannelMediaRelayConfiguration {
   /**
-   * The information of the source channel ChannelMediaInfo . It contains the following members:channelName: The name of the source channel. The default value is NULL, which means the SDK applies the name of the current channel.uid: The unique user ID to identify the relay stream in the source channel. The default value is 0, which means the SDK generates a random uid. You must set it as 0.token: The token for joining the source channel. This token is generated with the channelName and uid you set in srcInfo.If you have not enabled the App Certificate, set this parameter as the default value NULL, which means the SDK applies the App ID.If you have enabled the App Certificate, you must use the token generated with the channelName and uid, and the uid must be set as 0.
+   * @ignore
    */
   srcInfo?: ChannelMediaInfo;
   /**
-   * The information of the destination channel ChannelMediaInfo. It contains the following members:channelName: The name of the destination channel.uid: The unique user ID to identify the relay stream in the destination channel. The value ranges from 0 to (2 32-1). To avoid user ID conflicts, this user ID must be different from any other user ID in the destination channel. The default value is 0, which means the SDK generates a random user ID. Do not set this parameter as the user ID of the host in the destination channel, and ensure that this user ID is different from any other user ID in the channel.token: The token for joining the destination channel. It is generated with the channelName and uid you set in destInfos.If you have not enabled the App Certificate, set this parameter as the default value NULL, which means the SDK applies the App ID.If you have enabled the App Certificate, you must use the token generated with the channelName and uid.
+   * @ignore
    */
   destInfos?: ChannelMediaInfo[];
   /**
-   * The number of destination channels. The default value is 0, and the value range is from 0 to 4. Ensure that the value of this parameter corresponds to the number of ChannelMediaInfo structs you define in destInfo.
+   * @ignore
    */
   destCount?: number;
 }
@@ -4419,6 +4432,54 @@ export class ScreenCaptureParameters2 {
    * @ignore
    */
   videoParams?: ScreenVideoParameters;
+}
+
+/**
+ * @ignore
+ */
+export enum MediaTraceEvent {
+  /**
+   * @ignore
+   */
+  MediaTraceEventVideoRendered = 0,
+  /**
+   * @ignore
+   */
+  MediaTraceEventVideoDecoded = 1,
+}
+
+/**
+ * @ignore
+ */
+export class VideoRenderingTracingInfo {
+  /**
+   * @ignore
+   */
+  elapsedTime?: number;
+  /**
+   * @ignore
+   */
+  start2JoinChannel?: number;
+  /**
+   * @ignore
+   */
+  join2JoinSuccess?: number;
+  /**
+   * @ignore
+   */
+  joinSuccess2RemoteJoined?: number;
+  /**
+   * @ignore
+   */
+  remoteJoined2SetView?: number;
+  /**
+   * @ignore
+   */
+  remoteJoined2UnmuteVideo?: number;
+  /**
+   * @ignore
+   */
+  remoteJoined2PacketReceived?: number;
 }
 
 /**
