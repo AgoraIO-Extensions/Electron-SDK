@@ -56,7 +56,7 @@ def doPublish(buildVariables) {
                     {
                         "msgtype": "text",
                         "text": {
-                            "content": \"${env.NOTIFICATION_CONTENT}\n${artifactoryUrls.find { it.contains('demo') }}\"
+                            "content": \"${env.NOTIFICATION_CONTENT}\n${artifactoryUrls.find { it.startsWith('http') && it.contains('demo') }}\"
                         }
                     }
                     """
@@ -75,7 +75,7 @@ def doUploadCDN(artifactoryUrls) {
     if (!artifactoryUrls) {
         return
     }
-    def cdnUrl = artifactoryUrls.find { !it.contains('demo') }.replace('artifactory-api.bj2.agoralab.co', 'artifactory.agoralab.co')
+    def cdnUrl = artifactoryUrls.find { it.startsWith('http') && !it.contains('demo') }.replace('artifactory-api.bj2.agoralab.co', 'artifactory.agoralab.co')
     build job: 'AD/Agora-Electron-Upload-CDN', propagate: false, parameters: [
         string(name: 'electron_sdk_url', value: cdnUrl),
         string(name: 'npmv', value: params.package_version),

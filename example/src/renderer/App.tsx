@@ -28,7 +28,6 @@ class App extends React.Component {
 
   componentDidMount() {
     const engine = createAgoraRtcEngine();
-    engine.initialize({ appId: Config.appId });
     this.setState({ version: engine.getVersion() });
     engine.release();
   }
