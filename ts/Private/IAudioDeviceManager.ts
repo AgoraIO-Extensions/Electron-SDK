@@ -57,12 +57,7 @@ export abstract class IAudioDeviceManager {
   abstract getPlaybackDeviceInfo(): AudioDeviceInfo;
 
   /**
-   * Sets the volume of the audio recording device.
-   *
-   * @param volume  The volume of the audio recording device. The value range is [0,255].
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
+   * @ignore
    */
   abstract setPlaybackDeviceVolume(volume: number): number;
 
@@ -133,13 +128,7 @@ export abstract class IAudioDeviceManager {
   abstract getLoopbackDevice(): string;
 
   /**
-   * Stops or resumes publishing the local video stream.
-   * A successful call of this method triggers the onUserMuteVideo callback on the remote client.This method executes faster than the enableLocalVideo (false) method, which controls the sending of the local video stream.This method does not affect any ongoing video recording, because it does not disable the camera.
-   *
-   * @param mute Whether to stop publishing the local video stream.true: Stop publishing the local video stream.false: (Default) Publish the local video stream.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
+   * @ignore
    */
   abstract setPlaybackDeviceMute(mute: boolean): number;
 
@@ -149,13 +138,7 @@ export abstract class IAudioDeviceManager {
   abstract getPlaybackDeviceMute(): boolean;
 
   /**
-   * Stops or resumes publishing the local video stream.
-   * A successful call of this method triggers the onUserMuteVideo callback on the remote client.This method executes faster than the enableLocalVideo (false) method, which controls the sending of the local video stream.This method does not affect any ongoing video recording, because it does not disable the camera.
-   *
-   * @param mute Whether to stop publishing the local video stream.true: Stop publishing the local video stream.false: (Default) Publish the local video stream.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
+   * @ignore
    */
   abstract setRecordingDeviceMute(mute: boolean): number;
 
@@ -186,7 +169,7 @@ export abstract class IAudioDeviceManager {
 
   /**
    * Starts the audio capture device test.
-   * This method tests whether the audio capture device works properly. After calling this method, the SDK triggers the onAudioVolumeIndication callback at the time interval set in this method, which reports uid = 0 and the volume information of the capturing device.This method is for Windows and macOS only.Ensure that you call this method before joining a channel.
+   * This method tests whether the audio capture device works properly. After calling this method, the SDK triggers the onAudioVolumeIndication callback at the time interval set in this method, which reports uid = 0 and the volume information of the capturing device.Ensure that you call this method before joining a channel.
    *
    * @param indicationInterval The time interval (ms) at which the SDK triggers the onAudioVolumeIndication callback. Agora recommends a setting greater than 200 ms. This value must not be less than 10 ms; otherwise, you can not receive the onAudioVolumeIndication callback.
    *
