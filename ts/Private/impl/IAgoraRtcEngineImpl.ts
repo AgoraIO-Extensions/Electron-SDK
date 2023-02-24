@@ -25,6 +25,7 @@ import {
   LocalAccessPointConfiguration,
   AdvancedAudioOptions,
   ImageTrackOptions,
+  FeatureType,
   Metadata,
 } from '../IAgoraRtcEngine';
 import {
@@ -916,7 +917,7 @@ export function processIRtcEngineEventHandler(
           jsonParams.connection,
           jsonParams.uid,
           jsonParams.currentEvent,
-          jsonParams.info
+          jsonParams.tracingInfo
         );
       }
       break;
@@ -6503,6 +6504,24 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromEnableInstantMediaRendering(): string {
     return 'RtcEngine_enableInstantMediaRendering';
+  }
+
+  isFeatureSupported(type: FeatureType): boolean {
+    const apiType = this.getApiTypeFromIsFeatureSupported(type);
+    const jsonParams = {
+      type: type,
+      toJSON: () => {
+        return {
+          type: type,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromIsFeatureSupported(type: FeatureType): string {
+    return 'RtcEngine_isFeatureSupported';
   }
 
   destroyRendererByView(view: any): void {

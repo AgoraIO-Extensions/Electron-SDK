@@ -525,7 +525,8 @@ export abstract class IMediaPlayerCacheManager {
    * @param uri The URI (Uniform Resource Identifier) of the media file to be deleted.
    *
    * @returns
-   * 0: Success.< 0: Failure. See MediaPlayerError .
+   * 0: Success.
+   * < 0: Failure. See MediaPlayerError .
    */
   abstract removeCacheByUri(uri: string): number;
 
@@ -536,8 +537,7 @@ export abstract class IMediaPlayerCacheManager {
    * @param path The absolute path of the media files to be cached. Ensure that the directory for the media files exists and is writable.
    *
    * @returns
-   * 0: Success.
-   * < 0: Failure. See MediaPlayerError .
+   * 0: Success.< 0: Failure. See MediaPlayerError .
    */
   abstract setCacheDir(path: string): number;
 
@@ -558,7 +558,8 @@ export abstract class IMediaPlayerCacheManager {
    * @param cacheSize The maximum size (bytes) of the aggregate storage space for cached media files. The default value is 1 GB.
    *
    * @returns
-   * 0: Success.< 0: Failure. See MediaPlayerError .
+   * 0: Success.
+   * < 0: Failure. See MediaPlayerError .
    */
   abstract setMaxCacheFileSize(cacheSize: number): number;
 

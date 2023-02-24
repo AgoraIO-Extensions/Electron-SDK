@@ -52,7 +52,7 @@ import {
   UploadErrorReason,
   StreamSubscribeState,
   StreamPublishState,
-  MediaRenderTraceEvent,
+  MediaTraceEvent,
   VideoRenderingTracingInfo,
   AudioScenarioType,
   ThreadPriorityType,
@@ -901,10 +901,6 @@ export class ScreenCaptureSourceInfo {
    * (For Windows only) Whether the window is minimized:true: The window is minimized.false: The window is not minimized.
    */
   minimizeWindow?: boolean;
-  /**
-   * @ignore
-   */
-  position?: Rectangle;
 }
 
 /**
@@ -1117,6 +1113,20 @@ export enum ProxyType {
 /**
  * @ignore
  */
+export enum FeatureType {
+  /**
+   * @ignore
+   */
+  VideoPreprocessVirtualBackground = 1,
+  /**
+   * @ignore
+   */
+  VideoPreprocessBeauty = 2,
+}
+
+/**
+ * @ignore
+ */
 export class LogUploadServerInfo {
   /**
    * @ignore
@@ -1264,15 +1274,7 @@ export interface IRtcEngineEventHandler {
    *
    * @param remoteUid The user ID of the remote user sending the audio stream.
    *
-   * @param quality Audio quality of the user.
-   *  QualityUnknown(0): The quality is unknown.
-   *  QualityExcellent(1): The quality is excellent.
-   *  QualityGood(2): The network quality seems excellent, but the bitrate can be slightly lower than excellent.
-   *  QualityPoor(3): Users can feel the communication is slightly impaired.
-   *  QualityBad(4): Users cannot communicate smoothly.
-   *  QualityVbad(5): The quality is so bad that users can barely communicate.
-   *  QualityDown(6): The network is down, and users cannot communicate at all.
-   *  See QualityType .
+   * @param quality Audio quality of the user. QualityUnknown(0): The quality is unknown.QualityExcellent(1): The quality is excellent.QualityGood(2): The network quality seems excellent, but the bitrate can be slightly lower than excellent.QualityPoor(3): Users can feel the communication is slightly impaired.QualityBad(4): Users cannot communicate smoothly.QualityVbad(5): The quality is so bad that users can barely communicate.QualityDown(6): The network is down, and users cannot communicate at all.See QualityType .
    *
    * @param delay The network delay (ms) from the sender to the receiver, including the delay caused by audio sampling pre-processing, network transmission, and network jitter buffering.
    *
@@ -1425,7 +1427,15 @@ export interface IRtcEngineEventHandler {
    * Reports the last-mile network quality of the local user.
    * This callback reports the last-mile network conditions of the local user before the user joins the channel. Last mile refers to the connection between the local device and Agora's edge server.Before the user joins the channel, this callback is triggered by the SDK once startLastmileProbeTest is called and reports the last-mile network conditions of the local user.
    *
-   * @param quality The last-mile network quality. QualityUnknown(0): The quality is unknown.QualityExcellent(1): The quality is excellent.QualityGood(2): The network quality seems excellent, but the bitrate can be slightly lower than excellent.QualityPoor(3): Users can feel the communication is slightly impaired.QualityBad(4): Users cannot communicate smoothly.QualityVbad(5): The quality is so bad that users can barely communicate.QualityDown(6): The network is down, and users cannot communicate at all.See QualityType .
+   * @param quality The last-mile network quality.
+   *  QualityUnknown(0): The quality is unknown.
+   *  QualityExcellent(1): The quality is excellent.
+   *  QualityGood(2): The network quality seems excellent, but the bitrate can be slightly lower than excellent.
+   *  QualityPoor(3): Users can feel the communication is slightly impaired.
+   *  QualityBad(4): Users cannot communicate smoothly.
+   *  QualityVbad(5): The quality is so bad that users can barely communicate.
+   *  QualityDown(6): The network is down, and users cannot communicate at all.
+   *  See QualityType .
    */
   onLastmileQuality?(quality: QualityType): void;
 
@@ -2432,8 +2442,8 @@ export interface IRtcEngineEventHandler {
   onVideoRenderingTracingResult?(
     connection: RtcConnection,
     uid: number,
-    currentEvent: MediaRenderTraceEvent,
-    info: VideoRenderingTracingInfo
+    currentEvent: MediaTraceEvent,
+    tracingInfo: VideoRenderingTracingInfo
   ): void;
 }
 
@@ -2536,16 +2546,7 @@ export class RtcEngineContext {
    */
   areaCode?: number;
   /**
-   * The SDK log files are: agorasdk.log, agorasdk.1.log, agorasdk.2.log, agorasdk.3.log, and agorasdk.4.log.
-   * The API call log files are: agoraapi.log, agoraapi.1.log, agoraapi.2.log, agoraapi.3.log, and agoraapi.4.log.
-   * The default size for each SDK log file is 1,024 KB; the default size for each API call log file is 2,048 KB. These log files are encoded in UTF-8.
-   * The SDK writes the latest logs in agorasdk.log or agoraapi.log.
-   * When agorasdk.log is full, the SDK processes the log files in the following order:
-   * Delete the agorasdk.4.log file (if any).
-   * Rename agorasdk.3.log to agorasdk.4.log.
-   * Rename agorasdk.2.log to agorasdk.3.log.
-   * Rename agorasdk.1.log to agorasdk.2.log.
-   * Create a new agorasdk.log file. The overwrite rules for the agoraapi.log file are the same as for agorasdk.log. Sets the log file size. See LogConfig .By default, the SDK generates five SDK log files and five API call log files with the following rules:
+   * The SDK log files are: agorasdk.log, agorasdk.1.log, agorasdk.2.log, agorasdk.3.log, and agorasdk.4.log.The API call log files are: agoraapi.log, agoraapi.1.log, agoraapi.2.log, agoraapi.3.log, and agoraapi.4.log.The default size for each SDK log file is 1,024 KB; the default size for each API call log file is 2,048 KB. These log files are encoded in UTF-8.The SDK writes the latest logs in agorasdk.log or agoraapi.log.When agorasdk.log is full, the SDK processes the log files in the following order:Delete the agorasdk.4.log file (if any).Rename agorasdk.3.log to agorasdk.4.log.Rename agorasdk.2.log to agorasdk.3.log.Rename agorasdk.1.log to agorasdk.2.log.Create a new agorasdk.log file.The overwrite rules for the agoraapi.log file are the same as for agorasdk.log.Sets the log file size. See LogConfig .By default, the SDK generates five SDK log files and five API call log files with the following rules:
    */
   logConfig?: LogConfig;
   /**
@@ -2909,7 +2910,8 @@ export abstract class IRtcEngine {
 
   /**
    * Sets the client role.
-   * If you call this method to set the user's role as the host before joining the channel and set the local video property through the setupLocalVideo method, the local video preview is automatically enabled when the user joins the channel.You can call this method either before or after joining the channel to set the user role as audience or host.If you call this method to switch the user role after joining the channel, the SDK triggers the following callbacks:The local client: onClientRoleChanged .The remote client: onUserJoined or onUserOffline (UserOfflineBecomeAudience).
+   * If you call this method to set the user's role as the host before joining the channel and set the local video property through the setupLocalVideo method, the local video preview is automatically enabled when the user joins the channel.
+   * You can call this method either before or after joining the channel to set the user role as audience or host.If you call this method to switch the user role after joining the channel, the SDK triggers the following callbacks:The local client: onClientRoleChanged .The remote client: onUserJoined or onUserOffline (UserOfflineBecomeAudience).
    *
    * @param role The user role. See ClientRoleType .
    *
@@ -3385,10 +3387,8 @@ export abstract class IRtcEngine {
 
   /**
    * Set the allowlist of subscriptions for video streams.
-   * You can call this method to specify the video streams of a user that you want to subscribe to.If a user is added in the allowlist and blocklist at the same time, only the blocklist takes effect.
-   * Once the allowlist of subscriptions is set, it is effective even if you leave the current channel and rejoin the channel.
-   * You can call this method either before or after joining a channel.
-   * The allowlist is not affected by the setting in muteRemoteVideoStream , muteAllRemoteVideoStreams and autoSubscribeAudio in ChannelMediaOptions .
+   * You can call this method to specify the video streams of a user that you want to subscribe to.If a user is added in the allowlist and blocklist at the same time, only the blocklist takes effect.Once the allowlist of subscriptions is set, it is effective even if you leave the current channel and rejoin the channel.
+   * You can call this method either before or after joining a channel.The allowlist is not affected by the setting in muteRemoteVideoStream , muteAllRemoteVideoStreams and autoSubscribeAudio in ChannelMediaOptions .
    *
    * @param uidNumber The number of users in the user ID list.
    *
@@ -4165,7 +4165,10 @@ export abstract class IRtcEngine {
 
   /**
    * Enables or disables dual-stream mode on the sender side.
-   * This method is applicable to all types of streams from the sender, including but not limited to video streams collected from cameras, screen sharing streams, and custom-collected video streams.If you need to enable dual video streams in a multi-channel scenario, you can call the enableDualStreamModeEx method.You can call this method either before or after joining a channel.Dual streams are a pairing of a high-quality video stream and a low-quality video stream:High-quality video stream: High bitrate, high resolution.Low-quality video stream: Low bitrate, low resolution.After you enable dual-stream mode, you can call setRemoteVideoStreamType to choose to receive either the high-quality video stream or the low-quality video stream on the subscriber side.
+   * This method is applicable to all types of streams from the sender, including but not limited to video streams collected from cameras, screen sharing streams, and custom-collected video streams.
+   * If you need to enable dual video streams in a multi-channel scenario, you can call the enableDualStreamModeEx method.
+   * You can call this method either before or after joining a channel.
+   * Dual streams are a pairing of a high-quality video stream and a low-quality video stream:High-quality video stream: High bitrate, high resolution.Low-quality video stream: Low bitrate, low resolution.After you enable dual-stream mode, you can call setRemoteVideoStreamType to choose to receive either the high-quality video stream or the low-quality video stream on the subscriber side.
    *
    * @param enabled Whether to enable dual-stream mode.true: Enable dual-stream mode.false: (Default) Disable dual-stream mode.
    *
@@ -4519,7 +4522,9 @@ export abstract class IRtcEngine {
    * Registers an extension.
    * After the extension is loaded, you can call this method to register the extension.This method applies to Windows only.
    *
-   * @param type Type of media source. See MediaSourceType .In this method, this parameter supports only the following two settings:The default value is UnknownMediaSource.If you want to use the second camera to capture video, set this parameter to SecondaryCameraSource.
+   * @param type Type of media source. See MediaSourceType .In this method, this parameter supports only the following two settings:
+   *  The default value is UnknownMediaSource.
+   *  If you want to use the second camera to capture video, set this parameter to SecondaryCameraSource.
    *
    * @param extension The name of the extension.
    *
@@ -4788,9 +4793,7 @@ export abstract class IRtcEngine {
 
   /**
    * Shares the whole or part of a screen by specifying the screen rect.
-   * There are two ways to start screen sharing, you can choose one according to the actual needs:
-   * Call this method before joining a channel, and then call joinChannel [2/2] to join a channel and set publishScreenTrack or publishSecondaryScreenTrack to true to start screen sharing.
-   * Call this method after joining a channel, and then call updateChannelMediaOptions and set publishScreenTrack or publishSecondaryScreenTrack to true to start screen sharing. Deprecated:This method is deprecated. Use startScreenCaptureByDisplayId instead. Agora strongly recommends using startScreenCaptureByDisplayId if you need to start screen sharing on a device connected to another display.This method shares a screen or part of the screen. You need to specify the area of the screen to be shared.This method applies to Windows only.
+   * There are two ways to start screen sharing, you can choose one according to the actual needs:Call this method before joining a channel, and then call joinChannel [2/2] to join a channel and set publishScreenTrack or publishSecondaryScreenTrack to true to start screen sharing.Call this method after joining a channel, and then call updateChannelMediaOptions and set publishScreenTrack or publishSecondaryScreenTrack to true to start screen sharing.Deprecated:This method is deprecated. Use startScreenCaptureByDisplayId instead. Agora strongly recommends using startScreenCaptureByDisplayId if you need to start screen sharing on a device connected to another display.This method shares a screen or part of the screen. You need to specify the area of the screen to be shared.This method applies to Windows only.
    *
    * @param screenRect Sets the relative location of the screen to the virtual screen.
    *
@@ -4799,9 +4802,7 @@ export abstract class IRtcEngine {
    * @param captureParams The screen sharing encoding parameters. The default video dimension is 1920 x 1080, that is, 2,073,600 pixels. Agora uses the value of this parameter to calculate the charges. See ScreenCaptureParameters .
    *
    * @returns
-   * 0: Success.< 0: Failure.
-   * ERR_INVALID_STATE: The screen sharing state is invalid. Probably because you have shared other screens or windows. Try calling stopScreenCapture to stop the current sharing and start sharing the screen again.
-   * ERR_INVALID_ARGUMENT: The parameter is invalid.
+   * 0: Success.< 0: Failure.ERR_INVALID_STATE: The screen sharing state is invalid. Probably because you have shared other screens or windows. Try calling stopScreenCapture to stop the current sharing and start sharing the screen again.ERR_INVALID_ARGUMENT: The parameter is invalid.
    */
   abstract startScreenCaptureByScreenRect(
     screenRect: Rectangle,
@@ -4817,7 +4818,9 @@ export abstract class IRtcEngine {
 
   /**
    * Shares the whole or part of a window by specifying the window ID.
-   * There are two ways to start screen sharing, you can choose one according to the actual needs:Call this method before joining a channel, and then call joinChannel [2/2] to join a channel and set publishScreenTrack or publishSecondaryScreenTrack to true to start screen sharing.Call this method after joining a channel, and then call updateChannelMediaOptions and set publishScreenTrack or publishSecondaryScreenTrack to true to start screen sharing.This method shares a window or part of the window. You need to specify the ID of the window to be shared.Applies to the macOS and Windows platforms only.The window sharing feature of the Agora SDK relies on WGC (Windows Graphics Capture) or GDI (Graphics Device Interface) capture, and WGC cannot be set to disable mouse capture on systems earlier than Windows 10 2004. Therefore, captureMouseCursor(false) might not work when you start window sharing on a device with a system earlier than Windows 10 2004. See ScreenCaptureParameters .This method supports window sharing of UWP (Universal Windows Platform) applications. Agora tests the mainstream UWP applications by using the lastest SDK, see details as follows:
+   * There are two ways to start screen sharing, you can choose one according to the actual needs:
+   * Call this method before joining a channel, and then call joinChannel [2/2] to join a channel and set publishScreenTrack or publishSecondaryScreenTrack to true to start screen sharing.
+   * Call this method after joining a channel, and then call updateChannelMediaOptions and set publishScreenTrack or publishSecondaryScreenTrack to true to start screen sharing. This method shares a window or part of the window. You need to specify the ID of the window to be shared.Applies to the macOS and Windows platforms only.The window sharing feature of the Agora SDK relies on WGC (Windows Graphics Capture) or GDI (Graphics Device Interface) capture, and WGC cannot be set to disable mouse capture on systems earlier than Windows 10 2004. Therefore, captureMouseCursor(false) might not work when you start window sharing on a device with a system earlier than Windows 10 2004. See ScreenCaptureParameters .This method supports window sharing of UWP (Universal Windows Platform) applications. Agora tests the mainstream UWP applications by using the lastest SDK, see details as follows:
    *
    * @param windowId The ID of the window to be shared.
    *
@@ -4826,7 +4829,9 @@ export abstract class IRtcEngine {
    * @param captureParams Screen sharing configurations. The default video dimension is 1920 x 1080, that is, 2,073,600 pixels. Agora uses the value of this parameter to calculate the charges. See ScreenCaptureParameters .
    *
    * @returns
-   * 0: Success.< 0: Failure.ERR_INVALID_STATE: The screen sharing state is invalid. Probably because you have shared other screens or windows. Try calling stopScreenCapture to stop the current sharing and start sharing the screen again.ERR_INVALID_ARGUMENT: The parameter is invalid.
+   * 0: Success.< 0: Failure.
+   * ERR_INVALID_STATE: The screen sharing state is invalid. Probably because you have shared other screens or windows. Try calling stopScreenCapture to stop the current sharing and start sharing the screen again.
+   * ERR_INVALID_ARGUMENT: The parameter is invalid.
    */
   abstract startScreenCaptureByWindowId(
     windowId: any,
@@ -5393,12 +5398,7 @@ export abstract class IRtcEngine {
    *
    * @param token The token generated on your server for authentication.
    *
-   * @param channelId The channel name. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters:
-   *  All lowercase English letters: a to z.
-   *  All uppercase English letters: A to Z.
-   *  All numeric characters: 0 to 9.
-   *  Space
-   *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "= ", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
+   * @param channelId The channel name. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters:All lowercase English letters: a to z.All uppercase English letters: A to Z.All numeric characters: 0 to 9.Space"!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "= ", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
    *
    * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as NULL. Supported characters are (89 in total):The 26 lowercase English letters: a to z.The 26 uppercase English letters: A to Z.All numeric characters: 0 to 9.Space"!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "= ", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
    *
@@ -5679,6 +5679,11 @@ export abstract class IRtcEngine {
    * @ignore
    */
   abstract enableInstantMediaRendering(): number;
+
+  /**
+   * @ignore
+   */
+  abstract isFeatureSupported(type: FeatureType): boolean;
 
   /**
    * Destroys a video renderer object.

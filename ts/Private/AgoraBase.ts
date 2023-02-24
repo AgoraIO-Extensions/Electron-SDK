@@ -2991,7 +2991,7 @@ export enum ConnectionChangedReasonType {
   /**
    * @ignore
    */
-  ConnectionChangedLicenseVerifyFailed = 21,
+  ConnectionChangedLicenseValidationFailure = 21,
 }
 
 /**
@@ -3765,7 +3765,9 @@ export interface IAudioEncodedFrameObserver {
    *
    * @param samplesPerSec Recording sample rate (Hz).
    *
-   * @param channels The number of channels.1: Mono.2: Stereo. If the channel uses stereo, the data is interleaved.
+   * @param channels The number of channels.
+   *  1: Mono.
+   *  2: Stereo. If the channel uses stereo, the data is interleaved.
    *
    * @param samplesPerChannel The number of samples per channel in the audio frame.
    *
@@ -4437,15 +4439,15 @@ export class ScreenCaptureParameters2 {
 /**
  * @ignore
  */
-export enum MediaRenderTraceEvent {
+export enum MediaTraceEvent {
   /**
    * @ignore
    */
-  MediaRenderTraceEventRendered = 0,
+  MediaTraceEventVideoRendered = 0,
   /**
    * @ignore
    */
-  MediaRenderTraceEventDecoded = 1,
+  MediaTraceEventVideoDecoded = 1,
 }
 
 /**

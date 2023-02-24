@@ -474,6 +474,10 @@ export class ExternalVideoFrame {
    * This parameter only applies to video data in Texture format. The MetaData size. The default value is 0.
    */
   metadata_size?: number;
+  /**
+   * @ignore
+   */
+  alphaBuffer?: Uint8Array;
 }
 
 /**
@@ -549,6 +553,10 @@ export class VideoFrame {
    * @ignore
    */
   alphaBuffer?: Uint8Array;
+  /**
+   * @ignore
+   */
+  pixelBuffer?: Uint8Array;
 }
 
 /**
@@ -972,11 +980,7 @@ export interface IVideoFrameObserver {
    * @param channelId The channel ID.
    *
    * @returns
-   * When the video processing mode is ProcessModeReadOnly:
-   * true: Reserved for future use.
-   * false: Reserved for future use. When the video processing mode is ProcessModeReadWrite:
-   * true: Sets the SDK to receive the video frame.
-   * false: Sets the SDK to discard the video frame.
+   * When the video processing mode is ProcessModeReadOnly:true: Reserved for future use.false: Reserved for future use.When the video processing mode is ProcessModeReadWrite:true: Sets the SDK to receive the video frame.false: Sets the SDK to discard the video frame.
    */
   onRenderVideoFrame?(
     channelId: string,
