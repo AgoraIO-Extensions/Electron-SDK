@@ -1,220 +1,334 @@
 import './extension/AgoraMediaPlayerTypesExtension';
-/* enum_mediaplayerstate */
+/**
+ * The playback state.
+ */
 export enum MediaPlayerState {
-/* enum_mediaplayerstate_PlayerStateIdle */
-PlayerStateIdle = 0,
-/* enum_mediaplayerstate_PlayerStateOpening */
-PlayerStateOpening = 1,
-/* enum_mediaplayerstate_PlayerStateOpenCompleted */
-PlayerStateOpenCompleted = 2,
-/* enum_mediaplayerstate_PlayerStatePlaying */
-PlayerStatePlaying = 3,
-/* enum_mediaplayerstate_PlayerStatePaused */
-PlayerStatePaused = 4,
-/* enum_mediaplayerstate_PlayerStatePlaybackCompleted */
-PlayerStatePlaybackCompleted = 5,
-/* enum_mediaplayerstate_PlayerStatePlaybackAllLoopsCompleted */
-PlayerStatePlaybackAllLoopsCompleted = 6,
-/* enum_mediaplayerstate_PlayerStateStopped */
-PlayerStateStopped = 7,
-/* enum_mediaplayerstate_PlayerStatePausingInternal */
-PlayerStatePausingInternal = 50,
-/* enum_mediaplayerstate_PlayerStateStoppingInternal */
-PlayerStateStoppingInternal = 51,
-/* enum_mediaplayerstate_PlayerStateSeekingInternal */
-PlayerStateSeekingInternal = 52,
-/* enum_mediaplayerstate_PlayerStateGettingInternal */
-PlayerStateGettingInternal = 53,
-/* enum_mediaplayerstate_PlayerStateNoneInternal */
-PlayerStateNoneInternal = 54,
-/* enum_mediaplayerstate_PlayerStateDoNothingInternal */
-PlayerStateDoNothingInternal = 55,
-/* enum_mediaplayerstate_PlayerStateSetTrackInternal */
-PlayerStateSetTrackInternal = 56,
-/* enum_mediaplayerstate_PlayerStateFailed */
-PlayerStateFailed = 100,
+  /**
+   * 0: The default state. The media player returns this state code before you open the media resource or after you stop the playback.
+   */
+  PlayerStateIdle = 0,
+  /**
+   * 1: Opening the media resource.
+   */
+  PlayerStateOpening = 1,
+  /**
+   * 2: Opens the media resource successfully.
+   */
+  PlayerStateOpenCompleted = 2,
+  /**
+   * 3: The media resource is playing.
+   */
+  PlayerStatePlaying = 3,
+  /**
+   * 4: Pauses the playback.
+   */
+  PlayerStatePaused = 4,
+  /**
+   * 5: The playback is complete.
+   */
+  PlayerStatePlaybackCompleted = 5,
+  /**
+   * 6: The loop is complete.
+   */
+  PlayerStatePlaybackAllLoopsCompleted = 6,
+  /**
+   * 7: The playback stops.
+   */
+  PlayerStateStopped = 7,
+  /**
+   * @ignore
+   */
+  PlayerStatePausingInternal = 50,
+  /**
+   * @ignore
+   */
+  PlayerStateStoppingInternal = 51,
+  /**
+   * @ignore
+   */
+  PlayerStateSeekingInternal = 52,
+  /**
+   * @ignore
+   */
+  PlayerStateGettingInternal = 53,
+  /**
+   * @ignore
+   */
+  PlayerStateNoneInternal = 54,
+  /**
+   * @ignore
+   */
+  PlayerStateDoNothingInternal = 55,
+  /**
+   * @ignore
+   */
+  PlayerStateSetTrackInternal = 56,
+  /**
+   * 100: The media player fails to play the media resource.
+   */
+  PlayerStateFailed = 100,
 }
 
-/* enum_mediaplayererror */
+/**
+ * Error codes of the media player.
+ */
 export enum MediaPlayerError {
-/* enum_mediaplayererror_PlayerErrorNone */
-PlayerErrorNone = 0,
-/* enum_mediaplayererror_PlayerErrorInvalidArguments */
-PlayerErrorInvalidArguments = -1,
-/* enum_mediaplayererror_PlayerErrorInternal */
-PlayerErrorInternal = -2,
-/* enum_mediaplayererror_PlayerErrorNoResource */
-PlayerErrorNoResource = -3,
-/* enum_mediaplayererror_PlayerErrorInvalidMediaSource */
-PlayerErrorInvalidMediaSource = -4,
-/* enum_mediaplayererror_PlayerErrorUnknownStreamType */
-PlayerErrorUnknownStreamType = -5,
-/* enum_mediaplayererror_PlayerErrorObjNotInitialized */
-PlayerErrorObjNotInitialized = -6,
-/* enum_mediaplayererror_PlayerErrorCodecNotSupported */
-PlayerErrorCodecNotSupported = -7,
-/* enum_mediaplayererror_PlayerErrorVideoRenderFailed */
-PlayerErrorVideoRenderFailed = -8,
-/* enum_mediaplayererror_PlayerErrorInvalidState */
-PlayerErrorInvalidState = -9,
-/* enum_mediaplayererror_PlayerErrorUrlNotFound */
-PlayerErrorUrlNotFound = -10,
-/* enum_mediaplayererror_PlayerErrorInvalidConnectionState */
-PlayerErrorInvalidConnectionState = -11,
-/* enum_mediaplayererror_PlayerErrorSrcBufferUnderflow */
-PlayerErrorSrcBufferUnderflow = -12,
-/* enum_mediaplayererror_PlayerErrorInterrupted */
-PlayerErrorInterrupted = -13,
-/* enum_mediaplayererror_PlayerErrorNotSupported */
-PlayerErrorNotSupported = -14,
-/* enum_mediaplayererror_PlayerErrorTokenExpired */
-PlayerErrorTokenExpired = -15,
-/* enum_mediaplayererror_PlayerErrorIpExpired */
-PlayerErrorIpExpired = -16,
-/* enum_mediaplayererror_PlayerErrorUnknown */
-PlayerErrorUnknown = -17,
+  /**
+   * 0: No error.
+   */
+  PlayerErrorNone = 0,
+  /**
+   * -1: Invalid arguments.
+   */
+  PlayerErrorInvalidArguments = -1,
+  /**
+   * -2: Internal error.
+   */
+  PlayerErrorInternal = -2,
+  /**
+   * -3: No resource.
+   */
+  PlayerErrorNoResource = -3,
+  /**
+   * -4: Invalid media resource.
+   */
+  PlayerErrorInvalidMediaSource = -4,
+  /**
+   * -5: The media stream type is unknown.
+   */
+  PlayerErrorUnknownStreamType = -5,
+  /**
+   * -6: The object is not initialized.
+   */
+  PlayerErrorObjNotInitialized = -6,
+  /**
+   * -7: The codec is not supported.
+   */
+  PlayerErrorCodecNotSupported = -7,
+  /**
+   * -8: Invalid renderer.
+   */
+  PlayerErrorVideoRenderFailed = -8,
+  /**
+   * -9: An error with the internal state of the player occurs.
+   */
+  PlayerErrorInvalidState = -9,
+  /**
+   * -10: The URL of the media resource cannot be found.
+   */
+  PlayerErrorUrlNotFound = -10,
+  /**
+   * -11: Invalid connection between the player and the Agora Server.
+   */
+  PlayerErrorInvalidConnectionState = -11,
+  /**
+   * -12: The playback buffer is insufficient.
+   */
+  PlayerErrorSrcBufferUnderflow = -12,
+  /**
+   * -13: The playback is interrupted.
+   */
+  PlayerErrorInterrupted = -13,
+  /**
+   * -14: The SDK does not support the method being called.
+   */
+  PlayerErrorNotSupported = -14,
+  /**
+   * @ignore
+   */
+  PlayerErrorTokenExpired = -15,
+  /**
+   * @ignore
+   */
+  PlayerErrorIpExpired = -16,
+  /**
+   * -17: An unknown error.
+   */
+  PlayerErrorUnknown = -17,
 }
 
-/* enum_mediastreamtype */
+/**
+ * The type of the media stream.
+ */
 export enum MediaStreamType {
-/* enum_mediastreamtype_StreamTypeUnknown */
-StreamTypeUnknown = 0,
-/* enum_mediastreamtype_StreamTypeVideo */
-StreamTypeVideo = 1,
-/* enum_mediastreamtype_StreamTypeAudio */
-StreamTypeAudio = 2,
-/* enum_mediastreamtype_StreamTypeSubtitle */
-StreamTypeSubtitle = 3,
+  /**
+   * 0: The type is unknown.
+   */
+  StreamTypeUnknown = 0,
+  /**
+   * 1: The video stream.
+   */
+  StreamTypeVideo = 1,
+  /**
+   * 2: The audio stream.
+   */
+  StreamTypeAudio = 2,
+  /**
+   * 3: The subtitle stream.
+   */
+  StreamTypeSubtitle = 3,
 }
 
-/* enum_mediaplayerevent */
+/**
+ * Media player events.
+ */
 export enum MediaPlayerEvent {
-/* enum_mediaplayerevent_PlayerEventSeekBegin */
-PlayerEventSeekBegin = 0,
-/* enum_mediaplayerevent_PlayerEventSeekComplete */
-PlayerEventSeekComplete = 1,
-/* enum_mediaplayerevent_PlayerEventSeekError */
-PlayerEventSeekError = 2,
-/* enum_mediaplayerevent_PlayerEventAudioTrackChanged */
-PlayerEventAudioTrackChanged = 5,
-/* enum_mediaplayerevent_PlayerEventBufferLow */
-PlayerEventBufferLow = 6,
-/* enum_mediaplayerevent_PlayerEventBufferRecover */
-PlayerEventBufferRecover = 7,
-/* enum_mediaplayerevent_PlayerEventFreezeStart */
-PlayerEventFreezeStart = 8,
-/* enum_mediaplayerevent_PlayerEventFreezeStop */
-PlayerEventFreezeStop = 9,
-/* enum_mediaplayerevent_PlayerEventSwitchBegin */
-PlayerEventSwitchBegin = 10,
-/* enum_mediaplayerevent_PlayerEventSwitchComplete */
-PlayerEventSwitchComplete = 11,
-/* enum_mediaplayerevent_PlayerEventSwitchError */
-PlayerEventSwitchError = 12,
-/* enum_mediaplayerevent_PlayerEventFirstDisplayed */
-PlayerEventFirstDisplayed = 13,
-/* enum_mediaplayerevent_PlayerEventReachCacheFileMaxCount */
-PlayerEventReachCacheFileMaxCount = 14,
-/* enum_mediaplayerevent_PlayerEventReachCacheFileMaxSize */
-PlayerEventReachCacheFileMaxSize = 15,
-/* enum_mediaplayerevent_PlayerEventTryOpenStart */
-PlayerEventTryOpenStart = 16,
-/* enum_mediaplayerevent_PlayerEventTryOpenSucceed */
-PlayerEventTryOpenSucceed = 17,
-/* enum_mediaplayerevent_PlayerEventTryOpenFailed */
-PlayerEventTryOpenFailed = 18,
+  /**
+   * 0: The player begins to seek to a new playback position.
+   */
+  PlayerEventSeekBegin = 0,
+  /**
+   * 1: The player finishes seeking to a new playback position.
+   */
+  PlayerEventSeekComplete = 1,
+  /**
+   * 2: An error occurs when seeking to a new playback position.
+   */
+  PlayerEventSeekError = 2,
+  /**
+   * 5: The audio track used by the player has been changed.
+   */
+  PlayerEventAudioTrackChanged = 5,
+  /**
+   * 6: The currently buffered data is not enough to support playback.
+   */
+  PlayerEventBufferLow = 6,
+  /**
+   * 7: The currently buffered data is just enough to support playback.
+   */
+  PlayerEventBufferRecover = 7,
+  /**
+   * 8: The audio or video playback freezes.
+   */
+  PlayerEventFreezeStart = 8,
+  /**
+   * 9: The audio or video playback resumes without freezing.
+   */
+  PlayerEventFreezeStop = 9,
+  /**
+   * 10: The player starts switching the media resource.
+   */
+  PlayerEventSwitchBegin = 10,
+  /**
+   * 11: Media resource switching is complete.
+   */
+  PlayerEventSwitchComplete = 11,
+  /**
+   * 12: Media resource switching error.
+   */
+  PlayerEventSwitchError = 12,
+  /**
+   * 13: The first video frame is rendered.
+   */
+  PlayerEventFirstDisplayed = 13,
+  /**
+   * 14: The cached media files reach the limit in number.
+   */
+  PlayerEventReachCacheFileMaxCount = 14,
+  /**
+   * 15: The cached media files reach the limit in aggregate storage space.
+   */
+  PlayerEventReachCacheFileMaxSize = 15,
+  /**
+   * @ignore
+   */
+  PlayerEventTryOpenStart = 16,
+  /**
+   * @ignore
+   */
+  PlayerEventTryOpenSucceed = 17,
+  /**
+   * @ignore
+   */
+  PlayerEventTryOpenFailed = 18,
 }
 
-/* enum_playerpreloadevent */
+/**
+ * Events that occur when media resources are preloaded.
+ */
 export enum PlayerPreloadEvent {
-/* enum_playerpreloadevent_PlayerPreloadEventBegin */
-PlayerPreloadEventBegin = 0,
-/* enum_playerpreloadevent_PlayerPreloadEventComplete */
-PlayerPreloadEventComplete = 1,
-/* enum_playerpreloadevent_PlayerPreloadEventError */
-PlayerPreloadEventError = 2,
+  /**
+   * 0: Starts preloading media resources.
+   */
+  PlayerPreloadEventBegin = 0,
+  /**
+   * 1: Preloading media resources is complete.
+   */
+  PlayerPreloadEventComplete = 1,
+  /**
+   * 2: An error occurs when preloading media resources.
+   */
+  PlayerPreloadEventError = 2,
 }
 
-/* class_playerstreaminfo */
+/**
+ * The detailed information of the media stream.
+ */
 export class PlayerStreamInfo {
-  /* class_playerstreaminfo_streamIndex */
-  streamIndex?: number
-  /* class_playerstreaminfo_streamType */
-  streamType?: MediaStreamType
-  /* class_playerstreaminfo_codecName */
-  codecName?: string
-  /* class_playerstreaminfo_language */
-  language?: string
-  /* class_playerstreaminfo_videoFrameRate */
-  videoFrameRate?: number
-  /* class_playerstreaminfo_videoBitRate */
-  videoBitRate?: number
-  /* class_playerstreaminfo_videoWidth */
-  videoWidth?: number
-  /* class_playerstreaminfo_videoHeight */
-  videoHeight?: number
-  /* class_playerstreaminfo_videoRotation */
-  videoRotation?: number
-  /* class_playerstreaminfo_audioSampleRate */
-  audioSampleRate?: number
-  /* class_playerstreaminfo_audioChannels */
-  audioChannels?: number
-  /* class_playerstreaminfo_audioBitsPerSample */
-  audioBitsPerSample?: number
-  /* class_playerstreaminfo_duration */
-  duration?: number
+  streamIndex?: number;
+  streamType?: MediaStreamType;
+  codecName?: string;
+  language?: string;
+  videoFrameRate?: number;
+  videoBitRate?: number;
+  videoWidth?: number;
+  videoHeight?: number;
+  videoRotation?: number;
+  audioSampleRate?: number;
+  audioChannels?: number;
+  audioBitsPerSample?: number;
+  duration?: number;
 }
 
-/* class_srcinfo */
+/**
+ * Information about the video bitrate of the media resource being played.
+ */
 export class SrcInfo {
-  /* class_srcinfo_bitrateInKbps */
-  bitrateInKbps?: number
-  /* class_srcinfo_name */
-  name?: string
+  bitrateInKbps?: number;
+  name?: string;
 }
 
-/* enum_mediaplayermetadatatype */
+/**
+ * The type of media metadata.
+ */
 export enum MediaPlayerMetadataType {
-/* enum_mediaplayermetadatatype_PlayerMetadataTypeUnknown */
-PlayerMetadataTypeUnknown = 0,
-/* enum_mediaplayermetadatatype_PlayerMetadataTypeSei */
-PlayerMetadataTypeSei = 1,
+  /**
+   * 0: The type is unknown.
+   */
+  PlayerMetadataTypeUnknown = 0,
+  /**
+   * 1: The type is SEI.
+   */
+  PlayerMetadataTypeSei = 1,
 }
 
-/* class_cachestatistics */
+/**
+ * Statistics about the media files being cached.
+ */
 export class CacheStatistics {
-  /* class_cachestatistics_fileSize */
-  fileSize?: number
-  /* class_cachestatistics_cacheSize */
-  cacheSize?: number
-  /* class_cachestatistics_downloadSize */
-  downloadSize?: number
+  fileSize?: number;
+  cacheSize?: number;
+  downloadSize?: number;
 }
 
-/* class_playerupdatedinfo */
+/**
+ * Information related to the media player.
+ */
 export class PlayerUpdatedInfo {
-  /* class_playerupdatedinfo_playerId */
-  playerId?: string
-  /* class_playerupdatedinfo_deviceId */
-  deviceId?: string
-  /* class_playerupdatedinfo_cacheStatistics */
-  cacheStatistics?: CacheStatistics
+  playerId?: string;
+  deviceId?: string;
+  cacheStatistics?: CacheStatistics;
 }
 
-/* class_mediasource */
+/**
+ * Information related to the media file to be played and the playback scenario configurations.
+ */
 export class MediaSource {
-  /* class_mediasource_url */
-  url?: string
-  /* class_mediasource_uri */
-  uri?: string
-  /* class_mediasource_startPos */
-  startPos?: number
-  /* class_mediasource_autoPlay */
-  autoPlay?: boolean
-  /* class_mediasource_enableCache */
-  enableCache?: boolean
-  /* class_mediasource_isAgoraSource */
-  isAgoraSource?: boolean
-  /* class_mediasource_isLiveSource */
-  isLiveSource?: boolean
+  url?: string;
+  uri?: string;
+  startPos?: number;
+  autoPlay?: boolean;
+  enableCache?: boolean;
+  isAgoraSource?: boolean;
+  isLiveSource?: boolean;
 }
