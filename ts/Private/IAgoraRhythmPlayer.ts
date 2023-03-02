@@ -1,60 +1,36 @@
 import './extension/IAgoraRhythmPlayerExtension';
-/**
- * @ignore
- */
+/* enum_rhythmplayerstatetype */
 export enum RhythmPlayerStateType {
-  /**
-   * @ignore
-   */
+  /* enum_rhythmplayerstatetype_RhythmPlayerStateIdle */
   RhythmPlayerStateIdle = 810,
-  /**
-   * @ignore
-   */
+  /* enum_rhythmplayerstatetype_RhythmPlayerStateOpening */
   RhythmPlayerStateOpening = 811,
-  /**
-   * @ignore
-   */
+  /* enum_rhythmplayerstatetype_RhythmPlayerStateDecoding */
   RhythmPlayerStateDecoding = 812,
-  /**
-   * @ignore
-   */
+  /* enum_rhythmplayerstatetype_RhythmPlayerStatePlaying */
   RhythmPlayerStatePlaying = 813,
-  /**
-   * @ignore
-   */
+  /* enum_rhythmplayerstatetype_RhythmPlayerStateFailed */
   RhythmPlayerStateFailed = 814,
 }
 
-/**
- * @ignore
- */
+/* enum_rhythmplayererrortype */
 export enum RhythmPlayerErrorType {
-  /**
-   * @ignore
-   */
+  /* enum_rhythmplayererrortype_RhythmPlayerErrorOk */
   RhythmPlayerErrorOk = 0,
-  /**
-   * @ignore
-   */
+  /* enum_rhythmplayererrortype_RhythmPlayerErrorFailed */
   RhythmPlayerErrorFailed = 1,
-  /**
-   * @ignore
-   */
+  /* enum_rhythmplayererrortype_RhythmPlayerErrorCanNotOpen */
   RhythmPlayerErrorCanNotOpen = 801,
-  /**
-   * @ignore
-   */
+  /* enum_rhythmplayererrortype_RhythmPlayerErrorCanNotPlay */
   RhythmPlayerErrorCanNotPlay = 802,
-  /**
-   * @ignore
-   */
+  /* enum_rhythmplayererrortype_RhythmPlayerErrorFileOverDurationLimit */
   RhythmPlayerErrorFileOverDurationLimit = 803,
 }
 
-/**
- * The metronome configuration.
- */
+/* class_agorarhythmplayerconfig */
 export class AgoraRhythmPlayerConfig {
+  /* class_agorarhythmplayerconfig_beatsPerMeasure */
   beatsPerMeasure?: number;
+  /* class_agorarhythmplayerconfig_beatsPerMinute */
   beatsPerMinute?: number;
 }

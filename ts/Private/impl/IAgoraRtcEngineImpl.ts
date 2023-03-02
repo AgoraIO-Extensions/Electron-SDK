@@ -1168,7 +1168,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_getErrorDescription';
   }
 
-  queryCodecCapability(): { codecInfo: CodecCapInfo; size: number } {
+  queryCodecCapability(): { codecInfo: CodecCapInfo[]; size: number } {
     const apiType = this.getApiTypeFromQueryCodecCapability();
     const jsonParams = {};
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);
