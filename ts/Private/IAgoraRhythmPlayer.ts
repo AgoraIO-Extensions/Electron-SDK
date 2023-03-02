@@ -1,66 +1,36 @@
 import './extension/IAgoraRhythmPlayerExtension';
-/**
- * @ignore
- */
+/* enum_rhythmplayerstatetype */
 export enum RhythmPlayerStateType {
-  /**
-   * @ignore
-   */
-  RhythmPlayerStateIdle = 810,
-  /**
-   * @ignore
-   */
-  RhythmPlayerStateOpening = 811,
-  /**
-   * @ignore
-   */
-  RhythmPlayerStateDecoding = 812,
-  /**
-   * @ignore
-   */
-  RhythmPlayerStatePlaying = 813,
-  /**
-   * @ignore
-   */
-  RhythmPlayerStateFailed = 814,
+/* enum_rhythmplayerstatetype_RhythmPlayerStateIdle */
+RhythmPlayerStateIdle = 810,
+/* enum_rhythmplayerstatetype_RhythmPlayerStateOpening */
+RhythmPlayerStateOpening = 811,
+/* enum_rhythmplayerstatetype_RhythmPlayerStateDecoding */
+RhythmPlayerStateDecoding = 812,
+/* enum_rhythmplayerstatetype_RhythmPlayerStatePlaying */
+RhythmPlayerStatePlaying = 813,
+/* enum_rhythmplayerstatetype_RhythmPlayerStateFailed */
+RhythmPlayerStateFailed = 814,
 }
 
-/**
- * @ignore
- */
+/* enum_rhythmplayererrortype */
 export enum RhythmPlayerErrorType {
-  /**
-   * @ignore
-   */
-  RhythmPlayerErrorOk = 0,
-  /**
-   * @ignore
-   */
-  RhythmPlayerErrorFailed = 1,
-  /**
-   * @ignore
-   */
-  RhythmPlayerErrorCanNotOpen = 801,
-  /**
-   * @ignore
-   */
-  RhythmPlayerErrorCanNotPlay = 802,
-  /**
-   * @ignore
-   */
-  RhythmPlayerErrorFileOverDurationLimit = 803,
+/* enum_rhythmplayererrortype_RhythmPlayerErrorOk */
+RhythmPlayerErrorOk = 0,
+/* enum_rhythmplayererrortype_RhythmPlayerErrorFailed */
+RhythmPlayerErrorFailed = 1,
+/* enum_rhythmplayererrortype_RhythmPlayerErrorCanNotOpen */
+RhythmPlayerErrorCanNotOpen = 801,
+/* enum_rhythmplayererrortype_RhythmPlayerErrorCanNotPlay */
+RhythmPlayerErrorCanNotPlay = 802,
+/* enum_rhythmplayererrortype_RhythmPlayerErrorFileOverDurationLimit */
+RhythmPlayerErrorFileOverDurationLimit = 803,
 }
 
-/**
- * The metronome configuration.
- */
+/* class_agorarhythmplayerconfig */
 export class AgoraRhythmPlayerConfig {
-  /**
-   * The number of beats per measure, which ranges from 1 to 9. The default value is 4, which means that each measure contains one downbeat and three upbeats.
-   */
-  beatsPerMeasure?: number;
-  /**
-   * The beat speed (beats/minute), which ranges from 60 to 360. The default value is 60, which means that the metronome plays 60 beats in one minute.
-   */
-  beatsPerMinute?: number;
+  /* class_agorarhythmplayerconfig_beatsPerMeasure */
+  beatsPerMeasure?: number
+  /* class_agorarhythmplayerconfig_beatsPerMinute */
+  beatsPerMinute?: number
 }
