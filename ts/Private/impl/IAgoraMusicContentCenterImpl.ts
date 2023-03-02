@@ -1,4 +1,16 @@
 import { callIrisApi } from '../internal/IrisApiEngine';
+import {
+  MusicChartCollection,
+  MusicChartInfo,
+  MusicCollection,
+  Music,
+  IMusicContentCenterEventHandler,
+  IMusicPlayer,
+  IMusicContentCenter,
+  MusicContentCenterConfiguration,
+  MusicCacheInfo,
+} from '../IAgoraMusicContentCenter';
+import { IMediaPlayerImpl } from './IAgoraMediaPlayerImpl';
 // @ts-ignore
 export class MusicChartCollectionImpl implements MusicChartCollection {
   getCount(): number {

@@ -1,4 +1,14 @@
 import './extension/IAgoraMediaPlayerExtension';
+import { PlayerStreamInfo, MediaPlayerState } from './AgoraMediaPlayerTypes';
+import {
+  RenderModeType,
+  IAudioSpectrumObserver,
+  AudioDualMonoMode,
+  AudioPcmFrame,
+  VideoFrame,
+} from './AgoraMediaBase';
+import { IMediaPlayerSourceObserver } from './IAgoraMediaPlayerSource';
+import { SpatialAudioParams } from './AgoraBase';
 /**
  * This class provides media player functions and supports multiple instances.
  */

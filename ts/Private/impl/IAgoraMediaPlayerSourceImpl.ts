@@ -1,3 +1,5 @@
+import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
+
 export function processIMediaPlayerSourceObserver(
   handler: IMediaPlayerSourceObserver,
   event: string,

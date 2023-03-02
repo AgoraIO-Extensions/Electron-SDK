@@ -14,11 +14,11 @@ export const IRtcEngineEventHandler = t.iface([], {
   "onAudioVolumeIndication": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("speakers", t.array("AudioVolumeInfo")), t.param("speakerNumber", "number"), t.param("totalVolume", "number"))),
   "onLeaveChannel": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("stats", "RtcStats"))),
   "onRtcStats": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("stats", "RtcStats"))),
-  "onAudioDeviceStateChanged": t.opt(t.func("void", t.param("deviceId", "string"), t.param("deviceType", "MediaDeviceType"), t.param("deviceState", "number"))),
+  "onAudioDeviceStateChanged": t.opt(t.func("void", t.param("deviceId", "string"), t.param("deviceType", "MediaDeviceType"), t.param("deviceState", "MediaDeviceStateType"))),
   "onAudioMixingPositionChanged": t.opt(t.func("void", t.param("position", "number"))),
   "onAudioMixingFinished": t.opt(t.func("void")),
   "onAudioEffectFinished": t.opt(t.func("void", t.param("soundId", "number"))),
-  "onVideoDeviceStateChanged": t.opt(t.func("void", t.param("deviceId", "string"), t.param("deviceType", "MediaDeviceType"), t.param("deviceState", "number"))),
+  "onVideoDeviceStateChanged": t.opt(t.func("void", t.param("deviceId", "string"), t.param("deviceType", "MediaDeviceType"), t.param("deviceState", "MediaDeviceStateType"))),
   "onNetworkQuality": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("remoteUid", "number"), t.param("txQuality", "QualityType"), t.param("rxQuality", "QualityType"))),
   "onIntraRequestReceived": t.opt(t.func("void", t.param("connection", "RtcConnection"))),
   "onUplinkNetworkInfoUpdated": t.opt(t.func("void", t.param("info", "UplinkNetworkInfo"))),
@@ -98,6 +98,7 @@ export const IRtcEngineEventHandler = t.iface([], {
   "onExtensionError": t.opt(t.func("void", t.param("provider", "string"), t.param("extension", "string"), t.param("error", "number"), t.param("message", "string"))),
   "onUserAccountUpdated": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("remoteUid", "number"), t.param("userAccount", "string"))),
   "onVideoRenderingTracingResult": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("uid", "number"), t.param("currentEvent", "MediaTraceEvent"), t.param("tracingInfo", "VideoRenderingTracingInfo"))),
+  "onLocalVideoTranscoderError": t.opt(t.func("void", t.param("stream", "TranscodingVideoStream"), t.param("error", "VideoTranscoderError"))),
 });
 
 export const IMetadataObserver = t.iface([], {

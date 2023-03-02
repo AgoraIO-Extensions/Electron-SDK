@@ -1,4 +1,18 @@
 import { callIrisApi } from '../internal/IrisApiEngine';
+import {
+  IMediaPlayer,
+  IMediaPlayerAudioFrameObserver,
+  IMediaPlayerVideoFrameObserver,
+  IMediaPlayerCacheManager,
+} from '../IAgoraMediaPlayer';
+import { PlayerStreamInfo, MediaPlayerState } from '../AgoraMediaPlayerTypes';
+import {
+  RenderModeType,
+  IAudioSpectrumObserver,
+  AudioDualMonoMode,
+} from '../AgoraMediaBase';
+import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
+import { SpatialAudioParams } from '../AgoraBase';
 // @ts-ignore
 export class IMediaPlayerImpl implements IMediaPlayer {
   getMediaPlayerId(): number {
