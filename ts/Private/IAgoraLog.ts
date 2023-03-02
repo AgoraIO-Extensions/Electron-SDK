@@ -1,44 +1,73 @@
 import './extension/IAgoraLogExtension';
-/* enum_loglevel */
+/**
+ * The output log level of the SDK.
+ */
 export enum LogLevel {
-/* enum_loglevel_LogLevelNone */
-LogLevelNone = 0x0000,
-/* enum_loglevel_LogLevelInfo */
-LogLevelInfo = 0x0001,
-/* enum_loglevel_LogLevelWarn */
-LogLevelWarn = 0x0002,
-/* enum_loglevel_LogLevelError */
-LogLevelError = 0x0004,
-/* enum_loglevel_LogLevelFatal */
-LogLevelFatal = 0x0008,
-/* enum_loglevel_LogLevelApiCall */
-LogLevelApiCall = 0x0010,
+  /**
+   * 0: Do not output any log information.
+   */
+  LogLevelNone = 0x0000,
+  /**
+   * 0x0001: (Default) Output FATAL, ERROR, WARN, and INFO level log information. We recommend setting your log filter to this level.
+   */
+  LogLevelInfo = 0x0001,
+  /**
+   * 0x0002: Output FATAL, ERROR, and WARN level log information.
+   */
+  LogLevelWarn = 0x0002,
+  /**
+   * 0x0004: Output FATAL and ERROR level log information.
+   */
+  LogLevelError = 0x0004,
+  /**
+   * 0x0008: Output FATAL level log information.
+   */
+  LogLevelFatal = 0x0008,
+  /**
+   * @ignore
+   */
+  LogLevelApiCall = 0x0010,
 }
 
-/* enum_logfiltertype */
+/**
+ * The output log level of the SDK.
+ */
 export enum LogFilterType {
-/* enum_logfiltertype_LogFilterOff */
-LogFilterOff = 0,
-/* enum_logfiltertype_LogFilterDebug */
-LogFilterDebug = 0x080f,
-/* enum_logfiltertype_LogFilterInfo */
-LogFilterInfo = 0x000f,
-/* enum_logfiltertype_LogFilterWarn */
-LogFilterWarn = 0x000e,
-/* enum_logfiltertype_LogFilterError */
-LogFilterError = 0x000c,
-/* enum_logfiltertype_LogFilterCritical */
-LogFilterCritical = 0x0008,
-/* enum_logfiltertype_LogFilterMask */
-LogFilterMask = 0x80f,
+  /**
+   * 0: Do not output any log information.
+   */
+  LogFilterOff = 0,
+  /**
+   * 0x080f: Output all log information. Set your log filter to this level if you want to get the most complete log file.
+   */
+  LogFilterDebug = 0x080f,
+  /**
+   * 0x000f: Output LogFilterCritical, LogFilterError, LogFilterWarn, and LogFilterInfo level log information. We recommend setting your log filter to this level.
+   */
+  LogFilterInfo = 0x000f,
+  /**
+   * 0x000e: Output LogFilterCritical, LogFilterError, and LogFilterWarn level log information.
+   */
+  LogFilterWarn = 0x000e,
+  /**
+   * 0x000c: Output LogFilterCritical and LogFilterError level log information.
+   */
+  LogFilterError = 0x000c,
+  /**
+   * 0x0008: Output LogFilterCritical level log information.
+   */
+  LogFilterCritical = 0x0008,
+  /**
+   * @ignore
+   */
+  LogFilterMask = 0x80f,
 }
 
-/* class_logconfig */
+/**
+ * Configuration of Agora SDK log files.
+ */
 export class LogConfig {
-  /* class_logconfig_filePath */
-  filePath?: string
-  /* class_logconfig_fileSizeInKB */
-  fileSizeInKB?: number
-  /* class_logconfig_level */
-  level?: LogLevel
+  filePath?: string;
+  fileSizeInKB?: number;
+  level?: LogLevel;
 }
