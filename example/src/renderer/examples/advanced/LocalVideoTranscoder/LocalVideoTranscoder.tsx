@@ -362,7 +362,7 @@ export default class LocalVideoTranscoder
 
     return {
       streamCount: streams.length,
-      VideoInputStreams: streams,
+      videoInputStreams: streams,
       videoOutputConfiguration: {
         dimensions: { width: max_width, height: max_height },
       },

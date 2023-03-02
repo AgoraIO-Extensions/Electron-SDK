@@ -250,19 +250,19 @@ export default class MusicContentCenter
 
   onMusicChartsResult(
     requestId: string,
-    status: MusicContentCenterStatusCode,
-    result: MusicChartInfo[]
+    result: MusicChartInfo[],
+    errorCode: MusicContentCenterStatusCode
   ) {
-    this.info('onMusicChartsResult', requestId, status, result);
+    this.info('onMusicChartsResult', requestId, result, errorCode);
     this.setState({ musicChartInfos: result });
   }
 
   onMusicCollectionResult(
     requestId: string,
-    status: MusicContentCenterStatusCode,
-    result: MusicCollection
+    result: MusicCollection,
+    errorCode: MusicContentCenterStatusCode
   ) {
-    this.info('onMusicCollectionResult', requestId, status, result);
+    this.info('onMusicCollectionResult', requestId, result, errorCode);
     this.setState({
       musicCollection: result,
       musics: Array.from({ length: result.getCount() }, (value, index) => {
@@ -274,11 +274,11 @@ export default class MusicContentCenter
   onPreLoadEvent(
     songCode: number,
     percent: number,
+    lyricUrl: string,
     status: PreloadStatusCode,
-    msg: string,
-    lyricUrl?: string
+    errorCode: MusicContentCenterStatusCode
   ) {
-    this.info('onPreLoadEvent', songCode, percent, status, msg, lyricUrl);
+    this.info('onPreLoadEvent', songCode, percent, lyricUrl, status, errorCode);
     if (songCode === this.state.songCode) {
       this.setState({
         preload: status === PreloadStatusCode.KPreloadStatusCompleted,
@@ -286,8 +286,12 @@ export default class MusicContentCenter
     }
   }
 
-  onLyricResult(requestId: string, lyricUrl: string) {
-    this.info('onLyricResult', requestId, lyricUrl);
+  onLyricResult(
+    requestId: string,
+    lyricUrl: string,
+    errorCode: MusicContentCenterStatusCode
+  ) {
+    this.info('onLyricResult', requestId, lyricUrl, errorCode);
   }
 
   onPlayerSourceStateChanged(state: MediaPlayerState, ec: MediaPlayerError) {
