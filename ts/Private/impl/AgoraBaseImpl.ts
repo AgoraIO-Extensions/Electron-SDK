@@ -1,3 +1,5 @@
+import { IAudioEncodedFrameObserver } from '../AgoraBase';
+
 export function processIAudioEncodedFrameObserver(
   handler: IAudioEncodedFrameObserver,
   event: string,

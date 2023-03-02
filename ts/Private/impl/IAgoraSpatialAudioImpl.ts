@@ -1,4 +1,11 @@
 import { callIrisApi } from '../internal/IrisApiEngine';
+import {
+  IBaseSpatialAudioEngine,
+  RemoteVoicePositionInfo,
+  SpatialAudioZone,
+  ILocalSpatialAudioEngine,
+} from '../IAgoraSpatialAudio';
+import { RtcConnection } from '../IAgoraRtcEngineEx';
 // @ts-ignore
 export class IBaseSpatialAudioEngineImpl implements IBaseSpatialAudioEngine {
   release(): void {

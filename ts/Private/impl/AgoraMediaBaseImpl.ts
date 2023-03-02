@@ -1,3 +1,12 @@
+import {
+  IAudioFrameObserverBase,
+  IAudioFrameObserver,
+  IAudioSpectrumObserver,
+  IVideoEncodedFrameObserver,
+  IVideoFrameObserver,
+  IMediaRecorderObserver,
+} from '../AgoraMediaBase';
+
 export function processIAudioFrameObserverBase(
   handler: IAudioFrameObserverBase,
   event: string,
