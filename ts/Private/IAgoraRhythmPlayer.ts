@@ -1,36 +1,66 @@
 import './extension/IAgoraRhythmPlayerExtension';
-/* enum_rhythmplayerstatetype */
+  /**
+   * @ignore
+   */
 export enum RhythmPlayerStateType {
-  /* enum_rhythmplayerstatetype_RhythmPlayerStateIdle */
+  /**
+   * @ignore
+   */
   RhythmPlayerStateIdle = 810,
-  /* enum_rhythmplayerstatetype_RhythmPlayerStateOpening */
+  /**
+   * @ignore
+   */
   RhythmPlayerStateOpening = 811,
-  /* enum_rhythmplayerstatetype_RhythmPlayerStateDecoding */
+  /**
+   * @ignore
+   */
   RhythmPlayerStateDecoding = 812,
-  /* enum_rhythmplayerstatetype_RhythmPlayerStatePlaying */
+  /**
+   * @ignore
+   */
   RhythmPlayerStatePlaying = 813,
-  /* enum_rhythmplayerstatetype_RhythmPlayerStateFailed */
+  /**
+   * @ignore
+   */
   RhythmPlayerStateFailed = 814,
 }
 
-/* enum_rhythmplayererrortype */
+  /**
+   * @ignore
+   */
 export enum RhythmPlayerErrorType {
-  /* enum_rhythmplayererrortype_RhythmPlayerErrorOk */
+  /**
+   * @ignore
+   */
   RhythmPlayerErrorOk = 0,
-  /* enum_rhythmplayererrortype_RhythmPlayerErrorFailed */
+  /**
+   * @ignore
+   */
   RhythmPlayerErrorFailed = 1,
-  /* enum_rhythmplayererrortype_RhythmPlayerErrorCanNotOpen */
+  /**
+   * @ignore
+   */
   RhythmPlayerErrorCanNotOpen = 801,
-  /* enum_rhythmplayererrortype_RhythmPlayerErrorCanNotPlay */
+  /**
+   * @ignore
+   */
   RhythmPlayerErrorCanNotPlay = 802,
-  /* enum_rhythmplayererrortype_RhythmPlayerErrorFileOverDurationLimit */
+  /**
+   * @ignore
+   */
   RhythmPlayerErrorFileOverDurationLimit = 803,
 }
 
-/* class_agorarhythmplayerconfig */
+/**
+ * The metronome configuration.
+ */
 export class AgoraRhythmPlayerConfig {
-  /* class_agorarhythmplayerconfig_beatsPerMeasure */
+/**
+ * The number of beats per measure, which ranges from 1 to 9. The default value is 4, which means that each measure contains one downbeat and three upbeats.
+ */
   beatsPerMeasure?: number;
-  /* class_agorarhythmplayerconfig_beatsPerMinute */
+/**
+ * The beat speed (beats/minute), which ranges from 60 to 360. The default value is 60, which means that the metronome plays 60 beats in one minute.
+ */
   beatsPerMinute?: number;
 }

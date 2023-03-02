@@ -3,9 +3,9 @@ import { RenderModeType } from './Private/AgoraMediaBase';
 import { IRenderer } from './Renderer/IRenderer';
 import { RendererManager } from './Renderer/RendererManager';
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export interface AgoraEnvType {
   /**
    * @ignore
@@ -25,9 +25,9 @@ export interface AgoraEnvType {
   AgoraRendererManager?: RendererManager;
 }
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export interface CanvasOptions {
   /**
    * @ignore
@@ -55,9 +55,9 @@ export interface CanvasOptions {
   clientHeight: number;
 }
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export interface RendererOptions {
   /**
    * @ignore
@@ -69,9 +69,9 @@ export interface RendererOptions {
   mirror?: boolean;
 }
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export enum RENDER_MODE {
   /**
    * @ignore
@@ -87,9 +87,9 @@ export type User = 'local' | 'videoSource' | number | string;
 
 export type Channel = '' | string;
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export interface RendererVideoConfig {
   /**
    * @ignore
@@ -113,9 +113,9 @@ export interface RendererVideoConfig {
   rendererOptions?: RendererOptions;
 }
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export interface FormatRendererVideoConfig {
   /**
    * @ignore
@@ -139,9 +139,9 @@ export interface FormatRendererVideoConfig {
   rendererOptions: RendererOptions;
 }
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export interface VideoFrameCacheConfig {
   /**
    * @ignore
@@ -157,9 +157,9 @@ export interface VideoFrameCacheConfig {
   videoSourceType: VideoSourceType;
 }
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export interface ShareVideoFrame {
   /**
    * @ignore
@@ -203,9 +203,9 @@ export interface ShareVideoFrame {
   videoSourceType: VideoSourceType;
 }
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export interface Result {
   /**
    * @ignore
@@ -217,9 +217,9 @@ export interface Result {
   callApiResult: any;
 }
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export enum CallBackModule {
   /**
    * @ignore
@@ -229,9 +229,9 @@ export enum CallBackModule {
   OBSERVER,
 }
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export interface AgoraElectronBridge {
   /**
    * @ignore
@@ -282,9 +282,9 @@ export interface AgoraElectronBridge {
   ) => Result;
 }
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export interface RenderConfig {
   /**
    * @ignore

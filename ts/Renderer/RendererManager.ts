@@ -26,9 +26,9 @@ import GlRenderer from './GlRenderer';
 import { IRenderer, RenderFailCallback } from './IRenderer';
 import { YUVCanvasRenderer } from './YUVCanvasRenderer';
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 class RendererManager {
   /**
    * @ignore
@@ -65,15 +65,15 @@ class RendererManager {
     this.msgBridge = AgoraEnv.AgoraElectronBridge;
   }
 
-  /**
-   * Sets dual-stream mode on the sender side.
-   * The SDK enables the low-quality video stream auto mode on the sender by default, which is equivalent to calling this method and setting the mode to AutoSimulcastStream. If you want to modify this behavior, you can call this method and modify the mode to DisableSimulcastStream(never send low-quality video streams) or EnableSimulcastStream (always send low-quality video streams).The difference and connection between this method and enableDualStreamMode [1/3] is as follows:When calling this method and setting mode to DisableSimulcastStream, it has the same effect as enableDualStreamMode [1/3](false).When calling this method and setting mode to EnableSimulcastStream, it has the same effect as enableDualStreamMode [1/3](true).Both methods can be called before and after joining a channel. If they are used at the same time, the settings in the method called later shall prevail.
-   *
-   * @param mode The mode in which the video stream is sent. See SimulcastStreamMode .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
+/**
+ * Sets dual-stream mode on the sender side.
+ * The SDK enables the low-quality video stream auto mode on the sender by default, which is equivalent to calling this method and setting the mode to AutoSimulcastStream. If you want to modify this behavior, you can call this method and modify the mode to DisableSimulcastStream(never send low-quality video streams) or EnableSimulcastStream (always send low-quality video streams).The difference and connection between this method and enableDualStreamMode [1/3] is as follows:When calling this method and setting mode to DisableSimulcastStream, it has the same effect as enableDualStreamMode [1/3](false).When calling this method and setting mode to EnableSimulcastStream, it has the same effect as enableDualStreamMode [1/3](true).Both methods can be called before and after joining a channel. If they are used at the same time, the settings in the method called later shall prevail.
+ *
+ * @param mode The mode in which the video stream is sent. See SimulcastStreamMode .
+ *
+ * @returns
+ * 0: Success.< 0: Failure.
+ */
   setRenderMode(mode: RENDER_MODE) {
     this.renderMode = mode;
     logInfo(
@@ -95,9 +95,9 @@ class RendererManager {
     mirror: boolean = false
   ): void {
     if (!view) {
-      /**
-       * @ignore
-       */
+  /**
+   * @ignore
+   */
       logError('setRenderOption: view not exist', view);
     }
     this.forEachStream(({ renders }) => {
@@ -116,9 +116,9 @@ class RendererManager {
       rendererOptions,
       videoSourceType,
     }: FormatRendererVideoConfig =
-      /**
-       * @ignore
-       */
+  /**
+   * @ignore
+   */
       getDefaultRendererVideoConfig(rendererConfig);
 
     if (!rendererConfig.view) {
@@ -146,9 +146,9 @@ class RendererManager {
     try {
       gl =
         canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-      /**
-       * @ignore
-       */
+  /**
+   * @ignore
+   */
       logInfo('Your browser support webGL');
     } catch (e) {
       logWarn('Your browser may not support webGL');
