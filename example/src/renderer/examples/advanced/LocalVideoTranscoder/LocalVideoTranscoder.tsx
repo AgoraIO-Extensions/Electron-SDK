@@ -16,6 +16,7 @@ import createAgoraRtcEngine, {
   VideoSourceType,
   MediaSourceType,
   LocalTranscoderConfiguration,
+  VideoTranscoderError,
 } from 'agora-electron-sdk';
 
 import Config from '../../../config/agora.config';
@@ -327,7 +328,7 @@ export default class LocalVideoTranscoder
     if (open) {
       streams.push({
         sourceType: MediaSourceType.MediaPlayerSource,
-        imageUrl: this.player?.getMediaPlayerId().toString(),
+        mediaPlayerId: this.player?.getMediaPlayerId(),
       });
     }
 
@@ -433,6 +434,13 @@ export default class LocalVideoTranscoder
       case MediaPlayerState.PlayerStateFailed:
         break;
     }
+  }
+
+  onLocalVideoTranscoderError(
+    stream: TranscodingVideoStream,
+    error: VideoTranscoderError
+  ) {
+    this.error('onLocalVideoTranscoderError', 'stream', stream, 'error', error);
   }
 
   protected renderVideo(uid: number, channelId?: string): React.ReactNode {
