@@ -466,6 +466,7 @@ export default class App extends Component {
     }
     return new Promise((resolve, reject) => {
       let rtcEngine = this.getRtcEngine();
+      rtcEngine.videoSourceSetLogFile('videosource.txt');
       // rtcEngine.startScreenCapture2(windowId, captureFreq, rect, bitrate);
       // there's a known limitation that, videosourcesetvideoprofile has to be called at least once
       // note although it's called, it's not taking any effect, to control the screenshare dimension, use captureParam instead
@@ -482,8 +483,8 @@ export default class App extends Component {
           captureMouseCursor: false,
           windowFocus: false,
           enableHighLight: true,
-          highLightWidth: 35,
-          highLightColor: 0x000000,
+          highLightWidth: 2,
+          highLightColor: 0xFF0000,
         }
       );
       rtcEngine.startScreenCapturePreview();
@@ -517,8 +518,8 @@ export default class App extends Component {
           captureMouseCursor: false,
           windowFocus: false,
           enableHighLight: true,
-          highLightWidth: 5,
-          highLightColor: 0x00000,
+          highLightWidth: 2,
+          highLightColor: 0xFF0000,
         }
       );
 

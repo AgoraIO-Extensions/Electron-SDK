@@ -1,4 +1,11 @@
-const { lipoCreate, createTmpProduct,createTmpVideoSourceProduct,lipoCreateVideoSource } = require("./scripts/lipo");
+const {
+  lipoCreate,
+  createTmpProduct,
+  createTmpVideoSourceProduct,
+  lipoCreateVideoSource,
+  backupSymbol,
+  restoreSymbols
+} = require("./scripts/lipo");
 const { task, option, logger, argv, series, condition } = require('just-task');
 const path = require('path')
 const semver = require("semver");
@@ -44,7 +51,7 @@ task('sync:lib', () => {
   });
 })
 
-// npm run build:electron -- 
+// npm run build:electron --
 task("build:electron", async () => {
   await cleanup(path.join(__dirname, "./build"));
   const electronVersion = argv().electron_version;
@@ -69,7 +76,8 @@ task("build:electron", async () => {
         return;
       }
       if (argv().platform === "darwin" && isOver11) {
-        buildMacArm64(electronVersion);
+        await backupSymbol("x86_64");
+        await buildMacArm64(electronVersion);
       }
     }
   });
@@ -97,6 +105,9 @@ const buildMacArm64 = async electronVersion => {
       const arm64VDProConfig = await createTmpVideoSourceProduct();
       lipoCreate(x86ProConfig, arm64ProConfig);
       lipoCreateVideoSource(x86VDProConfig,arm64VDProConfig);
+
+      await backupSymbol("arm64");
+      await restoreSymbols();
     }
   });
 };
@@ -104,11 +115,11 @@ const buildMacArm64 = async electronVersion => {
 // npm run build:node --
 task('build:node', () => {
   build({
-    electronVersion: argv().electron_version, 
+    electronVersion: argv().electron_version,
     runtime: 'node',
     packageVersion,
     platform: argv().platform,
-    debug: argv().debug, 
+    debug: argv().debug,
     silent: argv().silent,
     msvsVersion: argv().msvs_version
   })
@@ -120,8 +131,8 @@ task('download', () => {
   cleanup(path.join(__dirname, "./build")).then(_ => {
     cleanup(path.join(__dirname, './js')).then(_ => {
       download({
-        electronVersion: argv().electron_version, 
-        platform: argv().platform, 
+        electronVersion: argv().electron_version,
+        platform: argv().platform,
         packageVersion: addonVersion,
         arch: argv().arch
       })
@@ -135,13 +146,13 @@ task('install', () => {
     ...getArgvFromPkgJson(),
     arch:getArgvFromNpmEnv().arch || getArgvFromPkgJson().arch || process.arch,
   }
-  
+
   // work-around
   const addonVersion = packageVersion;
   if (config.prebuilt) {
     download({
-      electronVersion: config.electronVersion, 
-      platform: config.platform, 
+      electronVersion: config.electronVersion,
+      platform: config.platform,
       packageVersion: addonVersion,
       arch: config.arch,
       no_symbol: config.no_symbol,
@@ -159,6 +170,7 @@ task('install', () => {
           libUrl: {
             win: argv().liburl_win || config.lib_sdk_win,
             mac: argv().liburl_mac || config.lib_sdk_mac,
+            win64: argv().liburl_win64 || config.lib_sdk_win64
           }
         })
       }).then(() => {

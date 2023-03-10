@@ -55,8 +55,7 @@ module.exports = ({
             fs.removeSync("./build/gyp-mac-tool");
             fs.removeSync("./build/Makefile");
             fs.removeSync("./build/VideoSource.target.mk");
-            fs.removeSync("./build/Release/agora_node_ext.node.dSYM");
-            fs.removeSync("./build/Release/VideoSource.dSYM");
+            fs.removeSync("./build/Release/symbols");
           } catch (err) {
             console.log(err);
             logger.info("Warning", "Some files doesn't removed.");
