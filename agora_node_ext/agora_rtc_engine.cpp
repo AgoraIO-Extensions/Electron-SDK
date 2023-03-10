@@ -215,7 +215,7 @@ getLiveTranscoding(Local<Object> &obj,
         napi_get_object_property_int32_(isolate, watermarkObj, key,
                                         wkImages[i].zOrder);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-          
+
         key = "alpha";
         napi_get_object_property_double_(isolate, watermarkObj, key,
                                         wkImages[i].alpha);
@@ -272,12 +272,12 @@ getLiveTranscoding(Local<Object> &obj,
         napi_get_object_property_int32_(isolate, advancedFeatureObj, key,
                                         bgImages[i].height);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-        
+
         key = "zOrder";
         napi_get_object_property_int32_(isolate, advancedFeatureObj, key,
                                         bgImages[i].zOrder);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-            
+
         key = "alpha";
         napi_get_object_property_double_(isolate, advancedFeatureObj, key,
                                         bgImages[i].alpha);
@@ -783,10 +783,10 @@ void NodeRtcEngine::Init(Local<Object>& module) {
   PROPERTY_METHOD_DEFINE(setColorEnhanceOptions);
   PROPERTY_METHOD_DEFINE(setVideoDenoiserOptions);
   PROPERTY_METHOD_DEFINE(startEchoTestWithConfig)
-  
+
   PROPERTY_METHOD_DEFINE(setLocalAccessPoint);
   PROPERTY_METHOD_DEFINE(videoSourceSetLocalAccessPoint);
-  
+
   /*
   * 3.7.0
   */
@@ -796,7 +796,7 @@ void NodeRtcEngine::Init(Local<Object>& module) {
   PROPERTY_METHOD_DEFINE(enableContentInspect);
   PROPERTY_METHOD_DEFINE(enableSpatialAudio);
   PROPERTY_METHOD_DEFINE(setRemoteUserSpatialAudioParams);
-  
+
   PROPERTY_METHOD_DEFINE(sendStreamMessageWithArrayBuffer);
   PROPERTY_METHOD_DEFINE(videoSourceSetScreenCaptureScenario);
   EN_PROPERTY_DEFINE()
@@ -1269,7 +1269,7 @@ NAPI_API_DEFINE(NodeRtcEngine, enableSoundPositionIndication) {
   do {
     NodeRtcEngine* pEngine = nullptr;
     napi_get_native_this(args, pEngine);
-    CHECK_NATIVE_THIS(pEngine); 
+    CHECK_NATIVE_THIS(pEngine);
 
     bool enabled;
     status = napi_get_value_bool_(args[0], enabled);
@@ -1455,7 +1455,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalAccessPoint) {
   LOG_ENTER;
   napi_status status = napi_ok;
   int result = -1;
-  
+
   do {
     Isolate *isolate = args.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
@@ -1471,7 +1471,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalAccessPoint) {
     CHECK_NAPI_STATUS(pEngine, status);
 
     LocalAccessPointConfiguration localAccessPointConfiguration;
-    
+
     v8::Array *ipList;
     v8::Array *domainList;
     std::vector<const char *> ipListVec;
@@ -1498,7 +1498,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalAccessPoint) {
       localAccessPointConfiguration.ipList = ipListVec.data();
       localAccessPointConfiguration.ipListSize = count;
     }
-    
+
     status = napi_get_object_property_array_(isolate, obj, "domainList", domainList);
     if (status == napi_ok && domainList->Length() > 0) {
       auto count = domainList->Length();
@@ -1518,17 +1518,17 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalAccessPoint) {
       localAccessPointConfiguration.domainList = domainListVec.data();
       localAccessPointConfiguration.domainListSize = count;
     }
-    
+
     NodeString verifyDomainNameStr;
     status = napi_get_object_property_nodestring_(isolate, obj, "verifyDomainName", verifyDomainNameStr);
     CHECK_NAPI_STATUS(pEngine, status);
     localAccessPointConfiguration.verifyDomainName = verifyDomainNameStr;
-    
+
     int32_t mode;
     status = napi_get_object_property_int32_(isolate, obj, "mode", mode);
     CHECK_NAPI_STATUS(pEngine, status);
     localAccessPointConfiguration.mode = (LOCAL_PROXY_MODE)mode;
-    
+
     result = pEngine->m_engine->setLocalAccessPoint(localAccessPointConfiguration);
   } while (false);
   napi_set_int_result(args, result);
@@ -2053,7 +2053,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setExternalAudioSource) {
     NodeRtcEngine* pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    
+
     int sampleRate, channels;
     bool enabled;
     status = napi_get_value_bool_(args[0], enabled);
@@ -2100,7 +2100,7 @@ NAPI_API_DEFINE(NodeRtcEngine, enableLoopbackRecording) {
     CHECK_NAPI_STATUS(pEngine, status);
     if (!args[1]->IsNull()) {
       status = napi_get_value_nodestring_(args[1], deviceName);
-      CHECK_NAPI_STATUS(pEngine, status); 
+      CHECK_NAPI_STATUS(pEngine, status);
       result = pEngine->m_engine->enableLoopbackRecording(enable, deviceName);
     } else {
       result = pEngine->m_engine->enableLoopbackRecording(enable);
@@ -2788,7 +2788,7 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceStartScreenCaptureByDisplayId) {
     }
     status = napi_get_value_object_(isolate, args[2], obj);
     CHECK_NAPI_STATUS(pEngine, status);
-    
+
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
     ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
     if (captureParams == nullptr) {
@@ -2868,13 +2868,13 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByDisplayId) {
     }
     status = napi_get_value_object_(isolate, args[2], obj);
     CHECK_NAPI_STATUS(pEngine, status);
-    
+
 
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
     ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
     if (captureParams == nullptr) {
       break;
-    }  
+    }
 
     result = pEngine->m_engine->startScreenCaptureByDisplayId(
           displayInfo.idVal, regionRect, *captureParams);
@@ -2947,7 +2947,7 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceStartScreenCaptureByWindow) {
     }
     status = napi_get_value_object_(isolate, args[2], obj);
     CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-    
+
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
     ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
     if (captureParams == nullptr) {
@@ -2986,7 +2986,7 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceUpdateScreenCaptureParameters) {
     Local<Object> obj;
     status = napi_get_value_object_(isolate, args[0], obj);
     CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-    
+
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
     ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
     if (captureParams == nullptr) {
@@ -4094,7 +4094,7 @@ NAPI_API_DEFINE(NodeRtcEngine, release) {
     NodeRtcEngine* pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    bool sync = true;
+    bool sync = false;
     napi_get_value_bool_(args[0], sync);
 
     LOG_F(INFO, "release engine :%d", sync);
@@ -4138,7 +4138,7 @@ NAPI_API_DEFINE(NodeRtcEngine, muteRemoteVideoStream) {
     status = napi_get_value_bool_(args[1], mute);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    
+
     result = pEngine->m_engine->muteRemoteVideoStream(uid, mute);
   } while (false);
   napi_set_int_result(args, result);
@@ -6084,7 +6084,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByWindow) {
     }
     status = napi_get_value_object_(isolate, args[2], obj);
     CHECK_NAPI_STATUS(pEngine, status);
-    
+
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
     ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
     if (captureParams == nullptr) {
@@ -6177,7 +6177,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByScreen) {
     }
     status = napi_get_value_object_(isolate, args[2], obj);
     CHECK_NAPI_STATUS(pEngine, status);
-    
+
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
     ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
     if (captureParams == nullptr) {
@@ -6215,7 +6215,7 @@ NAPI_API_DEFINE(NodeRtcEngine, updateScreenCaptureParameters) {
     Local<Object> obj;
     status = napi_get_value_object_(isolate, args[0], obj);
     CHECK_NAPI_STATUS(pEngine, status);
-    
+
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
     ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
     if (captureParams == nullptr) {
@@ -6912,7 +6912,7 @@ NAPI_API_DEFINE(NodeRtcEngine, enableVirtualBackground) {
     status = napi_get_object_property_uint32_(isolate, obj, "color",
                                               backgroundSource.color);
     CHECK_NAPI_STATUS(pEngine, status);
-      
+
     int blur_degree = VirtualBackgroundSource::BLUR_DEGREE_HIGH;
     status = napi_get_object_property_int32_(isolate, obj, "blur_degree", blur_degree);
     backgroundSource.blur_degree = (VirtualBackgroundSource::BACKGROUND_BLUR_DEGREE)blur_degree;
@@ -6989,7 +6989,7 @@ NAPI_API_DEFINE(NodeRtcEngine, getAudioFileInfo) {
   int result = -1;
   napi_status status = napi_ok;
   do {
-    
+
     NodeRtcEngine* pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);

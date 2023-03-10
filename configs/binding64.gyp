@@ -138,13 +138,6 @@
                     'libresolv.9.dylib',
                     'Accelerate.framework',
                     'AgoraRtcKit.framework',
-                    'Agorafdkaac.framework',
-                    'Agoraffmpeg.framework',
-                    'AgoraSoundTouch.framework',
-                    'AgoraVideoProcessExtension.framework',
-                    'AgoraCore.framework',
-                    'AgoraAIDenoiseExtension.framework',
-                    'av1.framework',
                     'CoreWLAN.framework',
                     'Cocoa.framework',
                     'VideoToolbox.framework',
@@ -160,6 +153,14 @@
                     'Foundation.framework',
                     'AVFoundation.framework',
                     ]
+                    ,
+                    "xcode_settings": {
+                        "OTHER_LDFLAGS": [
+                            "-Wl",
+                            "-rpath",
+                            "@loader_path"
+                            ]
+                    }
                 },
                 'include_dirs': [
                 './sdk/lib/mac/AgoraRtcKit.framework/Headers'
@@ -169,7 +170,12 @@
                     './common/libyuv/source/compare_gcc.cc',
                     './common/libyuv/source/rotate_gcc.cc',
                     './common/libyuv/source/row_gcc.cc',
-                    './common/libyuv/source/scale_gcc.cc'
+                    './common/libyuv/source/scale_neon64.cc',
+                    './common/libyuv/source/compare_neon64.cc',
+                    './common/libyuv/source/rotate_neon64.cc',
+                    './common/libyuv/source/row_neon64.cc',
+                    './common/libyuv/source/scale_gcc.cc',
+                    './video_source/main_mac.mm'
                 ],
                 'defines!': [
                 '_HAS_EXCEPTIONS=0',
@@ -181,6 +187,7 @@
                     '-fexceptions'
                 ],
                 'xcode_settings': {
+                    'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
                     'MACOSX_DEPLOYMENT_TARGET': '10.13',
                     'FRAMEWORK_SEARCH_PATHS': [
                     './sdk/lib/mac'
@@ -268,23 +275,24 @@
                 'copies': [{
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
-                        './sdk/dll/agora_rtc_sdk.dll',
-                        './sdk/dll/av1.dll',
-                        './sdk/dll/libagora-core.dll',
-                        './sdk/dll/libagora-ffmpeg.dll',
-                        './sdk/dll/libagora-soundtouch.dll',
-                        './sdk/dll/libagora-wgc.dll',
-                        './sdk/dll/libagora_ai_denoise_extension.dll',
-                        './sdk/dll/libagora_ci_extension.dll',
-                        './sdk/dll/libagora_dav1d_extension.dll',
+                        './sdk/dll/libhwcodec.dll',
+                        './sdk/dll/libagora_video_process_extension.dll',
+                        './sdk/dll/libagora_super_resolution_extension.dll',
+                        './sdk/dll/libagora_spatial_audio_extension.dll',
+                        './sdk/dll/libagora_segmentation_extension.dll',
+                        './sdk/dll/libagora_mpg123.dll',
+                        './sdk/dll/libagora_full_audio_format_extension.dll',
                         './sdk/dll/libagora_fd_extension.dll',
                         './sdk/dll/libagora_fdkaac.dll',
-                        './sdk/dll/libagora_full_audio_format_extension.dll',
-                        './sdk/dll/libagora_mpg123.dll',
-                        './sdk/dll/libagora_segmentation_extension.dll',
-                        './sdk/dll/libagora_spatial_audio_extension.dll',
-                        './sdk/dll/libagora_video_process_extension.dll',
-                        './sdk/dll/libhwcodec.dll',
+                        './sdk/dll/libagora_dav1d_extension.dll',
+                        './sdk/dll/libagora_ci_extension.dll',
+                        './sdk/dll/libagora_ai_denoise_extension.dll',
+                        './sdk/dll/libagora-wgc.dll',
+                        './sdk/dll/libagora-soundtouch.dll',
+                        './sdk/dll/libagora-ffmpeg.dll',
+                        './sdk/dll/libagora-core.dll',
+                        './sdk/dll/av1.dll',
+                        './sdk/dll/agora_rtc_sdk.dll',
                     ]
                 }],
                 'library_dirs': [
@@ -309,7 +317,7 @@
                     './common/libyuv/source/rotate_win.cc',
                     './common/libyuv/source/row_win.cc',
                     './common/libyuv/source/scale_win.cc',
-					'./agora_node_ext/node_screen_window_info_win.cpp',
+					          './agora_node_ext/node_screen_window_info_win.cpp',
                     './agora_node_ext/node_screen_window_info.h',
                     './agora_node_ext/win_enumer.h',
                     './agora_node_ext/win_enumer.cpp'
@@ -351,14 +359,21 @@
                 'copies': [{
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
-                        './sdk/lib/mac/AgoraRtcKit.framework',
                         './sdk/lib/mac/Agorafdkaac.framework',
                         './sdk/lib/mac/Agoraffmpeg.framework',
-                        './sdk/lib/mac/AgoraSoundTouch.framework',
-                        './sdk/lib/mac/AgoraCore.framework',
                         './sdk/lib/mac/av1.framework',
-                        './sdk/lib/mac/AgoraAIDenoiseExtension.framework'
+                        './sdk/lib/mac/AgoraSuperResolutionExtension.framework',
                         './sdk/lib/mac/AgoraVideoProcessExtension.framework',
+                        './sdk/lib/mac/AgoraVideoSegmentationExtension.framework',
+                        './sdk/lib/mac/AgoraFullAudioFormatExtension.framework',
+                        './sdk/lib/mac/AgoraRtcKit.framework',
+                        './sdk/lib/mac/AgoraSoundTouch.framework',
+                        './sdk/lib/mac/AgoraSpatialAudioExtension.framework',
+                        './sdk/lib/mac/AgoraCore.framework',
+                        './sdk/lib/mac/AgoraDav1dExtension.framework',
+                        './sdk/lib/mac/AgoraFDExtension.framework',
+                        './sdk/lib/mac/AgoraAIDenoiseExtension.framework',
+                        './sdk/lib/mac/AgoraCIExtension.framework',
                     ]
                 }],
                 'link_settings': {
@@ -366,13 +381,6 @@
                     'libresolv.9.dylib',
                     'Accelerate.framework',
                     'AgoraRtcKit.framework',
-                    'Agorafdkaac.framework',
-                    'Agoraffmpeg.framework',
-                    'AgoraSoundTouch.framework',
-                    'AgoraVideoProcessExtension.framework',
-                    'AgoraCore.framework',
-                    'AgoraAIDenoiseExtension.framework',
-                    'av1.framework',
                     'CoreWLAN.framework',
                     'Cocoa.framework',
                     'VideoToolbox.framework',
@@ -388,6 +396,14 @@
                     'Foundation.framework',
                     'AVFoundation.framework'
                     ]
+                    ,
+                    "xcode_settings": {
+                        "OTHER_LDFLAGS": [
+                            "-Wl",
+                            "-rpath",
+                            "@loader_path"
+                            ]
+                    }
                 },
                 'sources': [
                     './common/node_process_unix.cpp',
@@ -395,6 +411,10 @@
                     './common/libyuv/source/rotate_gcc.cc',
                     './common/libyuv/source/row_gcc.cc',
                     './common/libyuv/source/scale_gcc.cc',
+                    './common/libyuv/source/compare_neon64.cc',
+                    './common/libyuv/source/rotate_neon64.cc',
+                    './common/libyuv/source/row_neon64.cc',
+                    './common/libyuv/source/scale_neon64.cc',
                     './agora_node_ext/node_screen_window_info_mac.cpp',
                     './agora_node_ext/node_screen_window_info.h'
                 ],
@@ -412,12 +432,25 @@
                     '-fexceptions'
                 ],
                 'xcode_settings': {
+                    'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
                     'MACOSX_DEPLOYMENT_TARGET': '10.11',
                     'EXECUTABLE_EXTENSION': 'node',
                     'FRAMEWORK_SEARCH_PATHS': [
                     './sdk/lib/mac'
                     ],
-                    "DEBUG_INFORMATION_FORMAT": "dwarf-with-dsym"
+                    "DEBUG_INFORMATION_FORMAT": "dwarf-with-dsym",
+                    'conditions':[
+                        ['target_arch=="arm64"',
+                         {
+                            # 'CLANG_CXX_LANGUAGE_STANDARD': 'c++0x',
+                            # 'CLANG_CXX_LIBRARY': 'libc++',
+                            "OTHER_CPLUSPLUSFLAGS": [
+                                "-std=c++14",
+                                "-stdlib=libc++"
+                                ],
+                         }
+                        ]
+                    ]
                 },
             }
             ]

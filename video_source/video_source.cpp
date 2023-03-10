@@ -135,6 +135,7 @@ node_error AgoraVideoSource::startPreview() {
   int status = 0;
   do {
     std::string id = m_paramParser->getParameter("id");
+    std::lock_guard <std::mutex> lock(m_ipcSenderMutex);
     m_ipcSender.reset(new AgoraIpcDataSender());
     if (!m_ipcSender->initialize(id + DATA_IPC_NAME)) {
       LOG_ERROR("%s, ipc sender init fail.", __FUNCTION__);
@@ -155,7 +156,7 @@ node_error AgoraVideoSource::startPreview() {
 node_error AgoraVideoSource::stopPreview() {
   agora::rtc::VideoCanvas canvas;
   m_rtcEngine->setupLocalVideo(canvas);
-
+  m_rtcEngine->stopPreview();
   {
     std::lock_guard<std::mutex> lock(m_ipcSenderMutex);
     m_ipcSender.reset();
@@ -443,7 +444,7 @@ void AgoraVideoSource::onMessage(unsigned int msg,
       }
       int result = m_rtcEngine->startScreenCaptureByDisplayId(
                                                                        cmd->displayInfo.idVal, cmd->regionRect, cmd->captureParams);
-      LOG_INFO("startScreenCaptureByDisplayId res:%d",result);                                                                       
+      LOG_INFO("startScreenCaptureByDisplayId res:%d",result);
       if (result == 0 || result == 1736 || result == -1736) {
         m_rtcEngine->enableLocalVideo(true);
       } else {
