@@ -288,9 +288,7 @@ export default function JoinChannelVideo() {
       <List.Item>
         <Card title={`${uid === 0 ? 'Local' : 'Remote'} Uid: ${uid}`}>
           <AgoraText>Click view to mirror</AgoraText>
-          {enableVideo ? (
-            <RtcSurfaceView canvas={{ uid }} connection={{ channelId }} />
-          ) : undefined}
+          {enableVideo ? <RtcSurfaceView canvas={{ uid }} /> : undefined}
           <AgoraButton
             title={`Append`}
             onPress={() => {

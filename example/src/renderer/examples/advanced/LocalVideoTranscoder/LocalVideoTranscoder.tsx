@@ -453,7 +453,6 @@ export default class LocalVideoTranscoder
               uid,
               sourceType,
             }}
-            connection={{ channelId }}
           />
         </Card>
       </List.Item>
@@ -473,7 +472,6 @@ export default class LocalVideoTranscoder
                 uid: 0,
                 sourceType: this._getVideoSourceTypeCamera(value),
               }}
-              connection={{ channelId }}
             />
           );
         })}
