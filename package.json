@@ -70,7 +70,6 @@
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
-    "@arkweid/lefthook": "^0.7.7",
     "@commitlint/config-conventional": "^17.0.2",
     "@release-it/conventional-changelog": "^5.0.0",
     "@typescript-eslint/parser": "^5.33.0",
