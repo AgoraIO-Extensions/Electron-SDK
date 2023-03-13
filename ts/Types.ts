@@ -23,6 +23,10 @@ export interface AgoraEnvType {
    * @ignore
    */
   AgoraRendererManager?: RendererManager;
+  /**
+   * @ignore
+   */
+  defaultChannelId?: string;
 }
 
 /**
