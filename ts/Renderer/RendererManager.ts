@@ -1,14 +1,14 @@
-import { VideoSourceType } from '../Private/AgoraBase';
+import { ErrorCodeType, VideoSourceType } from '../Private/AgoraBase';
 import { RenderModeType } from '../Private/AgoraMediaBase';
 import {
   AgoraElectronBridge,
   Channel,
   ChannelIdMap,
   FormatRendererVideoConfig,
+  RENDER_MODE,
   RenderConfig,
   RendererVideoConfig,
   RenderMap,
-  RENDER_MODE,
   ShareVideoFrame,
   UidMap,
   VideoFrameCacheConfig,
@@ -119,7 +119,7 @@ class RendererManager {
 
     if (!rendererConfig.view) {
       logError('setRenderOptionByView: view not exist');
-      return -1;
+      return -ErrorCodeType.ErrInvalidArgument;
     }
 
     const renderList = this.getRenderers({ uid, channelId, videoSourceType });
@@ -132,7 +132,7 @@ class RendererManager {
       : logWarn(
           `RenderStreamType: ${videoSourceType} channelId:${channelId} uid:${uid} have no render view, you need to call this api after setView`
         );
-    return 0;
+    return ErrorCodeType.ErrOk;
   }
 
   public checkWebglEnv(): boolean {
@@ -171,7 +171,7 @@ class RendererManager {
         channelId,
         uid
       );
-      return -1;
+      return -ErrorCodeType.ErrInvalidArgument;
     }
 
     // ensure a render to RenderMap
@@ -189,30 +189,27 @@ class RendererManager {
 
     // enable render
     this.enableRender(true);
-    return 0;
+    return ErrorCodeType.ErrOk;
   }
 
   public setupLocalVideo(rendererConfig: RendererVideoConfig): number {
     const { videoSourceType } = rendererConfig;
     if (videoSourceType === VideoSourceType.VideoSourceRemote) {
       logError('setupLocalVideo videoSourceType error', videoSourceType);
-      return -1;
+      return -ErrorCodeType.ErrInvalidArgument;
     }
     this.setupVideo({ ...rendererConfig });
-    return 0;
+    return ErrorCodeType.ErrOk;
   }
 
   public setupRemoteVideo(rendererConfig: RendererVideoConfig): number {
     const { videoSourceType } = rendererConfig;
     if (videoSourceType !== VideoSourceType.VideoSourceRemote) {
       logError('setupRemoteVideo videoSourceType error', videoSourceType);
-      return -1;
+      return -ErrorCodeType.ErrInvalidArgument;
     }
-    this.setupVideo({
-      ...rendererConfig,
-      videoSourceType: VideoSourceType.VideoSourceRemote,
-    });
-    return 0;
+    this.setupVideo({ ...rendererConfig });
+    return ErrorCodeType.ErrOk;
   }
 
   public destroyRendererByView(view: Element): void {

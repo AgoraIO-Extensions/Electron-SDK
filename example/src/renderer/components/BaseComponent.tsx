@@ -226,7 +226,7 @@ export abstract class BaseComponent<
           {enableVideo ? (
             <>
               <AgoraText>Click view to mirror</AgoraText>
-              <RtcSurfaceView canvas={{ uid }} connection={{ channelId }} />
+              <RtcSurfaceView canvas={{ uid }} />
             </>
           ) : undefined}
         </Card>

@@ -346,6 +346,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     uid: number,
     options: ChannelMediaOptions
   ): string {
+    AgoraEnv.defaultChannelId = channelId;
     return 'RtcEngine_joinChannel2';
   }
 
@@ -439,6 +440,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     userAccount: string,
     options?: ChannelMediaOptions
   ): string {
+    AgoraEnv.defaultChannelId = channelId;
     return options === undefined
       ? 'RtcEngine_joinChannelWithUserAccount'
       : 'RtcEngine_joinChannelWithUserAccount2';
@@ -579,7 +581,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return (
       AgoraEnv.AgoraRendererManager?.setupRemoteVideo({
         videoSourceType: sourceType,
-        channelId: '',
+        channelId: AgoraEnv.defaultChannelId,
         uid,
         view,
         rendererOptions: {
