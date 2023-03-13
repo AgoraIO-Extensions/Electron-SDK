@@ -51,6 +51,10 @@ class RendererManager {
    * @ignore
    */
   msgBridge: AgoraElectronBridge;
+  /**
+   * @ignore
+   */
+  defaultRenderConfig: RendererVideoConfig;
 
   /**
    * @ignore
@@ -61,8 +65,13 @@ class RendererManager {
     this.renderMode = this.checkWebglEnv()
       ? RENDER_MODE.WEBGL
       : RENDER_MODE.SOFTWARE;
-
     this.msgBridge = AgoraEnv.AgoraElectronBridge;
+    this.defaultRenderConfig = {
+      rendererOptions: {
+        contentMode: RenderModeType.RenderModeFit,
+        mirror: false,
+      },
+    };
   }
 
   /**
@@ -91,9 +100,6 @@ class RendererManager {
     mirror: boolean = false
   ): void {
     if (!view) {
-      /**
-       * @ignore
-       */
       logError('setRenderOption: view not exist', view);
     }
     this.forEachStream(({ renders }) => {
@@ -112,22 +118,18 @@ class RendererManager {
       rendererOptions,
       videoSourceType,
     }: FormatRendererVideoConfig =
-      /**
-       * @ignore
-       */
       getDefaultRendererVideoConfig(rendererConfig);
-
-    if (!rendererConfig.view) {
-      logError('setRenderOptionByView: view not exist');
-      return -ErrorCodeType.ErrInvalidArgument;
-    }
 
     const renderList = this.getRenderers({ uid, channelId, videoSourceType });
     renderList
       ? renderList
-          .filter((renderItem) =>
-            renderItem.equalsElement(rendererConfig.view!)
-          )
+          .filter((renderItem) => {
+            if (rendererConfig.view) {
+              return renderItem.equalsElement(rendererConfig.view);
+            } else {
+              return true;
+            }
+          })
           .forEach((renderItem) => renderItem.setRenderOption(rendererOptions))
       : logWarn(
           `RenderStreamType: ${videoSourceType} channelId:${channelId} uid:${uid} have no render view, you need to call this api after setView`
@@ -142,9 +144,6 @@ class RendererManager {
     try {
       gl =
         canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-      /**
-       * @ignore
-       */
       logInfo('Your browser support webGL');
     } catch (e) {
       logWarn('Your browser may not support webGL');
