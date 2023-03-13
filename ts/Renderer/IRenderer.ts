@@ -6,6 +6,7 @@ export type RenderFailCallback =
   | ((obj: { error: string }) => void)
   | undefined
   | null;
+
 export class IRenderer {
   parentElement?: HTMLElement;
   canvas?: HTMLCanvasElement;
@@ -46,8 +47,7 @@ export class IRenderer {
   }
 
   setRenderOption({ contentMode, mirror }: RendererOptions) {
-    this.contentMode =
-      contentMode === undefined ? RenderModeType.RenderModeFit : contentMode;
+    this.contentMode = contentMode ?? RenderModeType.RenderModeFit;
     this.mirror = mirror;
     Object.assign(this.parentElement!.style, {
       transform: mirror ? 'rotateY(180deg)' : '',
