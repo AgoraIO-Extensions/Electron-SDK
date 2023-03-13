@@ -1,3 +1,5 @@
+import { RenderModeType } from '../../Private/AgoraMediaBase';
+
 const createProgramFromSources =
   require('./webgl-utils').createProgramFromSources;
 
@@ -150,7 +152,7 @@ export class GlRenderer extends IRenderer {
     this.clientHeight = this.parentElement.clientHeight;
 
     try {
-      if (this.contentMode === 0) {
+      if (this.contentMode === RenderModeType.RenderModeHidden) {
         // Cover
         if (rotation === 0 || rotation === 180) {
           if (this.clientWidth / this.clientHeight > width / height) {

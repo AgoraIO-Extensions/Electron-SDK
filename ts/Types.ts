@@ -23,10 +23,6 @@ export interface AgoraEnvType {
    * @ignore
    */
   AgoraRendererManager?: RendererManager;
-  /**
-   * @ignore
-   */
-  defaultChannelId?: string;
 }
 
 /**
@@ -219,18 +215,6 @@ export interface Result {
    * @ignore
    */
   callApiResult: any;
-}
-
-/**
- * @ignore
- */
-export enum CallBackModule {
-  /**
-   * @ignore
-   */
-  RTC = 0,
-  MPK,
-  OBSERVER,
 }
 
 /**
