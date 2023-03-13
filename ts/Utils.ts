@@ -145,10 +145,8 @@ export const getDefaultRendererVideoConfig = (
   config: RendererVideoConfig
 ): FormatRendererVideoConfig => {
   const rendererOptions = Object.assign(
-    {
-      contentMode: RenderModeType.RenderModeFit,
-      mirror: false,
-    },
+    {},
+    AgoraEnv.AgoraRendererManager?.defaultRenderConfig?.rendererOptions,
     config.rendererOptions
   );
 

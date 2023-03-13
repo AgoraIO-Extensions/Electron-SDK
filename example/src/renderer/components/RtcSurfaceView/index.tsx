@@ -1,13 +1,13 @@
 import { Component } from 'react';
 import {
-  AgoraEnv,
+  createAgoraRtcEngine,
+  IMediaPlayer,
+  IRtcEngineEx,
   RenderModeType,
   RtcConnection,
   VideoCanvas,
+  VideoMirrorModeType,
   VideoSourceType,
-  createAgoraRtcEngine,
-  IRtcEngineEx,
-  IMediaPlayer,
 } from 'agora-electron-sdk';
 
 import { getRandomInt } from '../../utils';
@@ -106,14 +106,53 @@ class RtcSurfaceView extends Component<Props, State> {
   };
 
   updateMirror = () => {
+    const { canvas, connection } = this.props;
     const { isMirror } = this.state;
-    const dom = this.getHTMLElement();
+    const engine = createAgoraRtcEngine();
 
-    AgoraEnv.AgoraRendererManager?.setRenderOption(
-      dom,
-      RenderModeType.RenderModeAdaptive,
-      isMirror
-    );
+    let funcName:
+      | typeof IRtcEngineEx.prototype.setRemoteRenderModeEx
+      | typeof IRtcEngineEx.prototype.setLocalRenderMode
+      | typeof IRtcEngineEx.prototype.setRemoteRenderMode;
+
+    if (canvas.sourceType === undefined) {
+      if (canvas.uid) {
+        funcName = engine.setRemoteRenderMode;
+      } else {
+        funcName = engine.setLocalRenderMode;
+      }
+    } else if (canvas.sourceType === VideoSourceType.VideoSourceMediaPlayer) {
+      funcName = engine.setLocalRenderMode;
+    } else if (canvas.sourceType === VideoSourceType.VideoSourceRemote) {
+      funcName = engine.setRemoteRenderMode;
+    } else {
+      funcName = engine.setLocalRenderMode;
+    }
+
+    if (funcName === engine.setupRemoteVideo && connection) {
+      funcName = engine.setRemoteRenderModeEx;
+    }
+
+    if (funcName === engine.setLocalRenderMode) {
+      funcName.call(
+        this,
+        RenderModeType.RenderModeFit,
+        isMirror
+          ? VideoMirrorModeType.VideoMirrorModeEnabled
+          : VideoMirrorModeType.VideoMirrorModeDisabled
+      );
+    } else {
+      // @ts-ignore
+      funcName.call(
+        this,
+        canvas.uid!,
+        RenderModeType.RenderModeFit,
+        isMirror
+          ? VideoMirrorModeType.VideoMirrorModeEnabled
+          : VideoMirrorModeType.VideoMirrorModeDisabled,
+        connection!
+      );
+    }
   };
 
   render() {
