@@ -66,6 +66,7 @@ import { MusicContentCenterInternal } from './MusicContentCenterInternal';
 
 import { callIrisApi, DeviceEventEmitter, EVENT_TYPE } from './IrisApiEngine';
 import { EmitterSubscription } from './emitter/EventEmitter';
+import { RendererManager } from '../../Renderer/RendererManager';
 
 const checkers = createCheckers(
   AgoraBaseTI,
@@ -105,7 +106,8 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   >();
 
   initialize(context: RtcEngineContext): number {
-    AgoraEnv.AgoraRendererManager?.enableRender();
+    AgoraEnv.AgoraRendererManager = new RendererManager();
+    AgoraEnv.AgoraRendererManager.enableRender();
     const ret = super.initialize(context);
     callIrisApi.call(this, 'RtcEngine_setAppType', {
       appType: 3,
@@ -115,6 +117,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
 
   release(sync: boolean = false) {
     AgoraEnv.AgoraRendererManager?.enableRender(false);
+    AgoraEnv.AgoraRendererManager = undefined;
     this._audio_device_manager.release();
     this._video_device_manager.release();
     this._media_engine.release();
