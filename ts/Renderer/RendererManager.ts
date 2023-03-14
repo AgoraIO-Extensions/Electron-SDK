@@ -29,7 +29,7 @@ import { YUVCanvasRenderer } from './YUVCanvasRenderer';
 /**
  * @ignore
  */
-class RendererManager {
+export class RendererManager {
   /**
    * @ignore
    */
@@ -89,7 +89,7 @@ class RendererManager {
   /**
    * @ignore
    */
-  setFPS(fps: number) {
+  public setFPS(fps: number) {
     this.renderFps = fps;
     this.restartRender();
   }
@@ -139,7 +139,7 @@ class RendererManager {
 
   public checkWebglEnv(): boolean {
     let gl;
-    const canvas = document.createElement('canvas');
+    let canvas: HTMLCanvasElement = document.createElement('canvas');
 
     try {
       gl =
@@ -150,11 +150,7 @@ class RendererManager {
       return false;
     }
 
-    if (gl) {
-      return true;
-    } else {
-      return false;
-    }
+    return !!gl;
   }
 
   public setupVideo(rendererVideoConfig: RendererVideoConfig): number {
@@ -165,11 +161,7 @@ class RendererManager {
 
     if (!formatConfig.view) {
       logWarn('setupVideo->destroyRenderersByConfig, because of view is null');
-      AgoraRendererManager.destroyRenderersByConfig(
-        videoSourceType,
-        channelId,
-        uid
-      );
+      this.destroyRenderersByConfig(videoSourceType, channelId, uid);
       return -ErrorCodeType.ErrInvalidArgument;
     }
 
@@ -551,10 +543,3 @@ class RendererManager {
         );
   }
 }
-
-const AgoraRendererManager = new RendererManager();
-
-AgoraEnv.AgoraRendererManager = AgoraRendererManager;
-
-export default AgoraRendererManager;
-export { RendererManager };
