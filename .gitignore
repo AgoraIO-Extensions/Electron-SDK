@@ -17,6 +17,5 @@ nohup.out
 js/
 docs/
 types/
-package-lock.json
 iris/
 source_code/iris
