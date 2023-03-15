@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: '16'
           cache: 'yarn'
-      - run: yarn
+      - run: yarn intall
 
       - name: Setup NPM auth token
         run: |
