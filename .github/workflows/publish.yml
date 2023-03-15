@@ -12,28 +12,33 @@ on:
         description: 'Do not touch or write anything, but show the commands'
         default: true
         type: boolean
-        
+
 jobs:
   release-it:
-    runs-on: macos-latest
+    runs-on: windows-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v3
         with:
-            node-version: '16'
+          node-version: '16'
+          cache: 'yarn'
       - run: yarn
-      
+
       - name: Setup NPM auth token
         run: |
           npm set "//registry.npmjs.org/:_authToken" ${{ secrets.NPM_TOKEN }}
-      
+
       - if: ${{ inputs.dry-run }}
         run: |
           yarn release ${{ inputs.increment }} -d --ci
-          
+
       - if: ${{ !inputs.dry-run }}
         run: |
+          git config --global user.email "${{ secrets.GIT_EMAIL }}"
+          git config --global user.name "${{ secrets.GIT_USERNAME }}"
           yarn release ${{ inputs.increment }} --ci

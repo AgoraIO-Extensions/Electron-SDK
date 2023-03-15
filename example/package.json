@@ -104,7 +104,7 @@
     "sass": "^1.56.2",
     "sass-loader": "~10.2.1",
     "style-loader": "^2.0.0",
-    "typescript": "4.6.4",
-    "webpack": "~4.42.1"
+    "typescript": "^4.5.2",
+    "webpack": "^4.43.0"
   }
 }

@@ -15,7 +15,6 @@ import AuthInfoScreen from './examples/config/AuthInfoScreen';
 import basicRoute from './examples/basic';
 import hooksRoutes from './examples/hooks';
 import advanceRoute from './examples/advanced';
-import Config from './config/agora.config';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -28,9 +27,7 @@ class App extends React.Component {
 
   componentDidMount() {
     const engine = createAgoraRtcEngine();
-    engine.initialize({ appId: Config.appId });
     this.setState({ version: engine.getVersion() });
-    engine.release();
   }
 
   onCollapse = (collapsed) => {

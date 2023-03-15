@@ -191,14 +191,12 @@ export default class JoinChannelVideo
   }
 
   protected renderVideo(uid: number): ReactNode {
-    const { channelId, enableVideo, remoteUsers } = this.state;
+    const { enableVideo, remoteUsers } = this.state;
     return (
       <List.Item>
         <Card title={`${uid === 0 ? 'Local' : 'Remote'} Uid: ${uid}`}>
           <AgoraText>Click view to mirror</AgoraText>
-          {enableVideo ? (
-            <RtcSurfaceView canvas={{ uid }} connection={{ channelId }} />
-          ) : undefined}
+          {enableVideo ? <RtcSurfaceView canvas={{ uid }} /> : undefined}
           <AgoraButton
             title={`Append`}
             onPress={() => {

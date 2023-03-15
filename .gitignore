@@ -16,6 +16,4 @@ nohup.out
 .version-cache
 lib/
 docs/
-package-lock.json
 .iris/
-source_code/iris

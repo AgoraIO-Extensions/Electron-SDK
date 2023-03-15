@@ -18,7 +18,7 @@ import {
   VideoSourceType,
   WatermarkOptions,
 } from '../AgoraBase';
-import { IAudioSpectrumObserver } from '../AgoraMediaBase';
+import { IAudioSpectrumObserver, RenderModeType } from '../AgoraMediaBase';
 import { IMediaEngine } from '../IAgoraMediaEngine';
 import { IMediaPlayer } from '../IAgoraMediaPlayer';
 import { IMediaRecorder } from '../IAgoraMediaRecorder';
@@ -56,11 +56,6 @@ import {
 import AgoraBaseTI from '../ti/AgoraBase-ti';
 import AgoraMediaBaseTI from '../ti/AgoraMediaBase-ti';
 import IAgoraRtcEngineTI from '../ti/IAgoraRtcEngine-ti';
-const checkers = createCheckers(
-  AgoraBaseTI,
-  AgoraMediaBaseTI,
-  IAgoraRtcEngineTI
-);
 
 import { AudioDeviceManagerInternal } from './AudioDeviceManagerInternal';
 import { LocalSpatialAudioEngineInternal } from './LocalSpatialAudioEngineInternal';
@@ -71,6 +66,13 @@ import { MusicContentCenterInternal } from './MusicContentCenterInternal';
 
 import { callIrisApi, DeviceEventEmitter, EVENT_TYPE } from './IrisApiEngine';
 import { EmitterSubscription } from './emitter/EventEmitter';
+import { RendererManager } from '../../Renderer/RendererManager';
+
+const checkers = createCheckers(
+  AgoraBaseTI,
+  AgoraMediaBaseTI,
+  IAgoraRtcEngineTI
+);
 
 export class RtcEngineExInternal extends IRtcEngineExImpl {
   static _event_handlers: IRtcEngineEventHandler[] = [];
@@ -104,7 +106,8 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   >();
 
   initialize(context: RtcEngineContext): number {
-    AgoraEnv.AgoraRendererManager?.enableRender();
+    AgoraEnv.AgoraRendererManager = new RendererManager();
+    AgoraEnv.AgoraRendererManager.enableRender();
     const ret = super.initialize(context);
     callIrisApi.call(this, 'RtcEngine_setAppType', {
       appType: 3,
@@ -114,6 +117,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
 
   release(sync: boolean = false) {
     AgoraEnv.AgoraRendererManager?.enableRender(false);
+    AgoraEnv.AgoraRendererManager = undefined;
     this._audio_device_manager.release();
     this._video_device_manager.release();
     this._media_engine.release();
@@ -346,6 +350,9 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     uid: number,
     options: ChannelMediaOptions
   ): string {
+    if (AgoraEnv.AgoraRendererManager) {
+      AgoraEnv.AgoraRendererManager.defaultRenderConfig.channelId = channelId;
+    }
     return 'RtcEngine_joinChannel2';
   }
 
@@ -439,6 +446,9 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     userAccount: string,
     options?: ChannelMediaOptions
   ): string {
+    if (AgoraEnv.AgoraRendererManager) {
+      AgoraEnv.AgoraRendererManager.defaultRenderConfig.channelId = channelId;
+    }
     return options === undefined
       ? 'RtcEngine_joinChannelWithUserAccount'
       : 'RtcEngine_joinChannelWithUserAccount2';
@@ -579,7 +589,8 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return (
       AgoraEnv.AgoraRendererManager?.setupRemoteVideo({
         videoSourceType: sourceType,
-        channelId: '',
+        channelId:
+          AgoraEnv.AgoraRendererManager?.defaultRenderConfig?.channelId,
         uid,
         view,
         rendererOptions: {
@@ -607,6 +618,74 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
         view,
         rendererOptions: {
           contentMode: renderMode,
+          mirror: mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled,
+        },
+      }) ?? -ErrorCodeType.ErrNotInitialized
+    );
+  }
+
+  setLocalRenderMode(
+    renderMode: RenderModeType,
+    mirrorMode: VideoMirrorModeType = VideoMirrorModeType.VideoMirrorModeAuto
+  ): number {
+    return (
+      AgoraEnv.AgoraRendererManager?.setRenderOptionByConfig({
+        videoSourceType: VideoSourceType.VideoSourceCamera,
+        channelId: '',
+        uid: 0,
+        rendererOptions: {
+          contentMode: renderMode,
+          mirror: mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled,
+        },
+      }) ?? -ErrorCodeType.ErrNotInitialized
+    );
+  }
+
+  setRemoteRenderMode(
+    uid: number,
+    renderMode: RenderModeType,
+    mirrorMode: VideoMirrorModeType
+  ): number {
+    return (
+      AgoraEnv.AgoraRendererManager?.setRenderOptionByConfig({
+        videoSourceType: VideoSourceType.VideoSourceRemote,
+        channelId: AgoraEnv.AgoraRendererManager?.defaultRenderConfig.channelId,
+        uid,
+        rendererOptions: {
+          contentMode: renderMode,
+          mirror: mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled,
+        },
+      }) ?? -ErrorCodeType.ErrNotInitialized
+    );
+  }
+
+  setRemoteRenderModeEx(
+    uid: number,
+    renderMode: RenderModeType,
+    mirrorMode: VideoMirrorModeType,
+    connection: RtcConnection
+  ): number {
+    const { channelId } = connection;
+    return (
+      AgoraEnv.AgoraRendererManager?.setRenderOptionByConfig({
+        videoSourceType: VideoSourceType.VideoSourceRemote,
+        channelId,
+        uid,
+        rendererOptions: {
+          contentMode: renderMode,
+          mirror: mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled,
+        },
+      }) ?? -ErrorCodeType.ErrNotInitialized
+    );
+  }
+
+  setLocalVideoMirrorMode(mirrorMode: VideoMirrorModeType): number {
+    return (
+      AgoraEnv.AgoraRendererManager?.setRenderOptionByConfig({
+        videoSourceType: VideoSourceType.VideoSourceCamera,
+        channelId: '',
+        uid: 0,
+        rendererOptions: {
           mirror: mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled,
         },
       }) ?? -ErrorCodeType.ErrNotInitialized

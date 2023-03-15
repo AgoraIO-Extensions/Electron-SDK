@@ -909,6 +909,17 @@ export function processIRtcEngineEventHandler(
         );
       }
       break;
+
+    case 'onVideoRenderingTracingResult':
+      if (handler.onVideoRenderingTracingResult !== undefined) {
+        handler.onVideoRenderingTracingResult(
+          jsonParams.connection,
+          jsonParams.uid,
+          jsonParams.currentEvent,
+          jsonParams.tracingInfo
+        );
+      }
+      break;
   }
 }
 
@@ -1629,32 +1640,6 @@ export class IRtcEngineImpl implements IRtcEngine {
     type: MediaSourceType = MediaSourceType.PrimaryCameraSource
   ): string {
     return 'RtcEngine_enableVirtualBackground';
-  }
-
-  enableRemoteSuperResolution(userId: number, enable: boolean): number {
-    const apiType = this.getApiTypeFromEnableRemoteSuperResolution(
-      userId,
-      enable
-    );
-    const jsonParams = {
-      userId: userId,
-      enable: enable,
-      toJSON: () => {
-        return {
-          userId: userId,
-          enable: enable,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromEnableRemoteSuperResolution(
-    userId: number,
-    enable: boolean
-  ): string {
-    return 'RtcEngine_enableRemoteSuperResolution';
   }
 
   setupRemoteVideo(canvas: VideoCanvas): number {
@@ -6480,6 +6465,46 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_getNetworkType';
   }
 
+  setParameters(parameters: string): number {
+    const apiType = this.getApiTypeFromSetParameters(parameters);
+    const jsonParams = {
+      parameters: parameters,
+      toJSON: () => {
+        return {
+          parameters: parameters,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSetParameters(parameters: string): string {
+    return 'RtcEngine_setParameters';
+  }
+
+  startMediaRenderingTracing(): number {
+    const apiType = this.getApiTypeFromStartMediaRenderingTracing();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromStartMediaRenderingTracing(): string {
+    return 'RtcEngine_startMediaRenderingTracing';
+  }
+
+  enableInstantMediaRendering(): number {
+    const apiType = this.getApiTypeFromEnableInstantMediaRendering();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromEnableInstantMediaRendering(): string {
+    return 'RtcEngine_enableInstantMediaRendering';
+  }
+
   destroyRendererByView(view: any): void {
     const apiType = this.getApiTypeFromDestroyRendererByView(view);
     const jsonParams = {
@@ -6656,24 +6681,6 @@ export class IRtcEngineImpl implements IRtcEngine {
     observer: IAudioEncodedFrameObserver
   ): string {
     return 'RtcEngine_unregisterAudioEncodedFrameObserver';
-  }
-
-  setParameters(parameters: string): number {
-    const apiType = this.getApiTypeFromSetParameters(parameters);
-    const jsonParams = {
-      parameters: parameters,
-      toJSON: () => {
-        return {
-          parameters: parameters,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromSetParameters(parameters: string): string {
-    return 'RtcEngine_setParameters';
   }
 
   getNativeHandle(): number {

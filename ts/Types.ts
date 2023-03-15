@@ -220,18 +220,6 @@ export interface Result {
 /**
  * @ignore
  */
-export enum CallBackModule {
-  /**
-   * @ignore
-   */
-  RTC = 0,
-  MPK,
-  OBSERVER,
-}
-
-/**
- * @ignore
- */
 export interface AgoraElectronBridge {
   /**
    * @ignore
