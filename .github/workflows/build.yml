@@ -41,7 +41,7 @@ jobs:
 
       - name: Yarn
         run: |
-          npm_config_arch=${{ matrix.arch }} yarn install
+          set npm_config_arch=${{ matrix.arch }}; yarn install
 
       - name: Prebuild
         run: |
