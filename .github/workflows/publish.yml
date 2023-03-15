@@ -15,7 +15,7 @@ on:
 
 jobs:
   release-it:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
