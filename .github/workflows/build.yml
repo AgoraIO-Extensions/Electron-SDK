@@ -40,8 +40,9 @@ jobs:
           cache: 'yarn'
 
       - name: Yarn
+        env:
+          npm_config_arch: ${{ matrix.arch }}
         run: |
-          set npm_config_arch=${{ matrix.arch }}
           yarn install
 
       - name: Prebuild
