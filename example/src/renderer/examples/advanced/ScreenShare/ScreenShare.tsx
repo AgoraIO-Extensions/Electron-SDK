@@ -157,7 +157,7 @@ export default class ScreenShare
     );
     this.setState({
       sources,
-      targetSource: sources?.at(0),
+      targetSource: sources![0],
     });
   };
 
@@ -431,7 +431,7 @@ export default class ScreenShare
           })}
           value={targetSource?.sourceId}
           onValueChange={(value, index) => {
-            this.setState({ targetSource: sources?.at(index) });
+            this.setState({ targetSource: sources![index] });
           }}
         />
         {targetSource ? (

@@ -129,23 +129,20 @@ export default class DeviceManager
    * Step 3-1: enumerateDevices
    */
   enumerateDevices = () => {
-    const playbackDevices = this.engine
-      ?.getAudioDeviceManager()
-      .enumeratePlaybackDevices();
-    const recordingDevices = this.engine
-      ?.getAudioDeviceManager()
-      .enumerateRecordingDevices();
-    const videoDevices = this.engine
-      ?.getVideoDeviceManager()
-      .enumerateVideoDevices();
+    const playbackDevices =
+      this.engine!.getAudioDeviceManager().enumeratePlaybackDevices();
+    const recordingDevices =
+      this.engine!.getAudioDeviceManager().enumerateRecordingDevices();
+    const videoDevices =
+      this.engine!.getVideoDeviceManager().enumerateVideoDevices();
 
     this.setState({
       playbackDevices,
-      playbackDeviceId: playbackDevices?.at(0)?.deviceId,
+      playbackDeviceId: playbackDevices[0]?.deviceId,
       recordingDevices,
-      recordingDeviceId: recordingDevices?.at(0)?.deviceId,
+      recordingDeviceId: recordingDevices[0]?.deviceId,
       videoDevices,
-      videoDeviceId: videoDevices?.at(0)?.deviceId,
+      videoDeviceId: videoDevices[0]?.deviceId,
     });
   };
 
@@ -344,7 +341,7 @@ export default class DeviceManager
           value={playbackDeviceId}
           onValueChange={(value, index) => {
             this.setState({
-              playbackDeviceId: playbackDevices?.at(index)?.deviceId,
+              playbackDeviceId: playbackDevices![index]?.deviceId,
             });
           }}
         />
@@ -360,7 +357,7 @@ export default class DeviceManager
           value={recordingDeviceId}
           onValueChange={(value, index) => {
             this.setState({
-              recordingDeviceId: recordingDevices?.at(index)?.deviceId,
+              recordingDeviceId: recordingDevices![index]?.deviceId,
             });
           }}
         />
@@ -376,7 +373,7 @@ export default class DeviceManager
           value={videoDeviceId}
           onValueChange={(value, index) => {
             this.setState({
-              videoDeviceId: videoDevices?.at(index)?.deviceId,
+              videoDeviceId: videoDevices![index]?.deviceId,
             });
           }}
         />

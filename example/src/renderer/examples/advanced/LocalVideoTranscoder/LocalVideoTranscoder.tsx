@@ -148,9 +148,7 @@ export default class LocalVideoTranscoder
 
     this.setState({
       videoDevices,
-      videoDeviceId: videoDevices?.length
-        ? [videoDevices!.at(0)!.deviceId!]
-        : [],
+      videoDeviceId: videoDevices?.length ? [videoDevices[0].deviceId!] : [],
     });
   };
 
@@ -192,14 +190,14 @@ export default class LocalVideoTranscoder
    * Step 3-2: getScreenCaptureSources
    */
   getScreenCaptureSources = () => {
-    const sources = this.engine?.getScreenCaptureSources(
+    const sources = this.engine!.getScreenCaptureSources(
       { width: 1920, height: 1080 },
       { width: 64, height: 64 },
       true
     );
     this.setState({
       sources,
-      targetSource: sources?.at(0),
+      targetSource: sources[0],
     });
   };
 
@@ -526,7 +524,7 @@ export default class LocalVideoTranscoder
           })}
           value={targetSource?.sourceId}
           onValueChange={(value, index) => {
-            this.setState({ targetSource: sources?.at(index) });
+            this.setState({ targetSource: sources![index] });
           }}
         />
         {targetSource ? (

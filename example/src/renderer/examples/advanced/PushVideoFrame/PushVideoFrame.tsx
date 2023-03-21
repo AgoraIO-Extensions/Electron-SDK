@@ -123,7 +123,7 @@ export default class PushVideoFrame
     );
     this.setState({
       sources,
-      targetSource: sources?.at(0),
+      targetSource: sources![0],
     });
   };
 
@@ -183,7 +183,7 @@ export default class PushVideoFrame
           })}
           value={targetSource?.sourceId}
           onValueChange={(value, index) => {
-            this.setState({ targetSource: sources?.at(index) });
+            this.setState({ targetSource: sources![index] });
           }}
         />
         {targetSource ? (
