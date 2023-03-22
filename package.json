@@ -111,6 +111,7 @@
     }
   },
   "eslintConfig": {
+    "root": true,
     "env": {
       "node": true,
       "browser": true,
@@ -122,11 +123,10 @@
       "eslint:recommended"
     ],
     "plugins": [
-      "prettier"
+      "prettier",
+      "auto-import"
     ],
     "rules": {
-      "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": "off",
       "prettier/prettier": [
         "error",
         {
@@ -135,6 +135,14 @@
           "tabWidth": 2,
           "trailingComma": "es5",
           "useTabs": false
+        }
+      ],
+      "no-unused-vars": "warn",
+      "@typescript-eslint/no-unused-vars": "off",
+      "auto-import/auto-import": [
+        "error",
+        {
+          "rootPath": "./ts/Private"
         }
       ]
     },
