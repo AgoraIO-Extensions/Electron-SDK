@@ -1,5 +1,4 @@
-import { VideoSourceType } from '../Private/AgoraBase';
-import { RenderModeType } from '../Private/AgoraMediaBase';
+import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
 import { AgoraEnv } from '../Utils';
 
 const VIDEO_SOURCE_TYPE_STRING = 'video-source-type';

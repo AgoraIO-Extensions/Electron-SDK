@@ -1,5 +1,5 @@
-import { ErrorCodeType, VideoSourceType } from '../Private/AgoraBase';
-import { RenderModeType } from '../Private/AgoraMediaBase';
+import { ErrorCodeType } from '../Private/AgoraBase';
+import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
 import {
   AgoraElectronBridge,
   Channel,

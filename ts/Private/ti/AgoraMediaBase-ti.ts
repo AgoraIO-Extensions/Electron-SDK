@@ -25,15 +25,9 @@ export const IVideoEncodedFrameObserver = t.iface([], {
 });
 
 export const IVideoFrameObserver = t.iface([], {
-  "onCaptureVideoFrame": t.opt(t.func("boolean", t.param("videoFrame", "VideoFrame"))),
-  "onPreEncodeVideoFrame": t.opt(t.func("boolean", t.param("videoFrame", "VideoFrame"))),
-  "onSecondaryCameraCaptureVideoFrame": t.opt(t.func("boolean", t.param("videoFrame", "VideoFrame"))),
-  "onSecondaryPreEncodeCameraVideoFrame": t.opt(t.func("boolean", t.param("videoFrame", "VideoFrame"))),
-  "onScreenCaptureVideoFrame": t.opt(t.func("boolean", t.param("videoFrame", "VideoFrame"))),
-  "onPreEncodeScreenVideoFrame": t.opt(t.func("boolean", t.param("videoFrame", "VideoFrame"))),
+  "onCaptureVideoFrame": t.opt(t.func("boolean", t.param("type", "VideoSourceType"), t.param("videoFrame", "VideoFrame"))),
+  "onPreEncodeVideoFrame": t.opt(t.func("boolean", t.param("type", "VideoSourceType"), t.param("videoFrame", "VideoFrame"))),
   "onMediaPlayerVideoFrame": t.opt(t.func("boolean", t.param("videoFrame", "VideoFrame"), t.param("mediaPlayerId", "number"))),
-  "onSecondaryScreenCaptureVideoFrame": t.opt(t.func("boolean", t.param("videoFrame", "VideoFrame"))),
-  "onSecondaryPreEncodeScreenVideoFrame": t.opt(t.func("boolean", t.param("videoFrame", "VideoFrame"))),
   "onRenderVideoFrame": t.opt(t.func("boolean", t.param("channelId", "string"), t.param("remoteUid", "number"), t.param("videoFrame", "VideoFrame"))),
   "onTranscodedVideoFrame": t.opt(t.func("boolean", t.param("videoFrame", "VideoFrame"))),
 });
