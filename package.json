@@ -32,8 +32,8 @@
     "ts_interface_builder": "ts-interface-builder ts/Private/*.ts -o ts/Private/ti/"
   },
   "agora_electron": {
-    "iris_sdk_win": "https://download.agora.io/staging/iris_4.1.1.3-build.1_DCG_Windows_Video_20230322_0645.zip",
-    "iris_sdk_mac": "https://download.agora.io/staging/iris_4.1.1.3-build.1_DCG_Mac_Video_20230322_0645.zip"
+    "iris_sdk_win": "https://download.agora.io/staging/iris_4.1.1.3-build.1_DCG_Windows_Video_20230324_0609.zip",
+    "iris_sdk_mac": "https://download.agora.io/staging/iris_4.1.1.3-build.1_DCG_Mac_Video_20230324_0327.zip"
   },
   "dependencies": {
     "bindings": "1.2.1",
