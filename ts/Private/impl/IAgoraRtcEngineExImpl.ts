@@ -685,6 +685,58 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     return 'RtcEngineEx_enableLoopbackRecordingEx';
   }
 
+  adjustRecordingSignalVolumeEx(
+    volume: number,
+    connection: RtcConnection
+  ): number {
+    const apiType = this.getApiTypeFromAdjustRecordingSignalVolumeEx(
+      volume,
+      connection
+    );
+    const jsonParams = {
+      volume: volume,
+      connection: connection,
+      toJSON: () => {
+        return {
+          volume: volume,
+          connection: connection,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromAdjustRecordingSignalVolumeEx(
+    volume: number,
+    connection: RtcConnection
+  ): string {
+    return 'RtcEngineEx_adjustRecordingSignalVolumeEx';
+  }
+
+  muteRecordingSignalEx(mute: boolean, connection: RtcConnection): number {
+    const apiType = this.getApiTypeFromMuteRecordingSignalEx(mute, connection);
+    const jsonParams = {
+      mute: mute,
+      connection: connection,
+      toJSON: () => {
+        return {
+          mute: mute,
+          connection: connection,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromMuteRecordingSignalEx(
+    mute: boolean,
+    connection: RtcConnection
+  ): string {
+    return 'RtcEngineEx_muteRecordingSignalEx';
+  }
+
   adjustUserPlaybackSignalVolumeEx(
     uid: number,
     volume: number,

@@ -8,6 +8,7 @@ import {
   IMusicPlayer,
   IMusicContentCenter,
   MusicContentCenterConfiguration,
+  MusicCacheInfo,
 } from '../IAgoraMusicContentCenter';
 import { IMediaPlayerImpl } from './IAgoraMediaPlayerImpl';
 // @ts-ignore
@@ -117,8 +118,8 @@ export function processIMusicContentCenterEventHandler(
       if (handler.onMusicChartsResult !== undefined) {
         handler.onMusicChartsResult(
           jsonParams.requestId,
-          jsonParams.status,
-          jsonParams.result
+          jsonParams.result,
+          jsonParams.error_code
         );
       }
       break;
@@ -127,15 +128,19 @@ export function processIMusicContentCenterEventHandler(
       if (handler.onMusicCollectionResult !== undefined) {
         handler.onMusicCollectionResult(
           jsonParams.requestId,
-          jsonParams.status,
-          jsonParams.result
+          jsonParams.result,
+          jsonParams.error_code
         );
       }
       break;
 
     case 'onLyricResult':
       if (handler.onLyricResult !== undefined) {
-        handler.onLyricResult(jsonParams.requestId, jsonParams.lyricUrl);
+        handler.onLyricResult(
+          jsonParams.requestId,
+          jsonParams.lyricUrl,
+          jsonParams.error_code
+        );
       }
       break;
 
@@ -144,9 +149,9 @@ export function processIMusicContentCenterEventHandler(
         handler.onPreLoadEvent(
           jsonParams.songCode,
           jsonParams.percent,
+          jsonParams.lyricUrl,
           jsonParams.status,
-          jsonParams.msg,
-          jsonParams.lyricUrl
+          jsonParams.error_code
         );
       }
       break;
@@ -155,7 +160,7 @@ export function processIMusicContentCenterEventHandler(
 
 // @ts-ignore
 export class IMusicPlayerImpl extends IMediaPlayerImpl implements IMusicPlayer {
-  openWithSongCode(songCode: number, startPos = 0): number {
+  openWithSongCode(songCode: number, startPos: number = 0): number {
     const apiType = this.getApiTypeFromOpenWithSongCode(songCode, startPos);
     const jsonParams = {
       songCode: songCode,
@@ -173,7 +178,7 @@ export class IMusicPlayerImpl extends IMediaPlayerImpl implements IMusicPlayer {
 
   protected getApiTypeFromOpenWithSongCode(
     songCode: number,
-    startPos = 0
+    startPos: number = 0
   ): string {
     return 'MusicPlayer_openWithSongCode';
   }
@@ -388,6 +393,40 @@ export class IMusicContentCenterImpl implements IMusicContentCenter {
     return 'MusicContentCenter_preload';
   }
 
+  removeCache(songCode: number): number {
+    const apiType = this.getApiTypeFromRemoveCache(songCode);
+    const jsonParams = {
+      songCode: songCode,
+      toJSON: () => {
+        return {
+          songCode: songCode,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromRemoveCache(songCode: number): string {
+    return 'MusicContentCenter_removeCache';
+  }
+
+  getCaches(): { cacheInfo: MusicCacheInfo[]; cacheInfoSize: number } {
+    const apiType = this.getApiTypeFromGetCaches();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    const cacheInfo = jsonResults.cacheInfo;
+    const cacheInfoSize = jsonResults.cacheInfoSize;
+    return {
+      cacheInfo,
+      cacheInfoSize,
+    };
+  }
+
+  protected getApiTypeFromGetCaches(): string {
+    return 'MusicContentCenter_getCaches';
+  }
+
   isPreloaded(songCode: number): number {
     const apiType = this.getApiTypeFromIsPreloaded(songCode);
     const jsonParams = {
@@ -406,7 +445,7 @@ export class IMusicContentCenterImpl implements IMusicContentCenter {
     return 'MusicContentCenter_isPreloaded';
   }
 
-  getLyric(songCode: number, lyricType = 0): string {
+  getLyric(songCode: number, lyricType: number = 0): string {
     const apiType = this.getApiTypeFromGetLyric(songCode, lyricType);
     const jsonParams = {
       songCode: songCode,
@@ -423,7 +462,10 @@ export class IMusicContentCenterImpl implements IMusicContentCenter {
     return requestId;
   }
 
-  protected getApiTypeFromGetLyric(songCode: number, lyricType = 0): string {
+  protected getApiTypeFromGetLyric(
+    songCode: number,
+    lyricType: number = 0
+  ): string {
     return 'MusicContentCenter_getLyric';
   }
 }

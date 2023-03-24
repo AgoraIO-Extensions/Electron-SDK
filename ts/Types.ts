@@ -1,5 +1,4 @@
-import { VideoSourceType } from './Private/AgoraBase';
-import { RenderModeType } from './Private/AgoraMediaBase';
+import { RenderModeType, VideoSourceType } from './Private/AgoraMediaBase';
 import { IRenderer } from './Renderer/IRenderer';
 import { RendererManager } from './Renderer/RendererManager';
 
