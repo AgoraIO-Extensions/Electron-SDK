@@ -129,7 +129,7 @@ class RtcSurfaceView extends Component<Props, State> {
       funcName = engine.setLocalRenderMode;
     }
 
-    if (funcName === engine.setupRemoteVideo && connection) {
+    if (funcName === engine.setRemoteRenderMode && connection) {
       funcName = engine.setRemoteRenderModeEx;
     }
 

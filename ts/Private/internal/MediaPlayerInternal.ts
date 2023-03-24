@@ -2,8 +2,12 @@ import { createCheckers } from 'ts-interface-checker';
 
 import { AgoraEnv, logWarn } from '../../Utils';
 
-import { ErrorCodeType, VideoSourceType } from '../AgoraBase';
-import { IAudioSpectrumObserver, RenderModeType } from '../AgoraMediaBase';
+import { ErrorCodeType } from '../AgoraBase';
+import {
+  IAudioSpectrumObserver,
+  RenderModeType,
+  VideoSourceType,
+} from '../AgoraMediaBase';
 import {
   IMediaPlayerAudioFrameObserver,
   IMediaPlayerVideoFrameObserver,

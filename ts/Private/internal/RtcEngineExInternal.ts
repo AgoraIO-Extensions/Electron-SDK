@@ -15,10 +15,13 @@ import {
   SimulcastStreamMode,
   VideoCanvas,
   VideoMirrorModeType,
-  VideoSourceType,
   WatermarkOptions,
 } from '../AgoraBase';
-import { IAudioSpectrumObserver, RenderModeType } from '../AgoraMediaBase';
+import {
+  IAudioSpectrumObserver,
+  RenderModeType,
+  VideoSourceType,
+} from '../AgoraMediaBase';
 import { IMediaEngine } from '../IAgoraMediaEngine';
 import { IMediaPlayer } from '../IAgoraMediaPlayer';
 import { IMediaRecorder } from '../IAgoraMediaRecorder';
@@ -37,6 +40,7 @@ import {
   ScreenCaptureSourceInfo,
   SDKBuildInfo,
   Size,
+  ScreenCaptureConfiguration,
 } from '../IAgoraRtcEngine';
 import { ILocalSpatialAudioEngine } from '../IAgoraSpatialAudio';
 import { IAudioDeviceManager } from '../IAudioDeviceManager';
@@ -459,6 +463,19 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     connection: RtcConnection
   ): string {
     return 'RtcEngineEx_createDataStreamEx2';
+  }
+
+  protected getApiTypeFromStartScreenCaptureDesktop(
+    type: VideoSourceType,
+    config: ScreenCaptureConfiguration
+  ): string {
+    return 'RtcEngine_startScreenCapture2';
+  }
+
+  protected getApiTypeFromStopScreenCapture(
+    type: VideoSourceType = VideoSourceType.VideoSourceScreenPrimary
+  ): string {
+    return 'RtcEngine_stopScreenCapture2';
   }
 
   getAudioDeviceManager(): IAudioDeviceManager {
