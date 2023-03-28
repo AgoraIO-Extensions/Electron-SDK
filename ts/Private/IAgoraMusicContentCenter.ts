@@ -4,27 +4,37 @@ import { IMediaPlayer } from './IAgoraMediaPlayer';
  * @ignore
  */
 export enum PreloadStatusCode {
-  /* enum__KPreloadStatusCompleted */
+/**
+ * @ignore
+ */
   KPreloadStatusCompleted = 0,
-  /* enum__KPreloadStatusFailed */
+/**
+ * @ignore
+ */
   KPreloadStatusFailed = 1,
-  /* enum__KPreloadStatusPreloading */
+/**
+ * @ignore
+ */
   KPreloadStatusPreloading = 2,
 }
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export enum MusicContentCenterStatusCode {
-  /* enum__KMusicContentCenterStatusOk */
+  /**
+   * @ignore
+   */
   KMusicContentCenterStatusOk = 0,
-  /* enum__KMusicContentCenterStatusErr */
+  /**
+   * @ignore
+   */
   KMusicContentCenterStatusErr = 1,
 }
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export class MusicChartInfo {
   /**
    * @ignore
@@ -40,14 +50,20 @@ export class MusicChartInfo {
  * @ignore
  */
 export abstract class MusicChartCollection {
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   abstract getCount(): number;
 
-  /**
-   * @ignore
-   */
+/**
+ * Gets the detailed information of the media stream.
+ * Call this method after calling getStreamCount .
+ *
+ * @param index The index of the media stream.
+ *
+ * @returns
+ * If the call succeeds, returns the detailed information of the media stream. See PlayerStreamInfo .If the call fails, returns NULL.
+ */
   abstract get(index: number): MusicChartInfo;
 }
 
@@ -55,13 +71,13 @@ export abstract class MusicChartCollection {
  * @ignore
  */
 export class MvProperty {
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   resolution?: string;
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   bandwidth?: string;
 }
 
@@ -69,13 +85,13 @@ export class MvProperty {
  * The climax parts of the music.
  */
 export class ClimaxSegment {
-  /**
-   * The time (ms) when the climax part begins.
-   */
+/**
+ * The time (ms) when the climax part begins.
+ */
   startTimeMs?: number;
-  /**
-   * The time (ms) when the climax part ends.
-   */
+/**
+ * The time (ms) when the climax part ends.
+ */
   endTimeMs?: number;
 }
 
@@ -83,53 +99,53 @@ export class ClimaxSegment {
  * @ignore
  */
 export class Music {
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   songCode?: number;
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   name?: string;
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   singer?: string;
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   poster?: string;
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   releaseTime?: string;
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   durationS?: number;
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   type?: number;
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   pitchType?: number;
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   lyricCount?: number;
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   lyricList?: number[];
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   climaxSegmentCount?: number;
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   climaxSegmentList?: ClimaxSegment[];
   /**
    * @ignore
@@ -145,14 +161,14 @@ export class Music {
  * @ignore
  */
 export abstract class MusicCollection {
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   abstract getCount(): number;
 
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   abstract getTotal(): number;
 
   /**
@@ -160,14 +176,14 @@ export abstract class MusicCollection {
    */
   abstract getPage(): number;
 
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   abstract getPageSize(): number;
 
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   abstract getMusic(index: number): Music;
 }
 
@@ -175,32 +191,32 @@ export abstract class MusicCollection {
  * @ignore
  */
 export interface IMusicContentCenterEventHandler {
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   onMusicChartsResult?(
     requestId: string,
     status: MusicContentCenterStatusCode,
     result: MusicChartInfo[]
   ): void;
 
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   onMusicCollectionResult?(
     requestId: string,
     status: MusicContentCenterStatusCode,
     result: MusicCollection
   ): void;
 
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   onLyricResult?(requestId: string, lyricUrl: string): void;
 
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   onPreLoadEvent?(
     songCode: number,
     percent: number,
@@ -214,17 +230,17 @@ export interface IMusicContentCenterEventHandler {
  * @ignore
  */
 export class MusicContentCenterConfiguration {
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   appId?: string;
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   token?: string;
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   mccUid?: number;
 }
 
@@ -232,9 +248,9 @@ export class MusicContentCenterConfiguration {
  * @ignore
  */
 export abstract class IMusicPlayer extends IMediaPlayer {
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   abstract openWithSongCode(songCode: number, startPos?: number): number;
 }
 
@@ -242,46 +258,46 @@ export abstract class IMusicPlayer extends IMediaPlayer {
  * @ignore
  */
 export abstract class IMusicContentCenter {
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   abstract initialize(configuration: MusicContentCenterConfiguration): number;
 
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   abstract renewToken(token: string): number;
 
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   abstract release(): void;
 
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   abstract registerEventHandler(
     eventHandler: IMusicContentCenterEventHandler
   ): number;
 
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   abstract unregisterEventHandler(): number;
 
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   abstract createMusicPlayer(): IMusicPlayer;
 
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   abstract getMusicCharts(): string;
 
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   abstract getMusicCollectionByMusicChartId(
     musicChartId: number,
     page: number,
@@ -289,9 +305,9 @@ export abstract class IMusicContentCenter {
     jsonOption?: string
   ): string;
 
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   abstract searchMusic(
     requestId: string,
     keyWord: string,
@@ -300,18 +316,18 @@ export abstract class IMusicContentCenter {
     jsonOption?: string
   ): number;
 
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   abstract preload(songCode: number, jsonOption?: string): number;
 
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   abstract isPreloaded(songCode: number): number;
 
-  /**
-   * @ignore
-   */
+/**
+ * @ignore
+ */
   abstract getLyric(songCode: number, lyricType?: number): string;
 }

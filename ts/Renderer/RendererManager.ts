@@ -26,9 +26,9 @@ import GlRenderer from './GlRenderer';
 import { IRenderer, RenderFailCallback } from './IRenderer';
 import { YUVCanvasRenderer } from './YUVCanvasRenderer';
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export class RendererManager {
   /**
    * @ignore
@@ -74,11 +74,15 @@ export class RendererManager {
     };
   }
 
-  /**
-   * Registers an audio frame observer object.
-   *
-   * @param mode The use mode of the audio frame. See RawAudioFrameOpModeType .
-   */
+/**
+ * Sets dual-stream mode on the sender side.
+ * The SDK enables the low-quality video stream auto mode on the sender by default, which is equivalent to calling this method and setting the mode to AutoSimulcastStream. If you want to modify this behavior, you can call this method and modify the mode to DisableSimulcastStream(never send low-quality video streams) or EnableSimulcastStream (always send low-quality video streams).The difference and connection between this method and enableDualStreamMode [1/3] is as follows:When calling this method and setting mode to DisableSimulcastStream, it has the same effect as enableDualStreamMode [1/3](false).When calling this method and setting mode to EnableSimulcastStream, it has the same effect as enableDualStreamMode [1/3](true).Both methods can be called before and after joining a channel. If they are used at the same time, the settings in the method called later shall prevail.
+ *
+ * @param mode The mode in which the video stream is sent. See SimulcastStreamMode .
+ *
+ * @returns
+ * 0: Success.< 0: Failure.
+ */
   setRenderMode(mode: RENDER_MODE) {
     this.renderMode = mode;
     logInfo(
@@ -86,9 +90,6 @@ export class RendererManager {
     );
   }
 
-  /**
-   * @ignore
-   */
   public setFPS(fps: number) {
     this.renderFps = fps;
     this.restartRender();
@@ -100,6 +101,9 @@ export class RendererManager {
     mirror: boolean = false
   ): void {
     if (!view) {
+  /**
+   * @ignore
+   */
       logError('setRenderOption: view not exist', view);
     }
     this.forEachStream(({ renders }) => {
@@ -118,6 +122,9 @@ export class RendererManager {
       rendererOptions,
       videoSourceType,
     }: FormatRendererVideoConfig =
+  /**
+   * @ignore
+   */
       getDefaultRendererVideoConfig(rendererConfig);
 
     const renderList = this.getRenderers({ uid, channelId, videoSourceType });

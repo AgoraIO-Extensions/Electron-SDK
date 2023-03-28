@@ -5,27 +5,27 @@ import {
   RendererVideoConfig,
 } from './Types';
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export const TAG = '[Agora]: ';
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export const DEBUG_TAG = '[Agora Debug]: ';
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export const deprecate = (originApi?: string, replaceApi?: string) =>
   logError(
     `${TAG} This method ${originApi} will be deprecated soon. `,
     replaceApi ? `Please use ${replaceApi} instead` : ''
   );
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export const logWarn = (msg: string, ...optParams: any[]) => {
   if (!AgoraEnv.enableLogging) {
     return;
@@ -33,9 +33,9 @@ export const logWarn = (msg: string, ...optParams: any[]) => {
   console.warn(`${TAG} ${msg}`, ...optParams);
 };
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export const logError = (msg: string, ...optParams: any[]) => {
   if (!AgoraEnv.enableLogging) {
     return;
@@ -43,9 +43,9 @@ export const logError = (msg: string, ...optParams: any[]) => {
   console.error(`${TAG} ${msg}`, ...optParams);
 };
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export const logInfo = (msg: string, ...optParams: any[]) => {
   if (!AgoraEnv.enableLogging) {
     return;
@@ -53,9 +53,9 @@ export const logInfo = (msg: string, ...optParams: any[]) => {
   console.log(`${TAG} ${msg}`, ...optParams);
 };
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export const logDebug = (msg: string, ...optParams: any[]) => {
   if (!AgoraEnv.enableLogging || !AgoraEnv.enableDebugLogging) {
     return;
@@ -63,9 +63,9 @@ export const logDebug = (msg: string, ...optParams: any[]) => {
   console.warn(`${DEBUG_TAG} ${msg}`, ...optParams);
 };
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export const parseJSON = (jsonString: string) => {
   if (jsonString === '') {
     return jsonString;
@@ -79,9 +79,9 @@ export const parseJSON = (jsonString: string) => {
   return obj || jsonString;
 };
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export const objsKeysToLowerCase = (array: Array<any>) => {
   array.forEach((obj) => {
     for (const key in obj) {
@@ -93,9 +93,9 @@ export const objsKeysToLowerCase = (array: Array<any>) => {
   });
 };
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export const formatConfigByVideoSourceType = (
   videoSourceType?: VideoSourceType,
   originChannelId = '',
@@ -137,9 +137,9 @@ export const formatConfigByVideoSourceType = (
   return { uid, channelId, videoSourceType };
 };
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export const getDefaultRendererVideoConfig = (
   config: RendererVideoConfig
 ): FormatRendererVideoConfig => {
@@ -158,9 +158,9 @@ export const getDefaultRendererVideoConfig = (
   return { ...config, uid, channelId, videoSourceType, rendererOptions };
 };
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export function classMix(...mixins: any[]): any {
   class MixClass {
     constructor() {
@@ -189,9 +189,9 @@ function copyProperties<T>(target: T, source: any) {
 
 const agora = require('../build/Release/agora_node_ext');
 
-/**
- * @ignore
- */
+  /**
+   * @ignore
+   */
 export const AgoraEnv: AgoraEnvType = {
   enableLogging: true,
   enableDebugLogging: false,
