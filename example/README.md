@@ -53,6 +53,17 @@ cd example && yarn link "agora-electron-sdk"
 | [ScreenShare](./src/renderer/examples/advanced/ScreenShare/ScreenShare.tsx) | sharing application screen view | getScreenCaptureSources, startPrimaryScreenCapture, startSecondaryScreenCapture, joinChannelEx |
 | ...                                                                                                                                                                    | ...                             | ...                                                                                            |
 
+- **hooks demos:**
+
+| Demo                                                                         | Description                                        | APIs                                                                                                                                               |
+| ---------------------------------------------------------------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [JoinChannelAudio](src/renderer/examples/hooks/JoinChannelAudio/JoinChannelAudio.tsx) | basic demo to show audio call                      | getAudioDeviceManager, setAudioProfile,setRecordingDevice, adjustRecordingSignalVolume, adjustAudioMixingPlayoutVolume, adjustPlaybackSignalVolume |
+| [JoinChannelVideo](src/renderer/examples/hooks/JoinChannelVideo/JoinChannelVideo.tsx) | video demo with role selection in Editor Inspector | enableVideo, getVideoDeviceManager,setChannelProfile, joinChannelEx, setAudioProfile, setVideoEncoderConfiguration                                 |
+| [StringUid](src/renderer/examples/hooks/StringUid/StringUid.tsx)               | basic demo with string uid                         | joinChannelWithUserAccount                                                                                                                         |
+| [JoinMultipleChannel](src/renderer/examples/hooks/JoinMultipleChannel/JoinMultipleChannel.tsx)               | Joins a channel with the connection ID                         | joinChannelEx, updateChannelMediaOptionsEx                                                                                                                         |
+| [DeviceManager](src/renderer/examples/hooks/DeviceManager/DeviceManager.tsx)               | Management tool that can switch microphone and camera                         | getVideoDeviceManager, getAudioDeviceManager                                                                                                                         |
+| [VirtualBackground](src/renderer/examples/hooks/VirtualBackground/VirtualBackground.tsx)               | Enables/Disables the virtual background (beta feature)                         | enableExtension, enableVirtualBackground                                                                                                                          |
+
 ## 👏 Feedback
 
 If you have any problems or suggestions regarding the sample projects, feel free to file an issue.
