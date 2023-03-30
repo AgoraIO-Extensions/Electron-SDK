@@ -79,7 +79,7 @@ export class RendererManager {
    *
    * @param mode The use mode of the audio frame. See RawAudioFrameOpModeType .
    */
-  setRenderMode(mode: RENDER_MODE) {
+  public setRenderMode(mode: RENDER_MODE) {
     this.renderMode = mode;
     logInfo(
       'setRenderMode:  new render mode will take effect only if new view bind to render'
@@ -270,7 +270,7 @@ export class RendererManager {
     renderMap.clear();
   }
 
-  clear(): void {
+  public clear(): void {
     this.stopRender();
     this.removeAllRenderer();
   }
