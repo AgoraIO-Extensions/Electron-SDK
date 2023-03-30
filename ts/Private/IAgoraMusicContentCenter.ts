@@ -4,11 +4,17 @@ import { IMediaPlayer } from './IAgoraMediaPlayer';
  * @ignore
  */
 export enum PreloadStatusCode {
-  /* enum__KPreloadStatusCompleted */
+  /**
+   * @ignore
+   */
   KPreloadStatusCompleted = 0,
-  /* enum__KPreloadStatusFailed */
+  /**
+   * @ignore
+   */
   KPreloadStatusFailed = 1,
-  /* enum__KPreloadStatusPreloading */
+  /**
+   * @ignore
+   */
   KPreloadStatusPreloading = 2,
 }
 
@@ -16,9 +22,13 @@ export enum PreloadStatusCode {
  * @ignore
  */
 export enum MusicContentCenterStatusCode {
-  /* enum__KMusicContentCenterStatusOk */
+  /**
+   * @ignore
+   */
   KMusicContentCenterStatusOk = 0,
-  /* enum__KMusicContentCenterStatusErr */
+  /**
+   * @ignore
+   */
   KMusicContentCenterStatusErr = 1,
 }
 
@@ -46,7 +56,13 @@ export abstract class MusicChartCollection {
   abstract getCount(): number;
 
   /**
-   * @ignore
+   * Gets the detailed information of the media stream.
+   * Call this method after calling getStreamCount .
+   *
+   * @param index The index of the media stream.
+   *
+   * @returns
+   * If the call succeeds, returns the detailed information of the media stream. See PlayerStreamInfo .If the call fails, returns NULL.
    */
   abstract get(index: number): MusicChartInfo;
 }
