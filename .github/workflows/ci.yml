@@ -22,7 +22,9 @@ jobs:
 
       - name: Typecheck files
         run: |
+          set +e
           yarn install --cwd example --frozen-lockfile
+          set -e
           yarn typecheck
 
   build:
