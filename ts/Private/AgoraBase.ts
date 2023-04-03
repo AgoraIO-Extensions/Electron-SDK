@@ -2992,7 +2992,7 @@ export enum ConnectionChangedReasonType {
   /**
    * @ignore
    */
-  ConnectionChangedLicenseVerifyFailed = 21,
+  ConnectionChangedLicenseValidationFailure = 21,
 }
 
 /**
@@ -4414,6 +4414,54 @@ export class ScreenCaptureParameters2 {
    * @ignore
    */
   videoParams?: ScreenVideoParameters;
+}
+
+/**
+ * @ignore
+ */
+export enum MediaTraceEvent {
+  /**
+   * @ignore
+   */
+  MediaTraceEventVideoRendered = 0,
+  /**
+   * @ignore
+   */
+  MediaTraceEventVideoDecoded = 1,
+}
+
+/**
+ * @ignore
+ */
+export class VideoRenderingTracingInfo {
+  /**
+   * @ignore
+   */
+  elapsedTime?: number;
+  /**
+   * @ignore
+   */
+  start2JoinChannel?: number;
+  /**
+   * @ignore
+   */
+  join2JoinSuccess?: number;
+  /**
+   * @ignore
+   */
+  joinSuccess2RemoteJoined?: number;
+  /**
+   * @ignore
+   */
+  remoteJoined2SetView?: number;
+  /**
+   * @ignore
+   */
+  remoteJoined2UnmuteVideo?: number;
+  /**
+   * @ignore
+   */
+  remoteJoined2PacketReceived?: number;
 }
 
 /**
