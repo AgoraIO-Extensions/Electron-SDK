@@ -23,7 +23,7 @@
     "build_linux_debug": "cmake-js rebuild --arch=x64 --CDCMAKE_BUILD_TYPE=Debug -G \"Unix Makefiles\"",
     "build_linux_release": "cmake-js rebuild --arch=x64 --CDCMAKE_BUILD_TYPE=Release -G \"Unix Makefiles\"",
     "test": "jest",
-    "typescript": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "install": "cross-env-shell gulp NPM_Install \\\"--INIT_CWD=$INIT_CWD\\\"",
     "release": "release-it",
@@ -138,7 +138,7 @@
         }
       ],
       "no-unused-vars": "warn",
-      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
       "auto-import/auto-import": [
         "error",
         {
