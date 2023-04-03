@@ -247,7 +247,7 @@ export function processIRtcEngineEventHandler(
     case 'onFirstLocalVideoFrame':
       if (handler.onFirstLocalVideoFrame !== undefined) {
         handler.onFirstLocalVideoFrame(
-          jsonParams.connection,
+          jsonParams.source,
           jsonParams.width,
           jsonParams.height,
           jsonParams.elapsed
@@ -998,6 +998,7 @@ export class IVideoDeviceManagerImpl implements IVideoDeviceManager {
       toJSON: () => {
         return {
           deviceIdUTF8: deviceIdUTF8,
+          deviceCapabilityNumber: deviceCapabilityNumber,
         };
       },
     };
@@ -1093,7 +1094,7 @@ export function processIDirectCdnStreamingEventHandler(
 
 // @ts-ignore
 export class IRtcEngineImpl implements IRtcEngine {
-  release(sync = false): void {
+  release(sync: boolean = false): void {
     const apiType = this.getApiTypeFromRelease(sync);
     const jsonParams = {
       sync: sync,
@@ -1106,7 +1107,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     callIrisApi.call(this, apiType, jsonParams);
   }
 
-  protected getApiTypeFromRelease(sync = false): string {
+  protected getApiTypeFromRelease(sync: boolean = false): string {
     return 'RtcEngine_release';
   }
 
@@ -1295,7 +1296,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_setClientRole';
   }
 
-  startEchoTest(intervalInSeconds = 10): number {
+  startEchoTest(intervalInSeconds: number = 10): number {
     const apiType = this.getApiTypeFromStartEchoTest(intervalInSeconds);
     const jsonParams = {
       intervalInSeconds: intervalInSeconds,
@@ -1309,7 +1310,9 @@ export class IRtcEngineImpl implements IRtcEngine {
     return jsonResults.result;
   }
 
-  protected getApiTypeFromStartEchoTest(intervalInSeconds = 10): string {
+  protected getApiTypeFromStartEchoTest(
+    intervalInSeconds: number = 10
+  ): string {
     return 'RtcEngine_startEchoTest';
   }
 
@@ -2248,7 +2251,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     filePath: string,
     loopback: boolean,
     cycle: number,
-    startPos = 0
+    startPos: number = 0
   ): number {
     const apiType = this.getApiTypeFromStartAudioMixing(
       filePath,
@@ -2278,7 +2281,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     filePath: string,
     loopback: boolean,
     cycle: number,
-    startPos = 0
+    startPos: number = 0
   ): string {
     return 'RtcEngine_startAudioMixing';
   }
@@ -2532,7 +2535,11 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_setEffectsVolume';
   }
 
-  preloadEffect(soundId: number, filePath: string, startPos = 0): number {
+  preloadEffect(
+    soundId: number,
+    filePath: string,
+    startPos: number = 0
+  ): number {
     const apiType = this.getApiTypeFromPreloadEffect(
       soundId,
       filePath,
@@ -2557,7 +2564,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   protected getApiTypeFromPreloadEffect(
     soundId: number,
     filePath: string,
-    startPos = 0
+    startPos: number = 0
   ): string {
     return 'RtcEngine_preloadEffect';
   }
@@ -2569,8 +2576,8 @@ export class IRtcEngineImpl implements IRtcEngine {
     pitch: number,
     pan: number,
     gain: number,
-    publish = false,
-    startPos = 0
+    publish: boolean = false,
+    startPos: number = 0
   ): number {
     const apiType = this.getApiTypeFromPlayEffect(
       soundId,
@@ -2615,8 +2622,8 @@ export class IRtcEngineImpl implements IRtcEngine {
     pitch: number,
     pan: number,
     gain: number,
-    publish = false,
-    startPos = 0
+    publish: boolean = false,
+    startPos: number = 0
   ): string {
     return 'RtcEngine_playEffect';
   }
@@ -2626,7 +2633,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     pitch: number,
     pan: number,
     gain: number,
-    publish = false
+    publish: boolean = false
   ): number {
     const apiType = this.getApiTypeFromPlayAllEffects(
       loopCount,
@@ -2660,7 +2667,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     pitch: number,
     pan: number,
     gain: number,
-    publish = false
+    publish: boolean = false
   ): string {
     return 'RtcEngine_playAllEffects';
   }
@@ -3778,7 +3785,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_setPlaybackAudioFrameBeforeMixingParameters';
   }
 
-  enableAudioSpectrumMonitor(intervalInMS = 100): number {
+  enableAudioSpectrumMonitor(intervalInMS: number = 100): number {
     const apiType = this.getApiTypeFromEnableAudioSpectrumMonitor(intervalInMS);
     const jsonParams = {
       intervalInMS: intervalInMS,
@@ -3793,7 +3800,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromEnableAudioSpectrumMonitor(
-    intervalInMS = 100
+    intervalInMS: number = 100
   ): string {
     return 'RtcEngine_enableAudioSpectrumMonitor';
   }
@@ -4068,7 +4075,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_setInEarMonitoringVolume';
   }
 
-  loadExtensionProvider(path: string, unloadAfterUse = false): number {
+  loadExtensionProvider(path: string, unloadAfterUse: boolean = false): number {
     const apiType = this.getApiTypeFromLoadExtensionProvider(
       path,
       unloadAfterUse
@@ -4089,7 +4096,7 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromLoadExtensionProvider(
     path: string,
-    unloadAfterUse = false
+    unloadAfterUse: boolean = false
   ): string {
     return 'RtcEngine_loadExtensionProvider';
   }
@@ -4165,7 +4172,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   enableExtension(
     provider: string,
     extension: string,
-    enable = true,
+    enable: boolean = true,
     type: MediaSourceType = MediaSourceType.UnknownMediaSource
   ): number {
     const apiType = this.getApiTypeFromEnableExtension(
@@ -4195,7 +4202,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   protected getApiTypeFromEnableExtension(
     provider: string,
     extension: string,
-    enable = true,
+    enable: boolean = true,
     type: MediaSourceType = MediaSourceType.UnknownMediaSource
   ): string {
     return 'RtcEngine_enableExtension';
@@ -6352,7 +6359,7 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   setAdvancedAudioOptions(
     options: AdvancedAudioOptions,
-    sourceType = 0
+    sourceType: number = 0
   ): number {
     const apiType = this.getApiTypeFromSetAdvancedAudioOptions(
       options,
@@ -6374,7 +6381,7 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromSetAdvancedAudioOptions(
     options: AdvancedAudioOptions,
-    sourceType = 0
+    sourceType: number = 0
   ): string {
     return 'RtcEngine_setAdvancedAudioOptions';
   }
@@ -6525,7 +6532,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   destroyRendererByConfig(
     sourceType: VideoSourceType,
     channelId?: string,
-    uid = 0
+    uid: number = 0
   ): void {
     const apiType = this.getApiTypeFromDestroyRendererByConfig(
       sourceType,
@@ -6550,7 +6557,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   protected getApiTypeFromDestroyRendererByConfig(
     sourceType: VideoSourceType,
     channelId?: string,
-    uid = 0
+    uid: number = 0
   ): string {
     return 'RtcEngine_destroyRendererByConfig';
   }
