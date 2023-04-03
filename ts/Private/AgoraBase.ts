@@ -1,5 +1,5 @@
 import './extension/AgoraBaseExtension';
-import { MediaSourceType, RenderModeType } from './AgoraMediaBase';
+import { VideoSourceType, RenderModeType } from './AgoraMediaBase';
 /**
  * The channel profile.
  */
@@ -546,10 +546,6 @@ export enum InterfaceIdType {
    */
   AgoraIidLocalSpatialAudio = 11,
   /**
-   * The IMediaRecorder interface class.
-   */
-  AgoraIidMediaRecorder = 12,
-  /**
    * @ignore
    */
   AgoraIidStateSync = 13,
@@ -561,6 +557,10 @@ export enum InterfaceIdType {
    * @ignore
    */
   AgoraIidMusicContentCenter = 15,
+  /**
+   * @ignore
+   */
+  AgoraIidH265Transcoder = 16,
 }
 
 /**
@@ -781,6 +781,24 @@ export class VideoDimensions {
    * The height (pixels) of the video.
    */
   height?: number;
+}
+
+/**
+ * @ignore
+ */
+export enum ScreenCaptureCapabilityLevel {
+  /**
+   * @ignore
+   */
+  ScreenCaptureCapabilityLevel15Fps = 0,
+  /**
+   * @ignore
+   */
+  ScreenCaptureCapabilityLevel30Fps = 1,
+  /**
+   * @ignore
+   */
+  ScreenCaptureCapabilityLevel60Fps = 2,
 }
 
 /**
@@ -1135,6 +1153,7 @@ export enum CompressionPreference {
   PreferLowLatency = 0,
   /**
    * 1: (Default) High quality preference. The SDK compresses video frames while maintaining video quality. This preference is suitable for scenarios where video quality is prioritized.
+   *
    */
   PreferQuality = 1,
 }
@@ -1187,6 +1206,46 @@ export enum VideoMirrorModeType {
    * 2: Disable mirror mode.
    */
   VideoMirrorModeDisabled = 2,
+}
+
+/**
+ * @ignore
+ */
+export enum CodecCapMask {
+  /**
+   * @ignore
+   */
+  CodecCapMaskNone = 0,
+  /**
+   * @ignore
+   */
+  CodecCapMaskHwDec = 1 << 0,
+  /**
+   * @ignore
+   */
+  CodecCapMaskHwEnc = 1 << 1,
+  /**
+   * @ignore
+   */
+  CodecCapMaskSwDec = 1 << 2,
+  /**
+   * @ignore
+   */
+  CodecCapMaskSwEnc = 1 << 3,
+}
+
+/**
+ * @ignore
+ */
+export class CodecCapInfo {
+  /**
+   * @ignore
+   */
+  codec_type?: VideoCodecType;
+  /**
+   * @ignore
+   */
+  codec_cap_mask?: number;
 }
 
 /**
@@ -1488,68 +1547,6 @@ export class RtcStats {
 }
 
 /**
- * The capture type of the custom video source.
- */
-export enum VideoSourceType {
-  /**
-   * @ignore
-   */
-  VideoSourceCameraPrimary = 0,
-  /**
-   * The camera.
-   */
-  VideoSourceCamera = 0,
-  /**
-   * The secondary camera.
-   */
-  VideoSourceCameraSecondary = 1,
-  /**
-   * The primary screen.
-   */
-  VideoSourceScreenPrimary = 2,
-  /**
-   * The screen.
-   */
-  VideoSourceScreen = 2,
-  /**
-   * The secondary screen.
-   */
-  VideoSourceScreenSecondary = 3,
-  /**
-   * The custom video source.
-   */
-  VideoSourceCustom = 4,
-  /**
-   * The video source from the media player.
-   */
-  VideoSourceMediaPlayer = 5,
-  /**
-   * The video source is a PNG image.
-   */
-  VideoSourceRtcImagePng = 6,
-  /**
-   * The video source is a JPEG image.
-   */
-  VideoSourceRtcImageJpeg = 7,
-  /**
-   * The video source is a GIF image.
-   */
-  VideoSourceRtcImageGif = 8,
-  /**
-   * The video source is remote video acquired by the network.
-   */
-  VideoSourceRemote = 9,
-  /**
-   * A transcoded video source.
-   */
-  VideoSourceTranscoded = 10,
-  /**
-   * An unknown video source.
-   */
-  VideoSourceUnknown = 100,
-}
-
-/**
  * The user role in the interactive live streaming.
  */
 export enum ClientRoleType {
@@ -1646,69 +1643,21 @@ export enum ExperiencePoorReason {
 }
 
 /**
- * Audio statistics of the remote user.
+ * @ignore
  */
-export class RemoteAudioStats {
+export enum AudioAinsMode {
   /**
-   * The user ID of the remote user.
+   * @ignore
    */
-  uid?: number;
+  AinsModeBalanced = 0,
   /**
-   * The quality of the audio stream sent by the user. See QualityType .
+   * @ignore
    */
-  quality?: number;
+  AinsModeAggressive = 1,
   /**
-   * The network delay (ms) from the sender to the receiver.
+   * @ignore
    */
-  networkTransportDelay?: number;
-  /**
-   * The network delay (ms) from the audio receiver to the jitter buffer.When the receiving end is an audience member and audienceLatencyLevel of ClientRoleOptions is 1, this parameter does not take effect.
-   */
-  jitterBufferDelay?: number;
-  /**
-   * The frame loss rate (%) of the remote audio stream in the reported interval.
-   */
-  audioLossRate?: number;
-  /**
-   * The number of audio channels.
-   */
-  numChannels?: number;
-  /**
-   * The sampling rate of the received audio stream in the reported interval.
-   */
-  receivedSampleRate?: number;
-  /**
-   * The average bitrate (Kbps) of the received audio stream in the reported interval.
-   */
-  receivedBitrate?: number;
-  /**
-   * The total freeze time (ms) of the remote audio stream after the remote user joins the channel. In a session, audio freeze occurs when the audio frame loss rate reaches 4%.
-   */
-  totalFrozenTime?: number;
-  /**
-   * The total audio freeze time as a percentage (%) of the total time when the audio is available. The audio is considered available when the remote user neither stops sending the audio stream nor disables the audio module after joining the channel.
-   */
-  frozenRate?: number;
-  /**
-   * The quality of the remote audio stream in the reported interval. The quality is determined by the Agora real-time audio MOS (Mean Opinion Score) measurement method. The return value range is [0, 500]. Dividing the return value by 100 gets the MOS score, which ranges from 0 to 5. The higher the score, the better the audio quality.The subjective perception of audio quality corresponding to the Agora real-time audio MOS scores is as follows:MOS scorePerception of audio qualityGreater than 4Excellent. The audio sounds clear and smooth.From 3.5 to 4Good. The audio has some perceptible impairment but still sounds clear.From 3 to 3.5Fair. The audio freezes occasionally and requires attentive listening.From 2.5 to 3Poor. The audio sounds choppy and requires considerable effort to understand.From 2 to 2.5Bad. The audio has occasional noise. Consecutive audio dropouts occur, resulting in some information loss. The users can communicate only with difficulty.Less than 2Very bad. The audio has persistent noise. Consecutive audio dropouts are frequent, resulting in severe information loss. Communication is nearly impossible.
-   */
-  mosValue?: number;
-  /**
-   * The total active time (ms) between the start of the audio call and the callback of the remote user.The active time refers to the total duration of the remote user without the mute state.
-   */
-  totalActiveTime?: number;
-  /**
-   * The total duration (ms) of the remote audio stream.
-   */
-  publishDuration?: number;
-  /**
-   * The Quality of Experience (QoE) of the local user when receiving a remote audio stream. See ExperienceQualityType .
-   */
-  qoeQuality?: number;
-  /**
-   * Reasons why the QoE of the local user when receiving a remote audio stream is poor. See ExperiencePoorReason .
-   */
-  qualityChangedReason?: number;
+  AinsModeUltralowlatency = 2,
 }
 
 /**
@@ -1835,6 +1784,20 @@ export enum ScreenScenarioType {
    * 4: Remote control. This scenario prioritizes the video quality of screen sharing and reduces the latency of the shared video for the receiver. If you share the device desktop being remotely controlled, you can set this scenario.
    */
   ScreenScenarioRdc = 4,
+}
+
+/**
+ * @ignore
+ */
+export enum VideoApplicationScenarioType {
+  /**
+   * @ignore
+   */
+  ApplicationScenarioGeneral = 0,
+  /**
+   * @ignore
+   */
+  ApplicationScenarioMeeting = 1,
 }
 
 /**
@@ -1978,9 +1941,9 @@ export enum LocalVideoStreamError {
    */
   LocalVideoStreamErrorCaptureFailure = 4,
   /**
-   * 5: The local video encoding fails.
+   * @ignore
    */
-  LocalVideoStreamErrorEncodeFailure = 5,
+  LocalVideoStreamErrorCodecNotSupport = 5,
   /**
    * @ignore
    */
@@ -2177,6 +2140,10 @@ export enum RemoteVideoStateReason {
    * @ignore
    */
   RemoteVideoStateReasonSdkInBackground = 12,
+  /**
+   * @ignore
+   */
+  RemoteVideoStateReasonCodecNotSupport = 13,
 }
 
 /**
@@ -2505,7 +2472,7 @@ export enum RtmpStreamPublishErrorType {
    */
   RtmpStreamPublishErrorNetDown = 14,
   /**
-   * 15: Your App ID does not have permission to use the CDN live streaming function.
+   * @ignore
    */
   RtmpStreamPublishErrorInvalidAppid = 15,
   /**
@@ -2595,11 +2562,11 @@ export class LiveStreamAdvancedFeature {
  */
 export enum ConnectionStateType {
   /**
-   * 1: The SDK is disconnected from the Agora edge server. The state indicates the SDK is in one of the following phases:Theinitial state before calling the joinChannel [2/2] method.The app calls the leaveChannel method.
+   * 1: The SDK is disconnected from the Agora edge server. The state indicates the SDK is in one of the following phases:Theinitial state before calling the joinChannel method.The app calls the leaveChannel method.
    */
   ConnectionStateDisconnected = 1,
   /**
-   * 2: The SDK is connecting to the Agora edge server. This state indicates that the SDK is establishing a connection with the specified channel after the app calls joinChannel [2/2].If the SDK successfully joins the channel, it triggers the onConnectionStateChanged callback and the connection state switches to ConnectionStateConnected.After the connection is established, the SDK also initializes the media and triggers onJoinChannelSuccess when everything is ready.
+   * 2: The SDK is connecting to the Agora edge server. This state indicates that the SDK is establishing a connection with the specified channel after the app calls joinChannel.If the SDK successfully joins the channel, it triggers the onConnectionStateChanged callback and the connection state switches to ConnectionStateConnected.After the connection is established, the SDK also initializes the media and triggers onJoinChannelSuccess when everything is ready.
    */
   ConnectionStateConnecting = 2,
   /**
@@ -2611,7 +2578,7 @@ export enum ConnectionStateType {
    */
   ConnectionStateReconnecting = 4,
   /**
-   * 5: The SDK fails to connect to the Agora edge server or join the channel. This state indicates that the SDK stops trying to rejoin the channel. You must call leaveChannel to leave the channel.You can call joinChannel [2/2] to rejoin the channel.If the SDK is banned from joining the channel by the Agora edge server through the RESTful API, the SDK triggers the onConnectionStateChanged callback.
+   * 5: The SDK fails to connect to the Agora edge server or join the channel. This state indicates that the SDK stops trying to rejoin the channel. You must call leaveChannel to leave the channel.You can call joinChannel to rejoin the channel.If the SDK is banned from joining the channel by the Agora edge server through the RESTful API, the SDK triggers the onConnectionStateChanged callback.
    */
   ConnectionStateFailed = 5,
 }
@@ -2759,7 +2726,7 @@ export class TranscodingVideoStream {
   /**
    * The source type of video for the video mixing on the local client. See VideoSourceType .
    */
-  sourceType?: MediaSourceType;
+  sourceType?: VideoSourceType;
   /**
    * The ID of the remote user.Use this parameter only when the source type of the video for the video mixing on the local client is VideoSourceRemote.
    */
@@ -2768,6 +2735,10 @@ export class TranscodingVideoStream {
    * The URL of the image.
    */
   imageUrl?: string;
+  /**
+   * @ignore
+   */
+  mediaPlayerId?: number;
   /**
    * The horizontal displacement of the top-left corner of the video for the video mixing on the client relative to the top-left corner (origin) of the canvas for this video mixing.
    */
@@ -2809,7 +2780,7 @@ export class LocalTranscoderConfiguration {
   /**
    * The video streams for the video mixing on the local client. See TranscodingVideoStream .
    */
-  VideoInputStreams?: TranscodingVideoStream[];
+  videoInputStreams?: TranscodingVideoStream[];
   /**
    * The encoding configuration of the mixed video stream after the video mixing on the local client. See VideoEncoderConfiguration .
    */
@@ -2818,6 +2789,40 @@ export class LocalTranscoderConfiguration {
    * @ignore
    */
   syncWithPrimaryCamera?: boolean;
+}
+
+/**
+ * @ignore
+ */
+export enum VideoTranscoderError {
+  /**
+   * @ignore
+   */
+  VtErrOk = 0,
+  /**
+   * @ignore
+   */
+  VtErrVideoSourceNotReady = 1,
+  /**
+   * @ignore
+   */
+  VtErrInvalidVideoSourceType = 2,
+  /**
+   * @ignore
+   */
+  VtErrInvalidImagePath = 3,
+  /**
+   * @ignore
+   */
+  VtErrUnsupportImageFormat = 4,
+  /**
+   * @ignore
+   */
+  VtErrInvalidLayout = 5,
+  /**
+   * @ignore
+   */
+  VtErrInternal = 20,
 }
 
 /**
@@ -2937,7 +2942,7 @@ export enum ConnectionChangedReasonType {
    */
   ConnectionChangedInvalidChannelName = 7,
   /**
-   * 8: The connection failed because the token is not valid. Possible reasons are as follows:The App Certificate for the project is enabled in Agora Console, but you do not use a token when joining the channel. If you enable the App Certificate, you must use a token to join the channel.The uid specified when calling joinChannel [2/2] to join the channel is inconsistent with the uid passed in when generating the token.
+   * 8: The connection failed because the token is not valid. Possible reasons are as follows:The App Certificate for the project is enabled in Agora Console, but you do not use a token when joining the channel. If you enable the App Certificate, you must use a token to join the channel.The uid specified when calling joinChannel to join the channel is inconsistent with the uid passed in when generating the token.
    */
   ConnectionChangedInvalidToken = 8,
   /**
@@ -2945,7 +2950,7 @@ export enum ConnectionChangedReasonType {
    */
   ConnectionChangedTokenExpired = 9,
   /**
-   * 10: The connection is rejected by server. Possible reasons are as follows:The user is already in the channel and still calls a method, for example, joinChannel [2/2], to join the channel. Stop calling this method to clear this error.The user tries to join a channel while a test call is in progress. The user needs to join the channel after the call test ends.
+   * 10: The connection is rejected by server. Possible reasons are as follows:The user is already in the channel and still calls a method, for example, joinChannel, to join the channel. Stop calling this method to clear this error.The user tries to join a channel while a test call is in progress. The user needs to join the channel after the call test ends.
    */
   ConnectionChangedRejectedByServer = 10,
   /**
@@ -3151,13 +3156,17 @@ export class VideoCanvas {
    */
   sourceType?: VideoSourceType;
   /**
-   * The ID of the media player. You can get the media player ID by calling getMediaPlayerId .
+   * The ID of the media player. You can get the Device ID by calling getMediaPlayerId .
    */
   mediaPlayerId?: number;
   /**
    * @ignore
    */
   cropArea?: Rectangle;
+  /**
+   * @ignore
+   */
+  enableAlphaMask?: boolean;
 }
 
 /**
@@ -3311,6 +3320,10 @@ export class ColorEnhanceOptions {
  */
 export enum BackgroundSourceType {
   /**
+   * @ignore
+   */
+  BackgroundNone = 0,
+  /**
    * 1: (Default) The background image is a solid color.
    */
   BackgroundColor = 1,
@@ -3322,6 +3335,10 @@ export enum BackgroundSourceType {
    * The background image is the blurred background.
    */
   BackgroundBlur = 3,
+  /**
+   * @ignore
+   */
+  BackgroundVideo = 4,
 }
 
 /**
@@ -3393,6 +3410,34 @@ export class SegmentationProperty {
 }
 
 /**
+ * @ignore
+ */
+export enum AudioTrackType {
+  /**
+   * @ignore
+   */
+  AudioTrackInvalid = -1,
+  /**
+   * @ignore
+   */
+  AudioTrackMixable = 0,
+  /**
+   * @ignore
+   */
+  AudioTrackDirect = 1,
+}
+
+/**
+ * @ignore
+ */
+export class AudioTrackConfig {
+  /**
+   * @ignore
+   */
+  enableLocalPlayback?: boolean;
+}
+
+/**
  * The options for SDK preset voice beautifier effects.
  */
 export enum VoiceBeautifierPreset {
@@ -3449,7 +3494,7 @@ export enum VoiceBeautifierPreset {
    */
   TimbreTransformationRinging = 0x01030800,
   /**
-   * A ultra-high quality voice, which makes the audio clearer and restores more details.To achieve better audio effect quality, Agora recommends that you set the profile of setAudioProfile [2/2] to AudioProfileMusicHighQuality(4) or AudioProfileMusicHighQualityStereo(5) and scenario to AudioScenarioGameStreaming(3) before calling setVoiceBeautifierPreset .If you have an audio capturing device that can already restore audio details to a high degree, Agora recommends that you do not enable ultra-high quality; otherwise, the SDK may over-restore audio details, and you may not hear the anticipated voice effect.
+   * A ultra-high quality voice, which makes the audio clearer and restores more details.To achieve better audio effect quality, Agora recommends that you set the profile of setAudioProfile to AudioProfileMusicHighQuality(4) or AudioProfileMusicHighQualityStereo(5) and scenario to AudioScenarioGameStreaming(3) before calling setVoiceBeautifierPreset .If you have an audio capturing device that can already restore audio details to a high degree, Agora recommends that you do not enable ultra-high quality; otherwise, the SDK may over-restore audio details, and you may not hear the anticipated voice effect.
    */
   UltraHighQualityVoice = 0x01040100,
 }
@@ -3565,6 +3610,50 @@ export enum VoiceConversionPreset {
    * A deep voice. To avoid audio distortion, ensure that you use this enumerator to process a male-sounding voice.
    */
   VoiceChangerBass = 0x03010400,
+  /**
+   * @ignore
+   */
+  VoiceChangerCartoon = 0x03010500,
+  /**
+   * @ignore
+   */
+  VoiceChangerChildlike = 0x03010600,
+  /**
+   * @ignore
+   */
+  VoiceChangerPhoneOperator = 0x03010700,
+  /**
+   * @ignore
+   */
+  VoiceChangerMonster = 0x03010800,
+  /**
+   * @ignore
+   */
+  VoiceChangerTransformers = 0x03010900,
+  /**
+   * @ignore
+   */
+  VoiceChangerGroot = 0x03010a00,
+  /**
+   * @ignore
+   */
+  VoiceChangerDarthVader = 0x03010b00,
+  /**
+   * @ignore
+   */
+  VoiceChangerIronLady = 0x03010c00,
+  /**
+   * @ignore
+   */
+  VoiceChangerShinChan = 0x03010d00,
+  /**
+   * @ignore
+   */
+  VoiceChangerGirlishMan = 0x03010e00,
+  /**
+   * @ignore
+   */
+  VoiceChangerChipmunk = 0x03010f00,
 }
 
 /**
@@ -3690,17 +3779,15 @@ export enum AudioEncodedFrameObserverPosition {
 }
 
 /**
- * Recording configuration.
+ * Recording configurations.
  */
 export class AudioRecordingConfiguration {
   /**
-   * The absolute path (including the filename extensions) of the recording file. For example: C:\music\audio.mp4.
-   * Ensure that the path for the recording file exists and is writable.
+   * The absolute path (including the filename extensions) of the recording file. For example: C:\music\audio.mp4.Ensure that the directory for the log files exists and is writable.
    */
   filePath?: string;
   /**
-   * Whether to encode the audio data:
-   * true: Encode audio data in AAC.false: (Default) Do not encode audio data, but save the recorded audio data directly.
+   * @ignore
    */
   encode?: boolean;
   /**
@@ -3708,7 +3795,7 @@ export class AudioRecordingConfiguration {
    */
   sampleRate?: number;
   /**
-   * Recording content. See AudioFileRecordingType .
+   * The recording content. See AudioFileRecordingType .
    */
   fileRecordingType?: AudioFileRecordingType;
   /**
@@ -3716,7 +3803,7 @@ export class AudioRecordingConfiguration {
    */
   quality?: AudioRecordingQualityType;
   /**
-   * The audio channel of recording: The parameter supports the following values:1: (Default) Mono.2: Stereo.The actual recorded audio channel is related to the audio channel that you capture.If the captured audio is mono and recordingChannel is 2, the recorded audio is the dual-channel data that is copied from mono data, not stereo.If the captured audio is dual channel and recordingChannel is 1, the recorded audio is the mono data that is mixed by dual-channel data.The integration scheme also affects the final recorded audio channel. Therefore, to record in stereo, technical support for assistance.
+   * The audio channel of recording: The parameter supports the following values:1: (Default) Mono.2: Stereo.The actual recorded audio channel is related to the audio channel that you capture.If the captured audio is mono and recordingChannel is 2, the recorded audio is the dual-channel data that is copied from mono data, not stereo.If the captured audio is dual channel and recordingChannel is 1, the recorded audio is the mono data that is mixed by dual-channel data.The integration scheme also affects the final recorded audio channel. If you need to record in stereo, contact .
    */
   recordingChannel?: number;
 }
@@ -3743,14 +3830,9 @@ export interface IAudioEncodedFrameObserver {
    * Gets the encoded audio data of the local user.
    * After calling registerAudioEncodedFrameObserver and setting the encoded audio as AudioEncodedFrameObserverPositionRecord, you can get the encoded audio data of the local user from this callback.
    *
-   * @param channels The number of channels.
-   *  1: Mono.
-   *  2: Stereo. If the channel uses stereo, the data is interleaved.
-   *
+   * @param channels The number of channels.1: Mono.2: Stereo. If the channel uses stereo, the data is interleaved.
    * @param frameBuffer The audio buffer.
-   *
    * @param length The data length (byte).
-   *
    * @param audioEncodedFrameInfo Audio information after encoding. See EncodedAudioFrameInfo .
    */
   onRecordAudioEncodedFrame?(
@@ -3764,15 +3846,10 @@ export interface IAudioEncodedFrameObserver {
    * After calling registerAudioEncodedFrameObserver and setting the encoded audio as AudioEncodedFrameObserverPositionPlayback, you can get encoded audio data of all remote users through this callback.
    *
    * @param samplesPerSec Recording sample rate (Hz).
-   *
    * @param channels The number of channels.1: Mono.2: Stereo. If the channel uses stereo, the data is interleaved.
-   *
    * @param samplesPerChannel The number of samples per channel in the audio frame.
-   *
    * @param frameBuffer The audio buffer.
-   *
    * @param length The data length (byte).
-   *
    * @param audioEncodedFrameInfo Audio information after encoding. See EncodedAudioFrameInfo .
    */
   onPlaybackAudioEncodedFrame?(
@@ -3786,17 +3863,10 @@ export interface IAudioEncodedFrameObserver {
    * After calling registerAudioEncodedFrameObserver and setting the audio profile as AudioEncodedFrameObserverPositionMixed, you can get the mixed and encoded audio data of the local and all remote users through this callback.
    *
    * @param samplesPerSec Recording sample rate (Hz).
-   *
-   * @param channels The number of channels.
-   *  1: Mono.
-   *  2: Stereo. If the channel uses stereo, the data is interleaved.
-   *
+   * @param channels The number of channels.1: Mono.2: Stereo. If the channel uses stereo, the data is interleaved.
    * @param samplesPerChannel The number of samples per channel in the audio frame.
-   *
    * @param frameBuffer The audio buffer.
-   *
    * @param length The data length (byte).
-   *
    * @param audioEncodedFrameInfo Audio information after encoding. See EncodedAudioFrameInfo .
    */
   onMixedAudioEncodedFrame?(
@@ -3945,11 +4015,11 @@ export enum ChannelMediaRelayEvent {
    */
   RelayEventPacketJoinedSrcChannel = 2,
   /**
-   * 3: The user joins the destination channel.
+   * 3: The user joins the target channel.
    */
   RelayEventPacketJoinedDestChannel = 3,
   /**
-   * 4: The SDK starts relaying the media stream to the destination channel.
+   * 4: The SDK starts relaying the media stream to the target channel.
    */
   RelayEventPacketSentToDestChannel = 4,
   /**
@@ -3961,7 +4031,7 @@ export enum ChannelMediaRelayEvent {
    */
   RelayEventPacketReceivedAudioFromSrc = 6,
   /**
-   * 7: The destination channel is updated.
+   * 7: The target channel is updated.
    */
   RelayEventPacketUpdateDestChannel = 7,
   /**
@@ -3969,11 +4039,11 @@ export enum ChannelMediaRelayEvent {
    */
   RelayEventPacketUpdateDestChannelRefused = 8,
   /**
-   * 9: The destination channel does not change, which means that the destination channel fails to be updated.
+   * 9: The target channel does not change, which means that the target channel fails to be updated.
    */
   RelayEventPacketUpdateDestChannelNotChange = 9,
   /**
-   * 10: The destination channel name is NULL.
+   * 10: The target channel name is NULL.
    */
   RelayEventPacketUpdateDestChannelIsNull = 10,
   /**
@@ -3981,19 +4051,19 @@ export enum ChannelMediaRelayEvent {
    */
   RelayEventVideoProfileUpdate = 11,
   /**
-   * 12: The SDK successfully pauses relaying the media stream to destination channels.
+   * 12: The SDK successfully pauses relaying the media stream to target channels.
    */
   RelayEventPauseSendPacketToDestChannelSuccess = 12,
   /**
-   * 13: The SDK fails to pause relaying the media stream to destination channels.
+   * 13: The SDK fails to pause relaying the media stream to target channels.
    */
   RelayEventPauseSendPacketToDestChannelFailed = 13,
   /**
-   * 14: The SDK successfully resumes relaying the media stream to destination channels.
+   * 14: The SDK successfully resumes relaying the media stream to target channels.
    */
   RelayEventResumeSendPacketToDestChannelSuccess = 14,
   /**
-   * 15: The SDK fails to resume relaying the media stream to destination channels.
+   * 15: The SDK fails to resume relaying the media stream to target channels.
    */
   RelayEventResumeSendPacketToDestChannelFailed = 15,
 }
@@ -4307,6 +4377,10 @@ export class EchoTestConfiguration {
    * The channel name that identifies each audio and video call loop. To ensure proper loop test functionality, the channel name passed in to identify each loop test cannot be the same when users of the same project (App ID) perform audio and video call loop tests on different devices.
    */
   channelId?: string;
+  /**
+   * @ignore
+   */
+  intervalInSeconds?: number;
 }
 
 /**
