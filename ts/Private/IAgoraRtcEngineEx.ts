@@ -762,4 +762,12 @@ export abstract class IRtcEngineEx extends IRtcEngine {
     uid: number,
     filePath: string
   ): number;
+
+  /**
+   * Occurs when the token expires.
+   * When the token expires during a call, the SDK triggers this callback to remind the app to renew the token.Once you receive this callback, generate a new token on your app server, and call joinChannel to rejoin the channel.
+   *
+   * @param connection The connection information. See RtcConnection .
+   */
+  abstract startMediaRenderingTracingEx(connection: RtcConnection): number;
 }

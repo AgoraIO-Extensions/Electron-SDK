@@ -52,6 +52,8 @@ import {
   UploadErrorReason,
   StreamSubscribeState,
   StreamPublishState,
+  MediaTraceEvent,
+  VideoRenderingTracingInfo,
   AudioScenarioType,
   ThreadPriorityType,
   LastmileProbeConfig,
@@ -513,10 +515,6 @@ export class RemoteVideoStats {
    * The total duration (ms) of the remote video stream.
    */
   publishDuration?: number;
-  /**
-   * The state of super resolution:>0: Super resolution is enabled.=0: Super resolution is not enabled.
-   */
-  superResolutionType?: number;
   /**
    * @ignore
    */
@@ -2290,6 +2288,16 @@ export interface IRtcEngineEventHandler {
     remoteUid: number,
     userAccount: string
   ): void;
+
+  /**
+   * @ignore
+   */
+  onVideoRenderingTracingResult?(
+    connection: RtcConnection,
+    uid: number,
+    currentEvent: MediaTraceEvent,
+    tracingInfo: VideoRenderingTracingInfo
+  ): void;
 }
 
 /**
@@ -2942,11 +2950,6 @@ export abstract class IRtcEngine {
     segproperty: SegmentationProperty,
     type?: MediaSourceType
   ): number;
-
-  /**
-   * @ignore
-   */
-  abstract enableRemoteSuperResolution(userId: number, enable: boolean): number;
 
   /**
    * Initializes the video view of a remote user.
@@ -5503,6 +5506,26 @@ export abstract class IRtcEngine {
   abstract getNetworkType(): number;
 
   /**
+   * Provides technical preview functionalities or special customizations by configuring the SDK with JSON options.
+   *
+   * @param parameters Pointer to the set parameters in a JSON string.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
+  abstract setParameters(parameters: string): number;
+
+  /**
+   * @ignore
+   */
+  abstract startMediaRenderingTracing(): number;
+
+  /**
+   * @ignore
+   */
+  abstract enableInstantMediaRendering(): number;
+
+  /**
    * Destroys a video renderer object.
    *
    * @param view The HTMLElement object to be destroyed.
@@ -5615,16 +5638,6 @@ export abstract class IRtcEngine {
   abstract unregisterAudioEncodedFrameObserver(
     observer: IAudioEncodedFrameObserver
   ): number;
-
-  /**
-   * Provides technical preview functionalities or special customizations by configuring the SDK with JSON options.
-   *
-   * @param parameters Pointer to the set parameters in a JSON string.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract setParameters(parameters: string): number;
 
   /**
    * Gets the C++ handle of the native SDK.
