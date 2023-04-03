@@ -1425,24 +1425,4 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
   ): string {
     return 'RtcEngineEx_takeSnapshotEx';
   }
-
-  startMediaRenderingTracingEx(connection: RtcConnection): number {
-    const apiType = this.getApiTypeFromStartMediaRenderingTracingEx(connection);
-    const jsonParams = {
-      connection: connection,
-      toJSON: () => {
-        return {
-          connection: connection,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromStartMediaRenderingTracingEx(
-    connection: RtcConnection
-  ): string {
-    return 'RtcEngineEx_startMediaRenderingTracingEx';
-  }
 }
