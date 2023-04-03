@@ -768,7 +768,13 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * @ignore
+   * Enables interoperability with the Agora Web SDK (applicable only in the live streaming scenarios).
+   * Deprecated:The SDK automatically enables interoperability with the Web SDK, so you no longer need to call this method.You can call this method to enable or disable interoperability with the Agora Web SDK. If a channel has Web SDK users, ensure that you call this method, or the video of the Native user will be a black screen for the Web user.This method is only applicable in live streaming scenarios, and interoperability is enabled by default in communication scenarios.
+   *
+   * @param enabled Whether to enable interoperability:true: Enable interoperability.false: (Default) Disable interoperability.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
    */
   abstract setHighPriorityUserListEx(
     uidList: number[],
