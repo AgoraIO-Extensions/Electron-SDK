@@ -19,14 +19,12 @@ import {
   RtcStats,
   UplinkNetworkInfo,
   DownlinkNetworkInfo,
-  VideoSourceType,
   LocalVideoStreamState,
   LocalVideoStreamError,
   RemoteVideoState,
   RemoteVideoStateReason,
   UserOfflineReasonType,
   LocalAudioStats,
-  RemoteAudioStats,
   LicenseErrorType,
   LocalAudioStreamState,
   LocalAudioStreamError,
@@ -52,10 +50,14 @@ import {
   UploadErrorReason,
   StreamSubscribeState,
   StreamPublishState,
+  TranscodingVideoStream,
+  VideoTranscoderError,
   MediaTraceEvent,
   VideoRenderingTracingInfo,
   AudioScenarioType,
   ThreadPriorityType,
+  CodecCapInfo,
+  EchoTestConfiguration,
   LastmileProbeConfig,
   VideoEncoderConfiguration,
   BeautyOptions,
@@ -65,6 +67,7 @@ import {
   VirtualBackgroundSource,
   SegmentationProperty,
   VideoCanvas,
+  VideoApplicationScenarioType,
   AudioProfileType,
   VideoSubscriptionOptions,
   AudioRecordingConfiguration,
@@ -82,18 +85,20 @@ import {
   AudioSessionOperationRestriction,
   DeviceInfo,
   VideoContentHint,
-  ScreenScenarioType,
   ScreenCaptureParameters2,
+  ScreenScenarioType,
   LiveTranscoding,
   LocalTranscoderConfiguration,
   VideoOrientation,
   EncryptionConfig,
   DataStreamConfig,
   WatermarkOptions,
+  AudioAinsMode,
   ChannelMediaRelayConfiguration,
 } from './AgoraBase';
 import {
   RenderModeType,
+  VideoSourceType,
   ContentInspectResult,
   MediaSourceType,
   RawAudioFrameOpModeType,
@@ -108,10 +113,10 @@ import {
 } from './IAgoraRhythmPlayer';
 import { LogConfig, LogFilterType, LogLevel } from './IAgoraLog';
 import { IMediaPlayer } from './IAgoraMediaPlayer';
+import { IMediaRecorder } from './IAgoraMediaRecorder';
 import { AudioMixingDualMonoMode, IMediaEngine } from './IAgoraMediaEngine';
 import { IAudioDeviceManager } from './IAudioDeviceManager';
 import { IMusicContentCenter } from './IAgoraMusicContentCenter';
-import { IMediaRecorder } from './IAgoraMediaRecorder';
 import { ILocalSpatialAudioEngine } from './IAgoraSpatialAudio';
 /**
  * Media device types.
@@ -141,6 +146,14 @@ export enum MediaDeviceType {
    * @ignore
    */
   AudioApplicationPlayoutDevice = 4,
+  /**
+   * @ignore
+   */
+  AudioVirtualPlayoutDevice = 5,
+  /**
+   * @ignore
+   */
+  AudioVirtualRecordingDevice = 6,
 }
 
 /**
@@ -452,6 +465,84 @@ export class LocalVideoStats {
 }
 
 /**
+ * Audio statistics of the remote user.
+ */
+export class RemoteAudioStats {
+  /**
+   * The user ID of the remote user.
+   */
+  uid?: number;
+  /**
+   * The quality of the audio stream sent by the user. See QualityType .
+   */
+  quality?: number;
+  /**
+   * The network delay (ms) from the sender to the receiver.
+   */
+  networkTransportDelay?: number;
+  /**
+   * The network delay (ms) from the audio receiver to the jitter buffer.When the receiving end is an audience member and audienceLatencyLevel of ClientRoleOptions is 1, this parameter does not take effect.
+   */
+  jitterBufferDelay?: number;
+  /**
+   * The frame loss rate (%) of the remote audio stream in the reported interval.
+   */
+  audioLossRate?: number;
+  /**
+   * The number of audio channels.
+   */
+  numChannels?: number;
+  /**
+   * The sampling rate of the received audio stream in the reported interval.
+   */
+  receivedSampleRate?: number;
+  /**
+   * The average bitrate (Kbps) of the received audio stream in the reported interval.
+   */
+  receivedBitrate?: number;
+  /**
+   * The total freeze time (ms) of the remote audio stream after the remote user joins the channel. In a session, audio freeze occurs when the audio frame loss rate reaches 4%.
+   */
+  totalFrozenTime?: number;
+  /**
+   * The total audio freeze time as a percentage (%) of the total time when the audio is available. The audio is considered available when the remote user neither stops sending the audio stream nor disables the audio module after joining the channel.
+   */
+  frozenRate?: number;
+  /**
+   * The quality of the remote audio stream in the reported interval. The quality is determined by the Agora real-time audio MOS (Mean Opinion Score) measurement method. The return value range is [0, 500]. Dividing the return value by 100 gets the MOS score, which ranges from 0 to 5. The higher the score, the better the audio quality.The subjective perception of audio quality corresponding to the Agora real-time audio MOS scores is as follows:MOS scorePerception of audio qualityGreater than 4Excellent. The audio sounds clear and smooth.From 3.5 to 4Good. The audio has some perceptible impairment but still sounds clear.From 3 to 3.5Fair. The audio freezes occasionally and requires attentive listening.From 2.5 to 3Poor. The audio sounds choppy and requires considerable effort to understand.From 2 to 2.5Bad. The audio has occasional noise. Consecutive audio dropouts occur, resulting in some information loss. The users can communicate only with difficulty.Less than 2Very bad. The audio has persistent noise. Consecutive audio dropouts are frequent, resulting in severe information loss. Communication is nearly impossible.
+   */
+  mosValue?: number;
+  /**
+   * @ignore
+   */
+  frozenRateByCustomPlcCount?: number;
+  /**
+   * @ignore
+   */
+  plcCount?: number;
+  /**
+   * The total active time (ms) between the start of the audio call and the callback of the remote user.The active time refers to the total duration of the remote user without the mute state.
+   */
+  totalActiveTime?: number;
+  /**
+   * The total duration (ms) of the remote audio stream.
+   */
+  publishDuration?: number;
+  /**
+   * The Quality of Experience (QoE) of the local user when receiving a remote audio stream. See ExperienceQualityType .
+   */
+  qoeQuality?: number;
+  /**
+   * Reasons why the QoE of the local user when receiving a remote audio stream is poor. See ExperiencePoorReason .
+   */
+  qualityChangedReason?: number;
+  /**
+   * @ignore
+   */
+  rxAudioBytes?: number;
+}
+
+/**
  * Statistics of the remote video stream.
  */
 export class RemoteVideoStats {
@@ -519,6 +610,10 @@ export class RemoteVideoStats {
    * @ignore
    */
   mosValue?: number;
+  /**
+   * @ignore
+   */
+  rxVideoBytes?: number;
 }
 
 /**
@@ -705,16 +800,6 @@ export class PublisherConfiguration {
 }
 
 /**
- * @ignore
- */
-export class AudioTrackConfig {
-  /**
-   * @ignore
-   */
-  enableLocalPlayback?: boolean;
-}
-
-/**
  * The camera direction.
  */
 export enum CameraDirection {
@@ -898,6 +983,10 @@ export class ScreenCaptureSourceInfo {
    */
   isOccluded?: boolean;
   /**
+   * @ignore
+   */
+  position?: Rectangle;
+  /**
    * (For Windows only) Whether the window is minimized:true: The window is minimized.false: The window is not minimized.
    */
   minimizeWindow?: boolean;
@@ -969,21 +1058,9 @@ export class ChannelMediaOptions {
    */
   publishCustomAudioTrack?: boolean;
   /**
-   * The ID of the custom audio source to publish. The default value is 0.If you have set sourceNumber in setExternalAudioSource to a value greater than 1, the SDK creates the corresponding number of custom audio tracks and assigns an ID to each audio track, starting from 0.
-   */
-  publishCustomAudioSourceId?: number;
-  /**
-   * Whether to enable AEC when publishing the audio captured from a custom source:true: Enable AEC when publishing the audio captured from the custom source.false: (Default) Do not enable AEC when publishing the audio captured from the custom source.
-   */
-  publishCustomAudioTrackEnableAec?: boolean;
-  /**
    * @ignore
    */
-  publishDirectCustomAudioTrack?: boolean;
-  /**
-   * @ignore
-   */
-  publishCustomAudioTrackAec?: boolean;
+  publishCustomAudioTrackId?: number;
   /**
    * Whether to publish the video captured from a custom source:true: Publish the video captured from the custom source.false: (Default) Do not publish the video captured from the custom source.
    */
@@ -1111,6 +1188,14 @@ export enum ProxyType {
    * 4: Automatic mode. In this mode, the SDK attempts a direct connection to SD-RTN™ and automatically switches to TCP/TLS 443 if the attempt fails.
    */
   TcpProxyAutoFallbackType = 4,
+  /**
+   * @ignore
+   */
+  HttpProxyType = 5,
+  /**
+   * @ignore
+   */
+  HttpsProxyType = 6,
 }
 
 /**
@@ -1621,16 +1706,6 @@ export interface IRtcEngineEventHandler {
     remoteUid: number,
     enabled: boolean
   ): void;
-
-  /**
-   * Occurs when a method is executed by the SDK.
-   * Deprecated:Deprecated as of v4.1.0. This method can neither accurately characterize the specific API method nor represent the execution result of the API.Agora recommends getting the results of the API implementation through relevant channels and media callbacks. For example, after calling the enableLocalAudio method to enable the microphone, the status of the microphone is returned in the onLocalAudioStateChanged callback.
-   *
-   * @param err The error code returned by the SDK when the method call fails. If the SDK returns 0, then the method call is successful.
-   * @param api The method executed by the SDK.
-   * @param result The result of the method call.
-   */
-  onApiCallExecuted?(err: ErrorCodeType, api: string, result: string): void;
 
   /**
    * Reports the statistics of the local audio stream.
@@ -2292,6 +2367,14 @@ export interface IRtcEngineEventHandler {
   /**
    * @ignore
    */
+  onLocalVideoTranscoderError?(
+    stream: TranscodingVideoStream,
+    error: VideoTranscoderError
+  ): void;
+
+  /**
+   * @ignore
+   */
   onVideoRenderingTracingResult?(
     connection: RtcConnection,
     uid: number,
@@ -2413,6 +2496,10 @@ export class RtcEngineContext {
    * Whether to enable domain name restriction:true: Enables the domain name restriction. This value is suitable for scenarios where IoT devices use IoT cards for network access. The SDK will only connect to servers in the domain name or IP whitelist that has been reported to the operator.false: (Default) Disables the domain name restriction. This value is suitable for most common scenarios.
    */
   domainLimit?: boolean;
+  /**
+   * @ignore
+   */
+  autoRegisterAgoraExtensions?: boolean;
 }
 
 /**
@@ -2681,6 +2768,11 @@ export abstract class IRtcEngine {
   abstract getErrorDescription(code: number): string;
 
   /**
+   * @ignore
+   */
+  abstract queryCodecCapability(): { codecInfo: CodecCapInfo[]; size: number };
+
+  /**
    * Joins a channel with media options.
    * This method enables users to join a channel. Users in the same channel can talk to each other, and multiple users in the same channel can start a group chat. Users with different App IDs cannot call each other.A successful call of this method triggers the following callbacks:The local client: The onJoinChannelSuccess and onConnectionStateChanged callbacks.The remote client: onUserJoined , if the user joining the channel is in the Communication profile or is a host in the Live-broadcasting profile.When the connection between the client and Agora's server is interrupted due to poor network conditions, the SDK tries reconnecting to the server. When the local client successfully rejoins the channel, the SDK triggers the onRejoinChannelSuccess callback on the local client.This method allows users to join only one channel at a time.Ensure that the app ID you use to generate the token is the same app ID that you pass in the initialize method; otherwise, you may fail to join the channel by token.
    *
@@ -2758,15 +2850,15 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
-   * Starts an audio call test.
-   * This method starts an audio call test to determine whether the audio devices (for example, headset and speaker) and the network connection are working properly. To conduct the test, let the user speak for a while, and the recording is played back within the set interval. If the user can hear the recording within the interval, the audio devices and network connection are working properly.Call this method before joining a channel.After calling startEchoTest, you must call stopEchoTest to end the test. Otherwise, the app cannot perform the next echo test, and you cannot join the channel.In the live streaming channels, only a host can call this method.
+   * Starts an audio and video call loop test.
+   * Before joining a channel, to test whether the user's local sending and receiving streams are normal, you can call this method to perform an audio and video call loop test, which tests whether the audio and video devices and the user's upstream and downstream networks are working properly.After starting the test, the user needs to make a sound or face the camera. The audio or video is output after about two seconds. If the audio playback is normal, the audio device and the user's upstream and downstream networks are working properly; if the video playback is normal, the video device and the user's upstream and downstream networks are working properly.Call this method before joining a channel.After calling this method, call stopEchoTest to end the test; otherwise, the user cannot perform the next audio and video call loop test and cannot join the channel.In live streaming scenarios, this method only applies to hosts.
    *
-   * @param intervalInSeconds The time interval (s) between when you speak and when the recording plays back. The value range is [2, 10], and the default value is 10.
+   * @param config The configuration of the audio and video call loop test. See EchoTestConfiguration .
    *
    * @returns
    * 0: Success.< 0: Failure.
    */
-  abstract startEchoTest(intervalInSeconds?: number): number;
+  abstract startEchoTest(config: EchoTestConfiguration): number;
 
   /**
    * Stops the audio call test.
@@ -2972,6 +3064,11 @@ export abstract class IRtcEngine {
    * 0: Success.< 0: Failure.
    */
   abstract setupLocalVideo(canvas: VideoCanvas): number;
+
+  /**
+   * @ignore
+   */
+  abstract setVideoScenario(scenarioType: VideoApplicationScenarioType): number;
 
   /**
    * Enables the audio module.
@@ -3300,6 +3397,27 @@ export abstract class IRtcEngine {
    * ≥ 0: Success. Returns the ID of media player instance.< 0: Failure.
    */
   abstract destroyMediaPlayer(mediaPlayer: IMediaPlayer): number;
+
+  /**
+   * Occurs when the token expires.
+   * When the token expires during a call, the SDK triggers this callback to remind the app to renew the token.Once you receive this callback, generate a new token on your app server, and call joinChannel to rejoin the channel.
+   *
+   * @param connection The connection information. See RtcConnection .
+   */
+  abstract createLocalMediaRecorder(connection: RtcConnection): IMediaRecorder;
+
+  /**
+   * @ignore
+   */
+  abstract createRemoteMediaRecorder(
+    channelId: string,
+    uid: number
+  ): IMediaRecorder;
+
+  /**
+   * @ignore
+   */
+  abstract destroyMediaRecorder(mediaRecorder: IMediaRecorder): number;
 
   /**
    * Starts playing the music file.
@@ -3837,6 +3955,11 @@ export abstract class IRtcEngine {
   abstract setLocalVoicePitch(pitch: number): number;
 
   /**
+   * @ignore
+   */
+  abstract setLocalVoiceFormant(formantRatio: number): number;
+
+  /**
    * Sets the local voice equalization effect.
    * You can call this method either before or after joining a channel.
    *
@@ -4000,50 +4123,10 @@ export abstract class IRtcEngine {
   /**
    * @ignore
    */
-  abstract enableEchoCancellationExternal(
-    enabled: boolean,
-    audioSourceDelay: number
-  ): number;
-
-  /**
-   * @ignore
-   */
   abstract enableCustomAudioLocalPlayback(
-    sourceId: number,
+    trackId: number,
     enabled: boolean
   ): number;
-
-  /**
-   * Sets the video encoder configuration.
-   * Sets the encoder configuration for the local video.You can call this method either before or after joining a channel. If the user does not need to reset the video encoding properties after joining the channel, Agora recommends calling this method before enableVideo to reduce the time to render the first video frame.
-   *
-   * @param config Video profile. See VideoEncoderConfiguration .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract startPrimaryCustomAudioTrack(config: AudioTrackConfig): number;
-
-  /**
-   * @ignore
-   */
-  abstract stopPrimaryCustomAudioTrack(): number;
-
-  /**
-   * Sets the video encoder configuration.
-   * Sets the encoder configuration for the local video.You can call this method either before or after joining a channel. If the user does not need to reset the video encoding properties after joining the channel, Agora recommends calling this method before enableVideo to reduce the time to render the first video frame.
-   *
-   * @param config Video profile. See VideoEncoderConfiguration .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract startSecondaryCustomAudioTrack(config: AudioTrackConfig): number;
-
-  /**
-   * @ignore
-   */
-  abstract stopSecondaryCustomAudioTrack(): number;
 
   /**
    * Sets the format of the captured raw audio data.
@@ -4234,6 +4317,15 @@ export abstract class IRtcEngine {
    * @ignore
    */
   abstract setRemoteSubscribeFallbackOption(
+    option: StreamFallbackOptions
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract setHighPriorityUserList(
+    uidList: number[],
+    uidNum: number,
     option: StreamFallbackOptions
   ): number;
 
@@ -4666,17 +4758,6 @@ export abstract class IRtcEngine {
   abstract setScreenCaptureContentHint(contentHint: VideoContentHint): number;
 
   /**
-   * Sets the screen sharing scenario.
-   * When you start screen sharing or window sharing, you can call this method to set the screen sharing scenario. The SDK adjusts the video quality and experience of the sharing according to the scenario.This method applies to macOS and Windows only.
-   *
-   * @param screenScenario The screen sharing scenario. See ScreenScenarioType .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract setScreenCaptureScenario(screenScenario: ScreenScenarioType): number;
-
-  /**
    * Updates the screen sharing region.
    * Call this method after starting screen sharing or window sharing.
    *
@@ -4712,6 +4793,14 @@ export abstract class IRtcEngine {
   abstract startScreenCapture(captureParams: ScreenCaptureParameters2): number;
 
   /**
+   * @ignore
+   */
+  abstract startScreenCaptureDesktop(
+    type: VideoSourceType,
+    config: ScreenCaptureConfiguration
+  ): number;
+
+  /**
    * Updates the screen sharing parameters.
    * This method is for Windows and macOS only.Call this method after starting screen sharing or window sharing.
    *
@@ -4723,12 +4812,28 @@ export abstract class IRtcEngine {
   abstract updateScreenCapture(captureParams: ScreenCaptureParameters2): number;
 
   /**
+   * @ignore
+   */
+  abstract queryScreenCaptureCapability(): number;
+
+  /**
+   * Sets the screen sharing scenario.
+   * When you start screen sharing or window sharing, you can call this method to set the screen sharing scenario. The SDK adjusts the video quality and experience of the sharing according to the scenario.This method applies to macOS and Windows only.
+   *
+   * @param screenScenario The screen sharing scenario. See ScreenScenarioType .
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
+  abstract setScreenCaptureScenario(screenScenario: ScreenScenarioType): number;
+
+  /**
    * Stops screen sharing.
    *
    * @returns
    * 0: Success.< 0: Failure.
    */
-  abstract stopScreenCapture(): number;
+  abstract stopScreenCapture(type?: VideoSourceType): number;
 
   /**
    * Retrieves the call ID.
@@ -4845,47 +4950,17 @@ export abstract class IRtcEngine {
   abstract stopLocalVideoTranscoder(): number;
 
   /**
-   * Starts video capture with a primary camera.
-   *
-   * @param config The configuration of the video capture. See CameraCapturerConfiguration .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
+   * @ignore
    */
-  abstract startPrimaryCameraCapture(
+  abstract startCameraCapture(
+    type: VideoSourceType,
     config: CameraCapturerConfiguration
   ): number;
 
   /**
-   * Sets the video encoder configuration.
-   * Sets the encoder configuration for the local video.You can call this method either before or after joining a channel. If the user does not need to reset the video encoding properties after joining the channel, Agora recommends calling this method before enableVideo to reduce the time to render the first video frame.
-   *
-   * @param config Video profile. See VideoEncoderConfiguration .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
+   * @ignore
    */
-  abstract startSecondaryCameraCapture(
-    config: CameraCapturerConfiguration
-  ): number;
-
-  /**
-   *  Stops capturing video through the first camera.
-   * You can call this method to stop capturing video through the first camera after calling startPrimaryCameraCapture .If you are using the local video mixing function, calling this method can cause the local video mixing to be interrupted.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract stopPrimaryCameraCapture(): number;
-
-  /**
-   *  Stops capturing video through the second camera.
-   * startSecondaryCameraCapture You can call this method to stop capturing video through the second camera after calling the .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract stopSecondaryCameraCapture(): number;
+  abstract stopCameraCapture(type: VideoSourceType): number;
 
   /**
    * Sets the rotation angle of the captured video.
@@ -4916,42 +4991,6 @@ export abstract class IRtcEngine {
     type: VideoSourceType,
     orientation: VideoOrientation
   ): number;
-
-  /**
-   * Starts sharing the primary screen.
-   *
-   * @param config The configuration of the captured screen. See ScreenCaptureConfiguration .
-   */
-  abstract startPrimaryScreenCapture(
-    config: ScreenCaptureConfiguration
-  ): number;
-
-  /**
-   * Starts sharing a secondary screen.
-   *
-   * @param config The configuration of the captured screen. See ScreenCaptureConfiguration .
-   */
-  abstract startSecondaryScreenCapture(
-    config: ScreenCaptureConfiguration
-  ): number;
-
-  /**
-   *  Stops sharing the first screen.
-   * After calling startPrimaryScreenCapture , you can call this method to stop sharing the first screen.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract stopPrimaryScreenCapture(): number;
-
-  /**
-   * Stops sharing the second screen.
-   * After calling startSecondaryScreenCapture , you can call this method to stop sharing the secondary screen.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract stopSecondaryScreenCapture(): number;
 
   /**
    * Gets the current connection state of the SDK.
@@ -5167,6 +5206,11 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
+   * @ignore
+   */
+  abstract setAINSMode(enabled: boolean, mode: AudioAinsMode): number;
+
+  /**
    * Registers a user account.
    * Once registered, the user account can be used to identify the local user when the user joins the channel. After the registration is successful, the user account can identify the identity of the local user, and the user can use it to join the channel.After the user successfully registers a user account, the SDK triggers the onLocalUserRegistered callback on the local client, reporting the user ID and account of the local user.This method is optional. To join a channel with a user account, you can choose either of the following ways:Call registerLocalUserAccount to create a user account, and then call joinChannelWithUserAccount to join the channel.Call the joinChannelWithUserAccount method to join the channel.The difference between the two ways is that the time elapsed between calling the registerLocalUserAccount method and joining the channel is shorter than directly calling joinChannelWithUserAccount.Ensure that you set the userAccount parameter; otherwise, this method does not take effect.Ensure that the userAccount is unique in the channel.To ensure smooth communication, use the same parameter type to identify the user. For example, if a user joins the channel with a user ID, then ensure all the other users use the user ID too. The same applies to the user account. If a user joins the channel with the Agora Web SDK, ensure that the ID of the user is set to the same parameter type.
    *
@@ -5238,6 +5282,13 @@ export abstract class IRtcEngine {
    * A pointer to the UserInfo instance, if the method call succeeds.If the call fails, returns NULL.
    */
   abstract getUserInfoByUid(uid: number): UserInfo;
+
+  /**
+   * @ignore
+   */
+  abstract startOrUpdateChannelMediaRelay(
+    configuration: ChannelMediaRelayConfiguration
+  ): number;
 
   /**
    * Starts relaying media streams across channels. This method can be used to implement scenarios such as co-host across channels.
@@ -5411,22 +5462,15 @@ export abstract class IRtcEngine {
    * 0: Success.< 0: Failure.
    */
   abstract adjustCustomAudioPublishVolume(
-    sourceId: number,
+    trackId: number,
     volume: number
   ): number;
 
   /**
-   * Adjusts the volume of the custom external audio source when it is published in the channel.
-   * Ensure you have called the setExternalAudioSource method to create an external audio track before calling this method.If you want to change the volume of the audio to be published, you need to call this method again.
-   *
-   * @param sourceId The ID of external audio source. If you want to publish a custom external audio source, set this parameter to the ID of the corresponding custom audio track you want to publish.
-   * @param volume The volume of the audio source. The value can range from 0 to 100. 0 means mute; 100 means the original volume.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
+   * @ignore
    */
   abstract adjustCustomAudioPlayoutVolume(
-    sourceId: number,
+    trackId: number,
     volume: number
   ): number;
 
@@ -5526,6 +5570,11 @@ export abstract class IRtcEngine {
   abstract enableInstantMediaRendering(): number;
 
   /**
+   * @ignore
+   */
+  abstract getNtpTimeInMs(): number;
+
+  /**
    * Destroys a video renderer object.
    *
    * @param view The HTMLElement object to be destroyed.
@@ -5582,15 +5631,6 @@ export abstract class IRtcEngine {
    * One IMediaEngine object.
    */
   abstract getMediaEngine(): IMediaEngine;
-
-  /**
-   * Gets one IMediaRecorder object.
-   * Make sure the IRtcEngine is initialized before you call this method.
-   *
-   * @returns
-   * One IMediaRecorder object.
-   */
-  abstract getMediaRecorder(): IMediaRecorder;
 
   /**
    * Gets one ILocalSpatialAudioEngine object.

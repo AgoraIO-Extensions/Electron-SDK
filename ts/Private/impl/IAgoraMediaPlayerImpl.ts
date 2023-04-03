@@ -1,7 +1,6 @@
 import { callIrisApi } from '../internal/IrisApiEngine';
 import {
   IMediaPlayer,
-  IMediaPlayerAudioFrameObserver,
   IMediaPlayerVideoFrameObserver,
   IMediaPlayerCacheManager,
 } from '../IAgoraMediaPlayer';
@@ -10,6 +9,8 @@ import {
   RenderModeType,
   IAudioSpectrumObserver,
   AudioDualMonoMode,
+  IAudioPcmFrameSink,
+  RawAudioFrameOpModeType,
 } from '../AgoraMediaBase';
 import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
 import { SpatialAudioParams } from '../AgoraBase';
@@ -866,12 +867,21 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     return 'MediaPlayer_setSoundPositionParams';
   }
 
-  registerAudioFrameObserver(observer: IMediaPlayerAudioFrameObserver): number {
-    const apiType = this.getApiTypeFromRegisterAudioFrameObserver(observer);
+  registerAudioFrameObserver(
+    observer: IAudioPcmFrameSink,
+    mode: RawAudioFrameOpModeType = RawAudioFrameOpModeType.RawAudioFrameOpModeReadOnly
+  ): number {
+    const apiType = this.getApiTypeFromRegisterAudioFrameObserver(
+      observer,
+      mode
+    );
     const jsonParams = {
       observer: observer,
+      mode: mode,
       toJSON: () => {
-        return {};
+        return {
+          mode: mode,
+        };
       },
     };
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);
@@ -879,14 +889,13 @@ export class IMediaPlayerImpl implements IMediaPlayer {
   }
 
   protected getApiTypeFromRegisterAudioFrameObserver(
-    observer: IMediaPlayerAudioFrameObserver
+    observer: IAudioPcmFrameSink,
+    mode: RawAudioFrameOpModeType = RawAudioFrameOpModeType.RawAudioFrameOpModeReadOnly
   ): string {
     return 'MediaPlayer_registerAudioFrameObserver';
   }
 
-  unregisterAudioFrameObserver(
-    observer: IMediaPlayerAudioFrameObserver
-  ): number {
+  unregisterAudioFrameObserver(observer: IAudioPcmFrameSink): number {
     const apiType = this.getApiTypeFromUnregisterAudioFrameObserver(observer);
     const jsonParams = {
       observer: observer,
@@ -899,7 +908,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
   }
 
   protected getApiTypeFromUnregisterAudioFrameObserver(
-    observer: IMediaPlayerAudioFrameObserver
+    observer: IAudioPcmFrameSink
   ): string {
     return 'MediaPlayer_unregisterAudioFrameObserver';
   }
@@ -1107,20 +1116,6 @@ export class IMediaPlayerCacheManagerImpl implements IMediaPlayerCacheManager {
 
   protected getApiTypeFromGetCacheFileCount(): string {
     return 'MediaPlayerCacheManager_getCacheFileCount';
-  }
-}
-
-export function processIMediaPlayerAudioFrameObserver(
-  handler: IMediaPlayerAudioFrameObserver,
-  event: string,
-  jsonParams: any
-) {
-  switch (event) {
-    case 'onFrame':
-      if (handler.onFrame !== undefined) {
-        handler.onFrame(jsonParams.frame);
-      }
-      break;
   }
 }
 
