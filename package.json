@@ -58,9 +58,9 @@
   "devDependencies": {
     "@commitlint/config-conventional": "^17.0.2",
     "@evilmartians/lefthook": "^1.2.2",
+    "@release-it/conventional-changelog": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
     "@typescript-eslint/parser": "^5.30.5",
-    "@release-it/conventional-changelog": "^5.0.0",
     "cmake-js": "6.3.2",
     "commitlint": "^17.0.2",
     "eslint": "^8.4.1",
