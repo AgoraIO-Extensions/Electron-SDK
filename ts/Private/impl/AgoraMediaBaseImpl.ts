@@ -1,4 +1,5 @@
 import {
+  IAudioPcmFrameSink,
   IAudioFrameObserverBase,
   IAudioFrameObserver,
   IAudioSpectrumObserver,
@@ -6,6 +7,20 @@ import {
   IVideoFrameObserver,
   IMediaRecorderObserver,
 } from '../AgoraMediaBase';
+
+export function processIAudioPcmFrameSink(
+  handler: IAudioPcmFrameSink,
+  event: string,
+  jsonParams: any
+) {
+  switch (event) {
+    case 'onFrame':
+      if (handler.onFrame !== undefined) {
+        handler.onFrame(jsonParams.frame);
+      }
+      break;
+  }
+}
 
 export function processIAudioFrameObserverBase(
   handler: IAudioFrameObserverBase,
@@ -110,37 +125,13 @@ export function processIVideoFrameObserver(
   switch (event) {
     case 'onCaptureVideoFrame':
       if (handler.onCaptureVideoFrame !== undefined) {
-        handler.onCaptureVideoFrame(jsonParams.videoFrame);
+        handler.onCaptureVideoFrame(jsonParams.type, jsonParams.videoFrame);
       }
       break;
 
     case 'onPreEncodeVideoFrame':
       if (handler.onPreEncodeVideoFrame !== undefined) {
-        handler.onPreEncodeVideoFrame(jsonParams.videoFrame);
-      }
-      break;
-
-    case 'onSecondaryCameraCaptureVideoFrame':
-      if (handler.onSecondaryCameraCaptureVideoFrame !== undefined) {
-        handler.onSecondaryCameraCaptureVideoFrame(jsonParams.videoFrame);
-      }
-      break;
-
-    case 'onSecondaryPreEncodeCameraVideoFrame':
-      if (handler.onSecondaryPreEncodeCameraVideoFrame !== undefined) {
-        handler.onSecondaryPreEncodeCameraVideoFrame(jsonParams.videoFrame);
-      }
-      break;
-
-    case 'onScreenCaptureVideoFrame':
-      if (handler.onScreenCaptureVideoFrame !== undefined) {
-        handler.onScreenCaptureVideoFrame(jsonParams.videoFrame);
-      }
-      break;
-
-    case 'onPreEncodeScreenVideoFrame':
-      if (handler.onPreEncodeScreenVideoFrame !== undefined) {
-        handler.onPreEncodeScreenVideoFrame(jsonParams.videoFrame);
+        handler.onPreEncodeVideoFrame(jsonParams.type, jsonParams.videoFrame);
       }
       break;
 
@@ -150,18 +141,6 @@ export function processIVideoFrameObserver(
           jsonParams.videoFrame,
           jsonParams.mediaPlayerId
         );
-      }
-      break;
-
-    case 'onSecondaryScreenCaptureVideoFrame':
-      if (handler.onSecondaryScreenCaptureVideoFrame !== undefined) {
-        handler.onSecondaryScreenCaptureVideoFrame(jsonParams.videoFrame);
-      }
-      break;
-
-    case 'onSecondaryPreEncodeScreenVideoFrame':
-      if (handler.onSecondaryPreEncodeScreenVideoFrame !== undefined) {
-        handler.onSecondaryPreEncodeScreenVideoFrame(jsonParams.videoFrame);
       }
       break;
 
@@ -191,13 +170,22 @@ export function processIMediaRecorderObserver(
   switch (event) {
     case 'onRecorderStateChanged':
       if (handler.onRecorderStateChanged !== undefined) {
-        handler.onRecorderStateChanged(jsonParams.state, jsonParams.error);
+        handler.onRecorderStateChanged(
+          jsonParams.channelId,
+          jsonParams.uid,
+          jsonParams.state,
+          jsonParams.error
+        );
       }
       break;
 
     case 'onRecorderInfoUpdated':
       if (handler.onRecorderInfoUpdated !== undefined) {
-        handler.onRecorderInfoUpdated(jsonParams.info);
+        handler.onRecorderInfoUpdated(
+          jsonParams.channelId,
+          jsonParams.uid,
+          jsonParams.info
+        );
       }
       break;
   }
