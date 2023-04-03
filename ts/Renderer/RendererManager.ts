@@ -56,9 +56,6 @@ export class RendererManager {
    */
   defaultRenderConfig: RendererVideoConfig;
 
-  /**
-   * @ignore
-   */
   constructor() {
     this.renderFps = 10;
     this.renderers = new Map();
@@ -75,9 +72,13 @@ export class RendererManager {
   }
 
   /**
-   * Registers an audio frame observer object.
+   * Sets dual-stream mode on the sender side.
+   * The SDK enables the low-quality video stream auto mode on the sender by default, which is equivalent to calling this method and setting the mode to AutoSimulcastStream. If you want to modify this behavior, you can call this method and modify the mode to DisableSimulcastStream(never send low-quality video streams) or EnableSimulcastStream (always send low-quality video streams).The difference and connection between this method and enableDualStreamMode [1/3] is as follows:When calling this method and setting mode to DisableSimulcastStream, it has the same effect as enableDualStreamMode [1/3](false).When calling this method and setting mode to EnableSimulcastStream, it has the same effect as enableDualStreamMode [1/3](true).Both methods can be called before and after joining a channel. If they are used at the same time, the settings in the method called later shall prevail.
    *
-   * @param mode The use mode of the audio frame. See RawAudioFrameOpModeType .
+   * @param mode The mode in which the video stream is sent. See SimulcastStreamMode .
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
    */
   public setRenderMode(mode: RENDER_MODE) {
     this.renderMode = mode;
@@ -94,6 +95,9 @@ export class RendererManager {
     this.restartRender();
   }
 
+  /**
+   * @ignore
+   */
   public setRenderOption(
     view: HTMLElement,
     contentMode = RenderModeType.RenderModeFit,
@@ -111,6 +115,9 @@ export class RendererManager {
     });
   }
 
+  /**
+   * @ignore
+   */
   public setRenderOptionByConfig(rendererConfig: RendererVideoConfig): number {
     const {
       uid,
@@ -137,6 +144,9 @@ export class RendererManager {
     return ErrorCodeType.ErrOk;
   }
 
+  /**
+   * @ignore
+   */
   public checkWebglEnv(): boolean {
     let gl;
     let canvas: HTMLCanvasElement = document.createElement('canvas');
@@ -153,6 +163,9 @@ export class RendererManager {
     return !!gl;
   }
 
+  /**
+   * @ignore
+   */
   public setupVideo(rendererVideoConfig: RendererVideoConfig): number {
     const formatConfig = getDefaultRendererVideoConfig(rendererVideoConfig);
 
@@ -183,6 +196,9 @@ export class RendererManager {
     return ErrorCodeType.ErrOk;
   }
 
+  /**
+   * @ignore
+   */
   public setupLocalVideo(rendererConfig: RendererVideoConfig): number {
     const { videoSourceType } = rendererConfig;
     if (videoSourceType === VideoSourceType.VideoSourceRemote) {
@@ -193,6 +209,9 @@ export class RendererManager {
     return ErrorCodeType.ErrOk;
   }
 
+  /**
+   * @ignore
+   */
   public setupRemoteVideo(rendererConfig: RendererVideoConfig): number {
     const { videoSourceType } = rendererConfig;
     if (videoSourceType !== VideoSourceType.VideoSourceRemote) {
@@ -203,6 +222,11 @@ export class RendererManager {
     return ErrorCodeType.ErrOk;
   }
 
+  /**
+   * Destroys a video renderer object.
+   *
+   * @param view The HTMLElement object to be destroyed.
+   */
   public destroyRendererByView(view: Element): void {
     const renders = this.renderers;
     renders.forEach((channelMap, videoSourceType) => {
@@ -231,6 +255,9 @@ export class RendererManager {
     });
   }
 
+  /**
+   * @ignore
+   */
   public destroyRenderersByConfig(
     videoSourceType: VideoSourceType,
     channelId?: Channel,
@@ -257,6 +284,9 @@ export class RendererManager {
     renderMap.renders = [];
   }
 
+  /**
+   * @ignore
+   */
   public removeAllRenderer(): void {
     const renderMap = this.forEachStream(
       (renderConfig, videoFrameCacheConfig) => {
@@ -270,11 +300,23 @@ export class RendererManager {
     renderMap.clear();
   }
 
+  /**
+   * @ignore
+   */
   public clear(): void {
     this.stopRender();
     this.removeAllRenderer();
   }
 
+  /**
+   * Enables interoperability with the Agora Web SDK (applicable only in the live streaming scenarios).
+   * Deprecated:The SDK automatically enables interoperability with the Web SDK, so you no longer need to call this method.You can call this method to enable or disable interoperability with the Agora Web SDK. If a channel has Web SDK users, ensure that you call this method, or the video of the Native user will be a black screen for the Web user.This method is only applicable in live streaming scenarios, and interoperability is enabled by default in communication scenarios.
+   *
+   * @param enabled Whether to enable interoperability:true: Enable interoperability.false: (Default) Disable interoperability.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
   public enableRender(enabled = true): void {
     if (enabled && this.isRendering) {
       //is already _isRendering
@@ -285,6 +327,9 @@ export class RendererManager {
     }
   }
 
+  /**
+   * @ignore
+   */
   public startRenderer(): void {
     this.isRendering = true;
     const renderFunc = (
@@ -349,6 +394,9 @@ export class RendererManager {
     }, 1000 / this.renderFps);
   }
 
+  /**
+   * @ignore
+   */
   public stopRender(): void {
     this.isRendering = false;
     if (this.videoFrameUpdateInterval) {
@@ -357,6 +405,9 @@ export class RendererManager {
     }
   }
 
+  /**
+   * @ignore
+   */
   public restartRender(): void {
     if (this.videoFrameUpdateInterval) {
       this.stopRender();
@@ -365,6 +416,9 @@ export class RendererManager {
     }
   }
 
+  /**
+   * @ignore
+   */
   private createRenderer(failCallback?: RenderFailCallback): IRenderer {
     if (this.renderMode === RENDER_MODE.SOFTWARE) {
       return new YUVCanvasRenderer();
@@ -373,6 +427,9 @@ export class RendererManager {
     }
   }
 
+  /**
+   * @ignore
+   */
   private getRender({
     videoSourceType,
     channelId,
@@ -381,6 +438,9 @@ export class RendererManager {
     return this.renderers.get(videoSourceType)?.get(channelId)?.get(uid);
   }
 
+  /**
+   * @ignore
+   */
   private getRenderers({
     videoSourceType,
     channelId,
@@ -392,6 +452,9 @@ export class RendererManager {
     );
   }
 
+  /**
+   * @ignore
+   */
   private bindHTMLElementToRender(
     config: FormatRendererVideoConfig,
     view: HTMLElement
@@ -427,6 +490,9 @@ export class RendererManager {
     return renderer;
   }
 
+  /**
+   * @ignore
+   */
   private forEachStream(
     callbackfn: (
       renderConfig: RenderConfig,
@@ -452,6 +518,9 @@ export class RendererManager {
     return renders;
   }
 
+  /**
+   * @ignore
+   */
   private enableVideoFrameCache(
     videoFrameCacheConfig: VideoFrameCacheConfig
   ): void {
@@ -459,6 +528,9 @@ export class RendererManager {
     this.msgBridge.EnableVideoFrameCache(videoFrameCacheConfig);
   }
 
+  /**
+   * @ignore
+   */
   private disableVideoFrameCache(
     videoFrameCacheConfig: VideoFrameCacheConfig
   ): void {
@@ -466,6 +538,15 @@ export class RendererManager {
     this.msgBridge.DisableVideoFrameCache(videoFrameCacheConfig);
   }
 
+  /**
+   * Sets the video encoder configuration.
+   * Sets the encoder configuration for the local video.You can call this method either before or after joining a channel. If the user does not need to reset the video encoding properties after joining the channel, Agora recommends calling this method before enableVideo to reduce the time to render the first video frame.
+   *
+   * @param config Video profile. See VideoEncoderConfiguration .
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
   private ensureRendererConfig(config: VideoFrameCacheConfig):
     | Map<
         number,
@@ -509,6 +590,9 @@ export class RendererManager {
     return channelMap;
   }
 
+  /**
+   * @ignore
+   */
   private resizeShareVideoFrame(
     videoSourceType: VideoSourceType,
     channelId: string,
@@ -528,6 +612,9 @@ export class RendererManager {
     };
   }
 
+  /**
+   * @ignore
+   */
   private updateVideoFrameCacheInMap(
     config: VideoFrameCacheConfig,
     shareVideoFrame: ShareVideoFrame
