@@ -34,6 +34,7 @@
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "install": "cross-env-shell gulp NPM_Install \\\"--INIT_CWD=$INIT_CWD\\\"",
     "release": "release-it",
     "example": "yarn --cwd example",
     "bootstrap": "yarn config set agora-electron-sdk-pre-built 0 && yarn example && yarn install && yarn patch-package && yarn ts_interface_builder && yarn totalBuild && yarn link && yarn example link agora-electron-sdk && yarn config delete agora-electron-sdk-pre-built",
