@@ -1,5 +1,9 @@
 import './extension/IAgoraMediaPlayerExtension';
-import { PlayerStreamInfo, MediaPlayerState } from './AgoraMediaPlayerTypes';
+import {
+  MediaSource,
+  PlayerStreamInfo,
+  MediaPlayerState,
+} from './AgoraMediaPlayerTypes';
 import {
   RenderModeType,
   IAudioSpectrumObserver,

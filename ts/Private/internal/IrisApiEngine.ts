@@ -6,6 +6,7 @@ import {
   AudioFrame,
   AudioPcmFrame,
   IAudioFrameObserver,
+  IAudioPcmFrameSink,
   IAudioSpectrumObserver,
   IMediaRecorderObserver,
   IVideoEncodedFrameObserver,
@@ -20,7 +21,6 @@ import {
 } from '../IAgoraRtcEngine';
 import {
   IMediaPlayer,
-  IMediaPlayerAudioFrameObserver,
   IMediaPlayerVideoFrameObserver,
 } from '../IAgoraMediaPlayer';
 import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
@@ -30,6 +30,7 @@ import { processIAudioEncodedFrameObserver } from '../impl/AgoraBaseImpl';
 import {
   processIAudioFrameObserver,
   processIAudioFrameObserverBase,
+  processIAudioPcmFrameSink,
   processIAudioSpectrumObserver,
   processIMediaRecorderObserver,
   processIVideoEncodedFrameObserver,
@@ -40,10 +41,7 @@ import {
   processIMetadataObserver,
   processIRtcEngineEventHandler,
 } from '../impl/IAgoraRtcEngineImpl';
-import {
-  processIMediaPlayerAudioFrameObserver,
-  processIMediaPlayerVideoFrameObserver,
-} from '../impl/IAgoraMediaPlayerImpl';
+import { processIMediaPlayerVideoFrameObserver } from '../impl/IAgoraMediaPlayerImpl';
 import { processIMediaPlayerSourceObserver } from '../impl/IAgoraMediaPlayerSourceImpl';
 import { processIMusicContentCenterEventHandler } from '../impl/IAgoraMusicContentCenterImpl';
 
@@ -103,7 +101,7 @@ export type EventProcessor = {
         | IAudioEncodedFrameObserver
         | IVideoEncodedFrameObserver
         | IMediaPlayerSourceObserver
-        | IMediaPlayerAudioFrameObserver
+        | IAudioPcmFrameSink
         | IMediaPlayerVideoFrameObserver
         | IMediaRecorderObserver
         | IMetadataObserver
@@ -217,7 +215,7 @@ export const EVENT_PROCESSORS = {
   IMediaPlayerAudioFrameObserver: {
     suffix: 'MediaPlayer_AudioFrameObserver_',
     type: EVENT_TYPE.IMediaPlayer,
-    func: [processIMediaPlayerAudioFrameObserver],
+    func: [processIAudioPcmFrameSink],
     preprocess: (event: string, data: any, buffers: Uint8Array[]) => {
       if (data.frame) {
         (data.frame as AudioPcmFrame).data_ = Array.from(buffers[0] ?? []);
@@ -247,9 +245,7 @@ export const EVENT_PROCESSORS = {
     type: EVENT_TYPE.IMediaRecorder,
     func: [processIMediaRecorderObserver],
     handlers: (data: any) => [
-      MediaRecorderInternal._observers.get(
-        (data.connection.channelId ?? '') + data.connection.localUid
-      ),
+      MediaRecorderInternal._observers.get(data.nativeHandle),
     ],
   },
   IMetadataObserver: {
@@ -355,7 +351,7 @@ function handleEvent(...[event, data, buffers]: any) {
 /**
  * @internal
  */
-export function callIrisApi<T>(funcName: string, params: any): any {
+export function callIrisApi(funcName: string, params: any): any {
   try {
     const buffers: Uint8Array[] = [];
 
@@ -375,6 +371,8 @@ export function callIrisApi<T>(funcName: string, params: any): any {
           buffers.push(Buffer.from(''));
           // frame.metadata_buffer
           buffers.push(Buffer.from(''));
+          // frame.alphaBuffer
+          buffers.push(params.frame.alphaBuffer);
           break;
         case 'MediaEngine_pushEncodedVideoImage':
           // imageBuffer
@@ -390,6 +388,13 @@ export function callIrisApi<T>(funcName: string, params: any): any {
       const json = params.toJSON?.call();
       params.toJSON = function () {
         return { ...json, playerId: params.mediaPlayerId };
+      };
+    } else if (funcName.startsWith('MediaRecorder_')) {
+      // @ts-ignore
+      params.nativeHandle = (this as MediaRecorderInternal).nativeHandle;
+      const json = params.toJSON?.call();
+      params.toJSON = function () {
+        return { ...json, nativeHandle: params.nativeHandle };
       };
     } else if (funcName.startsWith('RtcEngine_')) {
       switch (funcName) {
@@ -421,6 +426,13 @@ export function callIrisApi<T>(funcName: string, params: any): any {
             return { playerId: params.mediaPlayerId };
           };
           break;
+        case 'RtcEngine_destroyMediaRecorder':
+          // @ts-ignore
+          params.nativeHandle = (this as MediaRecorderInternal).nativeHandle;
+          params.toJSON = function () {
+            return { nativeHandle: params.nativeHandle };
+          };
+          break;
       }
     }
 
@@ -432,15 +444,15 @@ export function callIrisApi<T>(funcName: string, params: any): any {
     );
     let ret = callApiResult;
     if (ret !== undefined && ret !== null && ret !== '') {
-      ret = JSON.parse(ret);
+      const retObj = JSON.parse(ret);
       if (isDebuggable()) {
-        if (typeof ret.result === 'number' && ret.result < 0) {
+        if (typeof retObj.result === 'number' && retObj.result < 0) {
           console.error('callApi', funcName, JSON.stringify(params), ret);
         } else {
           console.debug('callApi', funcName, JSON.stringify(params), ret);
         }
       }
-      return ret;
+      return retObj;
     } else {
       if (isDebuggable()) {
         console.error(
@@ -465,8 +477,8 @@ export function callIrisApi<T>(funcName: string, params: any): any {
     } else {
       console.warn('callApi', funcName, JSON.stringify(params), e);
     }
-    return {};
   }
+  return {};
 }
 
 /**

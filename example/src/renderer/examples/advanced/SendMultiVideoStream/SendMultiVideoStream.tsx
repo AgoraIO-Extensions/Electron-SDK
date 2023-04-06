@@ -7,7 +7,7 @@ import {
   createAgoraRtcEngine,
   IAudioFrameObserver,
   IMediaPlayer,
-  IMediaPlayerAudioFrameObserver,
+  IAudioPcmFrameSink,
   IMediaPlayerSourceObserver,
   IMediaPlayerVideoFrameObserver,
   IRtcEngineEventHandler,
@@ -44,7 +44,7 @@ export default class SendMultiVideoStream
     IMediaPlayerSourceObserver,
     IAudioFrameObserver,
     IVideoFrameObserver,
-    IMediaPlayerAudioFrameObserver,
+    IAudioPcmFrameSink,
     IMediaPlayerVideoFrameObserver
 {
   // @ts-ignore
@@ -273,8 +273,11 @@ export default class SendMultiVideoStream
     return true;
   }
 
-  onCaptureVideoFrame(videoFrame: VideoFrame): boolean {
-    this.info('onCaptureVideoFrame', videoFrame);
+  onCaptureVideoFrame(
+    sourceType: VideoSourceType,
+    videoFrame: VideoFrame
+  ): boolean {
+    this.info('onCaptureVideoFrame', sourceType, videoFrame);
     return true;
   }
 
