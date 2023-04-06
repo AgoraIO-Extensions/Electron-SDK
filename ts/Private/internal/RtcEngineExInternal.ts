@@ -9,16 +9,20 @@ import {
   ClientRoleOptions,
   ClientRoleType,
   DataStreamConfig,
-  ErrorCodeType,
+  EchoTestConfiguration,
   IAudioEncodedFrameObserver,
   SimulcastStreamConfig,
   SimulcastStreamMode,
+  WatermarkOptions,
   VideoCanvas,
   VideoMirrorModeType,
-  VideoSourceType,
-  WatermarkOptions,
+  ErrorCodeType,
 } from '../AgoraBase';
-import { IAudioSpectrumObserver, RenderModeType } from '../AgoraMediaBase';
+import {
+  VideoSourceType,
+  IAudioSpectrumObserver,
+  RenderModeType,
+} from '../AgoraMediaBase';
 import { IMediaEngine } from '../IAgoraMediaEngine';
 import { IMediaPlayer } from '../IAgoraMediaPlayer';
 import { IMediaRecorder } from '../IAgoraMediaRecorder';
@@ -56,6 +60,11 @@ import {
 import AgoraBaseTI from '../ti/AgoraBase-ti';
 import AgoraMediaBaseTI from '../ti/AgoraMediaBase-ti';
 import IAgoraRtcEngineTI from '../ti/IAgoraRtcEngine-ti';
+const checkers = createCheckers(
+  AgoraBaseTI,
+  AgoraMediaBaseTI,
+  IAgoraRtcEngineTI
+);
 
 import { AudioDeviceManagerInternal } from './AudioDeviceManagerInternal';
 import { LocalSpatialAudioEngineInternal } from './LocalSpatialAudioEngineInternal';
@@ -67,12 +76,6 @@ import { MusicContentCenterInternal } from './MusicContentCenterInternal';
 import { callIrisApi, DeviceEventEmitter, EVENT_TYPE } from './IrisApiEngine';
 import { EmitterSubscription } from './emitter/EventEmitter';
 import { RendererManager } from '../../Renderer/RendererManager';
-
-const checkers = createCheckers(
-  AgoraBaseTI,
-  AgoraMediaBaseTI,
-  IAgoraRtcEngineTI
-);
 
 export class RtcEngineExInternal extends IRtcEngineExImpl {
   static _event_handlers: IRtcEngineEventHandler[] = [];
@@ -86,7 +89,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   private _video_device_manager: IVideoDeviceManager =
     new IVideoDeviceManagerImpl();
   private _media_engine: IMediaEngine = new MediaEngineInternal();
-  private _media_recorder: IMediaRecorder = new MediaRecorderInternal();
   private _music_content_center: IMusicContentCenter =
     new MusicContentCenterInternal();
   private _local_spatial_audio_engine: ILocalSpatialAudioEngine =
@@ -116,12 +118,11 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   }
 
   release(sync: boolean = false) {
-    AgoraEnv.AgoraRendererManager?.enableRender(false);
+    AgoraEnv.AgoraRendererManager?.clear();
     AgoraEnv.AgoraRendererManager = undefined;
     this._audio_device_manager.release();
     this._video_device_manager.release();
     this._media_engine.release();
-    this._media_recorder.release();
     this._local_spatial_audio_engine.release();
     RtcEngineExInternal._event_handlers = [];
     RtcEngineExInternal._direct_cdn_streaming_event_handler = [];
@@ -302,6 +303,27 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return ret;
   }
 
+  createLocalMediaRecorder(connection: RtcConnection): IMediaRecorder {
+    // @ts-ignore
+    const nativeHandle = super.createLocalMediaRecorder(connection) as string;
+    return new MediaRecorderInternal(nativeHandle);
+  }
+
+  createRemoteMediaRecorder(channelId: string, uid: number): IMediaRecorder {
+    // @ts-ignore
+    const nativeHandle = super.createRemoteMediaRecorder(
+      channelId,
+      uid
+    ) as string;
+    return new MediaRecorderInternal(nativeHandle);
+  }
+
+  destroyMediaRecorder(mediaRecorder: IMediaRecorder): number {
+    const ret = super.destroyMediaRecorder(mediaRecorder);
+    mediaRecorder.release?.call(mediaRecorder);
+    return ret;
+  }
+
   startDirectCdnStreaming(
     eventHandler: IDirectCdnStreamingEventHandler,
     publishUrl: string,
@@ -371,10 +393,8 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       : 'RtcEngine_setClientRole2';
   }
 
-  protected getApiTypeFromStartEchoTest(
-    intervalInSeconds: number = 10
-  ): string {
-    return 'RtcEngine_startEchoTest2';
+  protected getApiTypeFromStartEchoTest(config: EchoTestConfiguration): string {
+    return 'RtcEngine_startEchoTest3';
   }
 
   protected getApiTypeFromStartPreview(
@@ -471,10 +491,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
 
   getMediaEngine(): IMediaEngine {
     return this._media_engine;
-  }
-
-  getMediaRecorder(): IMediaRecorder {
-    return this._media_recorder;
   }
 
   getMusicContentCenter(): IMusicContentCenter {

@@ -1,4 +1,4 @@
-import { VideoSourceType } from './Private/AgoraBase';
+import { VideoSourceType } from './Private/AgoraMediaBase';
 import {
   AgoraEnvType,
   FormatRendererVideoConfig,
