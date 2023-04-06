@@ -107,7 +107,7 @@
     "env": {
       "es6": true,
       "node": true,
-      "browser": true
+      "shared-node-browser": true
     },
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -132,7 +132,18 @@
       "define": false,
       "obj_attrib": false,
       "info": false,
-      "NodeJS": false
+      "NodeJS": false,
+      "window": false,
+      "alert": false,
+      "document": false,
+      "HTMLElement": false,
+      "HTMLDivElement": false,
+      "WebGL2RenderingContext": false,
+      "WebGLTexture": false,
+      "HTMLCanvasElement": false,
+      "ResizeObserver": false,
+      "name": false,
+      "Element": false
     },
     "rules": {
       "prettier/prettier": [

@@ -51,18 +51,20 @@ export default function VirtualBackground() {
   const [enableVirtualBackground, setEnableVirtualBackground] =
     useState<boolean>(false);
 
+  const setupOtherExtension = useCallback(() => {
+    engine.current.enableExtension(
+      'agora_video_filters_segmentation',
+      'portrait_segmentation',
+      true
+    );
+  }, [engine]);
+
   const { token, initRtcEngine, startPreview } = useInitRtcEngine({
     enableAudio,
     enableVideo,
     enablePreview,
     engine: engine.current,
-    setupOtherExtension: () => {
-      engine.current.enableExtension(
-        'agora_video_filters_segmentation',
-        'portrait_segmentation',
-        true
-      );
-    },
+    setupOtherExtension,
   });
 
   /**
@@ -200,20 +202,16 @@ export default function VirtualBackground() {
       }
     );
 
-    engine.current.addListener(
-      'onLocalUserRegistered',
-      (uid: number, userAccount: string) => {
-        log.info('LocalUserRegistered', 'uid', uid, 'userAccount', userAccount);
-      }
-    );
-
     const engineCopy = engine.current;
     return () => {
       engineCopy.removeAllListeners();
     };
   }, [initRtcEngine]);
 
-  const onChannelIdChange = useCallback((text) => setChannelId(text), []);
+  const onChannelIdChange = useCallback(
+    (text: string) => setChannelId(text),
+    []
+  );
 
   return (
     <AgoraView className={AgoraStyle.screen}>

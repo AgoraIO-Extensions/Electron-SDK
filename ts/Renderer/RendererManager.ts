@@ -1,5 +1,5 @@
-import { ErrorCodeType, VideoSourceType } from '../Private/AgoraBase';
-import { RenderModeType } from '../Private/AgoraMediaBase';
+import { ErrorCodeType } from '../Private/AgoraBase';
+import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
 import {
   AgoraElectronBridge,
   Channel,
@@ -304,6 +304,7 @@ export class RendererManager {
    * @ignore
    */
   public clear(): void {
+    AgoraEnv.AgoraElectronBridge.ReleaseRenderer();
     this.stopRender();
     this.removeAllRenderer();
   }
@@ -346,14 +347,11 @@ export class RendererManager {
 
       switch (finalResult.ret) {
         case 0:
-          // IRIS_VIDEO_PROCESS_ERR::ERR_OK = 0,
+          // GET_VIDEO_FRAME_CACHE_RETURN_TYPE::OK = 0,
           // everything is ok
           break;
-        case 1:
-          // IRIS_VIDEO_PROCESS_ERR::ERR_NULL_POINTER = 1,
-          break;
-        case 2: {
-          // IRIS_VIDEO_PROCESS_ERR::ERR_SIZE_NOT_MATCHING
+        case 1: {
+          // GET_VIDEO_FRAME_CACHE_RETURN_TYPE::RESIZED
           const { width, height } = finalResult;
           const newShareVideoFrame = this.resizeShareVideoFrame(
             videoSourceType,
@@ -366,8 +364,8 @@ export class RendererManager {
           finalResult = this.msgBridge.GetVideoFrame(newShareVideoFrame);
           break;
         }
-        case 5:
-          // IRIS_VIDEO_PROCESS_ERR::ERR_BUFFER_EMPTY
+        case 2:
+          // GET_VIDEO_FRAME_CACHE_RETURN_TYPE::NO_CACHE
           // setupVideo/AgoraView render before initialize
           this.enableVideoFrameCache({ videoSourceType, channelId, uid });
           return;

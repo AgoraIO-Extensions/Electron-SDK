@@ -74,7 +74,7 @@ export default function StringUid() {
   const getUserInfoByUserAccount = () => {
     const userInfo = engine.current.getUserInfoByUserAccount(userAccount);
     if (userInfo) {
-      log.debug('getUserInfoByUserAccount', 'userInfo', userInfo);
+      log.debug('getUserInfoByUserAccount', userInfo);
     } else {
       log.error('getUserInfoByUserAccount');
     }
@@ -170,7 +170,10 @@ export default function StringUid() {
     };
   }, [initRtcEngine]);
 
-  const onChannelIdChange = useCallback((text) => setChannelId(text), []);
+  const onChannelIdChange = useCallback(
+    (text: string) => setChannelId(text),
+    []
+  );
 
   return (
     <AgoraView className={AgoraStyle.screen}>

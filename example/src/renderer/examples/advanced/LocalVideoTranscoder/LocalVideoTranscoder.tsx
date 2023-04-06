@@ -5,6 +5,7 @@ import createAgoraRtcEngine, {
   IMediaPlayer,
   IMediaPlayerSourceObserver,
   IRtcEngineEventHandler,
+  LocalTranscoderConfiguration,
   MediaPlayerError,
   MediaPlayerState,
   RtcConnection,
@@ -14,8 +15,6 @@ import createAgoraRtcEngine, {
   TranscodingVideoStream,
   VideoDeviceInfo,
   VideoSourceType,
-  MediaSourceType,
-  LocalTranscoderConfiguration,
 } from 'agora-electron-sdk';
 
 import Config from '../../../config/agora.config';
@@ -155,37 +154,13 @@ export default class LocalVideoTranscoder
   };
 
   startCameraCapture = (deviceId: string) => {
-    if (
-      VideoSourceType.VideoSourceCameraPrimary ===
-      this._getVideoSourceTypeCamera(deviceId)
-    ) {
-      this.engine?.startPrimaryCameraCapture({
-        deviceId,
-      });
-    }
-    if (
-      VideoSourceType.VideoSourceCameraSecondary ===
-      this._getVideoSourceTypeCamera(deviceId)
-    ) {
-      this.engine?.startSecondaryCameraCapture({
-        deviceId,
-      });
-    }
+    const type = this._getVideoSourceTypeCamera(deviceId);
+    this.engine?.startCameraCapture(type, { deviceId });
   };
 
   stopCameraCapture = (deviceId: string) => {
-    if (
-      VideoSourceType.VideoSourceCameraPrimary ===
-      this._getVideoSourceTypeCamera(deviceId)
-    ) {
-      this.engine?.stopPrimaryCameraCapture();
-    }
-    if (
-      VideoSourceType.VideoSourceCameraSecondary ===
-      this._getVideoSourceTypeCamera(deviceId)
-    ) {
-      this.engine?.stopSecondaryCameraCapture();
-    }
+    const type = this._getVideoSourceTypeCamera(deviceId);
+    this.engine?.stopScreenCapture(type);
   };
 
   /**
@@ -212,25 +187,28 @@ export default class LocalVideoTranscoder
       this.error(`targetSource is invalid`);
     }
 
-    this.engine?.startPrimaryScreenCapture({
-      isCaptureWindow:
-        targetSource!.type ===
-        ScreenCaptureSourceType.ScreencapturesourcetypeWindow,
-      screenRect: { width: 0, height: 0, x: 0, y: 0 },
-      windowId: targetSource!.sourceId,
-      displayId: targetSource!.sourceId,
-      params: {
-        dimensions: { width: 1920, height: 1080 },
-        bitrate: 1000,
-        frameRate: 15,
-        captureMouseCursor: false,
-        windowFocus: false,
-        excludeWindowList: [],
-        excludeWindowCount: 0,
-      },
+    this.engine?.startScreenCaptureDesktop(
+      VideoSourceType.VideoSourceScreenPrimary,
+      {
+        isCaptureWindow:
+          targetSource!.type ===
+          ScreenCaptureSourceType.ScreencapturesourcetypeWindow,
+        screenRect: { width: 0, height: 0, x: 0, y: 0 },
+        windowId: targetSource!.sourceId,
+        displayId: targetSource!.sourceId,
+        params: {
+          dimensions: { width: 1920, height: 1080 },
+          bitrate: 1000,
+          frameRate: 15,
+          captureMouseCursor: false,
+          windowFocus: false,
+          excludeWindowList: [],
+          excludeWindowCount: 0,
+        },
 
-      regionRect: { x: 0, y: 0, width: 0, height: 0 },
-    });
+        regionRect: { x: 0, y: 0, width: 0, height: 0 },
+      }
+    );
     this.setState({ startScreenCapture: true });
   };
 
@@ -238,7 +216,7 @@ export default class LocalVideoTranscoder
    * Step 3-4 (Optional): stopScreenCapture
    */
   stopScreenCapture = () => {
-    this.engine?.stopPrimaryScreenCapture();
+    this.engine?.stopScreenCapture(VideoSourceType.VideoSourceScreenPrimary);
     this.setState({ startScreenCapture: false });
   };
 
@@ -301,6 +279,8 @@ export default class LocalVideoTranscoder
     return [
       VideoSourceType.VideoSourceCameraPrimary,
       VideoSourceType.VideoSourceCameraSecondary,
+      VideoSourceType.VideoSourceCameraThird,
+      VideoSourceType.VideoSourceCameraFourth,
     ][videoDevices?.findIndex(({ deviceId }) => deviceId === value) ?? -1];
   };
 
@@ -312,33 +292,33 @@ export default class LocalVideoTranscoder
       height = 300;
 
     const streams: TranscodingVideoStream[] = [];
-    if (videoDeviceId?.length) {
+    videoDeviceId?.map((v) => {
       streams.push({
-        sourceType: MediaSourceType.PrimaryCameraSource,
+        sourceType: this._getVideoSourceTypeCamera(v),
       });
-    }
+    });
 
     if (startScreenCapture) {
       streams.push({
-        sourceType: MediaSourceType.PrimaryScreenSource,
+        sourceType: VideoSourceType.VideoSourceScreenPrimary,
       });
     }
 
     if (open) {
       streams.push({
-        sourceType: MediaSourceType.MediaPlayerSource,
-        imageUrl: this.player?.getMediaPlayerId().toString(),
+        sourceType: VideoSourceType.VideoSourceMediaPlayer,
+        mediaPlayerId: this.player?.getMediaPlayerId(),
       });
     }
 
     if (imageUrl) {
       const getImageType = (url) => {
         if (url.endsWith('.png')) {
-          return MediaSourceType.RtcImagePngSource;
+          return VideoSourceType.VideoSourceRtcImagePng;
         } else if (url.endsWith('.jepg') || url.endsWith('.jpg')) {
-          return MediaSourceType.RtcImageJpegSource;
+          return VideoSourceType.VideoSourceRtcImageJpeg;
         } else if (url.endsWith('.gif')) {
-          return MediaSourceType.RtcImageGifSource;
+          return VideoSourceType.VideoSourceRtcImageGif;
         }
       };
       streams.push({
@@ -362,7 +342,7 @@ export default class LocalVideoTranscoder
 
     return {
       streamCount: streams.length,
-      VideoInputStreams: streams,
+      videoInputStreams: streams,
       videoOutputConfiguration: {
         dimensions: { width: max_width, height: max_height },
       },

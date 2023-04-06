@@ -51,5 +51,10 @@ declare module '../IAgoraMediaRecorder' {
     removeAllListeners<EventType extends keyof IMediaRecorderEvent>(
       eventType?: EventType
     ): void;
+
+    /**
+     * @ignore
+     */
+    release(): void;
   }
 }
