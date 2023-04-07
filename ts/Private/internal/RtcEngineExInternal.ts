@@ -41,6 +41,7 @@ import {
   ScreenCaptureSourceInfo,
   SDKBuildInfo,
   Size,
+  ScreenCaptureConfiguration,
 } from '../IAgoraRtcEngine';
 import { ILocalSpatialAudioEngine } from '../IAgoraSpatialAudio';
 import { IAudioDeviceManager } from '../IAudioDeviceManager';
@@ -479,6 +480,19 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     connection: RtcConnection
   ): string {
     return 'RtcEngineEx_createDataStreamEx2';
+  }
+
+  protected getApiTypeFromStartScreenCaptureDesktop(
+    sourceType: VideoSourceType,
+    config: ScreenCaptureConfiguration
+  ): string {
+    return 'RtcEngine_startScreenCapture2';
+  }
+
+  protected getApiTypeFromStopScreenCapture(
+    sourceType: VideoSourceType = VideoSourceType.VideoSourceScreenPrimary
+  ): string {
+    return 'RtcEngine_stopScreenCapture2';
   }
 
   getAudioDeviceManager(): IAudioDeviceManager {

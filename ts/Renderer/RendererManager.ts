@@ -352,13 +352,14 @@ export class RendererManager {
           break;
         case 1: {
           // GET_VIDEO_FRAME_CACHE_RETURN_TYPE::RESIZED
-          const { width, height } = finalResult;
+          const { width, height, yStride } = finalResult;
           const newShareVideoFrame = this.resizeShareVideoFrame(
             videoSourceType,
             channelId,
             uid,
             width,
-            height
+            height,
+            yStride
           );
           rendererItem.shareVideoFrame = newShareVideoFrame;
           finalResult = this.msgBridge.GetVideoFrame(newShareVideoFrame);
@@ -367,10 +368,10 @@ export class RendererManager {
         case 2:
           // GET_VIDEO_FRAME_CACHE_RETURN_TYPE::NO_CACHE
           // setupVideo/AgoraView render before initialize
-          this.enableVideoFrameCache({ videoSourceType, channelId, uid });
-          return;
+          // this.enableVideoFrameCache({ videoSourceType, channelId, uid });
+          break;
         default:
-          return;
+          break;
       }
       if (finalResult.ret !== 0) {
         logWarn('GetVideoFrame ret is', finalResult.ret, rendererItem);
@@ -590,17 +591,19 @@ export class RendererManager {
     channelId: string,
     uid: number,
     width = 0,
-    height = 0
+    height = 0,
+    yStride = 0
   ): ShareVideoFrame {
     return {
       videoSourceType,
       channelId,
       uid,
-      yBuffer: Buffer.alloc(width * height),
-      uBuffer: Buffer.alloc((width * height) / 4),
-      vBuffer: Buffer.alloc((width * height) / 4),
+      yBuffer: Buffer.alloc(yStride * height),
+      uBuffer: Buffer.alloc((yStride * height) / 4),
+      vBuffer: Buffer.alloc((yStride * height) / 4),
       width,
       height,
+      yStride,
     };
   }
 

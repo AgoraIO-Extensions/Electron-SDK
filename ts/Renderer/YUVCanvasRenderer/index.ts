@@ -25,6 +25,7 @@ export class YUVCanvasRenderer extends IRenderer {
       rotation: 0,
       width: 0,
       height: 0,
+      yStride: 0,
       yBuffer: new Uint8Array(0),
       uBuffer: new Uint8Array(0),
       vBuffer: new Uint8Array(0),
@@ -174,14 +175,18 @@ export class YUVCanvasRenderer extends IRenderer {
     let frameHeight = frame.height;
 
     if (
-      this._videoFrame.width === 0 ||
+      this._videoFrame.yStride === 0 ||
       this._videoFrame.height === 0 ||
-      this._videoFrame.width != frame.width ||
+      this._videoFrame.yStride != frame.yStride ||
       this._videoFrame.height != frame.height
     ) {
-      this._videoFrame.yBuffer = new Uint8Array(frameWidth * frameHeight);
-      this._videoFrame.uBuffer = new Uint8Array((frameWidth * frameHeight) / 4);
-      this._videoFrame.vBuffer = new Uint8Array((frameWidth * frameHeight) / 4);
+      this._videoFrame.yBuffer = new Uint8Array(frame.yStride * frameHeight);
+      this._videoFrame.uBuffer = new Uint8Array(
+        (frame.yStride * frameHeight) / 4
+      );
+      this._videoFrame.vBuffer = new Uint8Array(
+        (frame.yStride * frameHeight) / 4
+      );
     }
 
     this._videoFrame.yBuffer.set(frame.yBuffer);
@@ -190,11 +195,12 @@ export class YUVCanvasRenderer extends IRenderer {
 
     this._videoFrame.width = frame.width;
     this._videoFrame.height = frame.height;
+    this._videoFrame.yStride = frame.yStride;
     this._videoFrame.rotation = frame.rotation;
 
     let options: CanvasOptions = {
-      frameWidth: frame.width,
-      frameHeight: frame.height,
+      frameWidth,
+      frameHeight,
       rotation: frame.rotation ? frame.rotation : 0,
       contentMode: this.contentMode,
       clientWidth: this._container.clientWidth,
@@ -208,12 +214,24 @@ export class YUVCanvasRenderer extends IRenderer {
       height: frameHeight,
       chromaWidth: frameWidth / 2,
       chromaHeight: frameHeight / 2,
+      cropLeft: frame.yStride - frameWidth,
     });
 
-    let y = YUVBuffer.lumaPlane(format, this._videoFrame.yBuffer);
-    let u = YUVBuffer.chromaPlane(format, this._videoFrame.uBuffer);
-    let v = YUVBuffer.chromaPlane(format, this._videoFrame.vBuffer);
-    let yuvBufferFrame = YUVBuffer.frame(format, y, u, v);
+    let yuvBufferFrame = YUVBuffer.frame(
+      format,
+      {
+        bytes: this._videoFrame.yBuffer,
+        stride: frame.yStride,
+      },
+      {
+        bytes: this._videoFrame.uBuffer,
+        stride: frame.yStride / 2,
+      },
+      {
+        bytes: this._videoFrame.vBuffer,
+        stride: frame.yStride / 2,
+      }
+    );
     this._yuvCanvasSink.drawFrame(yuvBufferFrame);
   }
 
