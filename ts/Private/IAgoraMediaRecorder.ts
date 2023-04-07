@@ -22,13 +22,7 @@ export abstract class IMediaRecorder {
   abstract setMediaRecorderObserver(callback: IMediaRecorderObserver): number;
 
   /**
-   * Sets the video encoder configuration.
-   * Sets the encoder configuration for the local video.You can call this method either before or after joining a channel. If the user does not need to reset the video encoding properties after joining the channel, Agora recommends calling this method before enableVideo to reduce the time to render the first video frame.
-   *
-   * @param config Video profile. See VideoEncoderConfiguration .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
+   * @ignore
    */
   abstract startRecording(config: MediaRecorderConfiguration): number;
 
