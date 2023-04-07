@@ -3,7 +3,6 @@ import {
   createAgoraRtcEngine,
   IMediaPlayer,
   IRtcEngineEx,
-  RenderModeType,
   RtcConnection,
   VideoCanvas,
   VideoMirrorModeType,
@@ -27,7 +26,8 @@ class RtcSurfaceView extends Component<Props, State> {
   constructor(props) {
     super(props);
     this.state = {
-      isMirror: false,
+      isMirror:
+        props.mirrorMode === VideoMirrorModeType.VideoMirrorModeDisabled,
       uniqueId: getRandomInt(),
     };
   }
@@ -47,8 +47,7 @@ class RtcSurfaceView extends Component<Props, State> {
 
   shouldComponentUpdate(
     nextProps: Readonly<Props>,
-    nextState: Readonly<{}>,
-    nextContext: any
+    nextState: Readonly<State>
   ): boolean {
     return (
       JSON.stringify(this.props.canvas) !== JSON.stringify(nextProps.canvas) ||
@@ -70,6 +69,7 @@ class RtcSurfaceView extends Component<Props, State> {
 
   updateRender = () => {
     const { canvas, connection } = this.props;
+    const { isMirror } = this.state;
     const dom = this.getHTMLElement();
     const engine = createAgoraRtcEngine();
 
@@ -102,57 +102,17 @@ class RtcSurfaceView extends Component<Props, State> {
     } catch (e) {
       console.warn(e);
     }
-    funcName.call(this, { ...canvas, view: dom }, connection!);
-  };
-
-  updateMirror = () => {
-    const { canvas, connection } = this.props;
-    const { isMirror } = this.state;
-    const engine = createAgoraRtcEngine();
-
-    let funcName:
-      | typeof IRtcEngineEx.prototype.setRemoteRenderModeEx
-      | typeof IRtcEngineEx.prototype.setLocalRenderMode
-      | typeof IRtcEngineEx.prototype.setRemoteRenderMode;
-
-    if (canvas.sourceType === undefined) {
-      if (canvas.uid) {
-        funcName = engine.setRemoteRenderMode;
-      } else {
-        funcName = engine.setLocalRenderMode;
-      }
-    } else if (canvas.sourceType === VideoSourceType.VideoSourceMediaPlayer) {
-      funcName = engine.setLocalRenderMode;
-    } else if (canvas.sourceType === VideoSourceType.VideoSourceRemote) {
-      funcName = engine.setRemoteRenderMode;
-    } else {
-      funcName = engine.setLocalRenderMode;
-    }
-
-    if (funcName === engine.setRemoteRenderMode && connection) {
-      funcName = engine.setRemoteRenderModeEx;
-    }
-
-    if (funcName === engine.setLocalRenderMode) {
-      funcName.call(
-        this,
-        RenderModeType.RenderModeFit,
-        isMirror
-          ? VideoMirrorModeType.VideoMirrorModeEnabled
-          : VideoMirrorModeType.VideoMirrorModeDisabled
-      );
-    } else {
-      // @ts-ignore
-      funcName.call(
-        this,
-        canvas.uid!,
-        RenderModeType.RenderModeFit,
-        isMirror
+    funcName.call(
+      this,
+      {
+        ...canvas,
+        mirrorMode: isMirror
           ? VideoMirrorModeType.VideoMirrorModeEnabled
           : VideoMirrorModeType.VideoMirrorModeDisabled,
-        connection!
-      );
-    }
+        view: dom,
+      },
+      connection!
+    );
   };
 
   render() {
@@ -163,11 +123,7 @@ class RtcSurfaceView extends Component<Props, State> {
       <div
         className={styles['window-item']}
         onClick={() => {
-          this.setState({ isMirror: !isMirror }, () => {
-            setTimeout(() => {
-              this.updateMirror();
-            });
-          });
+          this.setState({ isMirror: !isMirror }, this.updateRender);
         }}
       >
         <div

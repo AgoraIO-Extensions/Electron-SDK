@@ -171,6 +171,10 @@ export interface ShareVideoFrame {
   /**
    * @ignore
    */
+  yStride: number;
+  /**
+   * @ignore
+   */
   yBuffer: Buffer | Uint8Array;
   /**
    * @ignore

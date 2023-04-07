@@ -23,7 +23,8 @@ const vertexShaderSource =
 const yuvShaderSource =
   'precision mediump float;' +
   'uniform sampler2D Ytex;' +
-  'uniform sampler2D Utex,Vtex;' +
+  'uniform sampler2D Utex;' +
+  'uniform sampler2D Vtex;' +
   'varying vec2 v_texCoord;' +
   'void main(void) {' +
   '  float nx,ny,r,g,b,y,u,v;' +
@@ -294,7 +295,7 @@ export class GlRenderer extends IRenderer {
         height: videoFrame.height,
         left: 0,
         top: 0,
-        right: 0,
+        right: videoFrame.yStride - videoFrame.width,
         bottom: 0,
         rotation: videoFrame.rotation || 0,
         yplane: videoFrame.yBuffer,
