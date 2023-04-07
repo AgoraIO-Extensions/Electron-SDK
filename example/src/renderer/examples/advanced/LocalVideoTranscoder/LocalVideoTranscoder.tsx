@@ -337,7 +337,7 @@ export default class LocalVideoTranscoder
       value.height = height;
       value.zOrder = 1;
       value.alpha = 1;
-      value.mirror = true;
+      value.mirror = false;
     });
 
     return {

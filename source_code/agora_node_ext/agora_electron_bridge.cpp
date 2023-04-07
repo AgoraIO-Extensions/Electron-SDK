@@ -511,6 +511,7 @@ void AgoraElectronBridge::Init() {
 void AgoraElectronBridge::Release() {
   if (_iris_api_engine) {
     // reset
+    _iris_rendering.reset();
     _iris_api_engine.reset();
   }
   LOG_F(INFO, __FUNCTION__);
