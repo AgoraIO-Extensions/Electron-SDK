@@ -979,16 +979,10 @@ export interface IVideoFrameObserver {
    * Occurs each time the SDK receives a video frame before encoding.
    * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data before encoding and then process the data according to your particular scenarios.After processing, you can send the processed video data back to the SDK in this callback.The video data that this callback gets has been preprocessed, with its content cropped and rotated, and the image enhanced.
    *
-   * @param videoFrame The video frame. See VideoFrame .The default value of the video frame data format obtained through this callback is as follows:
-   *  macOS: YUV 420
-   *  Windows: YUV 420
+   * @param videoFrame The video frame. See VideoFrame .The default value of the video frame data format obtained through this callback is as follows:macOS: YUV 420Windows: YUV 420
    *
    * @returns
-   * When the video processing mode is ProcessModeReadOnly:
-   *  true: Reserved for future use.
-   *  false: Reserved for future use. When the video processing mode is ProcessModeReadWrite:
-   *  true: Sets the SDK to receive the video frame.
-   *  false: Sets the SDK to discard the video frame.
+   * When the video processing mode is ProcessModeReadOnly:true: Reserved for future use.false: Reserved for future use.When the video processing mode is ProcessModeReadWrite:true: Sets the SDK to receive the video frame.false: Sets the SDK to discard the video frame.
    */
   onPreEncodeVideoFrame?(
     type: VideoSourceType,
@@ -1027,19 +1021,13 @@ export interface IVideoFrameObserver {
   ): boolean;
 
   /**
-   * Occurs each time the SDK receives a video frame captured by the screen.
-   * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data for screen sharing. You can then pre-process the data according to your scenarios.After pre-processing, you can send the processed video data back to the SDK through this callback.This callback does not support sending processed RGBA video data back to the SDK.The video data that this callback gets has not been pre-processed, and is not watermarked, cropped, rotated or beautified.
+   * Occurs each time the SDK receives a video frame before encoding.
+   * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data before encoding and then process the data according to your particular scenarios.After processing, you can send the processed video data back to the SDK in this callback.The video data that this callback gets has been preprocessed, with its content cropped and rotated, and the image enhanced.
    *
-   * @param videoFrame The video frame. See VideoFrame .The default value of the video frame data format obtained through this callback is as follows:
-   *  macOS: YUV 420
-   *  Windows: YUV 420
+   * @param videoFrame The video frame. See VideoFrame .The default value of the video frame data format obtained through this callback is as follows:macOS: YUV 420Windows: YUV 420
    *
    * @returns
-   * When the video processing mode is ProcessModeReadOnly:
-   *  true: Reserved for future use.
-   *  false: Reserved for future use. When the video processing mode is ProcessModeReadWrite:
-   *  true: Sets the SDK to receive the video frame.
-   *  false: Sets the SDK to discard the video frame.
+   * When the video processing mode is ProcessModeReadOnly:true: Reserved for future use.false: Reserved for future use.When the video processing mode is ProcessModeReadWrite:true: Sets the SDK to receive the video frame.false: Sets the SDK to discard the video frame.
    */
   onTranscodedVideoFrame?(videoFrame: VideoFrame): boolean;
 }

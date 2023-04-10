@@ -337,7 +337,7 @@ export default class LocalVideoTranscoder
       value.height = height;
       value.zOrder = 1;
       value.alpha = 1;
-      value.mirror = true;
+      value.mirror = false;
     });
 
     return {
@@ -440,21 +440,23 @@ export default class LocalVideoTranscoder
   }
 
   protected renderUsers(): React.ReactNode {
-    const { videoDeviceId, channelId } = this.state;
+    const { startPreview, joinChannelSuccess, videoDeviceId } = this.state;
     return (
       <>
         {super.renderUsers()}
-        {videoDeviceId?.map((value) => {
-          return (
-            <RtcSurfaceView
-              key={value}
-              canvas={{
-                uid: 0,
-                sourceType: this._getVideoSourceTypeCamera(value),
-              }}
-            />
-          );
-        })}
+        {startPreview || joinChannelSuccess
+          ? videoDeviceId?.map((value) => {
+              return (
+                <RtcSurfaceView
+                  key={value}
+                  canvas={{
+                    uid: 0,
+                    sourceType: this._getVideoSourceTypeCamera(value),
+                  }}
+                />
+              );
+            })
+          : undefined}
       </>
     );
   }

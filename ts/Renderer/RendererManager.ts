@@ -56,9 +56,6 @@ export class RendererManager {
    */
   defaultRenderConfig: RendererVideoConfig;
 
-  /**
-   * @ignore
-   */
   constructor() {
     this.renderFps = 10;
     this.renderers = new Map();
@@ -74,15 +71,6 @@ export class RendererManager {
     };
   }
 
-  /**
-   * Sets dual-stream mode on the sender side.
-   * The SDK enables the low-quality video stream auto mode on the sender by default, which is equivalent to calling this method and setting the mode to AutoSimulcastStream. If you want to modify this behavior, you can call this method and modify the mode to DisableSimulcastStream(never send low-quality video streams) or EnableSimulcastStream (always send low-quality video streams).The difference and connection between this method and enableDualStreamMode [1/3] is as follows:When calling this method and setting mode to DisableSimulcastStream, it has the same effect as enableDualStreamMode [1/3](false).When calling this method and setting mode to EnableSimulcastStream, it has the same effect as enableDualStreamMode [1/3](true).Both methods can be called before and after joining a channel. If they are used at the same time, the settings in the method called later shall prevail.
-   *
-   * @param mode The mode in which the video stream is sent. See SimulcastStreamMode .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
   setRenderMode(mode: RENDER_MODE) {
     this.renderMode = mode;
     logInfo(
@@ -90,20 +78,23 @@ export class RendererManager {
     );
   }
 
+  /**
+   * @ignore
+   */
   public setFPS(fps: number) {
     this.renderFps = fps;
     this.restartRender();
   }
 
+  /**
+   * @ignore
+   */
   public setRenderOption(
     view: HTMLElement,
     contentMode = RenderModeType.RenderModeFit,
     mirror: boolean = false
   ): void {
     if (!view) {
-      /**
-       * @ignore
-       */
       logError('setRenderOption: view not exist', view);
     }
     this.forEachStream(({ renders }) => {
@@ -115,6 +106,9 @@ export class RendererManager {
     });
   }
 
+  /**
+   * @ignore
+   */
   public setRenderOptionByConfig(rendererConfig: RendererVideoConfig): number {
     const {
       uid,
@@ -122,9 +116,6 @@ export class RendererManager {
       rendererOptions,
       videoSourceType,
     }: FormatRendererVideoConfig =
-      /**
-       * @ignore
-       */
       getDefaultRendererVideoConfig(rendererConfig);
 
     const renderList = this.getRenderers({ uid, channelId, videoSourceType });
@@ -144,6 +135,9 @@ export class RendererManager {
     return ErrorCodeType.ErrOk;
   }
 
+  /**
+   * @ignore
+   */
   public checkWebglEnv(): boolean {
     let gl;
     let canvas: HTMLCanvasElement = document.createElement('canvas');
@@ -160,6 +154,9 @@ export class RendererManager {
     return !!gl;
   }
 
+  /**
+   * @ignore
+   */
   public setupVideo(rendererVideoConfig: RendererVideoConfig): number {
     const formatConfig = getDefaultRendererVideoConfig(rendererVideoConfig);
 
@@ -190,6 +187,9 @@ export class RendererManager {
     return ErrorCodeType.ErrOk;
   }
 
+  /**
+   * @ignore
+   */
   public setupLocalVideo(rendererConfig: RendererVideoConfig): number {
     const { videoSourceType } = rendererConfig;
     if (videoSourceType === VideoSourceType.VideoSourceRemote) {
@@ -200,6 +200,9 @@ export class RendererManager {
     return ErrorCodeType.ErrOk;
   }
 
+  /**
+   * @ignore
+   */
   public setupRemoteVideo(rendererConfig: RendererVideoConfig): number {
     const { videoSourceType } = rendererConfig;
     if (videoSourceType !== VideoSourceType.VideoSourceRemote) {
@@ -210,6 +213,11 @@ export class RendererManager {
     return ErrorCodeType.ErrOk;
   }
 
+  /**
+   * Destroys a video renderer object.
+   *
+   * @param view The HTMLElement object to be destroyed.
+   */
   public destroyRendererByView(view: Element): void {
     const renders = this.renderers;
     renders.forEach((channelMap, videoSourceType) => {
@@ -238,6 +246,9 @@ export class RendererManager {
     });
   }
 
+  /**
+   * @ignore
+   */
   public destroyRenderersByConfig(
     videoSourceType: VideoSourceType,
     channelId?: Channel,
@@ -264,6 +275,9 @@ export class RendererManager {
     renderMap.renders = [];
   }
 
+  /**
+   * @ignore
+   */
   public removeAllRenderer(): void {
     const renderMap = this.forEachStream(
       (renderConfig, videoFrameCacheConfig) => {
@@ -282,6 +296,15 @@ export class RendererManager {
     this.removeAllRenderer();
   }
 
+  /**
+   * Enables/Disables the local video capture.
+   * This method disables or re-enables the local video capture, and does not affect receiving the remote video stream.After calling enableVideo , the local video capture is enabled by default. You can call enableLocalVideo (false) to disable the local video capture. If you want to re-enable the local video capture, call enableLocalVideo(true).After the local video capturer is successfully disabled or re-enabled, the SDK triggers the onRemoteVideoStateChanged callback on the remote client.You can call this method either before or after joining a channel.This method enables the internal engine and is valid after leaving the channel.
+   *
+   * @param enabled Whether to enable the local video capture.true: (Default) Enable the local video capture.false: Disable the local video capture. Once the local video is disabled, the remote users cannot receive the video stream of the local user, while the local user can still receive the video streams of remote users. When set to false, this method does not require a local camera.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
   public enableRender(enabled = true): void {
     if (enabled && this.isRendering) {
       //is already _isRendering
@@ -292,6 +315,9 @@ export class RendererManager {
     }
   }
 
+  /**
+   * @ignore
+   */
   public startRenderer(): void {
     this.isRendering = true;
     const renderFunc = (
@@ -356,6 +382,9 @@ export class RendererManager {
     }, 1000 / this.renderFps);
   }
 
+  /**
+   * @ignore
+   */
   public stopRender(): void {
     this.isRendering = false;
     if (this.videoFrameUpdateInterval) {
@@ -364,6 +393,9 @@ export class RendererManager {
     }
   }
 
+  /**
+   * @ignore
+   */
   public restartRender(): void {
     if (this.videoFrameUpdateInterval) {
       this.stopRender();
@@ -372,6 +404,9 @@ export class RendererManager {
     }
   }
 
+  /**
+   * @ignore
+   */
   private createRenderer(failCallback?: RenderFailCallback): IRenderer {
     if (this.renderMode === RENDER_MODE.SOFTWARE) {
       return new YUVCanvasRenderer();
@@ -380,6 +415,9 @@ export class RendererManager {
     }
   }
 
+  /**
+   * @ignore
+   */
   private getRender({
     videoSourceType,
     channelId,
@@ -388,6 +426,9 @@ export class RendererManager {
     return this.renderers.get(videoSourceType)?.get(channelId)?.get(uid);
   }
 
+  /**
+   * @ignore
+   */
   private getRenderers({
     videoSourceType,
     channelId,
@@ -399,6 +440,9 @@ export class RendererManager {
     );
   }
 
+  /**
+   * @ignore
+   */
   private bindHTMLElementToRender(
     config: FormatRendererVideoConfig,
     view: HTMLElement
@@ -434,6 +478,9 @@ export class RendererManager {
     return renderer;
   }
 
+  /**
+   * @ignore
+   */
   private forEachStream(
     callbackfn: (
       renderConfig: RenderConfig,
@@ -459,6 +506,9 @@ export class RendererManager {
     return renders;
   }
 
+  /**
+   * @ignore
+   */
   private enableVideoFrameCache(
     videoFrameCacheConfig: VideoFrameCacheConfig
   ): void {
@@ -466,6 +516,9 @@ export class RendererManager {
     this.msgBridge.EnableVideoFrameCache(videoFrameCacheConfig);
   }
 
+  /**
+   * @ignore
+   */
   private disableVideoFrameCache(
     videoFrameCacheConfig: VideoFrameCacheConfig
   ): void {
@@ -473,6 +526,9 @@ export class RendererManager {
     this.msgBridge.DisableVideoFrameCache(videoFrameCacheConfig);
   }
 
+  /**
+   * @ignore
+   */
   private ensureRendererConfig(config: VideoFrameCacheConfig):
     | Map<
         number,
@@ -516,6 +572,9 @@ export class RendererManager {
     return channelMap;
   }
 
+  /**
+   * @ignore
+   */
   private resizeShareVideoFrame(
     videoSourceType: VideoSourceType,
     channelId: string,
@@ -535,6 +594,9 @@ export class RendererManager {
     };
   }
 
+  /**
+   * @ignore
+   */
   private updateVideoFrameCacheInMap(
     config: VideoFrameCacheConfig,
     shareVideoFrame: ShareVideoFrame

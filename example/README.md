@@ -22,7 +22,7 @@ Then do the following:
 git clone git@github.com:AgoraIO-Extensions/Electron-SDK.git
 cd example
 yarn
-yarn dev
+yarn start
 ```
 
 #### (Optional) Build From Local SDK
