@@ -5075,19 +5075,27 @@ NAPI_API_DEFINE(NodeRtcEngine, initializePluginManager) {
   int result = -1;
   do {
     NodeRtcEngine* pEngine = nullptr;
+    napi_status status = napi_ok;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
+    bool enablePacket;
+    status = napi_get_value_bool_(args[0], enablePacket);
+    CHECK_NAPI_STATUS(pEngine, status);
 
     agora::media::IMediaEngine* pMediaEngine = nullptr;
     pEngine->getRtcEngine()->queryInterface(agora::AGORA_IID_MEDIA_ENGINE,
                                             (void**)&pMediaEngine);
     if (pEngine->m_avPluginManager.get()) {
-      pMediaEngine->registerVideoFrameObserver(
-          pEngine->m_avPluginManager.get());
-      pMediaEngine->registerAudioFrameObserver(
-          pEngine->m_avPluginManager.get());
-      pEngine->getRtcEngine()->registerPacketObserver(
-          pEngine->m_avPluginManager.get());
+      if (pMediaEngine) {
+        pMediaEngine->registerVideoFrameObserver(
+            pEngine->m_avPluginManager.get());
+        pMediaEngine->registerAudioFrameObserver(
+            pEngine->m_avPluginManager.get());
+      }
+      if (enablePacket) {
+        pEngine->getRtcEngine()->registerPacketObserver(
+            pEngine->m_avPluginManager.get());
+      }
       result = 0;
     }
   } while (false);
@@ -5106,9 +5114,11 @@ NAPI_API_DEFINE(NodeRtcEngine, releasePluginManager) {
     agora::media::IMediaEngine* pMediaEngine = nullptr;
     pEngine->getRtcEngine()->queryInterface(agora::AGORA_IID_MEDIA_ENGINE,
                                             (void**)&pMediaEngine);
-    pMediaEngine->registerVideoFrameObserver(NULL);
-    pMediaEngine->registerAudioFrameObserver(NULL);
-     pEngine->getRtcEngine()->registerPacketObserver(NULL);
+    if (pMediaEngine) {  
+      pMediaEngine->registerVideoFrameObserver(NULL);
+      pMediaEngine->registerAudioFrameObserver(NULL);
+    }
+    pEngine->getRtcEngine()->registerPacketObserver(NULL);
     result = 0;
   } while (false);
   napi_set_int_result(args, result);

@@ -5788,8 +5788,8 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @ignore
    */
-  initializePluginManager(): number {
-    return this.rtcEngine.initializePluginManager();
+  initializePluginManager(enablePacket: boolean = false): number {
+    return this.rtcEngine.initializePluginManager(enablePacket);
   }
   /**
    * @ignore

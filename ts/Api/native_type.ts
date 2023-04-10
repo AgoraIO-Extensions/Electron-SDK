@@ -4636,7 +4636,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  initializePluginManager(): number;
+  initializePluginManager(enablePacket?: boolean): number;
   /**
    * @ignore
    */
