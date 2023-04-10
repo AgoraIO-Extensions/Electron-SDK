@@ -95,26 +95,26 @@ export abstract class IMediaEngine {
   ): number;
 
   /**
-   * Occurs each time the player receives an audio frame.
-   * After registering the audio frame observer, the callback occurs every time the player receives an audio frame, reporting the detailed information of the audio frame.
+   * Occurs each time the player receives a video frame.
+   * After registering the video frame observer, the callback occurs every time the player receives a video frame, reporting the detailed information of the video frame.
    *
-   * @param frame Audio frame information. See AudioPcmFrame .
+   * @param frame Video frame information. See VideoFrame .
    */
   abstract pushCaptureAudioFrame(frame: AudioFrame): number;
 
   /**
-   * Occurs each time the player receives an audio frame.
-   * After registering the audio frame observer, the callback occurs every time the player receives an audio frame, reporting the detailed information of the audio frame.
+   * Occurs each time the player receives a video frame.
+   * After registering the video frame observer, the callback occurs every time the player receives a video frame, reporting the detailed information of the video frame.
    *
-   * @param frame Audio frame information. See AudioPcmFrame .
+   * @param frame Video frame information. See VideoFrame .
    */
   abstract pushReverseAudioFrame(frame: AudioFrame): number;
 
   /**
-   * Occurs each time the player receives an audio frame.
-   * After registering the audio frame observer, the callback occurs every time the player receives an audio frame, reporting the detailed information of the audio frame.
+   * Occurs each time the player receives a video frame.
+   * After registering the video frame observer, the callback occurs every time the player receives a video frame, reporting the detailed information of the video frame.
    *
-   * @param frame Audio frame information. See AudioPcmFrame .
+   * @param frame Video frame information. See VideoFrame .
    */
   abstract pushDirectAudioFrame(frame: AudioFrame): number;
 
