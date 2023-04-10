@@ -12,7 +12,6 @@ exports.getOS = () => {
   } else {
     // not supported in temp
     logger.error('Unsupported platform!');
-    throw new Error('Unsupported platform!');
   }
 };
 
