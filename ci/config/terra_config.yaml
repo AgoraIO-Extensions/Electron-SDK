@@ -1,0 +1,10 @@
+include: shared:rtc_4.2.0/shared_configs.yaml
+
+language: ts
+
+defines_macros:
+  - __ELECTRON__
+
+legacy_renders:
+  - TsInterfaceRender
+  - TsImplRender
