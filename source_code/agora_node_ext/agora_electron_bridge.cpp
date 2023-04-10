@@ -391,6 +391,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   size_t v_length;
   int height;
   int width;
+  int yStride;
 
   napi_obj_get_property(env, obj, "uid", config.uid);
   napi_obj_get_property(env, obj, "videoSourceType", config.video_source_type);
@@ -408,6 +409,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
 
   napi_obj_get_property(env, obj, "height", height);
   napi_obj_get_property(env, obj, "width", width);
+  napi_obj_get_property(env, obj, "yStride", yStride);
 
   IrisCVideoFrame videoFrame;
   videoFrame.yBuffer = (uint8_t *) y_buffer;
@@ -415,6 +417,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   videoFrame.vBuffer = (uint8_t *) v_buffer;
   videoFrame.height = height;
   videoFrame.width = width;
+  videoFrame.yStride = yStride;
 
   bool isFresh = false;
   napi_value retObj;
