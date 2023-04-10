@@ -83,7 +83,9 @@ export default class Extension
       return;
     }
 
-    this.engine?.loadExtensionProvider(path);
+    if (process.platform === 'win32') {
+      this.engine?.loadExtensionProvider(path);
+    }
 
     this.engine?.enableExtension(provider, extension, true);
     this.setState({ enableExtension: true });

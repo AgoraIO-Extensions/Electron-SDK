@@ -91,6 +91,7 @@ function JoinChannelAudio() {
     engine.current.enableLocalAudio(false);
     setEnableLocalAudio(false);
   };
+
   /**
    * Step 3-2-1 (Optional): muteLocalAudioStream
    */
