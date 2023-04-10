@@ -682,7 +682,7 @@ export enum FrameWidth {
   /**
    * @ignore
    */
-  FrameWidth640 = 640,
+  FrameWidth960 = 960,
 }
 
 /**
@@ -692,7 +692,7 @@ export enum FrameHeight {
   /**
    * @ignore
    */
-  FrameHeight360 = 360,
+  FrameHeight540 = 540,
 }
 
 /**
@@ -2426,7 +2426,7 @@ export enum RtmpStreamPublishErrorType {
    */
   RtmpStreamPublishErrorNetDown = 14,
   /**
-   * 15: Your App ID does not have permission to use the CDN live streaming function.
+   * @ignore
    */
   RtmpStreamPublishErrorInvalidAppid = 15,
   /**
@@ -3716,7 +3716,9 @@ export interface IAudioEncodedFrameObserver {
    * After calling registerAudioEncodedFrameObserver and setting the encoded audio as AudioEncodedFrameObserverPositionPlayback, you can get encoded audio data of all remote users through this callback.
    *
    * @param samplesPerSec Recording sample rate (Hz).
-   * @param channels The number of channels.1: Mono.2: Stereo. If the channel uses stereo, the data is interleaved.
+   * @param channels The number of channels.
+   *  1: Mono.
+   *  2: Stereo. If the channel uses stereo, the data is interleaved.
    * @param samplesPerChannel The number of samples per channel in the audio frame.
    * @param frameBuffer The audio buffer.
    * @param length The data length (byte).

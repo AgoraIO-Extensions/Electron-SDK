@@ -249,7 +249,7 @@ export function processIRtcEngineEventHandler(
     case 'onFirstLocalVideoFrame':
       if (handler.onFirstLocalVideoFrame !== undefined) {
         handler.onFirstLocalVideoFrame(
-          jsonParams.connection,
+          jsonParams.source,
           jsonParams.width,
           jsonParams.height,
           jsonParams.elapsed
@@ -6505,6 +6505,17 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromGetNtpTimeInMs(): string {
     return 'RtcEngine_getNtpTimeInMs';
+  }
+
+  getNtpWallTimeInMs(): number {
+    const apiType = this.getApiTypeFromGetNtpWallTimeInMs();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromGetNtpWallTimeInMs(): string {
+    return 'RtcEngine_getNtpWallTimeInMs';
   }
 
   isFeatureAvailableOnDevice(type: FeatureType): boolean {
