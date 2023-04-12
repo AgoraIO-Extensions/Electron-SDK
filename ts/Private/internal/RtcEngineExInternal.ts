@@ -75,7 +75,7 @@ import { MediaRecorderInternal } from './MediaRecorderInternal';
 import { MusicContentCenterInternal } from './MusicContentCenterInternal';
 
 import { callIrisApi, DeviceEventEmitter, EVENT_TYPE } from './IrisApiEngine';
-import { EmitterSubscription } from './emitter/EventEmitter';
+import type { EmitterSubscription } from './emitter/EventEmitter';
 import { RendererManager } from '../../Renderer/RendererManager';
 
 export class RtcEngineExInternal extends IRtcEngineExImpl {
@@ -239,9 +239,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     listener: IRtcEngineEvent[EventType]
   ) {
     if (!this._events.has(listener)) return;
-    DeviceEventEmitter.removeSubscription(
-      this._events.get(listener)!.subscription
-    );
+    this._events.get(listener)!.subscription.remove();
     this._events.delete(listener);
   }
 
