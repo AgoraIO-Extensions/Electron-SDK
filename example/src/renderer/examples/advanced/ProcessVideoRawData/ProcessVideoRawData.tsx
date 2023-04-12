@@ -21,6 +21,7 @@ import { AgoraButton } from '../../../components/ui';
 const ffi = require('ffi-napi');
 const Pointer = 'uint64';
 
+const pluginVersion = 'v4.2.0';
 let pluginName = 'VideoObserverPlugin';
 let postfix = `_${process.arch}`;
 if (process.platform === 'darwin') {
@@ -112,8 +113,7 @@ export default class ProcessVideoRawData
    * Step 3: enablePlugin
    */
   enablePlugin = async () => {
-    const version = '4.1.0-beta.1';
-    const url = `https://github.com/AgoraIO-Extensions/RawDataPluginSample/releases/download/${version}/${pluginName}`;
+    const url = `https://github.com/AgoraIO-Extensions/RawDataPluginSample/releases/download/${pluginVersion}/${pluginName}`;
     const dllPath = path.resolve(os.tmpdir(), pluginName);
     if (!fs.existsSync(dllPath)) {
       console.log(`start downloading plugin ${url} to ${dllPath}`);
