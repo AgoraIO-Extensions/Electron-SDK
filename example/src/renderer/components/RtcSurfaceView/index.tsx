@@ -1,15 +1,16 @@
-import { Component } from 'react';
 import {
-  createAgoraRtcEngine,
   IMediaPlayer,
   IRtcEngineEx,
   RtcConnection,
   VideoCanvas,
   VideoMirrorModeType,
   VideoSourceType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
+import { Component } from 'react';
 
 import { getRandomInt } from '../../utils';
+
 import styles from './index.scss';
 
 interface Props {

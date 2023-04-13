@@ -1,23 +1,23 @@
-import React from 'react';
+import { Buffer } from 'buffer';
+
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IMetadataObserver,
   IRtcEngineEventHandler,
   Metadata,
   MetadataType,
   VideoSourceType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import { Buffer } from 'buffer';
-
-import Config from '../../../config/agora.config';
+import React from 'react';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
 import { AgoraButton, AgoraTextInput } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 
 interface State extends BaseVideoComponentState {
   metadataBuffer: string;

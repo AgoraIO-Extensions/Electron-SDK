@@ -2,6 +2,7 @@ declare namespace PublicScssNamespace {
   export interface IPublicScss {
     card: string;
     content: string;
+    fullSize: string;
     require: string;
     rightBar: string;
     rightBarBig: string;

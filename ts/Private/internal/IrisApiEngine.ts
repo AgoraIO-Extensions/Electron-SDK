@@ -1,4 +1,3 @@
-const JSON = require('json-bigint');
 import { AgoraEnv } from '../../Utils';
 
 import { IAudioEncodedFrameObserver } from '../AgoraBase';
@@ -14,17 +13,17 @@ import {
   VideoFrame,
 } from '../AgoraMediaBase';
 import {
-  IDirectCdnStreamingEventHandler,
-  IMetadataObserver,
-  IRtcEngineEventHandler,
-  Metadata,
-} from '../IAgoraRtcEngine';
-import {
   IMediaPlayer,
   IMediaPlayerVideoFrameObserver,
 } from '../IAgoraMediaPlayer';
 import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
 import { IMusicContentCenterEventHandler } from '../IAgoraMusicContentCenter';
+import {
+  IDirectCdnStreamingEventHandler,
+  IMetadataObserver,
+  IRtcEngineEventHandler,
+  Metadata,
+} from '../IAgoraRtcEngine';
 
 import { processIAudioEncodedFrameObserver } from '../impl/AgoraBaseImpl';
 import {
@@ -36,14 +35,14 @@ import {
   processIVideoEncodedFrameObserver,
   processIVideoFrameObserver,
 } from '../impl/AgoraMediaBaseImpl';
+import { processIMediaPlayerVideoFrameObserver } from '../impl/IAgoraMediaPlayerImpl';
+import { processIMediaPlayerSourceObserver } from '../impl/IAgoraMediaPlayerSourceImpl';
+import { processIMusicContentCenterEventHandler } from '../impl/IAgoraMusicContentCenterImpl';
 import {
   processIDirectCdnStreamingEventHandler,
   processIMetadataObserver,
   processIRtcEngineEventHandler,
 } from '../impl/IAgoraRtcEngineImpl';
-import { processIMediaPlayerVideoFrameObserver } from '../impl/IAgoraMediaPlayerImpl';
-import { processIMediaPlayerSourceObserver } from '../impl/IAgoraMediaPlayerSourceImpl';
-import { processIMusicContentCenterEventHandler } from '../impl/IAgoraMusicContentCenterImpl';
 
 import { MediaEngineInternal } from './MediaEngineInternal';
 import { MediaPlayerInternal } from './MediaPlayerInternal';
@@ -53,9 +52,10 @@ import {
   MusicContentCenterInternal,
 } from './MusicContentCenterInternal';
 import { RtcEngineExInternal } from './RtcEngineExInternal';
-
 import type { EventEmitter as IEventEmitter } from './emitter/EventEmitter';
 import EventEmitter from './emitter/EventEmitter';
+
+const JSON = require('json-bigint');
 
 // @ts-ignore
 export const DeviceEventEmitter: IEventEmitter = new EventEmitter();

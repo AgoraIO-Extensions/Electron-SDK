@@ -1,7 +1,7 @@
-import { IRtcEngineEx } from './Private/IAgoraRtcEngineEx';
-import { RtcEngineExInternal } from './Private/internal/RtcEngineExInternal';
 import { IMediaPlayerCacheManager } from './Private/IAgoraMediaPlayer';
+import { IRtcEngineEx } from './Private/IAgoraRtcEngineEx';
 import { IMediaPlayerCacheManagerImpl } from './Private/impl/IAgoraMediaPlayerImpl';
+import { RtcEngineExInternal } from './Private/internal/RtcEngineExInternal';
 
 export * from './Private/AgoraBase';
 export * from './Private/AgoraMediaBase';

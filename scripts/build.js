@@ -1,4 +1,5 @@
 const { exec } = require('shelljs');
+
 const getConfig = require('./getConfig');
 const logger = require('./logger');
 const { getOS } = require('./util');

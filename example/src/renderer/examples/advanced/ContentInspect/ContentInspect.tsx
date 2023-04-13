@@ -1,15 +1,13 @@
-import React from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
   ContentInspectModule,
   ContentInspectResult,
   ContentInspectType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React from 'react';
 
 import {
   BaseComponent,
@@ -23,6 +21,7 @@ import {
   AgoraTextInput,
   AgoraView,
 } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 import { enumToItems } from '../../../utils';
 
 interface State extends BaseVideoComponentState {

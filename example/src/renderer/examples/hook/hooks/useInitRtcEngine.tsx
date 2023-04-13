@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
 import createAgoraRtcEngine, {
   ChannelProfileType,
   ErrorCodeType,
@@ -7,10 +6,10 @@ import createAgoraRtcEngine, {
   RtcStats,
   UserOfflineReasonType,
 } from 'agora-electron-sdk';
-
-import * as log from '../../../utils/log';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import Config from '../../../config/agora.config';
+import * as log from '../../../utils/log';
 
 export function useInitRtcEngine(enableVideo: boolean) {
   const [appId] = useState(Config.appId);

@@ -1,6 +1,4 @@
-import React from 'react';
 import {
-  createAgoraRtcEngine,
   IMediaPlayer,
   IMediaPlayerSourceObserver,
   IRtcEngineEventHandler,
@@ -8,21 +6,22 @@ import {
   MediaPlayerEvent,
   MediaPlayerState,
   VideoSourceType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React from 'react';
 
 import {
   BaseComponent,
   BaseComponentState,
 } from '../../../components/BaseComponent';
+import RtcSurfaceView from '../../../components/RtcSurfaceView';
 import {
   AgoraButton,
   AgoraDivider,
   AgoraSlider,
   AgoraTextInput,
 } from '../../../components/ui';
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
+import Config from '../../../config/agora.config';
 
 interface State extends BaseComponentState {
   url: string;

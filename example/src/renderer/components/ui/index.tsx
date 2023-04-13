@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { DownOutlined } from '@ant-design/icons';
 import {
   Button,
   ButtonProps,
@@ -20,8 +20,10 @@ import {
   Switch,
   SwitchProps,
 } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
 import { ListItemProps } from 'antd/lib/list';
+import React, { useEffect, useState } from 'react';
+
+import css from './public.scss';
 
 export const AgoraView = (
   props: React.DetailedHTMLProps<
@@ -314,38 +316,4 @@ export const AgoraDropdown = (
   );
 };
 
-export const AgoraStyle = {
-  fullWidth: {
-    width: '100%',
-  },
-  fullSize: {
-    display: 'flex',
-    flex: 1,
-  },
-  input: {
-    height: 50,
-    color: 'black',
-  },
-  videoContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-  },
-  videoLarge: {
-    flex: 1,
-  },
-  videoSmall: {
-    width: 120,
-    height: 120,
-  },
-  float: {
-    position: 'absolute',
-    right: 0,
-    bottom: 0,
-    alignItems: 'flex-end',
-  },
-  slider: {
-    width: '100%',
-    height: 40,
-  },
-};
+export const AgoraStyle = css;

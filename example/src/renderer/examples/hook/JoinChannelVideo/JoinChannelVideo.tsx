@@ -1,16 +1,16 @@
-import React, { useEffect } from 'react';
 import {
   ClientRoleType,
   LocalVideoStreamError,
   LocalVideoStreamState,
   VideoSourceType,
 } from 'agora-electron-sdk';
+import React, { useEffect } from 'react';
 
 import * as log from '../../../utils/log';
-import { useInitRtcEngine } from '../hooks/useInitRtcEngine';
+import { BaseComponent } from '../components/BaseComponent';
 import BaseRenderChannel from '../components/BaseRenderChannel';
 import BaseRenderUsers from '../components/BaseRenderUsers';
-import { BaseComponent } from '../components/BaseComponent';
+import { useInitRtcEngine } from '../hooks/useInitRtcEngine';
 
 export default function JoinChannelVideo() {
   const {

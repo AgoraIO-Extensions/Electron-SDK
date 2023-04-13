@@ -1,7 +1,7 @@
-import React, { memo, ReactElement } from 'react';
+import React, { ReactElement, memo } from 'react';
 
-import { AgoraCard, AgoraList, AgoraText } from '../../../components/ui';
 import RtcSurfaceView from '../../../components/RtcSurfaceView';
+import { AgoraCard, AgoraList, AgoraText } from '../../../components/ui';
 
 export interface BaseRenderUsersProps {
   renderVideo?: (uid: number) => ReactElement;

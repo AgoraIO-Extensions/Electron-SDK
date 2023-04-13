@@ -1,10 +1,12 @@
 const path = require('path');
+
 const download = require('download');
 const fs = require('fs-extra');
-const { getOS } = require('./util');
-const logger = require('./logger');
+
 const { cleanBuildDir, cleanJSDir, buildDir } = require('./clean');
 const getConfig = require('./getConfig');
+const logger = require('./logger');
+const { getOS } = require('./util');
 
 const { platform, packageVersion, arch, no_symbol } = getConfig();
 

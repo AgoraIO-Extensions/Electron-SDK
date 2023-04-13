@@ -1,8 +1,6 @@
-import React, { ReactElement } from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   ErrorCodeType,
   IRtcEngineEventHandler,
   LocalVideoStreamError,
@@ -11,21 +9,22 @@ import {
   RtcStats,
   UserOfflineReasonType,
   VideoSourceType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
+import RtcSurfaceView from '../../../components/RtcSurfaceView';
 import {
   AgoraButton,
   AgoraCard,
   AgoraList,
   AgoraText,
 } from '../../../components/ui';
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
+import Config from '../../../config/agora.config';
 
 interface State extends BaseVideoComponentState {}
 

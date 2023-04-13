@@ -1,13 +1,11 @@
-import React from 'react';
 import {
   AudioScenarioType,
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React from 'react';
 
 import {
   BaseAudioComponentState,
@@ -21,6 +19,7 @@ import {
   AgoraTextInput,
   AgoraView,
 } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 import { arrayToItems } from '../../../utils';
 
 interface State extends BaseAudioComponentState {
@@ -212,7 +211,7 @@ export default class LocalSpatialAudioEngine
           {position.map((value, index) => (
             <AgoraTextInput
               key={`position-${index}`}
-              style={AgoraStyle.fullSize}
+              className={AgoraStyle.fullSize}
               onChangeText={(text) => {
                 if (isNaN(+text)) return;
                 position[index] = +text;
@@ -230,7 +229,7 @@ export default class LocalSpatialAudioEngine
           {axisForward.map((value, index) => (
             <AgoraTextInput
               key={`axisForward-${index}`}
-              style={AgoraStyle.fullSize}
+              className={AgoraStyle.fullSize}
               onChangeText={(text) => {
                 if (isNaN(+text)) return;
                 axisForward[index] = +text;
@@ -248,7 +247,7 @@ export default class LocalSpatialAudioEngine
           {axisRight.map((value, index) => (
             <AgoraTextInput
               key={`axisRight-${index}`}
-              style={AgoraStyle.fullSize}
+              className={AgoraStyle.fullSize}
               onChangeText={(text) => {
                 if (isNaN(+text)) return;
                 axisRight[index] = +text;
@@ -266,7 +265,7 @@ export default class LocalSpatialAudioEngine
           {axisUp.map((value, index) => (
             <AgoraTextInput
               key={`axisUp-${index}`}
-              style={AgoraStyle.fullSize}
+              className={AgoraStyle.fullSize}
               onChangeText={(text) => {
                 if (isNaN(+text)) return;
                 axisUp[index] = +text;

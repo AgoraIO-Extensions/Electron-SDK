@@ -1,9 +1,8 @@
-import React from 'react';
 import os from 'os';
+
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IMediaRecorder,
   IMediaRecorderObserver,
   IRtcEngineEventHandler,
@@ -12,9 +11,9 @@ import {
   RecorderErrorCode,
   RecorderInfo,
   RecorderState,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React from 'react';
 
 import {
   BaseComponent,
@@ -27,6 +26,7 @@ import {
   AgoraSlider,
   AgoraTextInput,
 } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 import { enumToItems } from '../../../utils';
 
 interface State extends BaseVideoComponentState {

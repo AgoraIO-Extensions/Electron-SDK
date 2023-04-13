@@ -1,4 +1,3 @@
-import React, { Component, ReactElement, ReactNode } from 'react';
 import {
   ErrorCodeType,
   IRtcEngine,
@@ -7,18 +6,19 @@ import {
   RtcStats,
   UserOfflineReasonType,
 } from 'agora-electron-sdk';
+import React, { Component, ReactElement, ReactNode } from 'react';
 
-import AgoraStyle from '../examples/config/public.scss';
+import RtcSurfaceView from './RtcSurfaceView';
 import {
   AgoraButton,
   AgoraCard,
   AgoraDivider,
   AgoraList,
+  AgoraStyle,
   AgoraText,
   AgoraTextInput,
   AgoraView,
 } from './ui';
-import RtcSurfaceView from './RtcSurfaceView';
 
 export interface BaseComponentState {
   appId: string;

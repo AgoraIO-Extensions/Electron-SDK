@@ -1,4 +1,3 @@
-import React from 'react';
 import createAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
@@ -16,14 +15,13 @@ import createAgoraRtcEngine, {
   VideoDeviceInfo,
   VideoSourceType,
 } from 'agora-electron-sdk';
+import React, { ReactElement } from 'react';
 
-import Config from '../../../config/agora.config';
-
-import { getResourcePath } from '../../../utils';
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
+import RtcSurfaceView from '../../../components/RtcSurfaceView';
 import {
   AgoraButton,
   AgoraCard,
@@ -33,8 +31,9 @@ import {
   AgoraText,
   AgoraTextInput,
 } from '../../../components/ui';
-import { Card, List } from 'antd';
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
+import Config from '../../../config/agora.config';
+
+import { getResourcePath } from '../../../utils';
 import { rgbImageBufferToBase64 } from '../../../utils/base64';
 
 interface State extends BaseVideoComponentState {
@@ -416,7 +415,7 @@ export default class LocalVideoTranscoder
     }
   }
 
-  protected renderVideo(uid: number, channelId?: string): React.ReactNode {
+  protected renderVideo(uid: number, channelId?: string): ReactElement {
     const { startLocalVideoTranscoder } = this.state;
     const sourceType =
       uid === 0
