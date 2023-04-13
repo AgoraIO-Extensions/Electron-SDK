@@ -5,7 +5,6 @@ import {
   IMusicPlayer,
   Music,
 } from '../IAgoraMusicContentCenter';
-
 import { IMusicContentCenterEvent } from '../extension/IAgoraMusicContentCenterExtension';
 
 import {
@@ -18,10 +17,9 @@ import {
 import IAgoraMusicContentCenterTI from '../ti/IAgoraMusicContentCenter-ti';
 const checkers = createCheckers(IAgoraMusicContentCenterTI);
 
-import { MediaPlayerInternal } from './MediaPlayerInternal';
-
-import type { EmitterSubscription } from './emitter/EventEmitter';
 import { DeviceEventEmitter, EVENT_TYPE } from './IrisApiEngine';
+import { MediaPlayerInternal } from './MediaPlayerInternal';
+import type { EmitterSubscription } from './emitter/EventEmitter';
 
 export class MusicContentCenterInternal extends IMusicContentCenterImpl {
   static _event_handlers: IMusicContentCenterEventHandler[] = [];

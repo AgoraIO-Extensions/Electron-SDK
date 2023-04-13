@@ -1,5 +1,6 @@
 ﻿import { createCheckers } from 'ts-interface-checker';
 
+import { RendererManager } from '../../Renderer/RendererManager';
 import { Channel } from '../../Types';
 import { AgoraEnv } from '../../Utils';
 
@@ -10,24 +11,23 @@ import {
   ClientRoleType,
   DataStreamConfig,
   EchoTestConfiguration,
+  ErrorCodeType,
   IAudioEncodedFrameObserver,
   SimulcastStreamConfig,
   SimulcastStreamMode,
-  WatermarkOptions,
   VideoCanvas,
   VideoMirrorModeType,
-  ErrorCodeType,
+  WatermarkOptions,
 } from '../AgoraBase';
 import {
-  VideoSourceType,
   IAudioSpectrumObserver,
   RenderModeType,
+  VideoSourceType,
 } from '../AgoraMediaBase';
 import { IMediaEngine } from '../IAgoraMediaEngine';
 import { IMediaPlayer } from '../IAgoraMediaPlayer';
 import { IMediaRecorder } from '../IAgoraMediaRecorder';
 import { IMusicContentCenter } from '../IAgoraMusicContentCenter';
-import { RtcConnection } from '../IAgoraRtcEngineEx';
 import {
   ChannelMediaOptions,
   DirectCdnStreamingMediaOptions,
@@ -38,14 +38,14 @@ import {
   LeaveChannelOptions,
   MetadataType,
   RtcEngineContext,
-  ScreenCaptureSourceInfo,
   SDKBuildInfo,
-  Size,
   ScreenCaptureConfiguration,
+  ScreenCaptureSourceInfo,
+  Size,
 } from '../IAgoraRtcEngine';
+import { RtcConnection } from '../IAgoraRtcEngineEx';
 import { ILocalSpatialAudioEngine } from '../IAgoraSpatialAudio';
 import { IAudioDeviceManager } from '../IAudioDeviceManager';
-
 import { IRtcEngineEvent } from '../extension/IAgoraRtcEngineExtension';
 
 import { processIAudioEncodedFrameObserver } from '../impl/AgoraBaseImpl';
@@ -68,15 +68,13 @@ const checkers = createCheckers(
 );
 
 import { AudioDeviceManagerInternal } from './AudioDeviceManagerInternal';
+import { DeviceEventEmitter, EVENT_TYPE, callIrisApi } from './IrisApiEngine';
 import { LocalSpatialAudioEngineInternal } from './LocalSpatialAudioEngineInternal';
 import { MediaEngineInternal } from './MediaEngineInternal';
 import { MediaPlayerInternal } from './MediaPlayerInternal';
 import { MediaRecorderInternal } from './MediaRecorderInternal';
 import { MusicContentCenterInternal } from './MusicContentCenterInternal';
-
-import { callIrisApi, DeviceEventEmitter, EVENT_TYPE } from './IrisApiEngine';
 import type { EmitterSubscription } from './emitter/EventEmitter';
-import { RendererManager } from '../../Renderer/RendererManager';
 
 export class RtcEngineExInternal extends IRtcEngineExImpl {
   static _event_handlers: IRtcEngineEventHandler[] = [];

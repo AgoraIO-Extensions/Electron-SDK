@@ -5,13 +5,13 @@
  * @Last Modified time: 2021-05-19 15:59:03
  */
 
-const YUVBuffer = require('yuv-buffer');
-const YUVCanvas = require('yuv-canvas');
-const isEqual = require('lodash.isequal');
-
 import { RenderModeType } from '../../Private/AgoraMediaBase';
 import { CanvasOptions, ShareVideoFrame } from '../../Types';
 import { IRenderer } from '../IRenderer';
+
+const isEqual = require('lodash.isequal');
+const YUVBuffer = require('yuv-buffer');
+const YUVCanvas = require('yuv-canvas');
 
 export class YUVCanvasRenderer extends IRenderer {
   private _cacheCanvasOptions?: CanvasOptions;

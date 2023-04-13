@@ -1,5 +1,6 @@
-const fs = require('fs-extra');
 const path = require('path');
+
+const fs = require('fs-extra');
 
 const destIrisSDKDir = path.join(__dirname, `../iris`);
 const buildDir = path.resolve(__dirname, '../build');

@@ -1,5 +1,7 @@
-const minimist = require('minimist');
 const path = require('path');
+
+const minimist = require('minimist');
+
 const logger = require('./logger');
 
 //@ts-ignore

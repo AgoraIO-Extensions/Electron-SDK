@@ -1,12 +1,13 @@
+import { EventEmitter } from 'events';
+
 import { RenderModeType } from '../../Private/AgoraMediaBase';
 
-const createProgramFromSources =
-  require('./webgl-utils').createProgramFromSources;
-
-import { EventEmitter } from 'events';
 import { ShareVideoFrame } from '../../Types';
 import { logError, logWarn } from '../../Utils';
 import { IRenderer, RenderFailCallback } from '../IRenderer';
+
+const createProgramFromSources =
+  require('./webgl-utils').createProgramFromSources;
 
 const vertexShaderSource =
   'attribute vec2 a_position;' +
