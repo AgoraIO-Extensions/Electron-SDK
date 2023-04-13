@@ -195,6 +195,7 @@ export default class ContentInspect
               interval: text === '' ? this.createState().interval : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`interval (defaults: ${this.createState().interval})`}
         />
       </>

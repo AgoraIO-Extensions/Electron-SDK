@@ -333,6 +333,7 @@ export default class MediaPlayer
               loopCount: text === '' ? this.createState().loopCount : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`loopCount (defaults: ${this.createState().loopCount})`}
         />
         <AgoraButton

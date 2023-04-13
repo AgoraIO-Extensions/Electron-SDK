@@ -203,6 +203,7 @@ export default class AudioSpectrum
                 text === '' ? this.createState().intervalInMS : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`intervalInMS (defaults: ${
             this.createState().intervalInMS
           })`}

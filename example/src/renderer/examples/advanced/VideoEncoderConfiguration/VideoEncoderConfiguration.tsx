@@ -185,6 +185,7 @@ export default class VideoEncoderConfiguration
                 width: text === '' ? this.createState().width : +text,
               });
             }}
+            numberKeyboard={true}
             placeholder={`width (defaults: ${this.createState().width})`}
           />
           <AgoraTextInput
@@ -195,6 +196,7 @@ export default class VideoEncoderConfiguration
                 height: text === '' ? this.createState().height : +text,
               });
             }}
+            numberKeyboard={true}
             placeholder={`height (defaults: ${this.createState().height})`}
           />
         </AgoraView>
@@ -205,6 +207,7 @@ export default class VideoEncoderConfiguration
               frameRate: text === '' ? this.createState().frameRate : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`frameRate (defaults: ${this.createState().frameRate})`}
         />
         <AgoraTextInput
@@ -214,6 +217,7 @@ export default class VideoEncoderConfiguration
               bitrate: text === '' ? this.createState().bitrate : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`bitrate (defaults: ${this.createState().bitrate})`}
         />
         <AgoraTextInput
@@ -223,6 +227,7 @@ export default class VideoEncoderConfiguration
               minBitrate: text === '' ? this.createState().minBitrate : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`minBitrate (defaults: ${
             this.createState().minBitrate
           })`}

@@ -26,6 +26,7 @@ import {
 } from '../../../components/BaseComponent';
 import {
   AgoraButton,
+  AgoraCard,
   AgoraDivider,
   AgoraDropdown,
   AgoraImage,
@@ -425,17 +426,15 @@ export default class LocalVideoTranscoder
         : VideoSourceType.VideoSourceRemote;
 
     return (
-      <List.Item>
-        <Card title={`ChannelId: ${channelId} Uid: ${uid}`}>
-          <AgoraText>Click view to mirror</AgoraText>
-          <RtcSurfaceView
-            canvas={{
-              uid,
-              sourceType,
-            }}
-          />
-        </Card>
-      </List.Item>
+      <AgoraCard title={`ChannelId: ${channelId} Uid: ${uid}`}>
+        <AgoraText>Click view to mirror</AgoraText>
+        <RtcSurfaceView
+          canvas={{
+            uid,
+            sourceType,
+          }}
+        />
+      </AgoraCard>
     );
   }
 

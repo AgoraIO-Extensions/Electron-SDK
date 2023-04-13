@@ -4,6 +4,7 @@ import {
   ChannelProfileType,
   ClientRoleType,
   createAgoraRtcEngine,
+  IMediaRecorder,
   IMediaRecorderObserver,
   IRtcEngineEventHandler,
   MediaRecorderContainerFormat,
@@ -11,7 +12,6 @@ import {
   RecorderErrorCode,
   RecorderInfo,
   RecorderState,
-  IMediaRecorder,
 } from 'agora-electron-sdk';
 
 import Config from '../../../config/agora.config';
@@ -267,6 +267,7 @@ export default class MediaRecorder
                 text === '' ? this.createState().maxDurationMs : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`maxDurationMs (defaults: ${
             this.createState().maxDurationMs
           })`}

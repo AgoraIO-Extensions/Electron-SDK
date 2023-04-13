@@ -1,5 +1,4 @@
 import React from 'react';
-import os from 'os';
 import {
   ChannelProfileType,
   ClientRoleType,
@@ -8,6 +7,7 @@ import {
   IRtcEngineEventHandler,
   RtcConnection,
 } from 'agora-electron-sdk';
+import os from 'os';
 
 import Config from '../../../config/agora.config';
 

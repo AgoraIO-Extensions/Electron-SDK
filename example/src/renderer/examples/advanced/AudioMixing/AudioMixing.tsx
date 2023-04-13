@@ -222,6 +222,7 @@ export default class AudioMixing
               cycle: text === '' ? this.createState().cycle : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`cycle (defaults: ${this.createState().cycle})`}
         />
         <AgoraTextInput
@@ -231,6 +232,7 @@ export default class AudioMixing
               startPos: text === '' ? this.createState().startPos : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`startPos (defaults: ${this.createState().startPos})`}
         />
       </>

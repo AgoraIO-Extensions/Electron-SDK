@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
@@ -11,7 +11,6 @@ import {
   RtcStats,
   UserOfflineReasonType,
 } from 'agora-electron-sdk';
-import { Card, List } from 'antd';
 
 import Config from '../../../config/agora.config';
 
@@ -19,7 +18,13 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import { AgoraButton, AgoraText, AgoraTextInput } from '../../../components/ui';
+import {
+  AgoraButton,
+  AgoraCard,
+  AgoraList,
+  AgoraText,
+  AgoraTextInput,
+} from '../../../components/ui';
 import RtcSurfaceView from '../../../components/RtcSurfaceView';
 
 interface State extends BaseVideoComponentState {
@@ -368,6 +373,7 @@ export default class JoinMultipleChannel
               uid: text === '' ? this.createState().uid : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`uid (must > 0)`}
           value={uid > 0 ? uid.toString() : ''}
         />
@@ -391,6 +397,7 @@ export default class JoinMultipleChannel
               uid2: text === '' ? this.createState().uid2 : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`uid2 (must > 0)`}
           value={uid2 > 0 ? uid2.toString() : ''}
         />
@@ -409,6 +416,8 @@ export default class JoinMultipleChannel
       startPreview,
       channelId,
       channelId2,
+      uid,
+      uid2,
       joinChannelSuccess,
       joinChannelSuccess2,
       remoteUsers,
@@ -417,22 +426,13 @@ export default class JoinMultipleChannel
     return (
       <>
         {startPreview || joinChannelSuccess || joinChannelSuccess2 ? (
-          <List
-            style={{ width: '100%' }}
-            grid={{
-              gutter: 16,
-              xs: 1,
-              sm: 1,
-              md: 1,
-              lg: 1,
-              xl: 1,
-              xxl: 2,
-            }}
-            dataSource={[0, ...remoteUsers, ...remoteUsers2]}
+          <AgoraList
+            data={[0, ...remoteUsers, ...remoteUsers2]}
             renderItem={(item) => {
               return this.renderVideo(
                 item,
-                remoteUsers2.indexOf(item) === -1 ? channelId : channelId2
+                remoteUsers2.indexOf(item) === -1 ? channelId : channelId2,
+                remoteUsers2.indexOf(item) === -1 ? uid : uid2
               );
             }}
           />
@@ -441,14 +441,16 @@ export default class JoinMultipleChannel
     );
   }
 
-  protected renderVideo(uid: number, channelId?: string): React.ReactNode {
+  protected renderVideo(
+    uid: number,
+    channelId?: string,
+    localUid?: number
+  ): ReactElement {
     return (
-      <List.Item>
-        <Card title={`ChannelId: ${channelId} Uid: ${uid}`}>
-          <AgoraText>Click view to mirror</AgoraText>
-          <RtcSurfaceView canvas={{ uid }} connection={{ channelId }} />
-        </Card>
-      </List.Item>
+      <AgoraCard title={`ChannelId: ${channelId} Uid: ${uid}`}>
+        <AgoraText>Click view to mirror</AgoraText>
+        <RtcSurfaceView canvas={{ uid }} connection={{ channelId, localUid }} />
+      </AgoraCard>
     );
   }
 

@@ -193,15 +193,17 @@ export default class Extension
     const { path, provider, extension } = this.state;
     return (
       <>
-        <AgoraTextInput
-          onChangeText={(text) => {
-            this.setState({
-              path: text,
-            });
-          }}
-          placeholder={'path'}
-          value={path}
-        />
+        {process.platform === 'win32' ? (
+          <AgoraTextInput
+            onChangeText={(text) => {
+              this.setState({
+                path: text,
+              });
+            }}
+            placeholder={'path'}
+            value={path}
+          />
+        ) : undefined}
         <AgoraTextInput
           onChangeText={(text) => {
             this.setState({

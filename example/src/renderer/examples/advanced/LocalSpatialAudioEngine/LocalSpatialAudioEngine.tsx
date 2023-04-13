@@ -190,6 +190,7 @@ export default class LocalSpatialAudioEngine
               range: text === '' ? this.createState().range : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`range (defaults: ${this.createState().range})`}
         />
         <AgoraButton
@@ -217,6 +218,7 @@ export default class LocalSpatialAudioEngine
                 position[index] = +text;
                 this.setState({ position });
               }}
+              numberKeyboard={true}
               placeholder={`position (defaults: ${
                 this.createState().position[index]
               })`}
@@ -234,6 +236,7 @@ export default class LocalSpatialAudioEngine
                 axisForward[index] = +text;
                 this.setState({ axisForward });
               }}
+              numberKeyboard={true}
               placeholder={`axisForward (defaults: ${
                 this.createState().axisForward[index]
               })`}
@@ -251,6 +254,7 @@ export default class LocalSpatialAudioEngine
                 axisRight[index] = +text;
                 this.setState({ axisRight });
               }}
+              numberKeyboard={true}
               placeholder={`axisRight (defaults: ${
                 this.createState().axisRight[index]
               })`}
@@ -268,6 +272,7 @@ export default class LocalSpatialAudioEngine
                 axisUp[index] = +text;
                 this.setState({ axisUp });
               }}
+              numberKeyboard={true}
               placeholder={`axisUp (defaults: ${
                 this.createState().axisUp[index]
               })`}

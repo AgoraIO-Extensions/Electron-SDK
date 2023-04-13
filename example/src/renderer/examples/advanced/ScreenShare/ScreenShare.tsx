@@ -447,6 +447,7 @@ export default class ScreenShare
               uid2: text === '' ? this.createState().uid2 : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`uid2 (must > 0)`}
           value={uid2 > 0 ? uid2.toString() : ''}
         />
@@ -458,6 +459,7 @@ export default class ScreenShare
                 width: text === '' ? this.createState().width : +text,
               });
             }}
+            numberKeyboard={true}
             placeholder={`width (defaults: ${this.createState().width})`}
           />
           <AgoraTextInput
@@ -467,6 +469,7 @@ export default class ScreenShare
                 height: text === '' ? this.createState().height : +text,
               });
             }}
+            numberKeyboard={true}
             placeholder={`height (defaults: ${this.createState().height})`}
           />
         </AgoraView>
@@ -477,6 +480,7 @@ export default class ScreenShare
               frameRate: text === '' ? this.createState().frameRate : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`frameRate (defaults: ${this.createState().frameRate})`}
         />
         <AgoraTextInput
@@ -486,6 +490,7 @@ export default class ScreenShare
               bitrate: text === '' ? this.createState().bitrate : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`bitrate (defaults: ${this.createState().bitrate})`}
         />
         {targetSource?.type ===

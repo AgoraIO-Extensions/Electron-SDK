@@ -1,4 +1,4 @@
-import React, { Component, ReactNode } from 'react';
+import React, { Component, ReactElement, ReactNode } from 'react';
 import {
   ErrorCodeType,
   IRtcEngine,
@@ -7,12 +7,13 @@ import {
   RtcStats,
   UserOfflineReasonType,
 } from 'agora-electron-sdk';
-import { Card, List } from 'antd';
 
 import AgoraStyle from '../examples/config/public.scss';
 import {
   AgoraButton,
+  AgoraCard,
   AgoraDivider,
+  AgoraList,
   AgoraText,
   AgoraTextInput,
   AgoraView,
@@ -180,37 +181,14 @@ export abstract class BaseComponent<
   }
 
   protected renderUsers(): ReactNode {
-    const {
-      enableVideo,
-      startPreview,
-      channelId,
-      joinChannelSuccess,
-      remoteUsers,
-    } = this.state;
+    const { startPreview, joinChannelSuccess, remoteUsers } = this.state;
     return (
       <>
         {startPreview || joinChannelSuccess ? (
-          <List
-            style={{ width: '100%' }}
-            grid={
-              enableVideo
-                ? {
-                    gutter: 16,
-                    xs: 1,
-                    sm: 1,
-                    md: 1,
-                    lg: 1,
-                    xl: 1,
-                    xxl: 2,
-                  }
-                : {
-                    gutter: 16,
-                    column: 4,
-                  }
-            }
-            dataSource={[0, ...(remoteUsers ?? [])]}
+          <AgoraList
+            data={[0, ...(remoteUsers ?? [])]}
             renderItem={(item) => {
-              return this.renderVideo(item, channelId);
+              return this.renderVideo(item);
             }}
           />
         ) : undefined}
@@ -218,19 +196,17 @@ export abstract class BaseComponent<
     );
   }
 
-  protected renderVideo(uid: number, channelId?: string): ReactNode {
+  protected renderVideo(uid: number): ReactElement {
     const { enableVideo } = this.state;
     return (
-      <List.Item>
-        <Card title={`${uid === 0 ? 'Local' : 'Remote'} Uid: ${uid}`}>
-          {enableVideo ? (
-            <>
-              <AgoraText>Click view to mirror</AgoraText>
-              <RtcSurfaceView canvas={{ uid }} />
-            </>
-          ) : undefined}
-        </Card>
-      </List.Item>
+      <AgoraCard title={`${uid === 0 ? 'Local' : 'Remote'} Uid: ${uid}`}>
+        {enableVideo ? (
+          <>
+            <AgoraText>Click view to mirror</AgoraText>
+            <RtcSurfaceView canvas={{ uid }} />
+          </>
+        ) : undefined}
+      </AgoraCard>
     );
   }
 
