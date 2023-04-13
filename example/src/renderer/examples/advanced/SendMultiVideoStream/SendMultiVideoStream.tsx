@@ -304,6 +304,7 @@ export default class SendMultiVideoStream
               uid2: text === '' ? this.createState().uid2 : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`uid2 (must > 0)`}
           value={uid2 > 0 ? uid2.toString() : ''}
         />

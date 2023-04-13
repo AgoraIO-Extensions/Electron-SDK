@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+
 import { AgoraButton, AgoraTextInput } from '../../../components/ui';
 
 export interface BaseRenderChannelProps {
@@ -16,14 +17,11 @@ function BaseRenderChannel({
   joinChannelSuccess,
   onChannelIdChange,
 }: BaseRenderChannelProps) {
-  const handleChannelIdChange = (text: string) => {
-    onChannelIdChange(text);
-  };
   return (
     <>
       <AgoraTextInput
-        onChangeText={(text: string) => {
-          handleChannelIdChange(text);
+        onChangeText={(text) => {
+          onChannelIdChange(text);
         }}
         placeholder={`channelId`}
         value={channelId}

@@ -178,6 +178,7 @@ export default class Encryption
               encryptionKdfSalt: text.split(' ').map((value) => +value),
             });
           }}
+          numberKeyboard={true}
           placeholder={'encryptionKdfSalt (split by blank)'}
           value={encryptionKdfSalt.join(' ')}
         />

@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactElement } from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
@@ -19,9 +19,13 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import { AgoraButton, AgoraText } from '../../../components/ui';
+import {
+  AgoraButton,
+  AgoraCard,
+  AgoraList,
+  AgoraText,
+} from '../../../components/ui';
 import RtcSurfaceView from '../../../components/RtcSurfaceView';
-import { Card, List } from 'antd';
 
 interface State extends BaseVideoComponentState {}
 
@@ -171,18 +175,8 @@ export default class JoinChannelVideo
     return (
       <>
         {startPreview || joinChannelSuccess ? (
-          <List
-            style={{ width: '100%' }}
-            grid={{
-              gutter: 16,
-              xs: 1,
-              sm: 1,
-              md: 1,
-              lg: 1,
-              xl: 1,
-              xxl: 2,
-            }}
-            dataSource={[0, ...remoteUsers]}
+          <AgoraList
+            data={[0, ...remoteUsers]}
             renderItem={this.renderVideo.bind(this)}
           />
         ) : undefined}
@@ -190,23 +184,21 @@ export default class JoinChannelVideo
     );
   }
 
-  protected renderVideo(uid: number): ReactNode {
+  protected renderVideo(uid: number): ReactElement {
     const { enableVideo, remoteUsers } = this.state;
     return (
-      <List.Item>
-        <Card title={`${uid === 0 ? 'Local' : 'Remote'} Uid: ${uid}`}>
-          <AgoraText>Click view to mirror</AgoraText>
-          {enableVideo ? <RtcSurfaceView canvas={{ uid }} /> : undefined}
-          <AgoraButton
-            title={`Append`}
-            onPress={() => {
-              this.setState({
-                remoteUsers: [...remoteUsers!, uid],
-              });
-            }}
-          />
-        </Card>
-      </List.Item>
+      <AgoraCard title={`${uid === 0 ? 'Local' : 'Remote'} Uid: ${uid}`}>
+        <AgoraText>Click view to mirror</AgoraText>
+        {enableVideo ? <RtcSurfaceView canvas={{ uid }} /> : undefined}
+        <AgoraButton
+          title={`Append`}
+          onPress={() => {
+            this.setState({
+              remoteUsers: [...remoteUsers!, uid],
+            });
+          }}
+        />
+      </AgoraCard>
     );
   }
 }

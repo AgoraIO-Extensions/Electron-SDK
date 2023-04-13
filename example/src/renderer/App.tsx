@@ -13,7 +13,7 @@ import { Layout, Menu } from 'antd';
 import './App.global.scss';
 import AuthInfoScreen from './examples/config/AuthInfoScreen';
 import basicRoute from './examples/basic';
-import hooksRoutes from './examples/hooks';
+import hooksRoutes from './examples/hook';
 import advanceRoute from './examples/advanced';
 
 const { Content, Footer, Sider } = Layout;

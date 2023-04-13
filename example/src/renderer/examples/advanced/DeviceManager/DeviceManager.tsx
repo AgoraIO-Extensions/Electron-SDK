@@ -250,10 +250,6 @@ export default class DeviceManager
     this.setState(state);
   }
 
-  onMediaDeviceChanged(deviceType: MediaDeviceType) {
-    this.info('onMediaDeviceChanged', 'deviceType', deviceType);
-  }
-
   onAudioDeviceStateChanged(
     deviceId: string,
     deviceType: MediaDeviceType,

@@ -374,6 +374,7 @@ export default class RTMPStreaming
                     width: text === '' ? this.createState().width : +text,
                   });
                 }}
+                numberKeyboard={true}
                 placeholder={`width (defaults: ${this.createState().width})`}
               />
               <AgoraTextInput
@@ -384,6 +385,7 @@ export default class RTMPStreaming
                     height: text === '' ? this.createState().height : +text,
                   });
                 }}
+                numberKeyboard={true}
                 placeholder={`height (defaults: ${this.createState().height})`}
               />
             </AgoraView>
@@ -395,6 +397,7 @@ export default class RTMPStreaming
                     text === '' ? this.createState().videoBitrate : +text,
                 });
               }}
+              numberKeyboard={true}
               placeholder={`videoBitrate (defaults: ${
                 this.createState().videoBitrate
               })`}
@@ -407,6 +410,7 @@ export default class RTMPStreaming
                     text === '' ? this.createState().videoFramerate : +text,
                 });
               }}
+              numberKeyboard={true}
               placeholder={`videoFramerate (defaults: ${
                 this.createState().videoFramerate
               })`}
@@ -418,6 +422,7 @@ export default class RTMPStreaming
                   videoGop: text === '' ? this.createState().videoGop : +text,
                 });
               }}
+              numberKeyboard={true}
               placeholder={`videoGop (defaults: ${
                 this.createState().videoGop
               })`}
@@ -471,6 +476,7 @@ export default class RTMPStreaming
                     text === '' ? this.createState().audioBitrate : +text,
                 });
               }}
+              numberKeyboard={true}
               placeholder={`audioBitrate (defaults: ${
                 this.createState().audioBitrate
               })`}

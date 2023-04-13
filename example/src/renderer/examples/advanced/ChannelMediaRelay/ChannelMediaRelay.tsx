@@ -15,12 +15,7 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import {
-  AgoraButton,
-  AgoraDivider,
-  AgoraText,
-  AgoraTextInput,
-} from '../../../components/ui';
+import { AgoraButton, AgoraText, AgoraTextInput } from '../../../components/ui';
 
 interface State extends BaseVideoComponentState {
   destChannelNames: string[];

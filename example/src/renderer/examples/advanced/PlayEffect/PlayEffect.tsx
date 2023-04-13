@@ -202,6 +202,7 @@ export default class PlayEffect
               soundId: text === '' ? this.createState().soundId : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`soundId (defaults: ${this.createState().soundId})`}
         />
         <AgoraTextInput
@@ -218,6 +219,7 @@ export default class PlayEffect
               loopCount: text === '' ? this.createState().loopCount : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`loopCount (defaults: ${this.createState().loopCount})`}
         />
         <AgoraSlider
@@ -268,6 +270,7 @@ export default class PlayEffect
               startPos: text === '' ? this.createState().startPos : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`startPos (defaults: ${this.createState().startPos})`}
         />
       </>

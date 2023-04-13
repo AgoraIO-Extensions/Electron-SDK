@@ -1,11 +1,9 @@
 .window-item {
-  width: 320px;
-  height: 240px;
+  flex: 1;
 }
 
 .video-item {
-  width: 320px;
-  height: 240px;
+  flex: 1;
   background: #cccccc;
   overflow: hidden;
 }
