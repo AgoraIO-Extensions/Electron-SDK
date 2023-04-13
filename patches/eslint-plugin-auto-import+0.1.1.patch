@@ -1,5 +1,5 @@
 diff --git a/node_modules/eslint-plugin-auto-import/lib/index.js b/node_modules/eslint-plugin-auto-import/lib/index.js
-index 86334aa..e9a2f35 100644
+index 86334aa..4dd0ce8 100644
 --- a/node_modules/eslint-plugin-auto-import/lib/index.js
 +++ b/node_modules/eslint-plugin-auto-import/lib/index.js
 @@ -10,7 +10,7 @@
@@ -21,11 +21,76 @@ index 86334aa..e9a2f35 100644
 +    // 'auto-const': autoConstRule
    }
  }
+\ No newline at end of file
+diff --git a/node_modules/eslint-plugin-auto-import/lib/rules/auto-const.js b/node_modules/eslint-plugin-auto-import/lib/rules/auto-const.js
+deleted file mode 100644
+index 307bae3..0000000
+--- a/node_modules/eslint-plugin-auto-import/lib/rules/auto-const.js
++++ /dev/null
+@@ -1,22 +0,0 @@
+-var preferConst = require('eslint/lib/rules/prefer-const')
+-
+-module.exports = function(context) {
+-  var originalReport = context.report
+-  return preferConst(Object.create(context, {
+-    report: {
+-      value: function(report) {
+-        var variableDeclarator = report.node.parent
+-        var variableDeclaration = variableDeclarator.parent
+-        if (variableDeclaration.declarations && variableDeclaration.declarations.length === 1) {
+-          report.fix = function(fixer) {
+-            var startOfLet = variableDeclaration.range[0]
+-            return fixer.replaceTextRange([startOfLet, startOfLet + 3], 'const')
+-          }
+-        } else {
+-          report.message += ' This can\'t be fixed'
+-        }
+-        originalReport.call(context, report)
+-      }
+-    }
+-  }))
+-}
+\ No newline at end of file
 diff --git a/node_modules/eslint-plugin-auto-import/lib/rules/auto-import.js b/node_modules/eslint-plugin-auto-import/lib/rules/auto-import.js
-index 4b4bb22..dba3908 100644
+index 4b4bb22..acf0749 100644
 --- a/node_modules/eslint-plugin-auto-import/lib/rules/auto-import.js
 +++ b/node_modules/eslint-plugin-auto-import/lib/rules/auto-import.js
-@@ -44,38 +44,54 @@ function isStaticRequire(node) {
+@@ -13,20 +13,20 @@ var fs = require('fs')
+ // Rule Definition
+ //------------------------------------------------------------------------------
+ 
++var sourceFileMap = []
++
+ function getSourceFile(sourceCode) {
+   const codeProject = new tsMorph.Project({ useInMemoryFileSystem: true });
+ 
+   return codeProject.createSourceFile('main.tsx', sourceCode);
+ }
+ 
+-
+ function isDefaultlyExported(path) {
+-  const sourceCode = fs.readFileSync(path, {encoding: 'utf8'})
+-
+-  const sourceFile = getSourceFile(sourceCode)
+-
+-  
+-  return sourceFile.getClasses().find(c => c.isDefaultExport()) !== undefined
++  if (sourceFileMap[path] === undefined) {
++    const sourceCode = fs.readFileSync(path, { encoding: 'utf8' })
++    sourceFileMap[path] = getSourceFile(sourceCode)
++  }
++  return sourceFileMap[path].getClasses().find(c => c.isDefaultExport()) !== undefined
+ }
+ 
+ function isStaticRequire(node) {
+@@ -38,44 +38,66 @@ function isStaticRequire(node) {
+     node.arguments[0].type === 'Literal' &&
+     typeof node.arguments[0].value === 'string'
+ }
++
+ /**
+  * Checks if the given node is the argument of a typeof operator.
+  * @param {ASTNode} node The AST node being checked.
   * @returns {boolean} Whether or not the node is the argument of a typeof operator.
   */
  function hasTypeOfOperator(node) {
@@ -45,9 +110,13 @@ index 4b4bb22..dba3908 100644
 -        if (basename) { // ignore .name directories
 -            var filePath = pathModule.join(path, file)
 -            if (basename === name) {
-+var sourceFileMap = []
++var cacheMap = []
 +
 +function searchDirectory(path, name, except, isNotDefaultExport) {
++  if (cacheMap[path + name] !== undefined) {
++    return cacheMap[path + name]
++  }
++
 +  var files = fs.readdirSync(path)
 +  var directories = []
 +  for (var i = 0, l = files.length; i < l; i++) {
@@ -68,10 +137,11 @@ index 4b4bb22..dba3908 100644
 +          if (isNotDefaultExport) {
 +            if (filePath.endsWith('.ts')) {
 +              if (sourceFileMap[filePath] === undefined) {
-+                const sourceCode = fs.readFileSync(filePath, {encoding: 'utf8'})
++                const sourceCode = fs.readFileSync(filePath, { encoding: 'utf8' })
 +                sourceFileMap[filePath] = getSourceFile(sourceCode)
 +              }
 +              if (sourceFileMap[filePath].getExportSymbols().find(c => c.getName() === name) !== undefined) {
++                cacheMap[path + name] = basename
                  return basename
 +              }
              }
@@ -103,7 +173,7 @@ index 4b4bb22..dba3908 100644
  }
  
  //------------------------------------------------------------------------------
-@@ -83,148 +99,147 @@ function searchDirectory(path, name, except) {
+@@ -83,148 +105,146 @@ function searchDirectory(path, name, except) {
  //------------------------------------------------------------------------------
  
  module.exports = {
@@ -139,7 +209,7 @@ index 4b4bb22..dba3908 100644
 +    ]
 +  },
 +
-+  create: function(context) {
++  create: function (context) {
 +    var options = context.options[0];
 +    var considerTypeOf = options && options.typeof === true || false;
 +    const dependencies = new Set() // keep track of dependencies
@@ -157,18 +227,16 @@ index 4b4bb22..dba3908 100644
 +
 +      CallExpression(node) {
 +        if (isStaticRequire(node)) {
-+          const [ requirePath ] = node.arguments
++          const [requirePath] = node.arguments
 +          dependencies.add(requirePath.value)
 +          lastNode = node
 +        }
 +      },
-+      "Program:exit": function(/* node */) {
++      "Program:exit": function (/* node */) {
 +        var globalScope = context.getScope()
 +        var options = context.options[0]
-+//                console.log(context.eslint)
 +        var fixed = {}
-+//                console.log(globalScope.block.body[0].specifiers[0])
-+        globalScope.through.forEach(function(ref) {
++        globalScope.through.forEach(function (ref) {
 +          var identifier = ref.identifier;
 +
 +          if (!considerTypeOf && hasTypeOfOperator(identifier)) {
@@ -179,7 +247,7 @@ index 4b4bb22..dba3908 100644
 +            node: identifier,
 +            message: '{{name}} is not defined.',
 +            data: identifier,
-+            fix: function(fixer) {
++            fix: function (fixer) {
 +              if (fixed[undefinedIndentifier]) {
 +                return
 +              }
@@ -199,6 +267,7 @@ index 4b4bb22..dba3908 100644
 +                foundModule = searchDirectory(path, undefinedIndentifier, lastPath, isNotDefaultExport)
 +                if (foundModule) {
 +                  foundModule = (parentPrefix || './') + foundModule
++                  break
 +                } else {
 +                  lastPath = path
 +                  path = pathModule.dirname(path)
@@ -239,8 +308,6 @@ index 4b4bb22..dba3908 100644
 -            dependencies.add(node.source.value)
 -            lastNode = node.source
 -          },
--
--          MemberExpression: function (node) {
 +                  }
 +                  if (foundModule) {
 +                    break
@@ -264,8 +331,13 @@ index 4b4bb22..dba3908 100644
 +                  }
 +                }
  
--          },
+-          MemberExpression: function (node) {
 +                isNotDefaultExport = !isDefaultlyExported(pathModule.resolve(pathModule.dirname(filename), foundModule + '.ts'))
+ 
+-          },
++                var importStatement = (isNotDefaultExport ?
++                  'import { ' + undefinedIndentifier + ' }' :
++                  'import ' + undefinedIndentifier) + " from '" + foundModule + "';\n"
  
 -          CallExpression(node) {
 -            if (isStaticRequire(node)) {
@@ -282,10 +354,7 @@ index 4b4bb22..dba3908 100644
 -//                console.log(globalScope.block.body[0].specifiers[0])
 -                globalScope.through.forEach(function(ref) {
 -                    var identifier = ref.identifier;
-+                var importStatement = (isNotDefaultExport ?
-+                  'import { ' + undefinedIndentifier + ' }' :
-+                  'import ' + undefinedIndentifier) + " from '" + foundModule + "'"
- 
+-
 -                    if (!considerTypeOf && hasTypeOfOperator(identifier)) {
 -                        return;
 -                    }
