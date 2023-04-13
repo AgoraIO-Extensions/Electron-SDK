@@ -1,10 +1,3 @@
-import React, {
-  ReactElement,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
 import {
   ClientRoleType,
   RemoteVideoState,
@@ -12,7 +5,15 @@ import {
   RtcConnection,
   RtcStats,
 } from 'agora-electron-sdk';
+import React, {
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 
+import RtcSurfaceView from '../../../components/RtcSurfaceView';
 import {
   AgoraButton,
   AgoraCard,
@@ -21,9 +22,8 @@ import {
   AgoraTextInput,
 } from '../../../components/ui';
 import * as log from '../../../utils/log';
-import { useInitRtcEngine } from '../hooks/useInitRtcEngine';
 import { BaseComponent } from '../components/BaseComponent';
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
+import { useInitRtcEngine } from '../hooks/useInitRtcEngine';
 
 export default function JoinMultipleChannel() {
   const {

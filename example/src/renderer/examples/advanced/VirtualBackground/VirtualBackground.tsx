@@ -1,15 +1,13 @@
-import React from 'react';
 import {
   BackgroundBlurDegree,
   BackgroundSourceType,
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
+import React from 'react';
 import { SketchPicker } from 'react-color';
-
-import Config from '../../../config/agora.config';
 
 import {
   BaseComponent,
@@ -20,6 +18,7 @@ import {
   AgoraDropdown,
   AgoraTextInput,
 } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 import { enumToItems, getResourcePath } from '../../../utils';
 
 interface State extends BaseVideoComponentState {

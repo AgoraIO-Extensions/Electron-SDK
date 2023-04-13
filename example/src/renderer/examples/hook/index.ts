@@ -1,9 +1,9 @@
-import JoinChannelVideo from './JoinChannelVideo/JoinChannelVideo';
-import StringUid from './StringUid/StringUid';
-import JoinChannelAudio from './JoinChannelAudio/JoinChannelAudio';
-import JoinMultipleChannel from './JoinMultipleChannel/JoinMultipleChannel';
-import VirtualBackground from './VirtualBackground/VirtualBackground';
 import DeviceManager from './DeviceManager/DeviceManager';
+import JoinChannelAudio from './JoinChannelAudio/JoinChannelAudio';
+import JoinChannelVideo from './JoinChannelVideo/JoinChannelVideo';
+import JoinMultipleChannel from './JoinMultipleChannel/JoinMultipleChannel';
+import StringUid from './StringUid/StringUid';
+import VirtualBackground from './VirtualBackground/VirtualBackground';
 
 const hooksRoutes = [
   {

@@ -1,16 +1,14 @@
-import React from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
   RhythmPlayerErrorType,
   RhythmPlayerStateType,
   RtcConnection,
   RtcStats,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React from 'react';
 
 import {
   BaseAudioComponentState,
@@ -22,6 +20,7 @@ import {
   AgoraSlider,
   AgoraTextInput,
 } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 import { getResourcePath } from '../../../utils';
 
 interface State extends BaseAudioComponentState {

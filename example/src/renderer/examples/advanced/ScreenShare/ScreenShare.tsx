@@ -1,8 +1,6 @@
-import React from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   LocalVideoStreamError,
@@ -11,17 +9,19 @@ import {
   RtcConnection,
   RtcStats,
   ScreenCaptureSourceInfo,
+  ScreenCaptureSourceType,
   UserOfflineReasonType,
   VideoSourceType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
+import React from 'react';
 import { SketchPicker } from 'react-color';
-
-import Config from '../../../config/agora.config';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
+import RtcSurfaceView from '../../../components/RtcSurfaceView';
 import {
   AgoraButton,
   AgoraDivider,
@@ -32,9 +32,9 @@ import {
   AgoraTextInput,
   AgoraView,
 } from '../../../components/ui';
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
+import Config from '../../../config/agora.config';
+
 import { rgbImageBufferToBase64 } from '../../../utils/base64';
-import { ScreenCaptureSourceType } from '../../../../../../ts/Private/IAgoraRtcEngine';
 
 interface State extends BaseVideoComponentState {
   token2: string;

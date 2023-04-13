@@ -1,12 +1,12 @@
-import React, { ReactNode, useEffect, useState } from 'react';
 import { ClientRoleType } from 'agora-electron-sdk';
+import React, { ReactNode, useEffect, useState } from 'react';
 
 import { AgoraButton, AgoraTextInput } from '../../../components/ui';
 import * as log from '../../../utils/log';
-import { useInitRtcEngine } from '../hooks/useInitRtcEngine';
-import BaseRenderUsers from '../components/BaseRenderUsers';
-import BaseRenderChannel from '../components/BaseRenderChannel';
 import { BaseComponent } from '../components/BaseComponent';
+import BaseRenderChannel from '../components/BaseRenderChannel';
+import BaseRenderUsers from '../components/BaseRenderUsers';
+import { useInitRtcEngine } from '../hooks/useInitRtcEngine';
 
 export default function StringUid() {
   const {

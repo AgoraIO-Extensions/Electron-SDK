@@ -1,15 +1,14 @@
-import React from 'react';
+import os from 'os';
+
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   ErrorCodeType,
   IRtcEngineEventHandler,
   RtcConnection,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import os from 'os';
-
-import Config from '../../../config/agora.config';
+import React from 'react';
 
 import {
   BaseComponent,
@@ -21,6 +20,7 @@ import {
   AgoraDropdown,
   AgoraImage,
 } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 import { arrayToItems } from '../../../utils';
 
 interface State extends BaseVideoComponentState {

@@ -1,8 +1,8 @@
-import React from 'react';
+import { Buffer } from 'buffer';
+
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   EncodedVideoFrameInfo,
   ExternalVideoSourceType,
   IRtcEngineEventHandler,
@@ -11,16 +11,16 @@ import {
   RtcConnection,
   VideoCodecType,
   VideoFrameType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import { Buffer } from 'buffer';
-
-import Config from '../../../config/agora.config';
+import React from 'react';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
 import { AgoraButton, AgoraTextInput } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 
 interface State extends BaseVideoComponentState {
   imageBuffer: string;

@@ -1,7 +1,9 @@
 const os = require('os');
+
+const fs = require('fs-extra');
+
 const getConfig = require('./getConfig');
 const logger = require('./logger');
-const fs = require('fs-extra');
 
 exports.getOS = () => {
   const { platform } = getConfig();

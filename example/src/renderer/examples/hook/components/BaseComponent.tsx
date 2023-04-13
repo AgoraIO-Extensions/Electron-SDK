@@ -1,7 +1,6 @@
 import React, { ReactNode } from 'react';
 
-import AgoraStyle from '../../../examples/config/public.scss';
-import { AgoraDivider, AgoraView } from '../../../components/ui';
+import { AgoraDivider, AgoraStyle, AgoraView } from '../../../components/ui';
 
 interface Props {
   name: string;

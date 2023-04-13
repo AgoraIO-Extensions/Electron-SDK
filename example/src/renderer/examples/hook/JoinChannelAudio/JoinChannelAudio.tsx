@@ -1,4 +1,3 @@
-import React, { ReactNode, useEffect, useState } from 'react';
 import {
   ClientRoleType,
   LocalAudioStreamError,
@@ -6,13 +5,14 @@ import {
   MediaDeviceType,
   RtcConnection,
 } from 'agora-electron-sdk';
+import React, { ReactNode, useEffect, useState } from 'react';
 
 import { AgoraButton, AgoraDivider, AgoraSlider } from '../../../components/ui';
 import * as log from '../../../utils/log';
-import { useInitRtcEngine } from '../hooks/useInitRtcEngine';
-import BaseRenderUsers from '../components/BaseRenderUsers';
-import BaseRenderChannel from '../components/BaseRenderChannel';
 import { BaseComponent } from '../components/BaseComponent';
+import BaseRenderChannel from '../components/BaseRenderChannel';
+import BaseRenderUsers from '../components/BaseRenderUsers';
+import { useInitRtcEngine } from '../hooks/useInitRtcEngine';
 
 export default function JoinChannelAudio() {
   const {

@@ -1,8 +1,6 @@
-import React from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   DegradationPreference,
   DirectCdnStreamingError,
   DirectCdnStreamingState,
@@ -14,9 +12,9 @@ import {
   RtcStats,
   VideoCodecType,
   VideoMirrorModeType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React from 'react';
 
 import {
   BaseComponent,
@@ -30,6 +28,7 @@ import {
   AgoraTextInput,
   AgoraView,
 } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 import { enumToItems } from '../../../utils';
 
 interface State extends BaseVideoComponentState {
@@ -267,7 +266,7 @@ export default class DirectCdnStreaming
         <AgoraDivider />
         <AgoraView>
           <AgoraTextInput
-            style={AgoraStyle.fullSize}
+            className={AgoraStyle.fullSize}
             onChangeText={(text) => {
               if (isNaN(+text)) return;
               this.setState({
@@ -278,7 +277,7 @@ export default class DirectCdnStreaming
             placeholder={`width (defaults: ${this.createState().width})`}
           />
           <AgoraTextInput
-            style={AgoraStyle.fullSize}
+            className={AgoraStyle.fullSize}
             onChangeText={(text) => {
               if (isNaN(+text)) return;
               this.setState({

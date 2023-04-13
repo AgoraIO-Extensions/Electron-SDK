@@ -1,13 +1,13 @@
-import React from 'react';
 import {
   AudioSpectrumData,
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IAudioSpectrumObserver,
   IRtcEngineEventHandler,
   UserAudioSpectrumInfo,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
+import React from 'react';
 import {
   CartesianGrid,
   Line,
@@ -16,13 +16,12 @@ import {
   YAxis,
 } from 'recharts';
 
-import Config from '../../../config/agora.config';
-
 import {
   BaseAudioComponentState,
   BaseComponent,
 } from '../../../components/BaseComponent';
 import { AgoraButton, AgoraTextInput } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 
 interface State extends BaseAudioComponentState {
   intervalInMS: number;

@@ -7,8 +7,8 @@ import {
   FormatRendererVideoConfig,
   RENDER_MODE,
   RenderConfig,
-  RendererVideoConfig,
   RenderMap,
+  RendererVideoConfig,
   ShareVideoFrame,
   UidMap,
   VideoFrameCacheConfig,
@@ -22,6 +22,7 @@ import {
   logInfo,
   logWarn,
 } from '../Utils';
+
 import GlRenderer from './GlRenderer';
 import { IRenderer, RenderFailCallback } from './IRenderer';
 import { YUVCanvasRenderer } from './YUVCanvasRenderer';

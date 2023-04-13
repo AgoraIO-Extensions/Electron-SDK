@@ -1,6 +1,7 @@
 ﻿import { AudioDeviceInfo } from '../IAgoraRtcEngine';
-import { callIrisApi } from './IrisApiEngine';
 import { IAudioDeviceManagerImpl } from '../impl/IAudioDeviceManagerImpl';
+
+import { callIrisApi } from './IrisApiEngine';
 
 export class AudioDeviceManagerInternal extends IAudioDeviceManagerImpl {
   getPlaybackDeviceInfo(): AudioDeviceInfo {

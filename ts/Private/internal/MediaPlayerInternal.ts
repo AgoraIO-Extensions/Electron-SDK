@@ -4,15 +4,14 @@ import { AgoraEnv, logWarn } from '../../Utils';
 
 import { ErrorCodeType } from '../AgoraBase';
 import {
-  IAudioSpectrumObserver,
   IAudioPcmFrameSink,
+  IAudioSpectrumObserver,
   RawAudioFrameOpModeType,
-  VideoSourceType,
   RenderModeType,
+  VideoSourceType,
 } from '../AgoraMediaBase';
 import { IMediaPlayerVideoFrameObserver } from '../IAgoraMediaPlayer';
 import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
-
 import { IMediaPlayerEvent } from '../extension/IAgoraMediaPlayerExtension';
 
 import {

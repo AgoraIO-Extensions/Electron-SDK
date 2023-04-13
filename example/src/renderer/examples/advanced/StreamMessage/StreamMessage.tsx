@@ -1,14 +1,13 @@
-import React from 'react';
+import { Buffer } from 'buffer';
+
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
   RtcConnection,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import { Buffer } from 'buffer';
-
-import Config from '../../../config/agora.config';
+import React from 'react';
 
 import {
   BaseAudioComponentState,
@@ -21,6 +20,7 @@ import {
   AgoraText,
   AgoraTextInput,
 } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 
 interface State extends BaseAudioComponentState {
   syncWithAudio: boolean;

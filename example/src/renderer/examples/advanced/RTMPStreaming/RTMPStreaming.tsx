@@ -1,22 +1,20 @@
-import React from 'react';
 import {
   AudioCodecProfileType,
   AudioSampleRateType,
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
   LiveTranscoding,
-  RtmpStreamingEvent,
   RtmpStreamPublishErrorType,
   RtmpStreamPublishState,
+  RtmpStreamingEvent,
   TranscodingUser,
   VideoCodecProfileType,
   VideoCodecTypeForStream,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
+import React from 'react';
 import { SketchPicker } from 'react-color';
-
-import Config from '../../../config/agora.config';
 
 import {
   BaseComponent,
@@ -33,6 +31,7 @@ import {
   AgoraTextInput,
   AgoraView,
 } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 import { enumToItems } from '../../../utils';
 
 interface State extends BaseVideoComponentState {
@@ -367,7 +366,7 @@ export default class RTMPStreaming
             <AgoraDivider />
             <AgoraView>
               <AgoraTextInput
-                style={AgoraStyle.fullSize}
+                className={AgoraStyle.fullSize}
                 onChangeText={(text) => {
                   if (isNaN(+text)) return;
                   this.setState({
@@ -378,7 +377,7 @@ export default class RTMPStreaming
                 placeholder={`width (defaults: ${this.createState().width})`}
               />
               <AgoraTextInput
-                style={AgoraStyle.fullSize}
+                className={AgoraStyle.fullSize}
                 onChangeText={(text) => {
                   if (isNaN(+text)) return;
                   this.setState({

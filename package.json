@@ -66,6 +66,7 @@
     "eslint": "^8.4.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-auto-import": "^0.1.1",
+    "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
@@ -119,6 +120,7 @@
     ],
     "plugins": [
       "@typescript-eslint/eslint-plugin",
+      "import",
       "auto-import",
       "react",
       "react-hooks"
@@ -165,7 +167,24 @@
         }
       ],
       "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "error"
+      "react-hooks/exhaustive-deps": "error",
+      "import/order": [
+        "error",
+        {
+          "newlines-between": "always-and-inside-groups",
+          "alphabetize": {
+            "order": "asc",
+            "orderImportKind": "asc"
+          }
+        }
+      ],
+      "sort-imports": [
+        "error",
+        {
+          "ignoreDeclarationSort": true,
+          "ignoreMemberSort": false
+        }
+      ]
     }
   },
   "eslintIgnore": [

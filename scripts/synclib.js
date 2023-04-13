@@ -1,13 +1,16 @@
-const glob = require('glob');
-const fs = require('fs-extra');
 const path = require('path');
+
+const { promisify } = require('util');
+
 const download = require('download');
 const extract = require('extract-zip');
-const { promisify } = require('util');
-const logger = require('./logger');
-const getConfig = require('./getConfig');
-const { getOS, createTmpDir } = require('./util');
+const fs = require('fs-extra');
+const glob = require('glob');
+
 const { destIrisSDKDir, cleanIrisDir } = require('./clean');
+const getConfig = require('./getConfig');
+const logger = require('./logger');
+const { getOS, createTmpDir } = require('./util');
 
 const globPromise = promisify(glob);
 const config = getConfig();

@@ -1,22 +1,21 @@
-import React from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   ErrorCodeType,
   IRtcEngineEventHandler,
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React from 'react';
 
 import {
   BaseAudioComponentState,
   BaseComponent,
 } from '../../../components/BaseComponent';
 import { AgoraButton, AgoraTextInput } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 
 interface State extends BaseAudioComponentState {
   userAccount: string;

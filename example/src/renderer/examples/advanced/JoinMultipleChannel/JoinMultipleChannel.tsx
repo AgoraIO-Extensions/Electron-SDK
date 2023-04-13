@@ -1,8 +1,6 @@
-import React, { ReactElement } from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   RemoteVideoState,
@@ -10,14 +8,15 @@ import {
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
+import RtcSurfaceView from '../../../components/RtcSurfaceView';
 import {
   AgoraButton,
   AgoraCard,
@@ -25,7 +24,7 @@ import {
   AgoraText,
   AgoraTextInput,
 } from '../../../components/ui';
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
+import Config from '../../../config/agora.config';
 
 interface State extends BaseVideoComponentState {
   channelId2: string;
