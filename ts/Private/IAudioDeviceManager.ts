@@ -1,5 +1,6 @@
 import './extension/IAudioDeviceManagerExtension';
 import { AudioDeviceInfo } from './IAgoraRtcEngine';
+
 /**
  * The maximum length of the device ID.
  */
@@ -77,7 +78,7 @@ export abstract class IAudioDeviceManager {
    * Sets the audio capture device.
    * You can call this method to change the audio route currently being used, but this does not change the default audio route. For example, if the default audio route is microphone, you call this method to set the audio route as bluetooth earphones before joinging a channel and then start a device test, the SDK conducts device test on the bluetooth earphones. After the device test is completed and you join a channel, the SDK still uses the microphone for audio capturing.
    *
-   * @param deviceId The ID of the audio capture device. You can get the media player ID by calling enumerateRecordingDevices . Connecting or disconnecting the audio device does not change the value of deviceId.The maximum length is MaxDeviceIdLengthType .
+   * @param deviceId The ID of the audio capture device. You can get the Device ID by calling enumerateRecordingDevices . Connecting or disconnecting the audio device does not change the value of deviceId.The maximum length is MaxDeviceIdLengthType .
    *
    * @returns
    * 0: Success.< 0: Failure.
