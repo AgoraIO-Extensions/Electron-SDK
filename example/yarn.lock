@@ -1688,10 +1688,10 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-agora-electron-sdk@4.2.0-dev.4:
-  version "4.2.0-dev.4"
-  resolved "https://registry.yarnpkg.com/agora-electron-sdk/-/agora-electron-sdk-4.2.0-dev.4.tgz#d88a339e03493808c2f94783223a0fae3fca6cc1"
-  integrity sha512-kfeOmkrdNaheDiBjAHWwgGtmA+59PoBFpHAr/slJPiVX/OTeREoOE9XdkC8dH2bIa1O4N20jyKNcrOq9w8Saaw==
+agora-electron-sdk@4.2.0-dev.5:
+  version "4.2.0-dev.5"
+  resolved "https://registry.yarnpkg.com/agora-electron-sdk/-/agora-electron-sdk-4.2.0-dev.5.tgz#bfcaba0b04a40875ab79f109cd6c7dd694db6905"
+  integrity sha512-DAyXlVStw1KZJCRrGoNQ+CjGPG1dGkp8MnGQPhb5oC/hGPkIKhHgnp+r1upH6SLwUW5AZEX0d1qR3eB+JROwng==
   dependencies:
     bindings "1.2.1"
     buffer "^6.0.3"
