@@ -3,10 +3,6 @@
 #include <stdio.h>
 #include "IAVFramePlugin.h"
 
-IAVFramePluginManager::IAVFramePluginManager() {}
-
-IAVFramePluginManager::~IAVFramePluginManager() {}
-
 IAVFramePluginManager::IAVFramePluginManager() {
 #ifdef _WIN32
   m_onFrame = ::CreateEvent(NULL, FALSE, FALSE, NULL);
