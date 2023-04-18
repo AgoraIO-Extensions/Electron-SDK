@@ -88,8 +88,6 @@ export default class MediaRecorder
     // Start preview before joinChannel
     this.engine.startPreview();
     this.setState({ startPreview: true });
-
-    this.createMediaRecorder();
   }
 
   /**
@@ -116,6 +114,8 @@ export default class MediaRecorder
       // Make myself as the broadcaster to send stream to remote
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
     });
+
+    this.createMediaRecorder();
   }
 
   /**
