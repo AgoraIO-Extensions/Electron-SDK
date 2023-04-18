@@ -106,7 +106,6 @@ export default class LocalVideoTranscoder
 
     this.enumerateDevices();
     this.getScreenCaptureSources();
-    (window as any).engine = this.engine;
   }
 
   /**
