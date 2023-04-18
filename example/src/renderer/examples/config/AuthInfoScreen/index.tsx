@@ -1,5 +1,6 @@
 import { AgoraEnv } from 'agora-electron-sdk';
 import { Button, Card, Checkbox, Form, Input, Row } from 'antd';
+import React from 'react';
 
 import config from '../../../config/agora.config';
 

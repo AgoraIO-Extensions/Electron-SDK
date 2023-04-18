@@ -175,7 +175,6 @@ export default function JoinChannelAudio() {
   return (
     <BaseComponent
       name={'JoinChannelAudio'}
-      enableVideo={false}
       renderConfiguration={renderConfiguration}
       renderChannel={() => (
         <BaseRenderChannel

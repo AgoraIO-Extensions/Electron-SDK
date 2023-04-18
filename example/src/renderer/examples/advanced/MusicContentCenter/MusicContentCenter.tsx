@@ -490,19 +490,15 @@ export default class MusicContentCenter
 
   protected renderUsers(): React.ReactNode {
     const { musics, songCode } = this.state;
-    return (
-      <>
-        {songCode >= 0 ? (
-          <AgoraImage
-            source={
-              musics.find((value) => {
-                return value.songCode === songCode;
-              })?.poster
-            }
-          />
-        ) : undefined}
-      </>
-    );
+    return +songCode >= 0 ? (
+      <AgoraImage
+        source={
+          musics.find((value) => {
+            return value.songCode == songCode;
+          })?.poster
+        }
+      />
+    ) : undefined;
   }
 
   protected renderAction(): React.ReactNode {

@@ -579,7 +579,7 @@ export default class ScreenShare
             <AgoraDivider />
             <SketchPicker
               onChangeComplete={(color) => {
-                const { a, r, g, b } = color.rgb;
+                const { a = 1, r, g, b } = color.rgb;
                 const argbHex =
                   `${((a * 255) | (1 << 8)).toString(16).slice(1)}` +
                   `${(r | (1 << 8)).toString(16).slice(1)}` +

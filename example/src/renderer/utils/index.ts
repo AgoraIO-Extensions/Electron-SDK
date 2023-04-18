@@ -2,16 +2,16 @@ import path from 'path';
 
 import { AgoraDropdownItem } from '../components/ui';
 
-export const objToArray = (obj) =>
+export const objToArray = (obj: any) =>
   Object.keys(obj).map((key) => ({ key, value: obj[key] }));
 
-export const configMapToOptions = (obj) =>
+export const configMapToOptions = (obj: any) =>
   objToArray(obj).map(({ key, value }) => ({
     dropId: value,
     dropText: key,
   }));
 
-export const configEnumToOptions = (enumValue) => {
+export const configEnumToOptions = (enumValue: any) => {
   const items = Object.values(enumValue);
   const keys = items.filter((v) => typeof v === 'string') as string[];
   const values = items.filter((v) => typeof v === 'number') as number[];
@@ -63,6 +63,7 @@ export const getResourcePath = (filePath = './') => {
     );
   } else {
     resourcePath = path.resolve(
+      // @ts-ignore
       `${process.resourcesPath}/extraResources`,
       filePath
     );

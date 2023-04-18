@@ -136,18 +136,19 @@ export abstract class BaseComponent<
   }
 
   render() {
+    const users = this.renderUsers();
     const configuration = this.renderConfiguration();
     return (
       <AgoraView className={AgoraStyle.screen}>
         <AgoraView className={AgoraStyle.content}>
-          {this.renderUsers()}
+          {users ? this.renderUsers() : undefined}
         </AgoraView>
         <AgoraView className={AgoraStyle.rightBar}>
           {this.renderChannel()}
           {configuration ? (
             <>
               <AgoraDivider>
-                The Configuration of {this.constructor.name}
+                {`The Configuration of ${this.constructor.name}`}
               </AgoraDivider>
               {configuration}
             </>
@@ -184,9 +185,10 @@ export abstract class BaseComponent<
     const { startPreview, joinChannelSuccess, remoteUsers } = this.state;
     return (
       <>
-        {startPreview || joinChannelSuccess ? (
+        {!!startPreview || joinChannelSuccess ? this.renderVideo(0) : undefined}
+        {!!startPreview || joinChannelSuccess ? (
           <AgoraList
-            data={[0, ...(remoteUsers ?? [])]}
+            data={remoteUsers ?? []}
             renderItem={(item) => {
               return this.renderVideo(item);
             }}

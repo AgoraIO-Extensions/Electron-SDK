@@ -5,37 +5,33 @@ import JoinMultipleChannel from './JoinMultipleChannel/JoinMultipleChannel';
 import StringUid from './StringUid/StringUid';
 import VirtualBackground from './VirtualBackground/VirtualBackground';
 
-const hooksRoutes = [
-  {
-    path: '/JoinChannelVideoWithHook',
-    component: JoinChannelVideo,
-    title: 'JoinChannelVideoWithHook',
-  },
-  {
-    path: '/JoinChannelAudioWithHook',
-    component: JoinChannelAudio,
-    title: 'JoinChannelAudioWithHook',
-  },
-  {
-    path: '/StringUidHook',
-    component: StringUid,
-    title: 'StringUidHook',
-  },
-  {
-    path: '/JoinMultipleChannelHook',
-    component: JoinMultipleChannel,
-    title: 'JoinMultipleChannelHook',
-  },
-  {
-    path: '/VirtualBackgroundHook',
-    component: VirtualBackground,
-    title: 'VirtualBackgroundHook',
-  },
-  {
-    path: '/DeviceManagerHook',
-    component: DeviceManager,
-    title: 'DeviceManagerHook',
-  },
-];
-
-export default hooksRoutes;
+const Hooks = {
+  title: 'Hooks',
+  data: [
+    {
+      name: 'DeviceManagerHooks',
+      component: DeviceManager,
+    },
+    {
+      name: 'JoinChannelVideoHooks',
+      component: JoinChannelVideo,
+    },
+    {
+      name: 'JoinChannelAudioHooks',
+      component: JoinChannelAudio,
+    },
+    {
+      name: 'StringUidHooks',
+      component: StringUid,
+    },
+    {
+      name: 'JoinMultipleChannelHooks',
+      component: JoinMultipleChannel,
+    },
+    {
+      name: 'VirtualBackgroundHooks',
+      component: VirtualBackground,
+    },
+  ],
+};
+export default Hooks;

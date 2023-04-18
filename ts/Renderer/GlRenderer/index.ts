@@ -56,8 +56,10 @@ export class GlRenderer extends IRenderer {
   texCoordBuffer: any;
   surfaceBuffer: any;
 
+  // @ts-ignore
   parentElement: HTMLElement | undefined;
   container: HTMLElement | undefined;
+  // @ts-ignore
   canvas: HTMLCanvasElement | undefined;
   renderImageCount = 0;
   initWidth = 0;
@@ -102,8 +104,7 @@ export class GlRenderer extends IRenderer {
   }
 
   unbind() {
-    // @ts-ignore
-    this.observer && this.observer.unobserve && this.observer.disconnect();
+    this.observer?.unobserve && this.observer.disconnect();
     this.program = undefined;
     this.positionLocation = undefined;
     this.texCoordLocation = undefined;
@@ -158,39 +159,33 @@ export class GlRenderer extends IRenderer {
         // Cover
         if (rotation === 0 || rotation === 180) {
           if (this.clientWidth / this.clientHeight > width / height) {
-            // @ts-ignore
-            this.canvas.style.zoom = this.clientWidth / width;
+            this.canvas.style.transform = `scale(${this.clientWidth / width})`;
           } else {
-            // @ts-ignore
-            this.canvas.style.zoom = this.clientHeight / height;
+            this.canvas.style.transform = `scale(${
+              this.clientHeight / height
+            })`;
           }
         } else {
           // 90, 270
           if (this.clientHeight / this.clientWidth > width / height) {
-            // @ts-ignore
-            this.canvas.style.zoom = this.clientHeight / width;
+            this.canvas.style.transform = `scale(${this.clientHeight / width})`;
           } else {
-            // @ts-ignore
-            this.canvas.style.zoom = this.clientWidth / height;
+            this.canvas.style.transform = `scale(${this.clientWidth / height})`;
           }
         }
         // Contain
       } else if (rotation === 0 || rotation === 180) {
         if (this.clientWidth / this.clientHeight > width / height) {
-          // @ts-ignore
-          this.canvas.style.zoom = this.clientHeight / height;
+          this.canvas.style.transform = `scale(${this.clientHeight / height})`;
         } else {
-          // @ts-ignore
-          this.canvas.style.zoom = this.clientWidth / width;
+          this.canvas.style.transform = `scale(${this.clientWidth / width})`;
         }
       } else {
         // 90, 270
         if (this.clientHeight / this.clientWidth > width / height) {
-          // @ts-ignore
-          this.canvas.style.zoom = this.clientWidth / height;
+          this.canvas.style.transform = `scale(${this.clientWidth / height})`;
         } else {
-          // @ts-ignore
-          this.canvas.style.zoom = this.clientHeight / width;
+          this.canvas.style.transform = `scale(${this.clientHeight / width})`;
         }
       }
     } catch (e) {

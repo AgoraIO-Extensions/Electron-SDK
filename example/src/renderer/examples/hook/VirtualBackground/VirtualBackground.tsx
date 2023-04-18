@@ -120,7 +120,6 @@ export default function VirtualBackground() {
   return (
     <BaseComponent
       name={'VirtualBackground'}
-      enableVideo={true}
       renderConfiguration={renderConfiguration}
       renderChannel={() => (
         <BaseRenderChannel
