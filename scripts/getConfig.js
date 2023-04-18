@@ -4,7 +4,6 @@ const minimist = require('minimist');
 
 const logger = require('./logger');
 
-//@ts-ignore
 const { INIT_CWD } = minimist(process.argv.slice(2), {
   string: ['INIT_CWD'],
   default: {},

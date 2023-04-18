@@ -156,12 +156,10 @@ export class YUVCanvasRenderer extends IRenderer {
         options.clientHeight
       );
 
-      // @ts-ignore
-      this.canvas.style.zoom = scale.toString();
+      this.canvas.style.transform = `scale(${scale.toString()})`;
 
       if (transformItems.length > 0) {
-        let transform = `${transformItems.join(' ')}`;
-        this.canvas.style.transform = transform;
+        this.canvas.style.transform = `${transformItems.join(' ')}`;
       }
     }
   }

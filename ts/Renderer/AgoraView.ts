@@ -82,6 +82,7 @@ export default class AgoraView extends HTMLElement {
       this.removeAttribute(VIDEO_SOURCE_TYPE_STRING);
     }
   }
+
   get uid(): number {
     const number = Number(this.getAttribute(UID_STRING));
     return isNaN(number) ? 0 : number;

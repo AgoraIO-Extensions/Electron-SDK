@@ -183,7 +183,7 @@ export class RendererManager {
     const render = this.bindHTMLElementToRender(formatConfig, view!);
 
     // render config
-    render.setRenderOption(rendererOptions);
+    render?.setRenderOption(rendererOptions);
 
     // enable iris videoFrame
     this.enableVideoFrameCache({
@@ -458,7 +458,7 @@ export class RendererManager {
   private bindHTMLElementToRender(
     config: FormatRendererVideoConfig,
     view: HTMLElement
-  ): IRenderer {
+  ): IRenderer | undefined {
     this.ensureRendererConfig(config);
     const renders = this.getRenderers(config);
     const filterRenders =
@@ -611,14 +611,13 @@ export class RendererManager {
   /**
    * @ignore
    */
-  private updateVideoFrameCacheInMap(
+  public updateVideoFrameCacheInMap(
     config: VideoFrameCacheConfig,
     shareVideoFrame: ShareVideoFrame
   ): void {
     let rendererConfigMap = this.ensureRendererConfig(config);
     rendererConfigMap
-      ? // @ts-ignore
-        Object.assign(rendererConfigMap.get(config.uid), {
+      ? Object.assign(rendererConfigMap.get(config.uid) ?? {}, {
           shareVideoFrame,
         })
       : logWarn(
