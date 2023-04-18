@@ -28,7 +28,6 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "esnext",
-    "outDir": "./js"
+    "target": "esnext"
   }
 }
