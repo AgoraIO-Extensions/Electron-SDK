@@ -1,4 +1,4 @@
-export default (input) => {
+export default (input: any) => {
   const keyStr =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
   let output = '';
@@ -29,7 +29,7 @@ export default (input) => {
   return output;
 };
 
-export const rgbImageBufferToBase64 = (target) => {
+export const rgbImageBufferToBase64 = (target: any) => {
   if (!target) {
     return '';
   }

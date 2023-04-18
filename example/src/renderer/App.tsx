@@ -11,10 +11,13 @@ import {
 } from 'react-router-dom';
 
 import './App.global.scss';
-import advanceRoute from './examples/advanced';
-import basicRoute from './examples/basic';
+
+import Advanced from './examples/advanced';
+import Basic from './examples/basic';
 import AuthInfoScreen from './examples/config/AuthInfoScreen';
-import hooksRoutes from './examples/hook';
+import Hooks from './examples/hook';
+
+const DATA = [Basic, Advanced, Hooks];
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -30,7 +33,7 @@ class App extends React.Component {
     this.setState({ version: engine.getVersion() });
   }
 
-  onCollapse = (collapsed) => {
+  onCollapse = (collapsed: any) => {
     console.log(collapsed);
     this.setState({ collapsed });
   };
@@ -46,62 +49,41 @@ class App extends React.Component {
               <Menu.Item key="1" icon={<SettingOutlined />}>
                 <Link to="/">Setting</Link>
               </Menu.Item>
-              <SubMenu key="sub1" icon={<GithubOutlined />} title="Basic">
-                {basicRoute.map(({ path, title }, index) => {
-                  console.log('path, title ', path, title);
-                  return (
-                    <Menu.Item key={`${index} ${title}`}>
-                      <Link to={path}>{title}</Link>
-                    </Menu.Item>
-                  );
-                })}
-              </SubMenu>
-              <SubMenu key="sub3" icon={<GithubOutlined />} title="Advanced">
-                {advanceRoute.map(({ path, title }, index) => {
-                  return (
-                    <Menu.Item key={`${index} ${title}`}>
-                      <Link to={path}>{title}</Link>
-                    </Menu.Item>
-                  );
-                })}
-              </SubMenu>
-              <SubMenu key="sub2" icon={<GithubOutlined />} title="Hooks">
-                {hooksRoutes.map(({ path, title }, index) => {
-                  console.log('path, title---> ', path, title);
-                  return (
-                    <Menu.Item key={`${index} ${title}`}>
-                      <Link to={path}>{title}</Link>
-                    </Menu.Item>
-                  );
-                })}
-              </SubMenu>
+              {DATA.map((value, index) => {
+                return (
+                  <SubMenu
+                    key={`sub${index}`}
+                    icon={<GithubOutlined />}
+                    title={value.title}
+                  >
+                    {value.data.map(({ name }) => {
+                      return (
+                        <Menu.Item key={name}>
+                          <Link to={`/${name}`}>{name}</Link>
+                        </Menu.Item>
+                      );
+                    })}
+                  </SubMenu>
+                );
+              })}
             </Menu>
           </Sider>
           <Layout className="site-layout">
             <Content style={{ flex: 1 }}>
               <Switch>
                 <Route path="/" children={<AuthInfoScreen />} exact={true} />
-                {basicRoute.map((route: any, index) => (
-                  <Route
-                    key={`${index}`}
-                    path={route.path}
-                    children={<route.component />}
-                  />
-                ))}
-                {advanceRoute.map((route: any, index) => (
-                  <Route
-                    key={`${index}`}
-                    path={route.path}
-                    children={<route.component />}
-                  />
-                ))}
-                {hooksRoutes.map((route: any, index) => (
-                  <Route
-                    key={`${index}`}
-                    path={route.path}
-                    children={<route.component />}
-                  />
-                ))}
+                {DATA.map((value) => {
+                  return value.data.map(({ name, component }) => {
+                    const RouteComponent = component;
+                    return (
+                      <Route
+                        key={name}
+                        path={`/${name}`}
+                        children={<RouteComponent />}
+                      />
+                    );
+                  });
+                })}
                 <Route path="*">
                   <Redirect to="/" />
                 </Route>

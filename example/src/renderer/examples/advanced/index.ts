@@ -29,101 +29,130 @@ import VideoEncoderConfiguration from './VideoEncoderConfiguration/VideoEncoderC
 import VirtualBackground from './VirtualBackground/VirtualBackground';
 import VoiceChanger from './VoiceChanger/VoiceChanger';
 
-const advanceRoute = [
-  { path: '/AudioMixing', component: AudioMixing, title: 'AudioMixing' },
-  { path: '/AudioSpectrum', component: AudioSpectrum, title: 'AudioSpectrum' },
-  { path: '/BeautyEffect', component: BeautyEffect, title: 'BeautyEffect' },
-  {
-    path: '/ChannelMediaRelay',
-    component: ChannelMediaRelay,
-    title: 'ChannelMediaRelay',
-  },
-  {
-    path: '/ContentInspect',
-    component: ContentInspect,
-    title: 'ContentInspect',
-  },
-  {
-    path: '/DeviceManager',
-    component: DeviceManager,
-    title: 'DeviceManager',
-  },
-  {
-    path: '/DirectCdnStreaming',
-    component: DirectCdnStreaming,
-    title: 'DirectCdnStreaming',
-  },
-  {
-    path: '/EncodedVideoFrame',
-    component: EncodedVideoFrame,
-    title: 'EncodedVideoFrame',
-  },
-  { path: '/Encryption', component: Encryption, title: 'Encryption' },
-  { path: '/Extension', component: Extension, title: 'Extension' },
-  {
-    path: '/JoinMultipleChannel',
-    component: JoinMultipleChannel,
-    title: 'JoinMultipleChannel',
-  },
-  {
-    path: '/LocalSpatialAudioEngine',
-    component: LocalSpatialAudioEngine,
-    title: 'LocalSpatialAudioEngine',
-  },
-  {
-    path: '/LocalVideoTranscoder',
-    component: LocalVideoTranscoder,
-    title: 'LocalVideoTranscoder',
-  },
-  { path: '/MediaPlayer', component: MediaPlayer, title: 'MediaPlayer' },
-  { path: '/MediaRecorder', component: MediaRecorder, title: 'MediaRecorder' },
-  {
-    path: '/MusicContentCenter',
-    component: MusicContentCenter,
-    title: 'MusicContentCenter',
-  },
-  { path: '/PlayEffect', component: PlayEffect, title: 'PlayEffect' },
-  {
-    path: '/ProcessVideoRawData',
-    component: ProcessVideoRawData,
-    title: 'ProcessVideoRawData',
-  },
-  {
-    path: '/PushVideoFrame',
-    component: PushVideoFrame,
-    title: 'PushVideoFrame',
-  },
-  { path: '/RhythmPlayer', component: RhythmPlayer, title: 'RhythmPlayer' },
-  {
-    path: '/RTMPStreaming',
-    component: RTMPStreaming,
-    title: 'RTMPStreaming',
-  },
-  { path: '/ScreenShare', component: ScreenShare, title: 'ScreenShare' },
-  { path: '/SendMetadata', component: SendMetadata, title: 'SendMetadata' },
-  {
-    path: '/SendMultiVideoStream',
-    component: SendMultiVideoStream,
-    title: 'SendMultiVideoStream',
-  },
-  { path: '/SpatialAudio', component: SpatialAudio, title: 'SpatialAudio' },
-  {
-    path: '/StreamMessage',
-    component: StreamMessage,
-    title: 'StreamMessage',
-  },
-  { path: '/TakeSnapshot', component: TakeSnapshot, title: 'TakeSnapshot' },
-  {
-    path: '/VideoEncoderConfiguration',
-    component: VideoEncoderConfiguration,
-    title: 'VideoEncoderConfiguration',
-  },
-  {
-    path: '/VirtualBackground',
-    component: VirtualBackground,
-    title: 'VirtualBackground',
-  },
-  { path: '/VoiceChanger', component: VoiceChanger, title: 'VoiceChanger' },
-];
+const Advanced = {
+  title: 'Advanced',
+  data: [
+    {
+      name: 'AudioMixing',
+      component: AudioMixing,
+    },
+    {
+      name: 'AudioSpectrum',
+      component: AudioSpectrum,
+    },
+    {
+      name: 'BeautyEffect',
+      component: BeautyEffect,
+    },
+    {
+      name: 'ChannelMediaRelay',
+      component: ChannelMediaRelay,
+    },
+    {
+      name: 'ContentInspect',
+      component: ContentInspect,
+    },
+    {
+      name: 'DeviceManager',
+      component: DeviceManager,
+    },
+    {
+      name: 'DirectCdnStreaming',
+      component: DirectCdnStreaming,
+    },
+    {
+      name: 'EncodedVideoFrame',
+      component: EncodedVideoFrame,
+    },
+    {
+      name: 'Encryption',
+      component: Encryption,
+    },
+    {
+      name: 'Extension',
+      component: Extension,
+    },
+    {
+      name: 'JoinMultipleChannel',
+      component: JoinMultipleChannel,
+    },
+    {
+      name: 'LocalSpatialAudioEngine',
+      component: LocalSpatialAudioEngine,
+    },
+    {
+      name: 'LocalVideoTranscoder',
+      component: LocalVideoTranscoder,
+    },
+    {
+      name: 'MediaPlayer',
+      component: MediaPlayer,
+    },
+    {
+      name: 'MediaRecorder',
+      component: MediaRecorder,
+    },
+    {
+      name: 'MusicContentCenter',
+      component: MusicContentCenter,
+    },
+    {
+      name: 'PlayEffect',
+      component: PlayEffect,
+    },
+    {
+      name: 'ProcessVideoRawData',
+      component: ProcessVideoRawData,
+    },
+    {
+      name: 'PushVideoFrame',
+      component: PushVideoFrame,
+    },
+    {
+      name: 'RhythmPlayer',
+      component: RhythmPlayer,
+    },
+    {
+      name: 'RTMPStreaming',
+      component: RTMPStreaming,
+    },
+    {
+      name: 'ScreenShare',
+      component: ScreenShare,
+    },
+    {
+      name: 'SendMetadata',
+      component: SendMetadata,
+    },
+    {
+      name: 'SendMultiVideoStream',
+      component: SendMultiVideoStream,
+    },
+    {
+      name: 'SpatialAudio',
+      component: SpatialAudio,
+    },
+    {
+      name: 'StreamMessage',
+      component: StreamMessage,
+    },
+    {
+      name: 'TakeSnapshot',
+      component: TakeSnapshot,
+    },
+    {
+      name: 'VideoEncoderConfiguration',
+      component: VideoEncoderConfiguration,
+    },
+    {
+      name: 'VirtualBackground',
+      component: VirtualBackground,
+    },
+    {
+      name: 'VoiceChanger',
+      component: VoiceChanger,
+    },
+  ],
+};
 
-export default advanceRoute;
+export default Advanced;

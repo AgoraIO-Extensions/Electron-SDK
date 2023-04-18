@@ -133,7 +133,7 @@ export default class LocalVideoTranscoder
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       publishMicrophoneTrack: false,
       publishCameraTrack: false,
-      publishTrancodedVideoTrack: true,
+      publishTranscodedVideoTrack: true,
     });
   }
 
@@ -154,13 +154,21 @@ export default class LocalVideoTranscoder
   };
 
   startCameraCapture = (deviceId: string) => {
-    const type = this._getVideoSourceTypeCamera(deviceId);
-    this.engine?.startCameraCapture(type, { deviceId });
+    const sourceType = this._getVideoSourceTypeCamera(deviceId);
+    if (sourceType === undefined) {
+      this.error('sourceType is invalid');
+      return;
+    }
+    this.engine?.startCameraCapture(sourceType, { deviceId });
   };
 
   stopCameraCapture = (deviceId: string) => {
-    const type = this._getVideoSourceTypeCamera(deviceId);
-    this.engine?.stopScreenCapture(type);
+    const sourceType = this._getVideoSourceTypeCamera(deviceId);
+    if (sourceType === undefined) {
+      this.error('sourceType is invalid');
+      return;
+    }
+    this.engine?.stopScreenCaptureBySourceType(sourceType);
   };
 
   /**
@@ -187,7 +195,7 @@ export default class LocalVideoTranscoder
       this.error(`targetSource is invalid`);
     }
 
-    this.engine?.startScreenCaptureDesktop(
+    this.engine?.startScreenCaptureBySourceType(
       VideoSourceType.VideoSourceScreenPrimary,
       {
         isCaptureWindow:
@@ -216,7 +224,9 @@ export default class LocalVideoTranscoder
    * Step 3-4 (Optional): stopScreenCapture
    */
   stopScreenCapture = () => {
-    this.engine?.stopScreenCapture(VideoSourceType.VideoSourceScreenPrimary);
+    this.engine?.stopScreenCaptureBySourceType(
+      VideoSourceType.VideoSourceScreenPrimary
+    );
     this.setState({ startScreenCapture: false });
   };
 
@@ -312,7 +322,7 @@ export default class LocalVideoTranscoder
     }
 
     if (imageUrl) {
-      const getImageType = (url) => {
+      const getImageType = (url: string): VideoSourceType | undefined => {
         if (url.endsWith('.png')) {
           return VideoSourceType.VideoSourceRtcImagePng;
         } else if (url.endsWith('.jepg') || url.endsWith('.jpg')) {
@@ -320,6 +330,7 @@ export default class LocalVideoTranscoder
         } else if (url.endsWith('.gif')) {
           return VideoSourceType.VideoSourceRtcImageGif;
         }
+        return undefined;
       };
       streams.push({
         sourceType: getImageType(imageUrl),

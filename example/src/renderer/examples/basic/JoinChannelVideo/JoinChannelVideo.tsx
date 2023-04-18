@@ -17,13 +17,6 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
-import {
-  AgoraButton,
-  AgoraCard,
-  AgoraList,
-  AgoraText,
-} from '../../../components/ui';
 import Config from '../../../config/agora.config';
 
 interface State extends BaseVideoComponentState {}
@@ -170,34 +163,10 @@ export default class JoinChannelVideo
   }
 
   protected renderUsers(): React.ReactNode {
-    const { startPreview, joinChannelSuccess, remoteUsers } = this.state;
-    return (
-      <>
-        {startPreview || joinChannelSuccess ? (
-          <AgoraList
-            data={[0, ...remoteUsers]}
-            renderItem={this.renderVideo.bind(this)}
-          />
-        ) : undefined}
-      </>
-    );
+    return super.renderUsers();
   }
 
   protected renderVideo(uid: number): ReactElement {
-    const { enableVideo, remoteUsers } = this.state;
-    return (
-      <AgoraCard title={`${uid === 0 ? 'Local' : 'Remote'} Uid: ${uid}`}>
-        <AgoraText>Click view to mirror</AgoraText>
-        {enableVideo ? <RtcSurfaceView canvas={{ uid }} /> : undefined}
-        <AgoraButton
-          title={`Append`}
-          onPress={() => {
-            this.setState({
-              remoteUsers: [...remoteUsers!, uid],
-            });
-          }}
-        />
-      </AgoraCard>
-    );
+    return super.renderVideo(uid);
   }
 }

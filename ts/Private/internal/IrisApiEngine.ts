@@ -317,7 +317,6 @@ function handleEvent(...[event, data, buffers]: any) {
   let processor: EventProcessor = EVENT_PROCESSORS.IRtcEngineEventHandler;
 
   Object.values(EVENT_PROCESSORS).some((it) => {
-    // @ts-ignore
     const p = it as EventProcessor;
     if (
       _event.startsWith(p.suffix) &&
@@ -421,7 +420,6 @@ export function callIrisApi(funcName: string, params: any): any {
           buffers.push(params.data);
           break;
         case 'RtcEngine_destroyMediaPlayer':
-          // @ts-ignore
           params.mediaPlayerId = params.media_player.getMediaPlayerId();
           params.toJSON = function () {
             return { playerId: params.mediaPlayerId };

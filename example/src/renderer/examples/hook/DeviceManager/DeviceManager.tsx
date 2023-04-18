@@ -255,7 +255,6 @@ export default function DeviceManager() {
   return (
     <BaseComponent
       name={'DeviceManager'}
-      enableVideo={true}
       renderConfiguration={renderConfiguration}
       renderChannel={() => (
         <BaseRenderChannel
