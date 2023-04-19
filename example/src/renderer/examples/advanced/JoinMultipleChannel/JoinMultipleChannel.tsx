@@ -8,6 +8,7 @@ import {
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
+  VideoCanvas,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
 import React, { ReactElement } from 'react';
@@ -429,7 +430,7 @@ export default class JoinMultipleChannel
             data={[0, ...remoteUsers, ...remoteUsers2]}
             renderItem={(item) => {
               return this.renderVideo(
-                item,
+                { uid: item },
                 remoteUsers2.indexOf(item) === -1 ? channelId : channelId2,
                 remoteUsers2.indexOf(item) === -1 ? uid : uid2
               );
@@ -441,14 +442,14 @@ export default class JoinMultipleChannel
   }
 
   protected renderVideo(
-    uid: number,
+    user: VideoCanvas,
     channelId?: string,
     localUid?: number
   ): ReactElement {
     return (
-      <AgoraCard title={`ChannelId: ${channelId} Uid: ${uid}`}>
+      <AgoraCard title={`${channelId} - ${user.uid}`}>
         <AgoraText>Click view to mirror</AgoraText>
-        <RtcSurfaceView canvas={{ uid }} connection={{ channelId, localUid }} />
+        <RtcSurfaceView canvas={user} connection={{ channelId, localUid }} />
       </AgoraCard>
     );
   }

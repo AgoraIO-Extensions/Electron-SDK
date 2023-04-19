@@ -5,6 +5,8 @@ import {
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
+  VideoCanvas,
+  VideoSourceType,
 } from 'agora-electron-sdk';
 import React, { Component, ReactElement, ReactNode } from 'react';
 
@@ -52,7 +54,7 @@ export abstract class BaseComponent<
 {
   protected engine?: IRtcEngine;
 
-  protected constructor(props: P) {
+  constructor(props: P) {
     super(props);
     this.state = this.createState();
   }
@@ -184,31 +186,43 @@ export abstract class BaseComponent<
     const { startPreview, joinChannelSuccess, remoteUsers } = this.state;
     return (
       <>
-        {!!startPreview || joinChannelSuccess ? this.renderVideo(0) : undefined}
+        {!!startPreview || joinChannelSuccess
+          ? this.renderUser({
+              uid: 0,
+              sourceType: VideoSourceType.VideoSourceCamera,
+            })
+          : undefined}
         {!!startPreview || joinChannelSuccess ? (
           <AgoraList
             data={remoteUsers ?? []}
-            renderItem={(item) => {
-              return this.renderVideo(item);
-            }}
+            renderItem={(item) =>
+              this.renderUser({
+                uid: item,
+                sourceType: VideoSourceType.VideoSourceRemote,
+              })
+            }
           />
         ) : undefined}
       </>
     );
   }
 
-  protected renderVideo(uid: number): ReactElement {
+  protected renderUser(user: VideoCanvas): ReactElement {
     const { enableVideo } = this.state;
     return (
-      <AgoraCard title={`${uid === 0 ? 'Local' : 'Remote'} Uid: ${uid}`}>
+      <AgoraCard title={`${user.uid} - ${user.sourceType}`}>
         {enableVideo ? (
           <>
             <AgoraText>Click view to mirror</AgoraText>
-            <RtcSurfaceView canvas={{ uid }} />
+            {this.renderVideo(user)}
           </>
         ) : undefined}
       </AgoraCard>
     );
+  }
+
+  protected renderVideo(user: VideoCanvas): ReactElement {
+    return <RtcSurfaceView canvas={user} />;
   }
 
   protected renderConfiguration(): ReactNode {

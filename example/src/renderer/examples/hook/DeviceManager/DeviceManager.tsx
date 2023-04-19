@@ -267,6 +267,7 @@ export default function DeviceManager() {
       )}
       renderUsers={() => (
         <BaseRenderUsers
+          enableVideo={true}
           startPreview={startPreview}
           joinChannelSuccess={joinChannelSuccess}
           remoteUsers={remoteUsers}

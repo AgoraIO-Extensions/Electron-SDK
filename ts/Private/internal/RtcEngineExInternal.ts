@@ -61,11 +61,6 @@ import {
 import AgoraBaseTI from '../ti/AgoraBase-ti';
 import AgoraMediaBaseTI from '../ti/AgoraMediaBase-ti';
 import IAgoraRtcEngineTI from '../ti/IAgoraRtcEngine-ti';
-const checkers = createCheckers(
-  AgoraBaseTI,
-  AgoraMediaBaseTI,
-  IAgoraRtcEngineTI
-);
 
 import { AudioDeviceManagerInternal } from './AudioDeviceManagerInternal';
 import { DeviceEventEmitter, EVENT_TYPE, callIrisApi } from './IrisApiEngine';
@@ -75,6 +70,12 @@ import { MediaPlayerInternal } from './MediaPlayerInternal';
 import { MediaRecorderInternal } from './MediaRecorderInternal';
 import { MusicContentCenterInternal } from './MusicContentCenterInternal';
 import type { EmitterSubscription } from './emitter/EventEmitter';
+
+const checkers = createCheckers(
+  AgoraBaseTI,
+  AgoraMediaBaseTI,
+  IAgoraRtcEngineTI
+);
 
 export class RtcEngineExInternal extends IRtcEngineExImpl {
   static _event_handlers: IRtcEngineEventHandler[] = [];
@@ -583,13 +584,20 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   }
 
   setupLocalVideo(canvas: VideoCanvas): number {
-    const {
+    let {
       sourceType = VideoSourceType.VideoSourceCamera,
       uid,
+      mediaPlayerId,
       view,
       renderMode,
       mirrorMode,
     } = canvas;
+    if (
+      sourceType === VideoSourceType.VideoSourceMediaPlayer &&
+      mediaPlayerId !== undefined
+    ) {
+      uid = mediaPlayerId;
+    }
     return (
       AgoraEnv.AgoraRendererManager?.setupLocalVideo({
         videoSourceType: sourceType,
