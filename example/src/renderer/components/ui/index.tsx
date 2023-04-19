@@ -316,4 +316,10 @@ export const AgoraDropdown = (
   );
 };
 
-export const AgoraStyle = css;
+export const AgoraStyle = {
+  ...css,
+  image: {
+    width: 120,
+    height: 120,
+  },
+};

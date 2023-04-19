@@ -84,8 +84,8 @@ export default class RTMPStreaming
           uid: 0,
           x: 0,
           y: 0,
-          width: styles.image.width,
-          height: styles.image.height,
+          width: AgoraStyle.image.width,
+          height: AgoraStyle.image.height,
           zOrder: 50,
         },
       ],
@@ -208,15 +208,15 @@ export default class RTMPStreaming
       transcodingUsers: [
         ...transcodingUsers,
         ...remoteUsers.map((value, index) => {
-          const maxNumPerRow = Math.floor(width / styles.image.width);
+          const maxNumPerRow = Math.floor(width / AgoraStyle.image.width);
           const numOfRow = Math.floor((index + 1) / maxNumPerRow);
           const numOfColumn = Math.floor((index + 1) % maxNumPerRow);
           return {
             uid: value,
-            x: numOfColumn * styles.image.width,
-            y: numOfRow * styles.image.height,
-            width: styles.image.width,
-            height: styles.image.height,
+            x: numOfColumn * AgoraStyle.image.width,
+            y: numOfRow * AgoraStyle.image.height,
+            width: AgoraStyle.image.width,
+            height: AgoraStyle.image.height,
             zOrder: 50,
           };
         }),
@@ -225,10 +225,10 @@ export default class RTMPStreaming
       watermark: [
         {
           url: watermarkUrl,
-          x: width - styles.image.width,
-          y: height - styles.image.height,
-          width: styles.image.width,
-          height: styles.image.height,
+          x: width - AgoraStyle.image.width,
+          y: height - AgoraStyle.image.height,
+          width: AgoraStyle.image.width,
+          height: AgoraStyle.image.height,
           zOrder: 100,
         },
       ],
@@ -527,10 +527,3 @@ export default class RTMPStreaming
     );
   }
 }
-
-const styles = {
-  image: {
-    width: 120,
-    height: 120,
-  },
-};
