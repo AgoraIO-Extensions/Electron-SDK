@@ -19,6 +19,7 @@ import {
   AgoraDivider,
   AgoraDropdown,
   AgoraImage,
+  AgoraStyle,
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { arrayToItems } from '../../../utils';
@@ -172,7 +173,7 @@ export default class TakeSnapshot
           <>
             <AgoraDivider />
             <AgoraImage
-              style={styles.image}
+              style={AgoraStyle.image}
               source={`file://${filePath}/${targetUid}.jpg`}
             />
           </>
@@ -194,10 +195,3 @@ export default class TakeSnapshot
     );
   }
 }
-
-const styles = {
-  image: {
-    width: 120,
-    height: 120,
-  },
-};
