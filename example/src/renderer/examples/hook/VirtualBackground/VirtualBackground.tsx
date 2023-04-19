@@ -132,6 +132,7 @@ export default function VirtualBackground() {
       )}
       renderUsers={() => (
         <BaseRenderUsers
+          enableVideo={true}
           startPreview={startPreview}
           joinChannelSuccess={joinChannelSuccess}
           remoteUsers={remoteUsers}

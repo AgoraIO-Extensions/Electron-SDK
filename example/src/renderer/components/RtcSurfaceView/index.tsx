@@ -86,8 +86,6 @@ class RtcSurfaceView extends Component<Props, State> {
       } else {
         funcName = engine.setupLocalVideo;
       }
-    } else if (canvas.sourceType === VideoSourceType.VideoSourceMediaPlayer) {
-      funcName = engine.setupLocalVideo;
     } else if (canvas.sourceType === VideoSourceType.VideoSourceRemote) {
       funcName = engine.setupRemoteVideo;
     } else {

@@ -22,7 +22,6 @@ import {
   AgoraSlider,
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
-
 import { enumToItems } from '../../../utils';
 
 import {

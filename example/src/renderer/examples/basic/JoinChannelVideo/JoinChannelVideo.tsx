@@ -8,6 +8,7 @@ import {
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
+  VideoCanvas,
   VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
@@ -166,7 +167,7 @@ export default class JoinChannelVideo
     return super.renderUsers();
   }
 
-  protected renderVideo(uid: number): ReactElement {
-    return super.renderVideo(uid);
+  protected renderVideo(user: VideoCanvas): ReactElement {
+    return super.renderVideo(user);
   }
 }

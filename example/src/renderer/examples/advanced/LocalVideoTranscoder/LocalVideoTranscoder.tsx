@@ -15,7 +15,7 @@ import createAgoraRtcEngine, {
   VideoDeviceInfo,
   VideoSourceType,
 } from 'agora-electron-sdk';
-import React, { ReactElement } from 'react';
+import React from 'react';
 
 import {
   BaseComponent,
@@ -24,11 +24,9 @@ import {
 import RtcSurfaceView from '../../../components/RtcSurfaceView';
 import {
   AgoraButton,
-  AgoraCard,
   AgoraDivider,
   AgoraDropdown,
   AgoraImage,
-  AgoraText,
   AgoraTextInput,
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
@@ -425,45 +423,28 @@ export default class LocalVideoTranscoder
     }
   }
 
-  protected renderVideo(uid: number, channelId?: string): ReactElement {
-    const { startLocalVideoTranscoder } = this.state;
-    const sourceType =
-      uid === 0
-        ? startLocalVideoTranscoder
-          ? VideoSourceType.VideoSourceTranscoded
-          : VideoSourceType.VideoSourceCamera
-        : VideoSourceType.VideoSourceRemote;
-
-    return (
-      <AgoraCard title={`ChannelId: ${channelId} Uid: ${uid}`}>
-        <AgoraText>Click view to mirror</AgoraText>
-        <RtcSurfaceView
-          canvas={{
-            uid,
-            sourceType,
-          }}
-        />
-      </AgoraCard>
-    );
-  }
-
   protected renderUsers(): React.ReactNode {
-    const { startPreview, joinChannelSuccess, videoDeviceId } = this.state;
+    const {
+      startPreview,
+      joinChannelSuccess,
+      startLocalVideoTranscoder,
+      videoDeviceId,
+    } = this.state;
     return (
       <>
-        {super.renderUsers()}
-        {startPreview || joinChannelSuccess
-          ? videoDeviceId?.map((value) => {
-              return (
-                <RtcSurfaceView
-                  key={value}
-                  canvas={{
-                    uid: 0,
-                    sourceType: this._getVideoSourceTypeCamera(value),
-                  }}
-                />
-              );
+        {startLocalVideoTranscoder
+          ? this.renderUser({
+              uid: 0,
+              sourceType: VideoSourceType.VideoSourceTranscoded,
             })
+          : undefined}
+        {startPreview || joinChannelSuccess
+          ? videoDeviceId?.map((value) =>
+              this.renderUser({
+                uid: 0,
+                sourceType: this._getVideoSourceTypeCamera(value),
+              })
+            )
           : undefined}
       </>
     );
@@ -543,7 +524,7 @@ export default class LocalVideoTranscoder
         {open ? (
           <RtcSurfaceView
             canvas={{
-              uid: this.player?.getMediaPlayerId(),
+              mediaPlayerId: this.player?.getMediaPlayerId(),
               sourceType: VideoSourceType.VideoSourceMediaPlayer,
             }}
           />

@@ -115,6 +115,7 @@ export default function JoinChannelVideo() {
       )}
       renderUsers={() => (
         <BaseRenderUsers
+          enableVideo={true}
           startPreview={startPreview}
           joinChannelSuccess={joinChannelSuccess}
           remoteUsers={remoteUsers}
