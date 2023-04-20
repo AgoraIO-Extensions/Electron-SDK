@@ -195,8 +195,6 @@ const agora = require('../build/Release/agora_node_ext');
 export const AgoraEnv: AgoraEnvType = {
   enableLogging: true,
   enableDebugLogging: false,
+  webEnvReady: true,
   AgoraElectronBridge: new agora.AgoraElectronBridge(),
 };
-
-// @ts-ignore
-(window || global).AgoraEnv = AgoraEnv;

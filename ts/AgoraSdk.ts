@@ -2,6 +2,8 @@ import { IMediaPlayerCacheManager } from './Private/IAgoraMediaPlayer';
 import { IRtcEngineEx } from './Private/IAgoraRtcEngineEx';
 import { IMediaPlayerCacheManagerImpl } from './Private/impl/IAgoraMediaPlayerImpl';
 import { RtcEngineExInternal } from './Private/internal/RtcEngineExInternal';
+import { AgoraEnvOptions } from './Types';
+import { AgoraEnv } from './Utils';
 
 export * from './Private/AgoraBase';
 export * from './Private/AgoraMediaBase';
@@ -17,7 +19,7 @@ export * from './Private/IAgoraRtcEngine';
 export * from './Private/IAgoraRtcEngineEx';
 export * from './Private/IAgoraSpatialAudio';
 export * from './Private/IAudioDeviceManager';
-export * from './Renderer/RendererManager';
+export * from './Renderer';
 export * from './Types';
 export * from './Utils';
 
@@ -30,7 +32,8 @@ const instance = new RtcEngineExInternal();
  * @returns
  * One IRtcEngine object.
  */
-export function createAgoraRtcEngine(): IRtcEngineEx {
+export function createAgoraRtcEngine(options?: AgoraEnvOptions): IRtcEngineEx {
+  Object.assign(AgoraEnv, options);
   return instance;
 }
 

@@ -33,7 +33,7 @@ export class YUVCanvasRenderer extends IRenderer {
     };
   }
 
-  bind(element: HTMLElement) {
+  public bind(element: HTMLElement) {
     super.bind(element);
     let container = document.createElement('div');
     Object.assign(container.style, {
@@ -54,7 +54,7 @@ export class YUVCanvasRenderer extends IRenderer {
     });
   }
 
-  unbind() {
+  public unbind() {
     if (this._container) {
       this._container.replaceChildren();
       this._container = undefined;
@@ -71,7 +71,7 @@ export class YUVCanvasRenderer extends IRenderer {
     }
   }
 
-  zoom(
+  private zoom(
     vertical: boolean,
     contentMode: RenderModeType = RenderModeType.RenderModeFit,
     width: number,
@@ -108,7 +108,7 @@ export class YUVCanvasRenderer extends IRenderer {
     }
   }
 
-  updateCanvas(
+  private updateCanvas(
     options: CanvasOptions = {
       frameWidth: 0,
       frameHeight: 0,
@@ -164,7 +164,7 @@ export class YUVCanvasRenderer extends IRenderer {
     }
   }
 
-  drawFrame(frame: ShareVideoFrame) {
+  public drawFrame(frame: ShareVideoFrame) {
     if (!this._container || !this._yuvCanvasSink) {
       return;
     }
@@ -233,7 +233,7 @@ export class YUVCanvasRenderer extends IRenderer {
     this._yuvCanvasSink.drawFrame(yuvBufferFrame);
   }
 
-  refreshCanvas() {
+  public refreshCanvas() {
     if (this._cacheCanvasOptions) {
       this.zoom(
         this._cacheCanvasOptions.rotation === 90 ||
