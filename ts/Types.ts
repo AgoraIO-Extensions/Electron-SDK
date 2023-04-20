@@ -1,19 +1,25 @@
 import { RenderModeType, VideoSourceType } from './Private/AgoraMediaBase';
-import { IRenderer } from './Renderer/IRenderer';
-import { RendererManager } from './Renderer/RendererManager';
+import { IRenderer, IRendererManager } from './Renderer';
+
+export interface AgoraEnvOptions {
+  /**
+   * @ignore
+   */
+  enableLogging?: boolean;
+  /**
+   * @ignore
+   */
+  enableDebugLogging?: boolean;
+  /**
+   * @ignore
+   */
+  webEnvReady?: boolean;
+}
 
 /**
  * @ignore
  */
-export interface AgoraEnvType {
-  /**
-   * @ignore
-   */
-  enableLogging: boolean;
-  /**
-   * @ignore
-   */
-  enableDebugLogging: boolean;
+export interface AgoraEnvType extends AgoraEnvOptions {
   /**
    * @ignore
    */
@@ -21,7 +27,7 @@ export interface AgoraEnvType {
   /**
    * @ignore
    */
-  AgoraRendererManager?: RendererManager;
+  AgoraRendererManager?: IRendererManager;
 }
 
 /**

@@ -1,6 +1,5 @@
 ﻿import { createCheckers } from 'ts-interface-checker';
 
-import { RendererManager } from '../../Renderer/RendererManager';
 import { Channel } from '../../Types';
 import { AgoraEnv } from '../../Utils';
 
@@ -108,8 +107,11 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   >();
 
   initialize(context: RtcEngineContext): number {
-    AgoraEnv.AgoraRendererManager = new RendererManager();
-    AgoraEnv.AgoraRendererManager.enableRender();
+    if (AgoraEnv.webEnvReady) {
+      const { RendererManager } = require('../../Renderer/RendererManager');
+      AgoraEnv.AgoraRendererManager = new RendererManager();
+    }
+    AgoraEnv.AgoraRendererManager?.enableRender();
     const ret = super.initialize(context);
     callIrisApi.call(this, 'RtcEngine_setAppType', {
       appType: 3,
@@ -118,6 +120,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   }
 
   release(sync: boolean = false) {
+    AgoraEnv.AgoraElectronBridge.ReleaseRenderer();
     AgoraEnv.AgoraRendererManager?.clear();
     AgoraEnv.AgoraRendererManager = undefined;
     this._audio_device_manager.release();

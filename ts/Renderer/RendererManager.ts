@@ -23,14 +23,15 @@ import {
   logWarn,
 } from '../Utils';
 
-import GlRenderer from './GlRenderer';
 import { IRenderer, RenderFailCallback } from './IRenderer';
+import { IRendererManager } from './IRendererManager';
+import WebGLRenderer from './WebGLRenderer';
 import { YUVCanvasRenderer } from './YUVCanvasRenderer';
 
 /**
  * @ignore
  */
-export class RendererManager {
+export class RendererManager extends IRendererManager {
   /**
    * @ignore
    */
@@ -58,6 +59,7 @@ export class RendererManager {
   defaultRenderConfig: RendererVideoConfig;
 
   constructor() {
+    super();
     this.renderFps = 10;
     this.renderers = new Map();
     this.renderMode = this.checkWebglEnv()
@@ -305,7 +307,6 @@ export class RendererManager {
    * @ignore
    */
   public clear(): void {
-    AgoraEnv.AgoraElectronBridge.ReleaseRenderer();
     this.stopRender();
     this.removeAllRenderer();
   }
@@ -423,7 +424,7 @@ export class RendererManager {
     if (this.renderMode === RENDER_MODE.SOFTWARE) {
       return new YUVCanvasRenderer();
     } else {
-      return new GlRenderer(failCallback);
+      return new WebGLRenderer(failCallback);
     }
   }
 
