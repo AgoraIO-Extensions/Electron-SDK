@@ -479,15 +479,15 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return 'RtcEngineEx_createDataStreamEx2';
   }
 
-  protected getApiTypeFromStartScreenCaptureDesktop(
+  protected getApiTypeFromStartScreenCaptureBySourceType(
     sourceType: VideoSourceType,
     config: ScreenCaptureConfiguration
   ): string {
     return 'RtcEngine_startScreenCapture2';
   }
 
-  protected getApiTypeFromStopScreenCapture(
-    sourceType: VideoSourceType = VideoSourceType.VideoSourceScreenPrimary
+  protected getApiTypeFromStopScreenCaptureBySourceType(
+    sourceType: VideoSourceType
   ): string {
     return 'RtcEngine_stopScreenCapture2';
   }
