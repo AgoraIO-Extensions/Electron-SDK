@@ -20,9 +20,10 @@ import * as log from '../../../utils/log';
 import { BaseComponent } from '../components/BaseComponent';
 import BaseRenderChannel from '../components/BaseRenderChannel';
 import BaseRenderUsers from '../components/BaseRenderUsers';
-import { useInitRtcEngine } from '../hooks/useInitRtcEngine';
+import useInitRtcEngine from '../hooks/useInitRtcEngine';
 
 export default function DeviceManager() {
+  const [enableVideo] = useState<boolean>(true);
   const {
     channelId,
     setChannelId,
@@ -36,7 +37,7 @@ export default function DeviceManager() {
     /**
      * Step 1: initRtcEngine
      */
-    useInitRtcEngine(true);
+    useInitRtcEngine(enableVideo);
 
   const [playbackDevices, setPlaybackDevices] = useState<AudioDeviceInfo[]>([]);
   const [playbackDeviceId, setPlaybackDeviceId] = useState<
@@ -267,7 +268,7 @@ export default function DeviceManager() {
       )}
       renderUsers={() => (
         <BaseRenderUsers
-          enableVideo={true}
+          enableVideo={enableVideo}
           startPreview={startPreview}
           joinChannelSuccess={joinChannelSuccess}
           remoteUsers={remoteUsers}
