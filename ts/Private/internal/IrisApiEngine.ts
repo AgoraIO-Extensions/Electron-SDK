@@ -1,5 +1,6 @@
-import { AgoraEnv } from '../../Utils';
+import JSON from 'json-bigint';
 
+import { AgoraEnv } from '../../Utils';
 import { IAudioEncodedFrameObserver } from '../AgoraBase';
 import {
   AudioFrame,
@@ -24,7 +25,6 @@ import {
   IRtcEngineEventHandler,
   Metadata,
 } from '../IAgoraRtcEngine';
-
 import { processIAudioEncodedFrameObserver } from '../impl/AgoraBaseImpl';
 import {
   processIAudioFrameObserver,
@@ -54,8 +54,6 @@ import {
 import { RtcEngineExInternal } from './RtcEngineExInternal';
 import type { EventEmitter as IEventEmitter } from './emitter/EventEmitter';
 import EventEmitter from './emitter/EventEmitter';
-
-const JSON = require('json-bigint');
 
 // @ts-ignore
 export const DeviceEventEmitter: IEventEmitter = new EventEmitter();
