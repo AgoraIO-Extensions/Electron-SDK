@@ -277,11 +277,9 @@
                     'files': [
                         './sdk/dll/libhwcodec.dll',
                         './sdk/dll/libagora_video_process_extension.dll',
-                        './sdk/dll/libagora_super_resolution_extension.dll',
-                        './sdk/dll/libagora_spatial_audio_extension.dll',
                         './sdk/dll/libagora_segmentation_extension.dll',
                         './sdk/dll/libagora_mpg123.dll',
-                        './sdk/dll/libagora_full_audio_format_extension.dll',
+                        './sdk/dll/libagora_jnd_extension.dll',
                         './sdk/dll/libagora_fd_extension.dll',
                         './sdk/dll/libagora_fdkaac.dll',
                         './sdk/dll/libagora_dav1d_extension.dll',
@@ -292,7 +290,7 @@
                         './sdk/dll/libagora-ffmpeg.dll',
                         './sdk/dll/libagora-core.dll',
                         './sdk/dll/av1.dll',
-                        './sdk/dll/agora_rtc_sdk.dll',
+                        './sdk/dll/agora_rtc_sdk.dll'
                     ]
                 }],
                 'library_dirs': [
@@ -359,21 +357,20 @@
                 'copies': [{
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
-                        './sdk/lib/mac/Agorafdkaac.framework',
-                        './sdk/lib/mac/Agoraffmpeg.framework',
-                        './sdk/lib/mac/av1.framework',
-                        './sdk/lib/mac/AgoraSuperResolutionExtension.framework',
-                        './sdk/lib/mac/AgoraVideoProcessExtension.framework',
-                        './sdk/lib/mac/AgoraVideoSegmentationExtension.framework',
-                        './sdk/lib/mac/AgoraFullAudioFormatExtension.framework',
-                        './sdk/lib/mac/AgoraRtcKit.framework',
-                        './sdk/lib/mac/AgoraSoundTouch.framework',
-                        './sdk/lib/mac/AgoraSpatialAudioExtension.framework',
+                        './sdk/lib/mac/AgoraJNDExtension.framework'
+                        './sdk/lib/mac/AgoraAIDenoiseExtension.framework',
+                        './sdk/lib/mac/AgoraCIExtension.framework',
                         './sdk/lib/mac/AgoraCore.framework',
                         './sdk/lib/mac/AgoraDav1dExtension.framework',
                         './sdk/lib/mac/AgoraFDExtension.framework',
-                        './sdk/lib/mac/AgoraAIDenoiseExtension.framework',
-                        './sdk/lib/mac/AgoraCIExtension.framework',
+                        './sdk/lib/mac/Agorafdkaac.framework',
+                        './sdk/lib/mac/Agoraffmpeg.framework',
+                        './sdk/lib/mac/AgoraJNDExtension.framework',
+                        './sdk/lib/mac/AgoraSoundTouch.framework',
+                        './sdk/lib/mac/AgoraVideoProcessExtension.framework',
+                        './sdk/lib/mac/AgoraVideoSegmentationExtension.framework',
+                        './sdk/lib/mac/AgoraRtcKit.framework',
+                        './sdk/lib/mac/av1.framework'
                     ]
                 }],
                 'link_settings': {
