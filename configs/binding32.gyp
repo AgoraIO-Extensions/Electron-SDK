@@ -286,7 +286,7 @@
                         './sdk/dll/libagora-ffmpeg.dll',
                         './sdk/dll/libagora-core.dll',
                         './sdk/dll/av1.dll',
-                        './sdk/dll/agora_rtc_sdk.dll',
+                        './sdk/dll/agora_rtc_sdk.dll'
                     ]
                 }],
                 'library_dirs': [
@@ -353,19 +353,20 @@
                 'copies': [{
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
-                        './sdk/lib/mac/Agorafdkaac.framework',
-                        './sdk/lib/mac/Agoraffmpeg.framework',
-                        './sdk/lib/mac/av1.framework',
-                        './sdk/lib/mac/AgoraVideoProcessExtension.framework',
-                        './sdk/lib/mac/AgoraVideoSegmentationExtension.framework',
-                        './sdk/lib/mac/AgoraJNDExtension.framework',
-                        './sdk/lib/mac/AgoraRtcKit.framework',
-                        './sdk/lib/mac/AgoraSoundTouch.framework',
+                        './sdk/lib/mac/AgoraJNDExtension.framework'
+                        './sdk/lib/mac/AgoraAIDenoiseExtension.framework',
+                        './sdk/lib/mac/AgoraCIExtension.framework',
                         './sdk/lib/mac/AgoraCore.framework',
                         './sdk/lib/mac/AgoraDav1dExtension.framework',
                         './sdk/lib/mac/AgoraFDExtension.framework',
-                        './sdk/lib/mac/AgoraAIDenoiseExtension.framework',
-                        './sdk/lib/mac/AgoraCIExtension.framework',
+                        './sdk/lib/mac/Agorafdkaac.framework',
+                        './sdk/lib/mac/Agoraffmpeg.framework',
+                        './sdk/lib/mac/AgoraJNDExtension.framework',
+                        './sdk/lib/mac/AgoraSoundTouch.framework',
+                        './sdk/lib/mac/AgoraVideoProcessExtension.framework',
+                        './sdk/lib/mac/AgoraVideoSegmentationExtension.framework',
+                        './sdk/lib/mac/AgoraRtcKit.framework',
+                        './sdk/lib/mac/av1.framework'
                     ]
                 }],
                 'link_settings': {
