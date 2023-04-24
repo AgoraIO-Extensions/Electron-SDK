@@ -353,7 +353,7 @@
                 'copies': [{
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
-                        './sdk/lib/mac/AgoraJNDExtension.framework'
+                        './sdk/lib/mac/AgoraJNDExtension.framework',
                         './sdk/lib/mac/AgoraAIDenoiseExtension.framework',
                         './sdk/lib/mac/AgoraCIExtension.framework',
                         './sdk/lib/mac/AgoraCore.framework',
