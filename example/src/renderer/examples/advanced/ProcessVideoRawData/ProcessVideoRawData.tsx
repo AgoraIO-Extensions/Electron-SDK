@@ -22,7 +22,7 @@ import {
 import { AgoraButton } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 
-const pluginVersion = 'v4.2.0';
+const pluginVersion = 'v4.2.0-dev.8';
 let pluginName = 'VideoObserverPlugin';
 let postfix = `_${process.arch}`;
 if (process.platform === 'darwin') {
@@ -129,7 +129,7 @@ export default class ProcessVideoRawData
     const dllPath = path.resolve(os.tmpdir(), pluginName);
     if (!fs.existsSync(dllPath)) {
       console.log(`start downloading plugin ${url} to ${dllPath}`);
-      await download(url, os.tmpdir());
+      await download(encodeURI(url), os.tmpdir());
       console.log(`download success`);
     }
 
