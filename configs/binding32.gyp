@@ -353,19 +353,18 @@
                 'copies': [{
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
-                        './sdk/lib/mac/AgoraJNDExtension.framework',
                         './sdk/lib/mac/AgoraAIDenoiseExtension.framework',
                         './sdk/lib/mac/AgoraCIExtension.framework',
                         './sdk/lib/mac/AgoraCore.framework',
                         './sdk/lib/mac/AgoraDav1dExtension.framework',
                         './sdk/lib/mac/AgoraFDExtension.framework',
-                        './sdk/lib/mac/Agorafdkaac.framework',
-                        './sdk/lib/mac/Agoraffmpeg.framework',
                         './sdk/lib/mac/AgoraJNDExtension.framework',
+                        './sdk/lib/mac/AgoraRtcKit.framework',
                         './sdk/lib/mac/AgoraSoundTouch.framework',
                         './sdk/lib/mac/AgoraVideoProcessExtension.framework',
                         './sdk/lib/mac/AgoraVideoSegmentationExtension.framework',
-                        './sdk/lib/mac/AgoraRtcKit.framework',
+                        './sdk/lib/mac/Agorafdkaac.framework',
+                        './sdk/lib/mac/Agoraffmpeg.framework',
                         './sdk/lib/mac/av1.framework'
                     ]
                 }],
@@ -373,7 +372,14 @@
                     'libraries': [
                     'libresolv.9.dylib',
                     'Accelerate.framework',
+                    'AgoraAIDenoiseExtension.framework',
+                    'AgoraCIExtension.framework',
+                    'AgoraDav1dExtension.framework',
+                    'AgoraFDExtension.framework',
+                    'AgoraJNDExtension.framework',
                     'AgoraRtcKit.framework',
+                    'AgoraVideoProcessExtension.framework',
+                    'AgoraVideoSegmentationExtension.framework',
                     'CoreWLAN.framework',
                     'Cocoa.framework',
                     'VideoToolbox.framework',
