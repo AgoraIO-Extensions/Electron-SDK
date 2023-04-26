@@ -33,6 +33,7 @@ import Config from '../../../config/agora.config';
 
 import { getResourcePath } from '../../../utils';
 import { rgbImageBufferToBase64 } from '../../../utils/base64';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   videoDevices?: VideoDeviceInfo[];
@@ -96,6 +97,7 @@ export default class LocalVideoTranscoder
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
+    askMediaAccess(['microphone', 'camera']);
     this.engine.enableVideo();
 
     // Start preview before joinChannel

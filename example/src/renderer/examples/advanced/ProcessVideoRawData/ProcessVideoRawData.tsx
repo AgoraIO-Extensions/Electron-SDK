@@ -21,6 +21,7 @@ import {
 } from '../../../components/BaseComponent';
 import { AgoraButton } from '../../../components/ui';
 import Config from '../../../config/agora.config';
+import { askMediaAccess } from '../../../utils/permissions';
 
 const pluginVersion = 'v4.2.0-dev.8';
 let pluginName = 'VideoObserverPlugin';
@@ -88,6 +89,7 @@ export default class ProcessVideoRawData
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
+    askMediaAccess(['microphone', 'camera']);
     this.engine.enableVideo();
 
     // Start preview before joinChannel

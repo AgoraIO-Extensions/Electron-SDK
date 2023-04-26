@@ -22,6 +22,7 @@ import {
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { getResourcePath } from '../../../utils';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseAudioComponentState {
   sound1: string;
@@ -71,6 +72,7 @@ export default class RhythmPlayer
     this.engine.registerEventHandler(this);
 
     // Only need to enable audio on this case
+    askMediaAccess(['microphone']);
     this.engine.enableAudio();
   }
 

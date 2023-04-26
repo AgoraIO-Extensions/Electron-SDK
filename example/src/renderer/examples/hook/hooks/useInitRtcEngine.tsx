@@ -10,6 +10,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import Config from '../../../config/agora.config';
 import * as log from '../../../utils/log';
+import { askMediaAccess } from '../../../utils/permissions';
 
 const useInitRtcEngine = (enableVideo: boolean) => {
   const [appId] = useState(Config.appId);
@@ -36,11 +37,13 @@ const useInitRtcEngine = (enableVideo: boolean) => {
 
     // Only need to enable audio on this case
     engine.current.enableAudio();
+    askMediaAccess(['microphone']);
 
     if (enableVideo) {
       // Need to enable video on this case
       // If you only call `enableAudio`, only relay the audio stream to the target channel
       engine.current.enableVideo();
+      askMediaAccess(['camera']);
 
       // Start preview before joinChannel
       engine.current.startPreview();

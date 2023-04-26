@@ -18,6 +18,7 @@ import {
 } from '../../../components/BaseComponent';
 import { AgoraButton, AgoraTextInput } from '../../../components/ui';
 import Config from '../../../config/agora.config';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   metadataBuffer: string;
@@ -61,6 +62,7 @@ export default class SendMetadata
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
+    askMediaAccess(['microphone', 'camera']);
     this.engine.enableVideo();
 
     this.registerMediaMetadataObserver();

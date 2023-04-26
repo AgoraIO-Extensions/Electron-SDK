@@ -21,6 +21,7 @@ import {
 import Config from '../../../config/agora.config';
 
 import { getResourcePath } from '../../../utils';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseAudioComponentState {
   filePath: string;
@@ -72,6 +73,7 @@ export default class AudioMixing
     this.engine.registerEventHandler(this);
 
     // Only need to enable audio on this case
+    askMediaAccess(['microphone']);
     this.engine.enableAudio();
   }
 
