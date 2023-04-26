@@ -44,9 +44,7 @@ function createMainWindow() {
   window.webContents.once('did-finish-load', async () => {
     ipcMain.handle('IPC_REQUEST_PERMISSION_HANDLER', async (event, arg) => {
       if (
-        systemPreferences.getMediaAccessStatus('camera') === 'not-determined' ||
-        systemPreferences.getMediaAccessStatus('microphone') ===
-          'not-determined'
+        systemPreferences.getMediaAccessStatus(arg.type) === 'not-determined'
       ) {
         console.log('main process request handler:' + JSON.stringify(arg));
         return await systemPreferences.askForMediaAccess(arg.type);
