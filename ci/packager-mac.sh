@@ -1,4 +1,3 @@
-
 outterZipName="electronDemo.zip"
 
 example_sdk_mode=${1:-1}
@@ -15,17 +14,16 @@ packExample() {
   rm -rf node_modules dist
 
   yarn config set registry https://registry.npmmirror.com
-  if [ -n "$2" ]
-  then
-      echo 选择了 electron_version:$2
-      yarn add --dev electron@$2 --no-lockfile
+  if [ -n "$2" ]; then
+    yarn install --no-lockfile
+    echo 选择了 electron_version:$2
+    yarn add --dev electron@$2 --no-lockfile
   else
-      echo 安装example 依赖
-      yarn install --no-lockfile
+    echo 安装example 依赖
+    yarn install --no-lockfile
   fi
 
-  if [ "$3" -eq 1 ]
-  then
+  if [ "$3" -eq 1 ]; then
     rm -rf node_modules/agora-electron-sdk/build
     cp -P -R ../Electron-*/* node_modules/agora-electron-sdk/
   fi
