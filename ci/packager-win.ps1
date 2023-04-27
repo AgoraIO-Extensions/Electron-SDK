@@ -4,40 +4,40 @@ $electronVersion=$args[2]
 $outterZipName="electronDemo.zip"
 
 pushd example
+yarn config set registry https://registry.npmmirror.com
 
 function ChooseArch($type)
 {
   # remove node_modules
   Remove-Item -Path node_modules -Recurse -Force -ErrorAction Ignore;
-  if($type -eq "ia32"){
+  if ($type -eq "ia32") {
     write-host("ChooseArch ia32")
     Copy-Item -Path ../ci/.npmrc_x32 -Destination ./.npmrc -Force
-  } elseif($type -eq "x64"){
+  } elseif ($type -eq "x64") {
     write-host("ChooseArch x64")
     Copy-Item -Path ../ci/.npmrc_x64 -Destination ./.npmrc -Force
-  }else {
+  } else {
     write-host("not set arch type")
   }
 }
 
-if($electronVersion -eq "switchEnv"){
+if ($electronVersion -eq "switchEnv") {
     write-host("switchEnv")
     ChooseArch -type $chooseExampleType
-    npm i
+    yarn install --force
     popd
     return
 }
 
 function DistByArch($type)
 {
-
-  if($type -eq "ia32"){
+  if ($type -eq "ia32") {
     write-host("distByArch x32")
-    npm run dist:win32
-  } elseif($type -eq "x64"){
+    yarn dist:win32
+  } elseif ($type -eq "x64") {
     write-host("distByArch x64")
-    npm run dist:win64
-  }else {
+    yarn dist:win64
+  } else {
     write-host("not set arch type")
   }
 }
@@ -52,18 +52,15 @@ function Package($archNum,$electronVersion,$example_sdk_mode){
   # choose arch
   ChooseArch -type $archNum
 
-  If([String]::IsNullOrEmpty($electronVersion))
+  if ([String]::IsNullOrEmpty($electronVersion))
   {
     Write-Host "安装example 依赖"
-    npm i
-  }
-  Else
-  {
-
+    yarn install --force
+  } else {
     Write-Host "选择了 electron_version:$electronVersion"
-    npm i -D electron@$electronVersion
+    yarn add electron@$electronVersion
   }
-  if($example_sdk_mode -eq 1){
+  if ($example_sdk_mode -eq 1) {
     Remove-Item -Path  node_modules/agora-electron-sdk/build -Recurse -Force -ErrorAction Ignore;
     Remove-Item -Path  node_modules/agora-electron-sdk/js -Recurse -Force -ErrorAction Ignore;
     Remove-Item -Path  node_modules/agora-electron-sdk/type -Recurse -Force -ErrorAction Ignore;
@@ -101,6 +98,4 @@ popd;
 #     4 {"It is four."; Break}
 # }
 
-
 echo "结束"
-
