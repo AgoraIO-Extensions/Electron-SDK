@@ -19,6 +19,7 @@ import {
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
 import Config from '../../../config/agora.config';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {}
 
@@ -58,7 +59,8 @@ export default class JoinChannelVideo
     this.engine.registerEventHandler(this);
 
     // Need to enable video on this case
-    // If you only call `enableAudio`, only relay the audio stream to the target channel
+    // If you only call `enableVideo`, only relay the video stream to the target channel
+    askMediaAccess(['microphone', 'camera']);
     this.engine.enableVideo();
 
     // Start preview before joinChannel

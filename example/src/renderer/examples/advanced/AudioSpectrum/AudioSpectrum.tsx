@@ -22,6 +22,7 @@ import {
 } from '../../../components/BaseComponent';
 import { AgoraButton, AgoraTextInput } from '../../../components/ui';
 import Config from '../../../config/agora.config';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseAudioComponentState {
   intervalInMS: number;
@@ -67,6 +68,7 @@ export default class AudioSpectrum
     this.engine.registerEventHandler(this);
 
     // Only need to enable audio on this case
+    askMediaAccess(['microphone']);
     this.engine.enableAudio();
 
     this.registerAudioSpectrumObserver();

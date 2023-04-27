@@ -21,6 +21,7 @@ import {
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { arrayToItems } from '../../../utils';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseAudioComponentState {
   range: number;
@@ -74,6 +75,7 @@ export default class LocalSpatialAudioEngine
     this.engine.registerEventHandler(this);
 
     // Only need to enable audio on this case
+    askMediaAccess(['microphone']);
     this.engine.enableAudio();
 
     this.engine.setParameters(
