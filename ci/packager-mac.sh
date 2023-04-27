@@ -1,3 +1,6 @@
+set -e
+set -x
+
 outterZipName="electronDemo.zip"
 
 example_sdk_mode=${1:-1}
