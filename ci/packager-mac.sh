@@ -14,11 +14,10 @@ packExample() {
   rm $outterZipName
   pushd $1
   echo 当前工作路径:$(pwd)
-  rm -rf node_modules dist
+  rm -rf node_modules dist yarn.lock
 
   yarn config set registry https://registry.npmmirror.com
   if [ -n "$2" ]; then
-    yarn install --no-lockfile
     echo 选择了 electron_version:$2
     yarn add --dev electron@$2 --no-lockfile
   else
