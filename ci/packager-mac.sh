@@ -18,7 +18,7 @@ packExample() {
   if [ -n "$2" ]
   then
       echo 选择了 electron_version:$2
-      yarn add --dev electron@$2
+      yarn add --dev electron@$2 --no-lockfile
   else
       echo 安装example 依赖
       yarn install --no-lockfile

@@ -58,7 +58,7 @@ function Package($archNum,$electronVersion,$example_sdk_mode){
     yarn install --no-lockfile
   } else {
     Write-Host "选择了 electron_version:$electronVersion"
-    yarn add electron@$electronVersion
+    yarn add --dev electron@$electronVersion --no-lockfile
   }
   if ($example_sdk_mode -eq 1) {
     Remove-Item -Path  node_modules/agora-electron-sdk/build -Recurse -Force -ErrorAction Ignore;
