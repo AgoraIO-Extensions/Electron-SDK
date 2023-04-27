@@ -23,7 +23,7 @@ function ChooseArch($type)
 if($electronVersion -eq "switchEnv"){
     write-host("switchEnv")
     ChooseArch -type $chooseExampleType
-    yarn
+    npm i
     popd
     return
 }
@@ -33,10 +33,10 @@ function DistByArch($type)
 
   if($type -eq "ia32"){
     write-host("distByArch x32")
-    yarn dist:win32
+    npm run dist:win32
   } elseif($type -eq "x64"){
     write-host("distByArch x64")
-    yarn dist:win64
+    npm run dist:win64
   }else {
     write-host("not set arch type")
   }
@@ -55,13 +55,13 @@ function Package($archNum,$electronVersion,$example_sdk_mode){
   If([String]::IsNullOrEmpty($electronVersion))
   {
     Write-Host "安装example 依赖"
-    yarn
+    npm i
   }
   Else
   {
 
     Write-Host "选择了 electron_version:$electronVersion"
-    yarn add electron@$electronVersion
+    npm i -D electron@$electronVersion
   }
   if($example_sdk_mode -eq 1){
     Remove-Item -Path  node_modules/agora-electron-sdk/build -Recurse -Force -ErrorAction Ignore;

@@ -17,10 +17,10 @@ packExample() {
   if [ -n "$2" ]
   then
       echo 选择了 electron_version:$2
-      yarn add electron@$2
+      npm i -D electron@$2
   else
       echo 安装example 依赖
-      yarn
+      npm i
   fi
 
   if [ "$3" -eq 1 ]
@@ -29,7 +29,7 @@ packExample() {
     cp -P -R ../Electron-*/* node_modules/agora-electron-sdk/
   fi
   export USE_HARD_LINKS=false
-  yarn dist:mac
+  npm run dist:mac
 
   pushd dist/mac
   zip -ry $(pwd)/../../../${outterZipName} Agora-Electron-API-Example.app
