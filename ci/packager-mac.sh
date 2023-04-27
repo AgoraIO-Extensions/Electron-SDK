@@ -14,13 +14,14 @@ packExample() {
   echo 当前工作路径:$(pwd)
   rm -rf node_modules dist
 
+  yarn config set registry https://registry.npmmirror.com
   if [ -n "$2" ]
   then
       echo 选择了 electron_version:$2
-      npm i -D electron@$2
+      yarn add --dev electron@$2
   else
       echo 安装example 依赖
-      npm i
+      yarn install --force
   fi
 
   if [ "$3" -eq 1 ]
@@ -29,7 +30,7 @@ packExample() {
     cp -P -R ../Electron-*/* node_modules/agora-electron-sdk/
   fi
   export USE_HARD_LINKS=false
-  npm run dist:mac
+  yarn dist:mac
 
   pushd dist/mac
   zip -ry $(pwd)/../../../${outterZipName} Agora-Electron-API-Example.app
