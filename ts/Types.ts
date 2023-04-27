@@ -1,6 +1,9 @@
 import { RenderModeType, VideoSourceType } from './Private/AgoraMediaBase';
 import { IRenderer, IRendererManager } from './Renderer';
 
+/**
+ * @ignore
+ */
 export interface AgoraEnvOptions {
   /**
    * @ignore
