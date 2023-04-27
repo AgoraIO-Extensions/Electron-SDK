@@ -126,7 +126,7 @@ const AuthInfoScreen = () => {
               name="SDKLogPath"
               rules={[
                 {
-                  required: true,
+                  required: false,
                   message: 'Please input log path',
                 },
               ]}
