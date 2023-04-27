@@ -11,10 +11,10 @@ echo example_sdk_mode: $example_sdk_mode
 echo example_electron_version: $example_electron_version
 
 packExample() {
-  rm $outterZipName
+  rm $outterZipName || true
   pushd $1
   echo 当前工作路径:$(pwd)
-  rm -rf node_modules dist yarn.lock
+  rm -rf node_modules dist yarn.lock || true
 
   yarn config set registry https://registry.npmmirror.com
   if [ -n "$2" ]; then
