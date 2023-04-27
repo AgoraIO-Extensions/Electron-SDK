@@ -26,6 +26,7 @@ import {
   AgoraTextInput,
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   channelId2: string;
@@ -80,6 +81,7 @@ export default class JoinMultipleChannel
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
+    askMediaAccess(['microphone', 'camera']);
     this.engine.enableVideo();
 
     // Need to startPreview before joinChannelEx

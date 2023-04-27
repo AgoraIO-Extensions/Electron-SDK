@@ -20,6 +20,7 @@ import {
 import { AgoraButton, AgoraDropdown, AgoraImage } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { rgbImageBufferToBase64 } from '../../../utils/base64';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   sources?: ScreenCaptureSourceInfo[];
@@ -68,6 +69,7 @@ export default class PushVideoFrame
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
+    askMediaAccess(['microphone', 'camera']);
     this.engine.enableVideo();
 
     this.setExternalVideoSource();

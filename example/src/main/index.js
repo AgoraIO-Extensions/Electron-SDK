@@ -1,15 +1,10 @@
 import path from 'path';
 import { format as formatUrl } from 'url';
 
-import { BrowserWindow, app, systemPreferences } from 'electron';
+import { BrowserWindow, app, ipcMain, systemPreferences } from 'electron';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 app.allowRendererProcessReuse = false;
-
-if (systemPreferences.askForMediaAccess) {
-  systemPreferences.askForMediaAccess('camera');
-  systemPreferences.askForMediaAccess('microphone');
-}
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow;
@@ -44,6 +39,17 @@ function createMainWindow() {
 
   window.on('closed', () => {
     mainWindow = null;
+  });
+
+  window.webContents.once('did-finish-load', async () => {
+    ipcMain.handle('IPC_REQUEST_PERMISSION_HANDLER', async (event, arg) => {
+      if (
+        systemPreferences.getMediaAccessStatus(arg.type) === 'not-determined'
+      ) {
+        console.log('main process request handler:' + JSON.stringify(arg));
+        return await systemPreferences.askForMediaAccess(arg.type);
+      }
+    });
   });
 
   window.webContents.on('devtools-opened', () => {

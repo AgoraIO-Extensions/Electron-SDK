@@ -24,6 +24,8 @@ import {
 import Config from '../../../config/agora.config';
 import { enumToItems } from '../../../utils';
 
+import { askMediaAccess } from '../../../utils/permissions';
+
 import {
   AudioEffectPresetParam1Limit,
   AudioEffectPresetParam2Limit,
@@ -90,6 +92,7 @@ export default class VoiceChanger
     this.engine.registerEventHandler(this);
 
     // Only need to enable audio on this case
+    askMediaAccess(['microphone']);
     this.engine.enableAudio();
   }
 

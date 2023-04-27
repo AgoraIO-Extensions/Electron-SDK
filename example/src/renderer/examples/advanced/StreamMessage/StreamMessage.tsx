@@ -21,6 +21,7 @@ import {
   AgoraTextInput,
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseAudioComponentState {
   syncWithAudio: boolean;
@@ -68,6 +69,7 @@ export default class StreamMessage
     this.engine.registerEventHandler(this);
 
     // Only need to enable audio on this case
+    askMediaAccess(['microphone']);
     this.engine.enableAudio();
   }
 
