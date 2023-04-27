@@ -24,7 +24,7 @@ function ChooseArch($type)
 if ($electronVersion -eq "switchEnv") {
     write-host("switchEnv")
     ChooseArch -type $chooseExampleType
-    yarn install --force
+    yarn install --no-lockfile
     popd
     return
 }
@@ -55,7 +55,7 @@ function Package($archNum,$electronVersion,$example_sdk_mode){
   if ([String]::IsNullOrEmpty($electronVersion))
   {
     Write-Host "安装example 依赖"
-    yarn install --force
+    yarn install --no-lockfile
   } else {
     Write-Host "选择了 electron_version:$electronVersion"
     yarn add electron@$electronVersion
