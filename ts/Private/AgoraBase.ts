@@ -4574,6 +4574,20 @@ export enum ConfigFetchType {
 }
 
 /**
+ * @ignore
+ */
+export class RecorderStreamInfo {
+  /**
+   * @ignore
+   */
+  channelId?: string;
+  /**
+   * @ignore
+   */
+  uid?: number;
+}
+
+/**
  * The spatial audio parameters.
  */
 export class SpatialAudioParams {
