@@ -21,7 +21,7 @@ packExample() {
       yarn add --dev electron@$2
   else
       echo 安装example 依赖
-      yarn install --force
+      yarn install --no-lockfile
   fi
 
   if [ "$3" -eq 1 ]
