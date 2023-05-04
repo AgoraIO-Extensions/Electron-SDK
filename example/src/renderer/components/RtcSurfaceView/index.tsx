@@ -23,7 +23,7 @@ interface State {
   uniqueId: number;
 }
 
-class RtcSurfaceView extends Component<Props, State> {
+export class RtcSurfaceView extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -133,5 +133,3 @@ class RtcSurfaceView extends Component<Props, State> {
     );
   }
 }
-
-export default RtcSurfaceView;

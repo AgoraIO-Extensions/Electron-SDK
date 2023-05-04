@@ -113,15 +113,17 @@ export default class RTMPStreaming
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
 
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
+
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
-    askMediaAccess(['microphone', 'camera']);
     this.engine.enableVideo();
   }
 
@@ -368,7 +370,7 @@ export default class RTMPStreaming
             <AgoraDivider />
             <AgoraView>
               <AgoraTextInput
-                className={AgoraStyle.fullSize}
+                style={AgoraStyle.fullSize}
                 onChangeText={(text) => {
                   if (isNaN(+text)) return;
                   this.setState({
@@ -379,7 +381,7 @@ export default class RTMPStreaming
                 placeholder={`width (defaults: ${this.createState().width})`}
               />
               <AgoraTextInput
-                className={AgoraStyle.fullSize}
+                style={AgoraStyle.fullSize}
                 onChangeText={(text) => {
                   if (isNaN(+text)) return;
                   this.setState({

@@ -10,7 +10,6 @@ import {
 } from 'agora-electron-sdk';
 import React, { Component, ReactElement, ReactNode } from 'react';
 
-import RtcSurfaceView from './RtcSurfaceView';
 import {
   AgoraButton,
   AgoraCard,
@@ -20,6 +19,7 @@ import {
   AgoraText,
   AgoraTextInput,
   AgoraView,
+  RtcSurfaceView,
 } from './ui';
 
 export interface BaseComponentState {
@@ -210,7 +210,10 @@ export abstract class BaseComponent<
   protected renderUser(user: VideoCanvas): ReactElement {
     const { enableVideo } = this.state;
     return (
-      <AgoraCard title={`${user.uid} - ${user.sourceType}`}>
+      <AgoraCard
+        key={`${user.uid} - ${user.sourceType}`}
+        title={`${user.uid} - ${user.sourceType}`}
+      >
         {enableVideo ? (
           <>
             <AgoraText>Click view to mirror</AgoraText>

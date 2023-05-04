@@ -14,7 +14,6 @@ import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 
 import { SketchPicker } from 'react-color';
 
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
 import {
   AgoraButton,
   AgoraDivider,
@@ -24,9 +23,11 @@ import {
   AgoraSwitch,
   AgoraTextInput,
   AgoraView,
+  RtcSurfaceView,
 } from '../../../components/ui';
 import { rgbImageBufferToBase64 } from '../../../utils/base64';
 import * as log from '../../../utils/log';
+import { askMediaAccess } from '../../../utils/permissions';
 import { BaseComponent } from '../components/BaseComponent';
 import BaseRenderChannel from '../components/BaseRenderChannel';
 import BaseRenderUsers from '../components/BaseRenderUsers';
@@ -99,7 +100,7 @@ export default function ScreenShare() {
   /**
    * Step 3-1: getScreenCaptureSources
    */
-  let getScreenCaptureSources = useCallback(() => {
+  const getScreenCaptureSources = useCallback(() => {
     const sources = engine.current.getScreenCaptureSources(
       { width: 1920, height: 1080 },
       { width: 64, height: 64 },
@@ -110,7 +111,9 @@ export default function ScreenShare() {
   }, [engine, setSources, setTargetSource]);
 
   useEffect(() => {
-    getScreenCaptureSources();
+    askMediaAccess(['screen']).then(() => {
+      getScreenCaptureSources();
+    });
   }, [engine, getScreenCaptureSources]);
 
   /**

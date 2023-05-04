@@ -46,7 +46,7 @@ export default class VirtualBackground
       startPreview: false,
       background_source_type: BackgroundSourceType.BackgroundColor,
       color: 0xffffff,
-      source: getResourcePath('png.png'),
+      source: getResourcePath('agora-logo.png'),
       blur_degree: BackgroundBlurDegree.BlurDegreeMedium,
       enableVirtualBackground: false,
     };
@@ -64,11 +64,14 @@ export default class VirtualBackground
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
 
     this.engine?.enableExtension(
       'agora_video_filters_segmentation',
@@ -78,7 +81,6 @@ export default class VirtualBackground
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
-    askMediaAccess(['microphone', 'camera']);
     this.engine.enableVideo();
 
     // This case works if startPreview without joinChannel

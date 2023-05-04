@@ -69,19 +69,21 @@ export default class SpatialAudio
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
       audioScenario: AudioScenarioType.AudioScenarioGameStreaming,
     });
     this.engine.registerEventHandler(this);
 
+    // Need granted the microphone permission
+    await askMediaAccess(['microphone']);
+
     this.engine.setParameters(
       JSON.stringify({ 'rtc.audio.force_bluetooth_a2dp': true })
     );
 
     // Only need to enable audio on this case
-    askMediaAccess(['microphone']);
     this.engine.enableAudio();
   }
 

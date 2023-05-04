@@ -66,7 +66,7 @@ export default class LocalSpatialAudioEngine
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
       // ⚠️ Must use AudioScenarioGameStreaming on this case
@@ -74,8 +74,10 @@ export default class LocalSpatialAudioEngine
     });
     this.engine.registerEventHandler(this);
 
+    // Need granted the microphone permission
+    await askMediaAccess(['microphone']);
+
     // Only need to enable audio on this case
-    askMediaAccess(['microphone']);
     this.engine.enableAudio();
 
     this.engine.setParameters(
@@ -213,7 +215,7 @@ export default class LocalSpatialAudioEngine
           {position.map((value, index) => (
             <AgoraTextInput
               key={`position-${index}`}
-              className={AgoraStyle.fullSize}
+              style={AgoraStyle.fullSize}
               onChangeText={(text) => {
                 if (isNaN(+text)) return;
                 position[index] = +text;
@@ -231,7 +233,7 @@ export default class LocalSpatialAudioEngine
           {axisForward.map((value, index) => (
             <AgoraTextInput
               key={`axisForward-${index}`}
-              className={AgoraStyle.fullSize}
+              style={AgoraStyle.fullSize}
               onChangeText={(text) => {
                 if (isNaN(+text)) return;
                 axisForward[index] = +text;
@@ -249,7 +251,7 @@ export default class LocalSpatialAudioEngine
           {axisRight.map((value, index) => (
             <AgoraTextInput
               key={`axisRight-${index}`}
-              className={AgoraStyle.fullSize}
+              style={AgoraStyle.fullSize}
               onChangeText={(text) => {
                 if (isNaN(+text)) return;
                 axisRight[index] = +text;
@@ -267,7 +269,7 @@ export default class LocalSpatialAudioEngine
           {axisUp.map((value, index) => (
             <AgoraTextInput
               key={`axisUp-${index}`}
-              className={AgoraStyle.fullSize}
+              style={AgoraStyle.fullSize}
               onChangeText={(text) => {
                 if (isNaN(+text)) return;
                 axisUp[index] = +text;

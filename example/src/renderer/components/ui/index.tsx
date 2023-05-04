@@ -25,6 +25,8 @@ import React, { useEffect, useState } from 'react';
 
 import css from './public.scss';
 
+export { RtcSurfaceView } from '../RtcSurfaceView';
+
 export const AgoraView = (
   props: React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLDivElement>,
@@ -321,5 +323,9 @@ export const AgoraStyle = {
   image: {
     width: 120,
     height: 120,
+  },
+  fullSize: {
+    display: 'flex',
+    flex: 1,
   },
 };

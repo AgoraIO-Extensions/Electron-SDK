@@ -48,7 +48,7 @@ export default class PlayEffect
       joinChannelSuccess: false,
       remoteUsers: [],
       soundId: 0,
-      filePath: getResourcePath('audioeffect.mp3'),
+      filePath: getResourcePath('effect.mp3'),
       loopCount: 1,
       pitch: 1.0,
       pan: 0,
@@ -72,14 +72,16 @@ export default class PlayEffect
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
 
+    // Need granted the microphone permission
+    await askMediaAccess(['microphone']);
+
     // Only need to enable audio on this case
-    askMediaAccess(['microphone']);
     this.engine.enableAudio();
   }
 

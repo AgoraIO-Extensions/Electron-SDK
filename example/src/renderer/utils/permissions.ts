@@ -14,14 +14,14 @@ export interface AskMediaAccessReturn {
  * @param mediaTypes
  * @returns AskMediaAccessReturn[]
  */
-export const askMediaAccess = (
+export const askMediaAccess = async (
   mediaTypes: mediaType[]
-): AskMediaAccessReturn[] => {
+): Promise<AskMediaAccessReturn[]> => {
   let results: AskMediaAccessReturn[] = [];
   if (process.platform === 'darwin') {
     for (const mediaType of mediaTypes) {
       let result: boolean = false;
-      ipcRenderer
+      await ipcRenderer
         .invoke('IPC_REQUEST_PERMISSION_HANDLER', {
           type: mediaType,
         })

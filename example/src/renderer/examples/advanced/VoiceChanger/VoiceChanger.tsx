@@ -23,7 +23,6 @@ import {
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { enumToItems } from '../../../utils';
-
 import { askMediaAccess } from '../../../utils/permissions';
 
 import {
@@ -85,14 +84,16 @@ export default class VoiceChanger
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
 
+    // Need granted the microphone permission
+    await askMediaAccess(['microphone']);
+
     // Only need to enable audio on this case
-    askMediaAccess(['microphone']);
     this.engine.enableAudio();
   }
 

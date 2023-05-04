@@ -14,13 +14,13 @@ import React, {
   useState,
 } from 'react';
 
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
 import {
   AgoraButton,
   AgoraCard,
   AgoraList,
   AgoraText,
   AgoraTextInput,
+  RtcSurfaceView,
 } from '../../../components/ui';
 import * as log from '../../../utils/log';
 import { BaseComponent } from '../components/BaseComponent';

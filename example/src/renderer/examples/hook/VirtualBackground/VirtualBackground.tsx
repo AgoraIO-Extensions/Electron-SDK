@@ -39,7 +39,7 @@ export default function VirtualBackground() {
     BackgroundSourceType.BackgroundColor
   );
   const [color, setColor] = useState(0xffffff);
-  const [source, setSource] = useState(getResourcePath('png.png'));
+  const [source, setSource] = useState(getResourcePath('agora-logo.png'));
   const [blur_degree, setBlur_degree] = useState(
     BackgroundBlurDegree.BlurDegreeMedium
   );

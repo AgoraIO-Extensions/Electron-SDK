@@ -1,8 +1,12 @@
 import { VideoCanvas, VideoSourceType } from 'agora-electron-sdk';
 import React, { ReactElement, memo } from 'react';
 
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
-import { AgoraCard, AgoraList, AgoraText } from '../../../components/ui';
+import {
+  AgoraCard,
+  AgoraList,
+  AgoraText,
+  RtcSurfaceView,
+} from '../../../components/ui';
 
 export interface BaseRenderUsersProps {
   enableVideo: boolean;

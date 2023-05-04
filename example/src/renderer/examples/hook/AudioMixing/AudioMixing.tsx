@@ -26,7 +26,7 @@ export default function AudioMixing() {
     useInitRtcEngine(enableVideo);
 
   const [filePath, setFilePath] = useState<string>(
-    getResourcePath('audioeffect.mp3')
+    getResourcePath('effect.mp3')
   );
   const [loopback, setLoopback] = useState<boolean>(false);
   const [cycle, setCycle] = useState<number>(-1);

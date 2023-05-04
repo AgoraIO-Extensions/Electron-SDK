@@ -30,20 +30,24 @@ const useInitRtcEngine = (enableVideo: boolean) => {
 
     engine.current.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
 
+    // Need granted the microphone permission
+    await askMediaAccess(['microphone']);
+
     // Only need to enable audio on this case
     engine.current.enableAudio();
-    askMediaAccess(['microphone']);
 
     if (enableVideo) {
+      // Need granted the camera permission
+      await askMediaAccess(['camera']);
+
       // Need to enable video on this case
       // If you only call `enableAudio`, only relay the audio stream to the target channel
       engine.current.enableVideo();
-      askMediaAccess(['camera']);
 
       // Start preview before joinChannel
       engine.current.startPreview();
