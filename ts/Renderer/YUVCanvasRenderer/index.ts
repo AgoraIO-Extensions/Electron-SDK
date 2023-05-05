@@ -1,15 +1,9 @@
-/*
- * @Author: zhangtao@agora.io
- * @Date: 2021-04-28 13:34:48
- * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-05-19 15:59:03
- */
+import isEqual from 'lodash.isequal';
 
 import { RenderModeType } from '../../Private/AgoraMediaBase';
 import { CanvasOptions, ShareVideoFrame } from '../../Types';
 import { IRenderer } from '../IRenderer';
 
-const isEqual = require('lodash.isequal');
 const YUVBuffer = require('yuv-buffer');
 const YUVCanvas = require('yuv-canvas');
 
