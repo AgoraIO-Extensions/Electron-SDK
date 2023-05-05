@@ -3,7 +3,6 @@ const path = require('path');
 const { promisify } = require('util');
 
 const download = require('download');
-const extract = require('extract-zip');
 const fs = require('fs-extra');
 const glob = require('glob');
 
@@ -29,12 +28,9 @@ const downloadSDK = async ({
   const downloadTmp = await createTmpDir();
   await download(sdkURL, downloadTmp, {
     filename: 'sdk.zip',
+    extract: true,
   });
 
-  const zipPath = path.join(downloadTmp, 'sdk.zip');
-  await extract(zipPath, {
-    dir: downloadTmp,
-  });
   const filterUnzipsFiles = await globPromise(
     path.join(downloadTmp, globPattern),
     {
