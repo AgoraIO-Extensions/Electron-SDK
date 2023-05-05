@@ -69,14 +69,12 @@
     "antd": "^4.20.3",
     "download": "^8.0.0",
     "ffi-napi": "^4.0.3",
-    "history": "^5.0.0",
     "react": "^18.1.0",
     "react-color": "^2.19.3",
     "react-dom": "^18.1.0",
     "react-router-dom": "^5.2.0",
     "recharts": "^2.1.13",
-    "ref-napi": "^3.0.3",
-    "source-map-support": "^0.5.16"
+    "ref-napi": "^3.0.3"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.16.7",
@@ -89,6 +87,7 @@
     "@types/react-color": "^3.0.6",
     "@types/react-dom": "^18.0.3",
     "@types/react-router-dom": "^5.1.6",
+    "@types/ref-napi": "^3.0.7",
     "electron": "18.2.3",
     "electron-builder": "^23.1.0",
     "electron-webpack": "^2.8.2",
