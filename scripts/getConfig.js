@@ -9,7 +9,7 @@ const { INIT_CWD } = minimist(process.argv.slice(2), {
   default: {},
 });
 logger.info(`pass INIT_CWD ${INIT_CWD}`);
-logger.info(`process.env.INIT_CWD  ${process.env.INIT_CWD}`);
+logger.info(`process.env.INIT_CWD ${process.env.INIT_CWD}`);
 
 const getArgvFromPkgJson = () => {
   const projectDir = path.join(INIT_CWD, 'package.json');
@@ -51,6 +51,10 @@ const getConfig = () => {
     string: ['arch', 'platform'],
     default: { ...getArgvFromPkgJson() },
   });
+
+  logger.info(
+    `env: ${npm_config_agora_electron_sdk_pre_built} ${npm_config_agora_electron_sdk_platform} ${npm_config_agora_electron_sdk_arch}`
+  );
 
   // argv from ci/npm_config
   if (npm_config_agora_electron_sdk_pre_built !== undefined) {
