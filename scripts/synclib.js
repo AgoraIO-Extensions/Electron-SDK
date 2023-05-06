@@ -1,3 +1,5 @@
+const path = require('path');
+
 const download = require('download');
 
 const { destIrisSDKDir, cleanIrisDir } = require('./clean');
@@ -15,7 +17,7 @@ const downloadSDK = async ({ preHook, postHook, sdkURL, destDir }) => {
   await download(sdkURL, destDir, {
     strip: 1,
     extract: true,
-    filter: (file) => !file.path.endsWith('/'),
+    filter: (file) => !file.path.endsWith(path.sep),
   });
   logger.info(`Finish download:${sdkURL}`);
   await postHook();
