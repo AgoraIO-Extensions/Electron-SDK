@@ -50,14 +50,14 @@ export const thumbImageBufferToBase64 = (target?: ThumbImageBuffer) => {
     const start = srow * width * 4;
     if (process.platform === 'win32') {
       for (let i = 0; i < rowBytes; i += 4) {
-        imageData.data[i] = target.buffer![start + i + 2];
-        imageData.data[i + 1] = target.buffer![start + i + 1];
-        imageData.data[i + 2] = target.buffer![start + i];
-        imageData.data[i + 3] = target.buffer![start + i + 3];
+        imageData.data[i] = target.buffer![start + i + 2]!;
+        imageData.data[i + 1] = target.buffer![start + i + 1]!;
+        imageData.data[i + 2] = target.buffer![start + i]!;
+        imageData.data[i + 3] = target.buffer![start + i + 3]!;
       }
     } else {
       for (let i = 0; i < rowBytes; ++i) {
-        imageData.data[i] = target.buffer![start + i];
+        imageData.data[i] = target.buffer![start + i]!;
       }
     }
     ctx.putImageData(imageData, 0, row);
