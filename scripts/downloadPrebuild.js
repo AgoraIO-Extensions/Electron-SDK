@@ -84,7 +84,7 @@ module.exports = async () => {
   await download(downloadUrl, buildDir, {
     strip: 1,
     extract: true,
-    filter: (file) => !!fs.statSync(file)?.isFile(),
+    filter: (file) => !!fs.statSync(file.path)?.isFile(),
   });
 
   if (no_symbol) {
