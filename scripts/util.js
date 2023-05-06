@@ -3,7 +3,6 @@ const os = require('os');
 const fs = require('fs-extra');
 
 const getConfig = require('./getConfig');
-const logger = require('./logger');
 
 exports.getOS = () => {
   const { platform } = getConfig();
@@ -12,8 +11,7 @@ exports.getOS = () => {
   } else if (platform === 'win32') {
     return 'win32';
   } else {
-    // not supported in temp
-    logger.error('Unsupported platform!');
+    return 'linux';
   }
 };
 
