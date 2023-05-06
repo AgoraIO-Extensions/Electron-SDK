@@ -85,7 +85,7 @@ module.exports = async () => {
     strip: 1,
     extract: true,
     filter: (file) => {
-      logger.info('test', JSON.stringify(file));
+      logger.info(JSON.stringify(file));
       return file.type === 'file' && !file.path.endsWith(path.sep);
     },
   });
