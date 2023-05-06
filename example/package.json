@@ -74,7 +74,8 @@
     "react-dom": "^18.1.0",
     "react-router-dom": "^5.2.0",
     "recharts": "^2.1.13",
-    "ref-napi": "^3.0.3"
+    "ref-napi": "^3.0.3",
+    "source-map-support": "^0.5.16"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.16.7",
