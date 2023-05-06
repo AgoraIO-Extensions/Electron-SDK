@@ -18,8 +18,9 @@ const downloadSDK = async ({ preHook, postHook, sdkURL, destDir }) => {
     strip: 1,
     extract: true,
     filter: (file) => {
+      logger.info(JSON.stringify({ ...file, data: file.data.length }));
       return (
-        file.type === 'file' &&
+        file.type !== 'directory' &&
         !file.path.endsWith(path.sep) &&
         file.data.length !== 0
       );
