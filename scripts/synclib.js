@@ -1,6 +1,5 @@
-const path = require('path');
-
 const download = require('download');
+const fs = require('graceful-fs');
 
 const { destIrisSDKDir, cleanIrisDir } = require('./clean');
 const getConfig = require('./getConfig');
@@ -17,7 +16,7 @@ const downloadSDK = async ({ preHook, postHook, sdkURL, destDir }) => {
   await download(sdkURL, destDir, {
     strip: 1,
     extract: true,
-    filter: (file) => !file.path.endsWith(path.sep),
+    filter: (file) => !!fs.statSync(file)?.isFile(),
   });
   logger.info(`Finish download:${sdkURL}`);
   await postHook();
