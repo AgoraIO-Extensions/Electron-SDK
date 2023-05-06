@@ -21,17 +21,13 @@ const downloadSDK = async ({ preHook, postHook, sdkURL, destDir }) => {
 };
 
 const syncLib = async (cb) => {
-  try {
-    const os = getOS();
-    await downloadSDK({
-      preHook: cleanIrisDir,
-      postHook: () => {},
-      sdkURL: os === 'mac' ? iris_sdk_mac : iris_sdk_win,
-      destDir: destIrisSDKDir,
-    });
-  } catch (error) {
-    logger.error(error);
-  }
+  const os = getOS();
+  await downloadSDK({
+    preHook: cleanIrisDir,
+    postHook: () => {},
+    sdkURL: os === 'mac' ? iris_sdk_mac : iris_sdk_win,
+    destDir: destIrisSDKDir,
+  });
   cb();
 };
 

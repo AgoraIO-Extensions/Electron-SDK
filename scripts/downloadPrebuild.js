@@ -81,14 +81,10 @@ module.exports = async () => {
   logger.info('Download URL  %s ', downloadUrl);
 
   logger.info('Downloading prebuilt C++ addon for Agora Electron SDK...');
-  try {
-    await download(downloadUrl, buildDir, {
-      strip: 1,
-      extract: true,
-    });
-  } catch (error) {
-    logger.error('Agora sdk download base sdk error', error);
-  }
+  await download(downloadUrl, buildDir, {
+    strip: 1,
+    extract: true,
+  });
 
   if (no_symbol) {
     await removeFileByFilter();
