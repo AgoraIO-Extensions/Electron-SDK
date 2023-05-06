@@ -1,7 +1,7 @@
 const path = require('path');
 
 const download = require('download');
-const fs = require('graceful-fs');
+const fs = require('fs-extra');
 
 const { cleanBuildDir, buildDir } = require('./clean');
 const getConfig = require('./getConfig');
@@ -84,7 +84,10 @@ module.exports = async () => {
   await download(downloadUrl, buildDir, {
     strip: 1,
     extract: true,
-    filter: (file) => !!fs.statSync(file.path)?.isFile(),
+    filter: (file) => {
+      logger.info('test', JSON.stringify(file));
+      return file.type === 'file' && !file.path.endsWith(path.sep);
+    },
   });
 
   if (no_symbol) {
