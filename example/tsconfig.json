@@ -1,0 +1,31 @@
+{
+  "root": true,
+  "extends": "./node_modules/electron-webpack/tsconfig-base.json",
+  "include": ["src"],
+  "compilerOptions": {
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false,
+    "jsx": "react-jsx",
+    "target": "ES2018",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "declaration": false,
+    "declarationMap": false,
+    "pretty": true,
+    /* Additional Checks */
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": false,
+    "noImplicitAny": false,
+    /* Module Resolution Options */
+    "outDir": "./dist"
+  }
+}
