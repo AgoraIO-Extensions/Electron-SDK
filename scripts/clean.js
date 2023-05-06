@@ -12,22 +12,22 @@ exports.buildDir = buildDir;
 
 exports.cleanIrisDir = async () => {
   await fs.remove(destIrisSDKDir);
-  logger.info(`clean :${destIrisSDKDir}`);
+  logger.info(`clean:${destIrisSDKDir}`);
 };
 
 exports.cleanBuildDir = async () => {
   await fs.remove(buildDir);
-  logger.info(`clean :${buildDir}`);
+  logger.info(`clean:${buildDir}`);
 };
 
 exports.cleanJSDir = async () => {
   const dir = path.resolve(__dirname, '../js');
   await fs.remove(dir);
-  logger.info(`clean :${dir}`);
+  logger.info(`clean:${dir}`);
 };
 
 exports.cleanTypesDir = async () => {
   const dir = path.resolve(__dirname, '../types');
   await fs.remove(dir);
-  logger.info(`clean :${dir}`);
+  logger.info(`clean:${dir}`);
 };
