@@ -25,7 +25,7 @@ import {
   AgoraView,
   RtcSurfaceView,
 } from '../../../components/ui';
-import { rgbImageBufferToBase64 } from '../../../utils/base64';
+import { thumbImageBufferToBase64 } from '../../../utils/base64';
 import * as log from '../../../utils/log';
 import { askMediaAccess } from '../../../utils/permissions';
 import { BaseComponent } from '../components/BaseComponent';
@@ -378,7 +378,7 @@ export default function ScreenShare() {
         />
         {targetSource ? (
           <AgoraImage
-            source={rgbImageBufferToBase64(targetSource.thumbImage)}
+            source={thumbImageBufferToBase64(targetSource.thumbImage)}
           />
         ) : undefined}
         {uid2}

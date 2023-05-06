@@ -33,7 +33,7 @@ import {
 import Config from '../../../config/agora.config';
 
 import { getResourcePath } from '../../../utils';
-import { rgbImageBufferToBase64 } from '../../../utils/base64';
+import { thumbImageBufferToBase64 } from '../../../utils/base64';
 import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
@@ -509,7 +509,7 @@ export default class LocalVideoTranscoder
         />
         {targetSource ? (
           <AgoraImage
-            source={rgbImageBufferToBase64(targetSource.thumbImage)}
+            source={thumbImageBufferToBase64(targetSource.thumbImage)}
           />
         ) : undefined}
         <AgoraButton
