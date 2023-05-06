@@ -86,7 +86,7 @@ module.exports = async () => {
     extract: true,
     filter: (file) => {
       return (
-        file.type === 'file' &&
+        file.type !== 'directory' &&
         !file.path.endsWith(path.sep) &&
         file.data.length !== 0
       );
