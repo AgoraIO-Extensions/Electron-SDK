@@ -5,12 +5,14 @@ call node -v
 call npm config list
 if %1 == ia32 (
     echo sdk_ia32
-    call npm install --verbose --agora_electron_sdk_pre_built=false  --agora_electron_sdk_arch=ia32
+    call npm config set agora_electron_sdk_pre_built=false
+    call npm install --verbose --agora_electron_sdk_arch=ia32
     call npm run totalBuild --verbose --agora_electron_sdk_arch=ia32
 )
 if %1 == x64 (
     echo sdk_x64
-    call npm install --verbose --agora_electron_sdk_pre_built=false  --agora_electron_sdk_arch=x64
+    call npm config set agora_electron_sdk_pre_built=false
+    call npm install --verbose --agora_electron_sdk_arch=x64
     call npm run totalBuild --verbose --agora_electron_sdk_arch=x64
 )
 
