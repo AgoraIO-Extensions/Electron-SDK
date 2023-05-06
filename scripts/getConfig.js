@@ -58,7 +58,7 @@ const getConfig = () => {
 
   // argv from ci/npm_config
   if (npm_config_agora_electron_sdk_pre_built !== undefined) {
-    config.prebuilt = !!JSON.parse(npm_config_agora_electron_sdk_pre_built);
+    config.prebuilt = !!+npm_config_agora_electron_sdk_pre_built;
   }
 
   if (npm_config_agora_electron_sdk_platform !== undefined) {
