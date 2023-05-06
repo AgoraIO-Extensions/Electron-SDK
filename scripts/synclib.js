@@ -15,12 +15,7 @@ const downloadSDK = async ({ preHook, postHook, sdkURL, destDir }) => {
   await download(sdkURL, destDir, {
     strip: 1,
     extract: true,
-    map: (file) => {
-      if (file.type === 'file' && file.path.endsWith('/')) {
-        file.type = 'directory';
-      }
-      return file;
-    },
+    filter: (file) => !file.path.endsWith('/'),
   });
   logger.info(`Finish download:${sdkURL}`);
   await postHook();
