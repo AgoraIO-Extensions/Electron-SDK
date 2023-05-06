@@ -84,12 +84,7 @@ module.exports = async () => {
   await download(downloadUrl, buildDir, {
     strip: 1,
     extract: true,
-    map: (file) => {
-      if (file.type === 'file' && file.path.endsWith('/')) {
-        file.type = 'directory';
-      }
-      return file;
-    },
+    filter: (file) => !file.path.endsWith('/'),
   });
 
   if (no_symbol) {
