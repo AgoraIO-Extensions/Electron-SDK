@@ -5,7 +5,6 @@ import {
   LighteningContrastLevel,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
 import React from 'react';
 
 import {
@@ -20,6 +19,7 @@ import {
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { enumToItems } from '../../../utils';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   lighteningContrastLevel: LighteningContrastLevel;
@@ -65,11 +65,14 @@ export default class BeautyEffect
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
 
     this.engine?.enableExtension(
       'agora_video_filters_clear_vision',

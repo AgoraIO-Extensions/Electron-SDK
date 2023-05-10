@@ -14,12 +14,12 @@ import {
   BaseComponent,
   BaseComponentState,
 } from '../../../components/BaseComponent';
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
 import {
   AgoraButton,
   AgoraDivider,
   AgoraSlider,
   AgoraTextInput,
+  RtcSurfaceView,
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 
@@ -69,7 +69,7 @@ export default class MediaPlayer
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
     });
     this.engine.registerEventHandler(this);
 

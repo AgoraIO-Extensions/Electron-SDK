@@ -19,7 +19,8 @@ import {
 } from '../../../components/BaseComponent';
 import { AgoraButton, AgoraDropdown, AgoraImage } from '../../../components/ui';
 import Config from '../../../config/agora.config';
-import { rgbImageBufferToBase64 } from '../../../utils/base64';
+import { thumbImageBufferToBase64 } from '../../../utils/base64';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   sources?: ScreenCaptureSourceInfo[];
@@ -60,11 +61,14 @@ export default class PushVideoFrame
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
@@ -187,7 +191,7 @@ export default class PushVideoFrame
         />
         {targetSource ? (
           <AgoraImage
-            source={rgbImageBufferToBase64(targetSource.thumbImage)}
+            source={thumbImageBufferToBase64(targetSource.thumbImage)}
           />
         ) : undefined}
       </>

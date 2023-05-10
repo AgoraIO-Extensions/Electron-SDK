@@ -19,6 +19,7 @@ import {
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
 import Config from '../../../config/agora.config';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {}
 
@@ -51,11 +52,14 @@ export default class JoinChannelVideo
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel

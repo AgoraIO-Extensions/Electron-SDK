@@ -7,6 +7,7 @@ import createAgoraRtcEngine, {
   LocalTranscoderConfiguration,
   MediaPlayerError,
   MediaPlayerState,
+  RenderModeType,
   RtcConnection,
   RtcStats,
   ScreenCaptureSourceInfo,
@@ -21,18 +22,19 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
 import {
   AgoraButton,
   AgoraDivider,
   AgoraDropdown,
   AgoraImage,
   AgoraTextInput,
+  RtcSurfaceView,
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 
 import { getResourcePath } from '../../../utils';
-import { rgbImageBufferToBase64 } from '../../../utils/base64';
+import { thumbImageBufferToBase64 } from '../../../utils/base64';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   videoDevices?: VideoDeviceInfo[];
@@ -70,7 +72,7 @@ export default class LocalVideoTranscoder
       startScreenCapture: false,
       url: 'https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov',
       open: false,
-      imageUrl: getResourcePath('png.png'),
+      imageUrl: getResourcePath('agora-logo.png'),
       startLocalVideoTranscoder: false,
       VideoInputStreams: [],
     };
@@ -89,10 +91,13 @@ export default class LocalVideoTranscoder
     this.engine.registerEventHandler(this);
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera', 'screen']);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
@@ -261,6 +266,7 @@ export default class LocalVideoTranscoder
     const config = this._generateLocalTranscoderConfiguration();
 
     this.engine?.startLocalVideoTranscoder(config);
+    this.engine?.startPreview(VideoSourceType.VideoSourceTranscoded);
     this.setState({ startLocalVideoTranscoder: true });
   };
 
@@ -434,6 +440,7 @@ export default class LocalVideoTranscoder
       <>
         {startLocalVideoTranscoder
           ? this.renderUser({
+              renderMode: RenderModeType.RenderModeFit,
               uid: 0,
               sourceType: VideoSourceType.VideoSourceTranscoded,
             })
@@ -502,7 +509,7 @@ export default class LocalVideoTranscoder
         />
         {targetSource ? (
           <AgoraImage
-            source={rgbImageBufferToBase64(targetSource.thumbImage)}
+            source={thumbImageBufferToBase64(targetSource.thumbImage)}
           />
         ) : undefined}
         <AgoraButton

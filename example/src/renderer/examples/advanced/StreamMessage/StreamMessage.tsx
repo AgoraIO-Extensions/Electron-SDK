@@ -21,6 +21,7 @@ import {
   AgoraTextInput,
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseAudioComponentState {
   syncWithAudio: boolean;
@@ -61,11 +62,14 @@ export default class StreamMessage
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone permission
+    await askMediaAccess(['microphone']);
 
     // Only need to enable audio on this case
     this.engine.enableAudio();

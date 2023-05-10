@@ -21,8 +21,9 @@ import {
 } from '../../../components/BaseComponent';
 import { AgoraButton } from '../../../components/ui';
 import Config from '../../../config/agora.config';
+import { askMediaAccess } from '../../../utils/permissions';
 
-const pluginVersion = 'v4.2.0';
+const pluginVersion = 'v4.2.0-dev.8';
 let pluginName = 'VideoObserverPlugin';
 let postfix = `_${process.arch}`;
 if (process.platform === 'darwin') {
@@ -80,11 +81,14 @@ export default class ProcessVideoRawData
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
@@ -129,7 +133,7 @@ export default class ProcessVideoRawData
     const dllPath = path.resolve(os.tmpdir(), pluginName);
     if (!fs.existsSync(dllPath)) {
       console.log(`start downloading plugin ${url} to ${dllPath}`);
-      await download(url, os.tmpdir());
+      await download(encodeURI(url), os.tmpdir());
       console.log(`download success`);
     }
 

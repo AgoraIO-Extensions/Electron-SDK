@@ -21,7 +21,6 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
 import {
   AgoraButton,
   AgoraDivider,
@@ -31,10 +30,11 @@ import {
   AgoraSwitch,
   AgoraTextInput,
   AgoraView,
+  RtcSurfaceView,
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
-
-import { rgbImageBufferToBase64 } from '../../../utils/base64';
+import { thumbImageBufferToBase64 } from '../../../utils/base64';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   token2: string;
@@ -103,11 +103,14 @@ export default class ScreenShare
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera', 'screen']);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
@@ -436,7 +439,7 @@ export default class ScreenShare
         />
         {targetSource ? (
           <AgoraImage
-            source={rgbImageBufferToBase64(targetSource.thumbImage)}
+            source={thumbImageBufferToBase64(targetSource.thumbImage)}
           />
         ) : undefined}
         <AgoraTextInput

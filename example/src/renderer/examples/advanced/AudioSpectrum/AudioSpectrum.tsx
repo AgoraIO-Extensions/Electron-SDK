@@ -22,6 +22,7 @@ import {
 } from '../../../components/BaseComponent';
 import { AgoraButton, AgoraTextInput } from '../../../components/ui';
 import Config from '../../../config/agora.config';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseAudioComponentState {
   intervalInMS: number;
@@ -42,7 +43,7 @@ export default class AudioSpectrum
       uid: Config.uid,
       joinChannelSuccess: false,
       remoteUsers: [],
-      intervalInMS: 100,
+      intervalInMS: 500,
       enableAudioSpectrumMonitor: false,
       audioSpectrumData: [],
     };
@@ -60,11 +61,14 @@ export default class AudioSpectrum
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone permission
+    await askMediaAccess(['microphone']);
 
     // Only need to enable audio on this case
     this.engine.enableAudio();

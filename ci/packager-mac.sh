@@ -1,3 +1,5 @@
+set -e
+set -x
 
 outterZipName="electronDemo.zip"
 
@@ -9,22 +11,21 @@ echo example_sdk_mode: $example_sdk_mode
 echo example_electron_version: $example_electron_version
 
 packExample() {
-  rm $outterZipName
+  rm $outterZipName || true
   pushd $1
   echo 当前工作路径:$(pwd)
-  rm -rf node_modules dist
+  rm -rf node_modules dist yarn.lock || true
 
-  if [ -n "$2" ]
-  then
-      echo 选择了 electron_version:$2
-      yarn add electron@$2
+  yarn config set registry https://registry.npmmirror.com
+  if [ -n "$2" ]; then
+    echo 选择了 electron_version:$2
+    yarn add --dev electron@$2 --no-lockfile
   else
-      echo 安装example 依赖
-      yarn
+    echo 安装example 依赖
+    yarn install --no-lockfile
   fi
 
-  if [ "$3" -eq 1 ]
-  then
+  if [ "$3" -eq 1 ]; then
     rm -rf node_modules/agora-electron-sdk/build
     cp -P -R ../Electron-*/* node_modules/agora-electron-sdk/
   fi

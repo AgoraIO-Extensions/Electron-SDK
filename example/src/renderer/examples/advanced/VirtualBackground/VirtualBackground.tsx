@@ -20,6 +20,7 @@ import {
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { enumToItems, getResourcePath } from '../../../utils';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   background_source_type: BackgroundSourceType;
@@ -45,7 +46,7 @@ export default class VirtualBackground
       startPreview: false,
       background_source_type: BackgroundSourceType.BackgroundColor,
       color: 0xffffff,
-      source: getResourcePath('png.png'),
+      source: getResourcePath('agora-logo.png'),
       blur_degree: BackgroundBlurDegree.BlurDegreeMedium,
       enableVirtualBackground: false,
     };
@@ -63,11 +64,14 @@ export default class VirtualBackground
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
 
     this.engine?.enableExtension(
       'agora_video_filters_segmentation',
