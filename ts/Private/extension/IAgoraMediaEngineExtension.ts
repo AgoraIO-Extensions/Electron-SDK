@@ -3,7 +3,6 @@ import {
   IVideoEncodedFrameObserver,
   IVideoFrameObserver,
 } from '../AgoraMediaBase';
-import { EmitterSubscription } from '../internal/emitter/EventEmitter';
 
 export type IMediaEngineEvent = IAudioFrameObserver &
   IVideoFrameObserver &
@@ -29,7 +28,7 @@ declare module '../IAgoraMediaEngine' {
     addListener<EventType extends keyof IMediaEngineEvent>(
       eventType: EventType,
       listener: IMediaEngineEvent[EventType]
-    ): EmitterSubscription;
+    ): void;
 
     /**
      * Removes the specified IMediaEngineEvent listener.

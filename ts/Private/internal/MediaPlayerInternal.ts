@@ -34,7 +34,6 @@ const checkers = createCheckers(
 );
 
 import { DeviceEventEmitter, EVENT_TYPE } from './IrisApiEngine';
-import { EmitterSubscription } from './emitter/EventEmitter';
 
 export class MediaPlayerInternal extends IMediaPlayerImpl {
   static _source_observers: Map<number, IMediaPlayerSourceObserver[]> = new Map<
@@ -48,19 +47,6 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   static _audio_spectrum_observers: Map<number, IAudioSpectrumObserver[]> =
     new Map<number, IAudioSpectrumObserver[]>();
   private readonly _mediaPlayerId: number;
-  private _events: Map<
-    any,
-    {
-      eventType: string;
-      subscription: EmitterSubscription;
-    }
-  > = new Map<
-    any,
-    {
-      eventType: string;
-      subscription: EmitterSubscription;
-    }
-  >();
 
   constructor(mediaPlayerId: number) {
     super();
@@ -135,7 +121,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   addListener<EventType extends keyof IMediaPlayerEvent>(
     eventType: EventType,
     listener: IMediaPlayerEvent[EventType]
-  ): EmitterSubscription {
+  ): void {
     this._addListenerPreCheck(eventType);
     const callback = (...data: any[]) => {
       if (data[0] !== EVENT_TYPE.IMediaPlayer) {
@@ -164,38 +150,20 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
         );
       }
     };
-    const subscription = DeviceEventEmitter.addListener(eventType, callback);
-    this._events.set(listener, { eventType, subscription });
-    return subscription;
+    DeviceEventEmitter.addListener(eventType, callback);
   }
 
   removeListener<EventType extends keyof IMediaPlayerEvent>(
     eventType: EventType,
     listener: IMediaPlayerEvent[EventType]
   ) {
-    if (!this._events.has(listener)) return;
-    DeviceEventEmitter.removeSubscription(
-      this._events.get(listener)!.subscription
-    );
-    this._events.delete(listener);
+    DeviceEventEmitter.removeListener(eventType);
   }
 
   removeAllListeners<EventType extends keyof IMediaPlayerEvent>(
     eventType?: EventType
   ) {
-    if (eventType === undefined) {
-      this._events.forEach((value) => {
-        DeviceEventEmitter.removeAllListeners(value.eventType);
-      });
-      this._events.clear();
-    } else {
-      DeviceEventEmitter.removeAllListeners(eventType);
-      this._events.forEach((value, key) => {
-        if (value.eventType === eventType) {
-          this._events.delete(key);
-        }
-      });
-    }
+    DeviceEventEmitter.removeAllListeners(eventType);
   }
 
   getMediaPlayerId(): number {

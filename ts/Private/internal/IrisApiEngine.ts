@@ -55,11 +55,10 @@ import {
   MusicContentCenterInternal,
 } from './MusicContentCenterInternal';
 import { RtcEngineExInternal } from './RtcEngineExInternal';
-
-import EventEmitter from './emitter/EventEmitter';
+import EventEmitter from 'eventemitter3';
 
 // @ts-ignore
-export const DeviceEventEmitter = new EventEmitter();
+export const DeviceEventEmitter: EventEmitter = new EventEmitter();
 
 const AgoraRtcNg = AgoraEnv.AgoraElectronBridge;
 AgoraRtcNg.OnEvent('call_back_with_buffer', (...params: any) => {
