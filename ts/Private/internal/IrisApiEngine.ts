@@ -1,3 +1,4 @@
+import EventEmitter from 'eventemitter3';
 import JSON from 'json-bigint';
 
 import { AgoraEnv } from '../../Utils';
@@ -52,11 +53,9 @@ import {
   MusicContentCenterInternal,
 } from './MusicContentCenterInternal';
 import { RtcEngineExInternal } from './RtcEngineExInternal';
-import type { EventEmitter as IEventEmitter } from './emitter/EventEmitter';
-import EventEmitter from './emitter/EventEmitter';
 
 // @ts-ignore
-export const DeviceEventEmitter: IEventEmitter = new EventEmitter();
+export const DeviceEventEmitter: EventEmitter = new EventEmitter();
 
 const AgoraRtcNg = AgoraEnv.AgoraElectronBridge;
 AgoraRtcNg.OnEvent('call_back_with_buffer', (...params: any) => {

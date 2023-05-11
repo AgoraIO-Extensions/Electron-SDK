@@ -110,6 +110,7 @@
     "buffer": "^6.0.3",
     "cross-env": "^7.0.3",
     "download": "^8.0.0",
+    "eventemitter3": "^5.0.1",
     "fs-extra": "^11.1.1",
     "gulp": "^4.0.2",
     "json-bigint": "^1.0.0",
