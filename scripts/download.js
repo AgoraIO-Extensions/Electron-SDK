@@ -5,7 +5,7 @@ const fs = require('fs-extra');
 
 
 module.exports = ({
-  electronVersion = "5.0.8",
+  electronVersion = "12.0.0",
   platform = process.platform,
   packageVersion,
   arch,
@@ -25,8 +25,8 @@ module.exports = ({
   };
   // check electron version
 
-  if (['11.0.0', '10.2.0', '9.0.0', '7.1.13', '9.4.4', '7.1.2', '6.1.7', '5.0.8', '4.2.8', '3.0.6', '1.8.3'].indexOf(electronVersion) === -1) {
-    throw new Error('Prebuilt addon only supported electron version 11.0.0 9.0.0 7.1.2, 6.1.7, 5.0.8, 4.2.8, 3.0.6, 1.8.3')
+  if (['12.0.15', '12.0.0', '11.4.10', '11.0.0', '10.2.0', "10.1.5", '9.4.2', '9.0.0', '7.1.2', '6.1.7', '5.0.8', '4.2.8', '3.0.6', '1.8.3'].indexOf(electronVersion) === -1) {
+    throw new Error('Prebuilt addon only supported electron version 12.0.15 12.0.0 11.4.10 11.0.0 10.2.0 9.0.0, 7.1.2, 6.1.7, 5.0.8, 4.2.8, 3.0.6, 1.8.3')
   }
 
   let downloadUrl = `http://download.agora.io/sdk/release/Electron-${genOS()}-${packageVersion}-${electronVersion}.zip`;
