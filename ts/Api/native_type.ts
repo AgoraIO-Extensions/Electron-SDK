@@ -36,7 +36,7 @@ export interface SIZE {
  * @note The default image is in the RGBA format. If you need to use another format, you need to convert the image on
  * your own.
  */
- export interface ThumbImageBuffer {
+export interface ThumbImageBuffer {
   /**
    * The buffer of the thumbnail or icon.
    */
@@ -3087,6 +3087,15 @@ export enum LOCAL_VIDEO_STREAM_ERROR {
   /** 21: The screen capture fails. */
   LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_FAILURE = 21,
   LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_NO_PERMISSION = 22,
+  /** 23: (Windows only The screen capture fails with invalid parameters. */
+  LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_INVALID_PARAMETERS = 23,
+  /**
+   * 24: (Windows only The screen capture auto fallback to GDI
+   * When this error occurs, it means that the screen sharing failed to filter the specified window list of the user. Mowever, the sereen sharing is still ongoing.
+   *
+   * @since v3.6.1.17
+   */
+  LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_AUTO_FALLBACK = 24,
 }
 
 /** Local audio state types.
@@ -4762,7 +4771,7 @@ export interface NodeRtcEngine {
   videoSourceSetScreenCaptureScenario(
     type: SCREEN_SCENARIO_TYPE
   ): number;
-  
+
   isFeatureSupported(
     type: FeatureType
   ): boolean;
@@ -4986,7 +4995,7 @@ export interface NodeRtcChannel {
   sendStreamMessageWithArrayBuffer(
     streamId: number,
     buffer: UInt8ArrayBuffer
-  ): number 
+  ): number
 }
 
 /** Audio codec profile types. The default value is LC_ACC. */
@@ -5107,9 +5116,9 @@ export enum LOCAL_PROXY_MODE {
 }
 
 export interface UploadServerInfo {
-  serverDomain:string;
+  serverDomain: string;
 
-  serverPath:string;
+  serverPath: string;
 
   serverPort: number;
 
