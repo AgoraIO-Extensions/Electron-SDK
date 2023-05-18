@@ -1,4 +1,3 @@
-import { callIrisApi } from '../internal/IrisApiEngine';
 import { IRtcEngineImpl } from './IAgoraRtcEngineImpl';
 import { IRtcEngineEx, RtcConnection } from '../IAgoraRtcEngineEx';
 import { ChannelMediaOptions, LeaveChannelOptions } from '../IAgoraRtcEngine';
@@ -20,6 +19,7 @@ import {
   SimulcastStreamMode,
 } from '../AgoraBase';
 import { RenderModeType } from '../AgoraMediaBase';
+
 // @ts-ignore
 export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
   joinChannelEx(
@@ -1498,3 +1498,5 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     return 'RtcEngineEx_startMediaRenderingTracingEx';
   }
 }
+
+import { callIrisApi } from '../internal/IrisApiEngine';

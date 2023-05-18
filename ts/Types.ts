@@ -220,6 +220,9 @@ export interface Result {
  * @ignore
  */
 export interface AgoraElectronBridge {
+  /**
+   * @ignore
+   */
   OnEvent(
     callbackName: string,
     callback: (
@@ -248,34 +251,13 @@ export interface AgoraElectronBridge {
 
   GetBuffer(ptr: number, length: number): Buffer;
 
-  /**
-   * @ignore
-   */
   GetVideoFrame(streamInfo: ShareVideoFrame): {
     ret: number;
-    /**
-     * @ignore
-     */
     isNewFrame: boolean;
-    /**
-     * @ignore
-     */
     yStride: number;
-    /**
-     * @ignore
-     */
     width: number;
-    /**
-     * @ignore
-     */
     height: number;
-    /**
-     * @ignore
-     */
     rotation: number;
-    /**
-     * @ignore
-     */
     timestamp: number;
   };
 

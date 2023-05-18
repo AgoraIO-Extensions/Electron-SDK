@@ -1,4 +1,3 @@
-import { callIrisApi } from '../internal/IrisApiEngine';
 import {
   IRtcEngineEventHandler,
   IVideoDeviceManager,
@@ -13,7 +12,6 @@ import {
   CameraCapturerConfiguration,
   AudioEqualizationBandFrequency,
   AudioReverbType,
-  AudioTrackConfig,
   StreamFallbackOptions,
   Size,
   ScreenCaptureSourceInfo,
@@ -65,8 +63,8 @@ import {
   ScreenCaptureParameters,
   DeviceInfo,
   VideoContentHint,
-  ScreenScenarioType,
   ScreenCaptureParameters2,
+  ScreenScenarioType,
   LiveTranscoding,
   LocalTranscoderConfiguration,
   VideoOrientation,
@@ -93,6 +91,7 @@ import { IAudioDeviceManager } from '../IAudioDeviceManager';
 import { IMusicContentCenter } from '../IAgoraMusicContentCenter';
 import { IMediaRecorder } from '../IAgoraMediaRecorder';
 import { ILocalSpatialAudioEngine } from '../IAgoraSpatialAudio';
+
 export function processIRtcEngineEventHandler(
   handler: IRtcEngineEventHandler,
   event: string,
@@ -3514,6 +3513,32 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_setDualStreamMode';
   }
 
+  enableCustomAudioLocalPlayback(trackId: number, enabled: boolean): number {
+    const apiType = this.getApiTypeFromEnableCustomAudioLocalPlayback(
+      trackId,
+      enabled
+    );
+    const jsonParams = {
+      trackId: trackId,
+      enabled: enabled,
+      toJSON: () => {
+        return {
+          trackId: trackId,
+          enabled: enabled,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromEnableCustomAudioLocalPlayback(
+    trackId: number,
+    enabled: boolean
+  ): string {
+    return 'RtcEngine_enableCustomAudioLocalPlayback';
+  }
+
   enableEchoCancellationExternal(
     enabled: boolean,
     audioSourceDelay: number
@@ -3541,94 +3566,6 @@ export class IRtcEngineImpl implements IRtcEngine {
     audioSourceDelay: number
   ): string {
     return 'RtcEngine_enableEchoCancellationExternal';
-  }
-
-  enableCustomAudioLocalPlayback(sourceId: number, enabled: boolean): number {
-    const apiType = this.getApiTypeFromEnableCustomAudioLocalPlayback(
-      sourceId,
-      enabled
-    );
-    const jsonParams = {
-      sourceId: sourceId,
-      enabled: enabled,
-      toJSON: () => {
-        return {
-          sourceId: sourceId,
-          enabled: enabled,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromEnableCustomAudioLocalPlayback(
-    sourceId: number,
-    enabled: boolean
-  ): string {
-    return 'RtcEngine_enableCustomAudioLocalPlayback';
-  }
-
-  startPrimaryCustomAudioTrack(config: AudioTrackConfig): number {
-    const apiType = this.getApiTypeFromStartPrimaryCustomAudioTrack(config);
-    const jsonParams = {
-      config: config,
-      toJSON: () => {
-        return {
-          config: config,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromStartPrimaryCustomAudioTrack(
-    config: AudioTrackConfig
-  ): string {
-    return 'RtcEngine_startPrimaryCustomAudioTrack';
-  }
-
-  stopPrimaryCustomAudioTrack(): number {
-    const apiType = this.getApiTypeFromStopPrimaryCustomAudioTrack();
-    const jsonParams = {};
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromStopPrimaryCustomAudioTrack(): string {
-    return 'RtcEngine_stopPrimaryCustomAudioTrack';
-  }
-
-  startSecondaryCustomAudioTrack(config: AudioTrackConfig): number {
-    const apiType = this.getApiTypeFromStartSecondaryCustomAudioTrack(config);
-    const jsonParams = {
-      config: config,
-      toJSON: () => {
-        return {
-          config: config,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromStartSecondaryCustomAudioTrack(
-    config: AudioTrackConfig
-  ): string {
-    return 'RtcEngine_startSecondaryCustomAudioTrack';
-  }
-
-  stopSecondaryCustomAudioTrack(): number {
-    const apiType = this.getApiTypeFromStopSecondaryCustomAudioTrack();
-    const jsonParams = {};
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromStopSecondaryCustomAudioTrack(): string {
-    return 'RtcEngine_stopSecondaryCustomAudioTrack';
   }
 
   setRecordingAudioFrameParameters(
@@ -4911,26 +4848,6 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_setScreenCaptureContentHint';
   }
 
-  setScreenCaptureScenario(screenScenario: ScreenScenarioType): number {
-    const apiType = this.getApiTypeFromSetScreenCaptureScenario(screenScenario);
-    const jsonParams = {
-      screenScenario: screenScenario,
-      toJSON: () => {
-        return {
-          screenScenario: screenScenario,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromSetScreenCaptureScenario(
-    screenScenario: ScreenScenarioType
-  ): string {
-    return 'RtcEngine_setScreenCaptureScenario';
-  }
-
   updateScreenCaptureRegion(regionRect: Rectangle): number {
     const apiType = this.getApiTypeFromUpdateScreenCaptureRegion(regionRect);
     const jsonParams = {
@@ -4994,11 +4911,14 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_startScreenCapture';
   }
 
-  startScreenCaptureDesktop(
+  startScreenCaptureBySourceType(
     type: VideoSourceType,
     config: ScreenCaptureConfiguration
   ): number {
-    const apiType = this.getApiTypeFromStartScreenCaptureDesktop(type, config);
+    const apiType = this.getApiTypeFromStartScreenCaptureBySourceType(
+      type,
+      config
+    );
     const jsonParams = {
       type: type,
       config: config,
@@ -5013,11 +4933,11 @@ export class IRtcEngineImpl implements IRtcEngine {
     return jsonResults.result;
   }
 
-  protected getApiTypeFromStartScreenCaptureDesktop(
+  protected getApiTypeFromStartScreenCaptureBySourceType(
     type: VideoSourceType,
     config: ScreenCaptureConfiguration
   ): string {
-    return 'RtcEngine_startScreenCaptureDesktop';
+    return 'RtcEngine_startScreenCaptureBySourceType';
   }
 
   updateScreenCapture(captureParams: ScreenCaptureParameters2): number {
@@ -5040,10 +4960,50 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_updateScreenCapture';
   }
 
-  stopScreenCapture(
-    type: VideoSourceType = VideoSourceType.VideoSourceScreenPrimary
-  ): number {
-    const apiType = this.getApiTypeFromStopScreenCapture(type);
+  queryScreenCaptureCapability(): number {
+    const apiType = this.getApiTypeFromQueryScreenCaptureCapability();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromQueryScreenCaptureCapability(): string {
+    return 'RtcEngine_queryScreenCaptureCapability';
+  }
+
+  setScreenCaptureScenario(screenScenario: ScreenScenarioType): number {
+    const apiType = this.getApiTypeFromSetScreenCaptureScenario(screenScenario);
+    const jsonParams = {
+      screenScenario: screenScenario,
+      toJSON: () => {
+        return {
+          screenScenario: screenScenario,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSetScreenCaptureScenario(
+    screenScenario: ScreenScenarioType
+  ): string {
+    return 'RtcEngine_setScreenCaptureScenario';
+  }
+
+  stopScreenCapture(): number {
+    const apiType = this.getApiTypeFromStopScreenCapture();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromStopScreenCapture(): string {
+    return 'RtcEngine_stopScreenCapture';
+  }
+
+  stopScreenCaptureBySourceType(type: VideoSourceType): number {
+    const apiType = this.getApiTypeFromStopScreenCaptureBySourceType(type);
     const jsonParams = {
       type: type,
       toJSON: () => {
@@ -5056,10 +5016,10 @@ export class IRtcEngineImpl implements IRtcEngine {
     return jsonResults.result;
   }
 
-  protected getApiTypeFromStopScreenCapture(
-    type: VideoSourceType = VideoSourceType.VideoSourceScreenPrimary
+  protected getApiTypeFromStopScreenCaptureBySourceType(
+    type: VideoSourceType
   ): string {
-    return 'RtcEngine_stopScreenCapture';
+    return 'RtcEngine_stopScreenCaptureBySourceType';
   }
 
   getCallId(): string {
@@ -6251,17 +6211,17 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_enableContentInspect';
   }
 
-  adjustCustomAudioPublishVolume(sourceId: number, volume: number): number {
+  adjustCustomAudioPublishVolume(trackId: number, volume: number): number {
     const apiType = this.getApiTypeFromAdjustCustomAudioPublishVolume(
-      sourceId,
+      trackId,
       volume
     );
     const jsonParams = {
-      sourceId: sourceId,
+      trackId: trackId,
       volume: volume,
       toJSON: () => {
         return {
-          sourceId: sourceId,
+          trackId: trackId,
           volume: volume,
         };
       },
@@ -6271,23 +6231,23 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromAdjustCustomAudioPublishVolume(
-    sourceId: number,
+    trackId: number,
     volume: number
   ): string {
     return 'RtcEngine_adjustCustomAudioPublishVolume';
   }
 
-  adjustCustomAudioPlayoutVolume(sourceId: number, volume: number): number {
+  adjustCustomAudioPlayoutVolume(trackId: number, volume: number): number {
     const apiType = this.getApiTypeFromAdjustCustomAudioPlayoutVolume(
-      sourceId,
+      trackId,
       volume
     );
     const jsonParams = {
-      sourceId: sourceId,
+      trackId: trackId,
       volume: volume,
       toJSON: () => {
         return {
-          sourceId: sourceId,
+          trackId: trackId,
           volume: volume,
         };
       },
@@ -6297,7 +6257,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromAdjustCustomAudioPlayoutVolume(
-    sourceId: number,
+    trackId: number,
     volume: number
   ): string {
     return 'RtcEngine_adjustCustomAudioPlayoutVolume';
@@ -6494,17 +6454,6 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromEnableInstantMediaRendering(): string {
     return 'RtcEngine_enableInstantMediaRendering';
-  }
-
-  getNtpTimeInMs(): number {
-    const apiType = this.getApiTypeFromGetNtpTimeInMs();
-    const jsonParams = {};
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromGetNtpTimeInMs(): string {
-    return 'RtcEngine_getNtpTimeInMs';
   }
 
   getNtpWallTimeInMs(): number {
@@ -6727,3 +6676,5 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_getNativeHandle';
   }
 }
+
+import { callIrisApi } from '../internal/IrisApiEngine';

@@ -56,6 +56,9 @@ export class RendererManager {
    */
   defaultRenderConfig: RendererVideoConfig;
 
+  /**
+   * @ignore
+   */
   constructor() {
     this.renderFps = 10;
     this.renderers = new Map();
@@ -71,6 +74,9 @@ export class RendererManager {
     };
   }
 
+  /**
+   * @ignore
+   */
   setRenderMode(mode: RENDER_MODE) {
     this.renderMode = mode;
     logInfo(
@@ -214,9 +220,7 @@ export class RendererManager {
   }
 
   /**
-   * Destroys a video renderer object.
-   *
-   * @param view The HTMLElement object to be destroyed.
+   * @ignore
    */
   public destroyRendererByView(view: Element): void {
     const renders = this.renderers;
@@ -291,19 +295,16 @@ export class RendererManager {
     renderMap.clear();
   }
 
+  /**
+   * @ignore
+   */
   clear(): void {
     this.stopRender();
     this.removeAllRenderer();
   }
 
   /**
-   * Enables/Disables the local video capture.
-   * This method disables or re-enables the local video capture, and does not affect receiving the remote video stream.After calling enableVideo , the local video capture is enabled by default. You can call enableLocalVideo (false) to disable the local video capture. If you want to re-enable the local video capture, call enableLocalVideo(true).After the local video capturer is successfully disabled or re-enabled, the SDK triggers the onRemoteVideoStateChanged callback on the remote client.You can call this method either before or after joining a channel.This method enables the internal engine and is valid after leaving the channel.
-   *
-   * @param enabled Whether to enable the local video capture.true: (Default) Enable the local video capture.false: Disable the local video capture. Once the local video is disabled, the remote users cannot receive the video stream of the local user, while the local user can still receive the video streams of remote users. When set to false, this method does not require a local camera.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
+   * @ignore
    */
   public enableRender(enabled = true): void {
     if (enabled && this.isRendering) {
@@ -492,6 +493,9 @@ export class RendererManager {
     ) => void
   ): RenderMap {
     const renders = this.renderers;
+    /**
+     * @ignore
+     */
     renders.forEach((channelMap, videoSourceType) => {
       channelMap.forEach((uidMap, channelId) => {
         uidMap.forEach((renderConfig, uid) => {
@@ -541,6 +545,9 @@ export class RendererManager {
     const { videoSourceType, uid, channelId } = config;
     const emptyRenderConfig = {
       renders: [],
+      /**
+       * @ignore
+       */
       shareVideoFrame: this.resizeShareVideoFrame(
         videoSourceType,
         channelId,
@@ -556,11 +563,17 @@ export class RendererManager {
       renderers.set(videoSourceType, emptyChannelMap);
       return emptyUidMap;
     }
+    /**
+     * @ignore
+     */
     const channelMap = videoSourceMap.get(channelId);
     if (!channelMap) {
       videoSourceMap.set(channelId, emptyUidMap);
       return emptyUidMap;
     }
+    /**
+     * @ignore
+     */
     const renderConfig = channelMap?.get(uid);
     if (!renderConfig) {
       channelMap?.set(uid, emptyRenderConfig);
