@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "4.1.1-build.3-dev.2",
+  "version": "4.1.1-build.3-dev.3",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk",
   "types": "types/AgoraSdk.d.ts",
@@ -76,7 +76,7 @@
     "typescript": "^4.5.2"
   },
   "engines": {
-    "node": ">= 16.0.0"
+    "node": ">= 14.0.0"
   },
   "packageManager": "^yarn@1.22.15",
   "commitlint": {
