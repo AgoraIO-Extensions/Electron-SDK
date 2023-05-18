@@ -122,7 +122,6 @@ if %example_sdk_mode% == 1 (
 
 if %isBuildDemo% == true (
   echo isBuildDemo: %isBuildDemo%
-  set https_proxy=http://10.80.1.174:1080
   call powershell.exe -executionpolicy remotesigned -File ci\packager-win.ps1 %arch% %example_sdk_mode% %example_electron_version%
   @REM electronDemo.zip
   @REM 执行上传到artifactory

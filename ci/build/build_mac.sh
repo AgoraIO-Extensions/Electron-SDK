@@ -117,7 +117,7 @@ fi
 
 if [ "$isBuildDemo" = true ]
 then
-  https_proxy=http://10.80.1.174:1080 sh /tmp/jenkins/Electron-SDK/ci/packager-mac.sh $example_sdk_mode $example_electron_version
+  sh /tmp/jenkins/Electron-SDK/ci/packager-mac.sh $example_sdk_mode $example_electron_version
   # electronDemo.zip
   # 执行上传到artifactory
   echo 执行上传electronDemo.zip到artifactory
