@@ -1,4 +1,9 @@
 name: CI
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
@@ -24,9 +29,25 @@ jobs:
       - name: Typecheck files
         run: |
           set +e
-          yarn install --cwd example --frozen-lockfile
+          yarn example install --frozen-lockfile
           set -e
           yarn typecheck
+
+  test:
+    strategy:
+      matrix:
+        runner: [ windows, macos ]
+    runs-on: ${{ matrix.runner }}-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Build
+        run: |
+          yarn totalBuild
 
   build:
     runs-on: ubuntu-latest
