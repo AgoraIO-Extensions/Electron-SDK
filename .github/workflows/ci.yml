@@ -57,7 +57,7 @@ jobs:
       - name: Jest
         run: yarn test
 
-  build-${{ matrix.runner }}:
+  build-os:
     strategy:
       matrix:
         runner: [ windows, macos ]
