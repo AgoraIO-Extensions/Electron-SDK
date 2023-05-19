@@ -55,7 +55,9 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Jest
-        run: yarn test
+        run: |
+          echo > build/Release/agora_node_ext.node
+          yarn test
 
   build-os:
     strategy:
