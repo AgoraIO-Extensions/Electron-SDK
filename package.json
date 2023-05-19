@@ -10,10 +10,8 @@
     "ts",
     "types",
     "scripts",
-    "gulpfile.*",
-    "agora_node_ext",
-    "common",
-    "extra"
+    "gulpfile.js",
+    "!**/__tests__"
   ],
   "scripts": {
     "totalBuild": "cross-env-shell gulp totalBuild \\\"--INIT_CWD=$INIT_CWD\\\"",
@@ -59,6 +57,7 @@
     "@commitlint/config-conventional": "^17.0.2",
     "@evilmartians/lefthook": "^1.2.2",
     "@release-it/conventional-changelog": "^5.0.0",
+    "@types/jest": "^28.1.2",
     "@types/json-bigint": "^1.0.1",
     "@types/lodash.isequal": "^4.5.6",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
@@ -69,10 +68,12 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-auto-import": "^0.1.1",
     "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jest": "^26.9.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "gulp-zip": "^5.1.0",
+    "jest": "^28.1.1",
     "patch-package": "^6.5.0",
     "prettier": "^2.0.5",
     "release-it": "^15.0.0",
