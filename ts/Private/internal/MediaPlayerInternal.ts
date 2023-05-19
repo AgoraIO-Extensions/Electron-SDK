@@ -14,16 +14,6 @@ import { IMediaPlayerVideoFrameObserver } from '../IAgoraMediaPlayer';
 import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
 import { IMediaPlayerEvent } from '../extension/IAgoraMediaPlayerExtension';
 
-import {
-  processIAudioPcmFrameSink,
-  processIAudioSpectrumObserver,
-} from '../impl/AgoraMediaBaseImpl';
-import {
-  IMediaPlayerImpl,
-  processIMediaPlayerVideoFrameObserver,
-} from '../impl/IAgoraMediaPlayerImpl';
-import { processIMediaPlayerSourceObserver } from '../impl/IAgoraMediaPlayerSourceImpl';
-
 import AgoraMediaBaseTI from '../ti/AgoraMediaBase-ti';
 import IAgoraMediaPlayerTI from '../ti/IAgoraMediaPlayer-ti';
 import IAgoraMediaPlayerSourceTI from '../ti/IAgoraMediaPlayerSource-ti';
@@ -33,7 +23,11 @@ const checkers = createCheckers(
   IAgoraMediaPlayerSourceTI
 );
 
-import { DeviceEventEmitter, EVENT_TYPE } from './IrisApiEngine';
+import {
+  DeviceEventEmitter,
+  EVENT_TYPE,
+  EventProcessor,
+} from './IrisApiEngine';
 
 export class MediaPlayerInternal extends IMediaPlayerImpl {
   static _source_observers: Map<number, IMediaPlayerSourceObserver[]> = new Map<
@@ -125,41 +119,29 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     listener: IMediaPlayerEvent[EventType]
   ): void {
     this._addListenerPreCheck(eventType);
-    const callback = (...data: any[]) => {
-      if (data[0] !== EVENT_TYPE.IMediaPlayer) {
+    const callback = (eventProcessor: EventProcessor<any>, data: any) => {
+      if (eventProcessor.type(data) !== EVENT_TYPE.IMediaPlayer) {
         return;
       }
-      if (data[1].playerId === this._mediaPlayerId) {
-        processIMediaPlayerSourceObserver(
-          { [eventType]: listener },
-          eventType,
-          data[1]
-        );
-        processIAudioPcmFrameSink(
-          { [eventType]: listener },
-          eventType,
-          data[1]
-        );
-        processIMediaPlayerVideoFrameObserver(
-          { [eventType]: listener },
-          eventType,
-          data[1]
-        );
-        processIAudioSpectrumObserver(
-          { [eventType]: listener },
-          eventType,
-          data[1]
-        );
+      if (data.playerId !== this._mediaPlayerId) {
+        return;
       }
+      eventProcessor.func.map((it) => {
+        it({ [eventType]: listener }, eventType, data);
+      });
     };
+    listener!.prototype.callback = callback;
     DeviceEventEmitter.addListener(eventType, callback);
   }
 
   removeListener<EventType extends keyof IMediaPlayerEvent>(
     eventType: EventType,
-    listener: IMediaPlayerEvent[EventType]
+    listener?: IMediaPlayerEvent[EventType]
   ) {
-    DeviceEventEmitter.removeListener(eventType);
+    DeviceEventEmitter.removeListener(
+      eventType,
+      listener?.prototype.callback ?? listener
+    );
   }
 
   removeAllListeners<EventType extends keyof IMediaPlayerEvent>(
@@ -348,3 +330,5 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     );
   }
 }
+
+import { IMediaPlayerImpl } from '../impl/IAgoraMediaPlayerImpl';

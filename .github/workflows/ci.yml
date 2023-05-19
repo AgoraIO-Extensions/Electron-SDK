@@ -33,7 +33,31 @@ jobs:
           set -e
           yarn typecheck
 
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Build package
+        run: yarn prepack
+
   test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Jest
+        run: yarn test
+
+  build-${{ matrix.runner }}:
     strategy:
       matrix:
         runner: [ windows, macos ]
@@ -48,15 +72,3 @@ jobs:
       - name: Build
         run: |
           yarn totalBuild
-
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup
-        uses: ./.github/actions/setup
-
-      - name: Build package
-        run: yarn prepack

@@ -29,19 +29,6 @@
   "overrides": [
     {
       "files": [
-        "*.js"
-      ],
-      "parser": "@babel/eslint-parser",
-      "plugins": [
-        "ft-flow"
-      ],
-      "rules": {
-        "ft-flow/define-flow-type": 1,
-        "ft-flow/use-flow-type": 1
-      }
-    },
-    {
-      "files": [
         "*.ts",
         "*.tsx"
       ],
@@ -51,7 +38,7 @@
       ],
       "rules": {
         "@typescript-eslint/no-unused-vars": [
-          "error",
+          "warn",
           {
             "argsIgnorePattern": "^_",
             "destructuredArrayIgnorePattern": "^_"
@@ -132,6 +119,14 @@
         "pathGroups": [
           {
             "pattern": "../internal/IrisApiEngine",
+            "group": "unknown"
+          },
+          {
+            "pattern": "../impl/**",
+            "group": "unknown"
+          },
+          {
+            "pattern": "./Private/impl/**",
             "group": "unknown"
           }
         ],

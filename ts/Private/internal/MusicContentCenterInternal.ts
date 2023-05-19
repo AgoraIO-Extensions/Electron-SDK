@@ -4,20 +4,18 @@ import {
   IMusicContentCenterEventHandler,
   IMusicPlayer,
   Music,
+  MusicCollection,
 } from '../IAgoraMusicContentCenter';
 import { IMusicContentCenterEvent } from '../extension/IAgoraMusicContentCenterExtension';
-
-import {
-  IMusicContentCenterImpl,
-  IMusicPlayerImpl,
-  MusicCollectionImpl,
-  processIMusicContentCenterEventHandler,
-} from '../impl/IAgoraMusicContentCenterImpl';
 
 import IAgoraMusicContentCenterTI from '../ti/IAgoraMusicContentCenter-ti';
 const checkers = createCheckers(IAgoraMusicContentCenterTI);
 
-import { DeviceEventEmitter, EVENT_TYPE } from './IrisApiEngine';
+import {
+  DeviceEventEmitter,
+  EVENT_TYPE,
+  EventProcessor,
+} from './IrisApiEngine';
 import { MediaPlayerInternal } from './MediaPlayerInternal';
 
 export class MusicContentCenterInternal extends IMusicContentCenterImpl {
@@ -43,24 +41,26 @@ export class MusicContentCenterInternal extends IMusicContentCenterImpl {
     listener: IMusicContentCenterEvent[EventType]
   ): void {
     this._addListenerPreCheck(eventType);
-    const callback = (...data: any[]) => {
-      if (data[0] !== EVENT_TYPE.IMusicContentCenter) {
+    const callback = (eventProcessor: EventProcessor<any>, data: any) => {
+      if (eventProcessor.type(data) !== EVENT_TYPE.IMusicContentCenter) {
         return;
       }
-      processIMusicContentCenterEventHandler(
-        { [eventType]: listener },
-        eventType,
-        data[1]
-      );
+      eventProcessor.func.map((it) => {
+        it({ [eventType]: listener }, eventType, data);
+      });
     };
+    listener!.prototype.callback = callback;
     DeviceEventEmitter.addListener(eventType, callback);
   }
 
   removeListener<EventType extends keyof IMusicContentCenterEvent>(
     eventType: EventType,
-    listener: IMusicContentCenterEvent[EventType]
+    listener?: IMusicContentCenterEvent[EventType]
   ) {
-    DeviceEventEmitter.removeListener(eventType, listener);
+    DeviceEventEmitter.removeListener(
+      eventType,
+      listener?.prototype.callback ?? listener
+    );
   }
 
   removeAllListeners<EventType extends keyof IMusicContentCenterEvent>(
@@ -136,39 +136,74 @@ export class MusicPlayerInternal
   }
 }
 
-interface _MusicCollection {
+class _MusicCollection extends MusicCollection {
   count: number;
   music: Music[];
   page: number;
   pageSize: number;
   total: number;
+
+  constructor(collection: any | _MusicCollection) {
+    super();
+    this.count = collection.count;
+    this.music = collection.music;
+    this.page = collection.page;
+    this.pageSize = collection.pageSize;
+    this.total = collection.total;
+  }
+
+  getCount(): number {
+    return this.count;
+  }
+
+  getMusic(index: number): Music {
+    return this.music[index] ?? {};
+  }
+
+  getPage(): number {
+    return this.page;
+  }
+
+  getPageSize(): number {
+    return this.pageSize;
+  }
+
+  getTotal(): number {
+    return this.total;
+  }
 }
 
 export class MusicCollectionInternal extends MusicCollectionImpl {
-  private readonly _musicCollection: _MusicCollection;
+  private readonly _musicCollection: MusicCollection;
 
-  constructor(musicCollection: _MusicCollection) {
+  constructor(musicCollection: MusicCollection) {
     super();
-    this._musicCollection = musicCollection;
+    this._musicCollection = new _MusicCollection(musicCollection);
   }
 
   override getCount(): number {
-    return this._musicCollection.count;
+    return this._musicCollection.getCount();
   }
 
   override getMusic(index: number): Music {
-    return this._musicCollection.music[index] ?? {};
+    return this._musicCollection.getMusic(index);
   }
 
   override getPage(): number {
-    return this._musicCollection.page;
+    return this._musicCollection.getPage();
   }
 
   override getPageSize(): number {
-    return this._musicCollection.pageSize;
+    return this._musicCollection.getPageSize();
   }
 
   override getTotal(): number {
-    return this._musicCollection.total;
+    return this._musicCollection.getTotal();
   }
 }
+
+import {
+  IMusicContentCenterImpl,
+  IMusicPlayerImpl,
+  MusicCollectionImpl,
+} from '../impl/IAgoraMusicContentCenterImpl';

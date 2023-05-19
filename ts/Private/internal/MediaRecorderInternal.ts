@@ -5,13 +5,14 @@ import { IMediaRecorderObserver } from '../AgoraMediaBase';
 
 import { IMediaRecorderEvent } from '../extension/IAgoraMediaRecorderExtension';
 
-import { processIMediaRecorderObserver } from '../impl/AgoraMediaBaseImpl';
-import { IMediaRecorderImpl } from '../impl/IAgoraMediaRecorderImpl';
-
 import AgoraMediaBaseTI from '../ti/AgoraMediaBase-ti';
 const checkers = createCheckers(AgoraMediaBaseTI);
 
-import { DeviceEventEmitter, EVENT_TYPE } from './IrisApiEngine';
+import {
+  DeviceEventEmitter,
+  EVENT_TYPE,
+  EventProcessor,
+} from './IrisApiEngine';
 
 export class MediaRecorderInternal extends IMediaRecorderImpl {
   static _observers: Map<string, IMediaRecorderObserver> = new Map<
@@ -65,24 +66,29 @@ export class MediaRecorderInternal extends IMediaRecorderImpl {
     listener: IMediaRecorderEvent[EventType]
   ): void {
     this._addListenerPreCheck(eventType);
-    const callback = (...data: any[]) => {
-      if (data[0] !== EVENT_TYPE.IMediaRecorder) {
+    const callback = (eventProcessor: EventProcessor<any>, data: any) => {
+      if (eventProcessor.type(data) !== EVENT_TYPE.IMediaRecorder) {
         return;
       }
-      processIMediaRecorderObserver(
-        { [eventType]: listener },
-        eventType,
-        data[1]
-      );
+      if (data.nativeHandle !== this._nativeHandle) {
+        return;
+      }
+      eventProcessor.func.map((it) => {
+        it({ [eventType]: listener }, eventType, data);
+      });
     };
+    listener!.prototype.callback = callback;
     DeviceEventEmitter.addListener(eventType, callback);
   }
 
   removeListener<EventType extends keyof IMediaRecorderEvent>(
     eventType: EventType,
-    listener: IMediaRecorderEvent[EventType]
+    listener?: IMediaRecorderEvent[EventType]
   ) {
-    DeviceEventEmitter.removeListener(eventType, listener);
+    DeviceEventEmitter.removeListener(
+      eventType,
+      listener?.prototype.callback ?? listener
+    );
   }
 
   removeAllListeners<EventType extends keyof IMediaRecorderEvent>(
@@ -91,3 +97,5 @@ export class MediaRecorderInternal extends IMediaRecorderImpl {
     DeviceEventEmitter.removeAllListeners(eventType);
   }
 }
+
+import { IMediaRecorderImpl } from '../impl/IAgoraMediaRecorderImpl';

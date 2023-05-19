@@ -8,17 +8,14 @@ import {
 
 import { IMediaEngineEvent } from '../extension/IAgoraMediaEngineExtension';
 
-import {
-  processIAudioFrameObserver,
-  processIVideoEncodedFrameObserver,
-  processIVideoFrameObserver,
-} from '../impl/AgoraMediaBaseImpl';
-import { IMediaEngineImpl } from '../impl/IAgoraMediaEngineImpl';
-
 import AgoraMediaBaseTI from '../ti/AgoraMediaBase-ti';
 const checkers = createCheckers(AgoraMediaBaseTI);
 
-import { DeviceEventEmitter, EVENT_TYPE } from './IrisApiEngine';
+import {
+  DeviceEventEmitter,
+  EVENT_TYPE,
+  EventProcessor,
+} from './IrisApiEngine';
 
 export class MediaEngineInternal extends IMediaEngineImpl {
   static _audio_frame_observers: IAudioFrameObserver[] = [];
@@ -132,26 +129,26 @@ export class MediaEngineInternal extends IMediaEngineImpl {
     listener: IMediaEngineEvent[EventType]
   ) {
     this._addListenerPreCheck(eventType);
-    const callback = (...data: any[]) => {
-      if (data[0] !== EVENT_TYPE.IMediaEngine) {
+    const callback = (eventProcessor: EventProcessor<any>, data: any) => {
+      if (eventProcessor.type(data) !== EVENT_TYPE.IMediaEngine) {
         return;
       }
-      processIAudioFrameObserver({ [eventType]: listener }, eventType, data[1]);
-      processIVideoFrameObserver({ [eventType]: listener }, eventType, data[1]);
-      processIVideoEncodedFrameObserver(
-        { [eventType]: listener },
-        eventType,
-        data[1]
-      );
+      eventProcessor.func.map((it) => {
+        it({ [eventType]: listener }, eventType, data);
+      });
     };
+    listener!.prototype.callback = callback;
     DeviceEventEmitter.addListener(eventType, callback);
   }
 
   removeListener<EventType extends keyof IMediaEngineEvent>(
     eventType: EventType,
-    listener: IMediaEngineEvent[EventType]
+    listener?: IMediaEngineEvent[EventType]
   ) {
-    DeviceEventEmitter.removeListener(eventType, listener);
+    DeviceEventEmitter.removeListener(
+      eventType,
+      listener?.prototype.callback ?? listener
+    );
   }
 
   removeAllListeners<EventType extends keyof IMediaEngineEvent>(
@@ -160,3 +157,5 @@ export class MediaEngineInternal extends IMediaEngineImpl {
     DeviceEventEmitter.removeAllListeners(eventType);
   }
 }
+
+import { IMediaEngineImpl } from '../impl/IAgoraMediaEngineImpl';
