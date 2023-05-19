@@ -56,6 +56,7 @@ jobs:
 
       - name: Jest
         run: |
+          mkdir -p build/Release
           echo > build/Release/agora_node_ext.node
           yarn test
 
