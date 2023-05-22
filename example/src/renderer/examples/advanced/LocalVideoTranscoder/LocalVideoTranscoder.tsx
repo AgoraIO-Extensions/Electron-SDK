@@ -224,7 +224,9 @@ export default class LocalVideoTranscoder
    * Step 3-4 (Optional): stopScreenCapture
    */
   stopScreenCapture = () => {
-    this.engine?.stopScreenCaptureBySourceType(VideoSourceType.VideoSourceScreenPrimary);
+    this.engine?.stopScreenCaptureBySourceType(
+      VideoSourceType.VideoSourceScreenPrimary
+    );
     this.setState({ startScreenCapture: false });
   };
 
