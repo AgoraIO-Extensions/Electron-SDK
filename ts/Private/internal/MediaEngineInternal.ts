@@ -136,7 +136,8 @@ export class MediaEngineInternal extends IMediaEngineImpl {
         it({ [eventType]: listener }, eventType, data);
       });
     };
-    listener!.prototype.callback = callback;
+    // @ts-ignore
+    listener!.agoraCallback = callback;
     DeviceEventEmitter.addListener(eventType, callback);
   }
 
@@ -146,7 +147,8 @@ export class MediaEngineInternal extends IMediaEngineImpl {
   ) {
     DeviceEventEmitter.removeListener(
       eventType,
-      listener?.prototype.callback ?? listener
+      // @ts-ignore
+      listener?.agoraCallback ?? listener
     );
   }
 

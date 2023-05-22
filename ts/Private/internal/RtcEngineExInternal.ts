@@ -90,8 +90,10 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
 
   override initialize(context: RtcEngineContext): number {
     if (AgoraEnv.webEnvReady) {
-      const { RendererManager } = require('../../Renderer/RendererManager');
-      AgoraEnv.AgoraRendererManager = new RendererManager();
+      if (AgoraEnv.AgoraRendererManager === undefined) {
+        const { RendererManager } = require('../../Renderer/RendererManager');
+        AgoraEnv.AgoraRendererManager = new RendererManager();
+      }
     }
     AgoraEnv.AgoraRendererManager?.enableRender();
     const ret = super.initialize(context);
@@ -195,7 +197,8 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
         it({ [eventType]: listener }, eventType, data);
       });
     };
-    listener!.prototype.callback = callback;
+    // @ts-ignore
+    listener!.agoraCallback = callback;
     DeviceEventEmitter.addListener(eventType, callback);
   }
 
@@ -205,7 +208,8 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   ) {
     DeviceEventEmitter.removeListener(
       eventType,
-      listener?.prototype.callback ?? listener
+      // @ts-ignore
+      listener?.agoraCallback ?? listener
     );
   }
 
