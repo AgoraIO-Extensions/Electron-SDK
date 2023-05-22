@@ -1,5 +1,7 @@
-import { Input, Row, Card, Form, Button, Checkbox } from 'antd';
 import { AgoraEnv } from 'agora-electron-sdk';
+import { Button, Card, Checkbox, Form, Input, Row } from 'antd';
+import React from 'react';
+
 import config from '../../../config/agora.config';
 
 console.log('config', config);
@@ -27,9 +29,8 @@ const onFinish = (values: any) => {
   config.channelId = values.channelId;
   config.token = values.token;
   config.uid = +values.uid;
-  config.pluginPath = values.pluginPath;
 
-  config.SDKLogPath = values.SDKLogPath;
+  config.logFilePath = values.SDKLogPath;
 
   config.enableSDKLogging = values.enableSDKDebugLogging;
   config.enableSDKDebugLogging = values.enableSDKLogging;
@@ -108,23 +109,11 @@ const AuthInfoScreen = () => {
               <Input />
             </Form.Item>
             <Form.Item
-              label="Plugin Path"
-              name="pluginPath"
-              rules={[
-                {
-                  required: false,
-                  message: 'Please input your plugin path!',
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
               label="Native SDK Log Path"
               name="SDKLogPath"
               rules={[
                 {
-                  required: true,
+                  required: false,
                   message: 'Please input log path',
                 },
               ]}

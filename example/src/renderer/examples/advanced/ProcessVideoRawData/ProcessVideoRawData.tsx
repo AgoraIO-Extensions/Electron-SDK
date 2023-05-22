@@ -1,22 +1,22 @@
-import React from 'react';
-import {
-  ChannelProfileType,
-  ClientRoleType,
-  createAgoraRtcEngine,
-  IRtcEngineEventHandler,
-} from 'agora-electron-sdk';
-import download from 'download';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import Config from '../../../config/agora.config';
+import {
+  ChannelProfileType,
+  ClientRoleType,
+  IRtcEngineEventHandler,
+  createAgoraRtcEngine,
+} from 'agora-electron-sdk';
+import download from 'download';
+import React from 'react';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
 import { AgoraButton } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 
 const ffi = require('ffi-napi');
 const Pointer = 'uint64';
@@ -67,7 +67,7 @@ export default class ProcessVideoRawData
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });

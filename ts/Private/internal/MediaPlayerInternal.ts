@@ -13,17 +13,8 @@ import {
   IMediaPlayerVideoFrameObserver,
 } from '../IAgoraMediaPlayer';
 import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
-
 import { IMediaPlayerEvent } from '../extension/IAgoraMediaPlayerExtension';
-
-import { processIAudioSpectrumObserver } from '../impl/AgoraMediaBaseImpl';
-import {
-  IMediaPlayerImpl,
-  processIMediaPlayerAudioFrameObserver,
-  processIMediaPlayerVideoFrameObserver,
-} from '../impl/IAgoraMediaPlayerImpl';
-import { processIMediaPlayerSourceObserver } from '../impl/IAgoraMediaPlayerSourceImpl';
-
+import { IMediaPlayerImpl } from '../impl/IAgoraMediaPlayerImpl';
 import AgoraMediaBaseTI from '../ti/AgoraMediaBase-ti';
 import IAgoraMediaPlayerTI from '../ti/IAgoraMediaPlayer-ti';
 import IAgoraMediaPlayerSourceTI from '../ti/IAgoraMediaPlayerSource-ti';
@@ -33,7 +24,11 @@ const checkers = createCheckers(
   IAgoraMediaPlayerSourceTI
 );
 
-import { DeviceEventEmitter, EVENT_TYPE } from './IrisApiEngine';
+import {
+  DeviceEventEmitter,
+  EVENT_TYPE,
+  EventProcessor,
+} from './IrisApiEngine';
 
 export class MediaPlayerInternal extends IMediaPlayerImpl {
   static _source_observers: Map<number, IMediaPlayerSourceObserver[]> = new Map<
@@ -123,41 +118,31 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     listener: IMediaPlayerEvent[EventType]
   ): void {
     this._addListenerPreCheck(eventType);
-    const callback = (...data: any[]) => {
-      if (data[0] !== EVENT_TYPE.IMediaPlayer) {
+    const callback = (eventProcessor: EventProcessor<any>, data: any) => {
+      if (eventProcessor.type(data) !== EVENT_TYPE.IMediaPlayer) {
         return;
       }
-      if (data[1].playerId === this._mediaPlayerId) {
-        processIMediaPlayerSourceObserver(
-          { [eventType]: listener },
-          eventType,
-          data[1]
-        );
-        processIMediaPlayerAudioFrameObserver(
-          { [eventType]: listener },
-          eventType,
-          data[1]
-        );
-        processIMediaPlayerVideoFrameObserver(
-          { [eventType]: listener },
-          eventType,
-          data[1]
-        );
-        processIAudioSpectrumObserver(
-          { [eventType]: listener },
-          eventType,
-          data[1]
-        );
+      if (data.playerId !== this._mediaPlayerId) {
+        return;
       }
+      eventProcessor.func.map((it) => {
+        it({ [eventType]: listener }, eventType, data);
+      });
     };
+    // @ts-ignore
+    listener!.agoraCallback = callback;
     DeviceEventEmitter.addListener(eventType, callback);
   }
 
   removeListener<EventType extends keyof IMediaPlayerEvent>(
     eventType: EventType,
-    listener: IMediaPlayerEvent[EventType]
+    listener?: IMediaPlayerEvent[EventType]
   ) {
-    DeviceEventEmitter.removeListener(eventType);
+    DeviceEventEmitter.removeListener(
+      eventType,
+      // @ts-ignore
+      listener?.agoraCallback ?? listener
+    );
   }
 
   removeAllListeners<EventType extends keyof IMediaPlayerEvent>(
@@ -166,11 +151,13 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     DeviceEventEmitter.removeAllListeners(eventType);
   }
 
-  getMediaPlayerId(): number {
+  override getMediaPlayerId(): number {
     return this._mediaPlayerId;
   }
 
-  registerPlayerSourceObserver(observer: IMediaPlayerSourceObserver): number {
+  override registerPlayerSourceObserver(
+    observer: IMediaPlayerSourceObserver
+  ): number {
     let observers = MediaPlayerInternal._source_observers.get(
       this._mediaPlayerId
     );
@@ -184,7 +171,9 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     return super.registerPlayerSourceObserver(observer);
   }
 
-  unregisterPlayerSourceObserver(observer: IMediaPlayerSourceObserver): number {
+  override unregisterPlayerSourceObserver(
+    observer: IMediaPlayerSourceObserver
+  ): number {
     let observers = MediaPlayerInternal._source_observers.get(
       this._mediaPlayerId
     );
@@ -196,7 +185,9 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     return super.unregisterPlayerSourceObserver(observer);
   }
 
-  registerAudioFrameObserver(observer: IMediaPlayerAudioFrameObserver): number {
+  override registerAudioFrameObserver(
+    observer: IMediaPlayerAudioFrameObserver
+  ): number {
     let observers = MediaPlayerInternal._audio_frame_observers.get(
       this._mediaPlayerId
     );
@@ -213,7 +204,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     return super.registerAudioFrameObserver(observer);
   }
 
-  unregisterAudioFrameObserver(
+  override unregisterAudioFrameObserver(
     observer: IMediaPlayerAudioFrameObserver
   ): number {
     let observers = MediaPlayerInternal._audio_frame_observers.get(
@@ -227,7 +218,9 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     return super.unregisterAudioFrameObserver(observer);
   }
 
-  registerVideoFrameObserver(observer: IMediaPlayerVideoFrameObserver): number {
+  override registerVideoFrameObserver(
+    observer: IMediaPlayerVideoFrameObserver
+  ): number {
     let observers = MediaPlayerInternal._video_frame_observers.get(
       this._mediaPlayerId
     );
@@ -244,7 +237,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     return super.registerVideoFrameObserver(observer);
   }
 
-  unregisterVideoFrameObserver(
+  override unregisterVideoFrameObserver(
     observer: IMediaPlayerVideoFrameObserver
   ): number {
     let observers = MediaPlayerInternal._video_frame_observers.get(
@@ -258,7 +251,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     return super.unregisterVideoFrameObserver(observer);
   }
 
-  registerMediaPlayerAudioSpectrumObserver(
+  override registerMediaPlayerAudioSpectrumObserver(
     observer: IAudioSpectrumObserver,
     intervalInMS: number
   ): number {
@@ -281,7 +274,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     );
   }
 
-  unregisterMediaPlayerAudioSpectrumObserver(
+  override unregisterMediaPlayerAudioSpectrumObserver(
     observer: IAudioSpectrumObserver
   ): number {
     let observers = MediaPlayerInternal._audio_spectrum_observers.get(
@@ -295,21 +288,21 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     return super.unregisterMediaPlayerAudioSpectrumObserver(observer);
   }
 
-  protected getApiTypeFromSetPlayerOptionInInt(
+  protected override getApiTypeFromSetPlayerOptionInInt(
     key: string,
     value: number
   ): string {
     return 'MediaPlayer_setPlayerOption';
   }
 
-  protected getApiTypeFromSetPlayerOptionInString(
+  protected override getApiTypeFromSetPlayerOptionInString(
     key: string,
     value: string
   ): string {
     return 'MediaPlayer_setPlayerOption2';
   }
 
-  setView(view: HTMLElement): number {
+  override setView(view: HTMLElement): number {
     logWarn('Also can use other api setupLocalVideo');
     return (
       AgoraEnv.AgoraRendererManager?.setupVideo({
@@ -320,7 +313,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     );
   }
 
-  setRenderMode(renderMode: RenderModeType): number {
+  override setRenderMode(renderMode: RenderModeType): number {
     logWarn(
       'Also can use other api setRenderOption or setRenderOptionByConfig'
     );

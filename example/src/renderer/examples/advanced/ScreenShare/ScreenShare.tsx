@@ -1,8 +1,6 @@
-import React from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   LocalVideoStreamError,
@@ -13,15 +11,17 @@ import {
   ScreenCaptureSourceInfo,
   UserOfflineReasonType,
   VideoSourceType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
+import React from 'react';
 import { SketchPicker } from 'react-color';
 
-import Config from '../../../config/agora.config';
-
+import { ScreenCaptureSourceType } from '../../../../../../ts/Private/IAgoraRtcEngine';
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
+import RtcSurfaceView from '../../../components/RtcSurfaceView';
 import {
   AgoraButton,
   AgoraDivider,
@@ -32,9 +32,9 @@ import {
   AgoraTextInput,
   AgoraView,
 } from '../../../components/ui';
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
-import { rgbImageBufferToBase64 } from '../../../utils/base64';
-import { ScreenCaptureSourceType } from '../../../../../../ts/Private/IAgoraRtcEngine';
+import Config from '../../../config/agora.config';
+
+import { thumbImageBufferToBase64 } from '../../../utils/base64';
 
 interface State extends BaseVideoComponentState {
   token2: string;
@@ -103,7 +103,7 @@ export default class ScreenShare
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
@@ -436,7 +436,7 @@ export default class ScreenShare
         />
         {targetSource ? (
           <AgoraImage
-            source={rgbImageBufferToBase64(targetSource.thumbImage)}
+            source={thumbImageBufferToBase64(targetSource.thumbImage)}
           />
         ) : undefined}
         <AgoraTextInput
@@ -574,7 +574,7 @@ export default class ScreenShare
             <AgoraDivider />
             <SketchPicker
               onChangeComplete={(color) => {
-                const { a, r, g, b } = color.rgb;
+                const { a = 1, r, g, b } = color.rgb;
                 const argbHex =
                   `${((a * 255) | (1 << 8)).toString(16).slice(1)}` +
                   `${(r | (1 << 8)).toString(16).slice(1)}` +

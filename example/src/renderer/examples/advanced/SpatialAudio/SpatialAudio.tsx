@@ -1,13 +1,11 @@
-import React from 'react';
 import {
   AudioScenarioType,
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React from 'react';
 
 import {
   BaseAudioComponentState,
@@ -20,6 +18,7 @@ import {
   AgoraSlider,
   AgoraSwitch,
 } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 import { arrayToItems } from '../../../utils';
 
 interface State extends BaseAudioComponentState {
@@ -69,7 +68,7 @@ export default class SpatialAudio
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
       audioScenario: AudioScenarioType.AudioScenarioGameStreaming,

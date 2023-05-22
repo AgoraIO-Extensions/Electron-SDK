@@ -1,4 +1,5 @@
-const { exec } = require('shelljs');
+const { exec, error } = require('shelljs');
+
 const getConfig = require('./getConfig');
 const logger = require('./logger');
 const { getOS } = require('./util');
@@ -28,6 +29,8 @@ const build = async (cb) => {
   scriptStr = `npm run ${scriptStr}`;
   logger.info(`Will to run: ${scriptStr}`);
   await exec(scriptStr, { silent: false });
+  const err = error();
+  if (err) throw err;
   cb();
 };
 

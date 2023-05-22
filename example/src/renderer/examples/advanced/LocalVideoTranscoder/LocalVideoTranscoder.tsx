@@ -1,4 +1,3 @@
-import React from 'react';
 import createAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
@@ -16,14 +15,14 @@ import createAgoraRtcEngine, {
   VideoDeviceInfo,
   VideoSourceType,
 } from 'agora-electron-sdk';
+import { Card, List } from 'antd';
+import React from 'react';
 
-import Config from '../../../config/agora.config';
-
-import { getResourcePath } from '../../../utils';
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
+import RtcSurfaceView from '../../../components/RtcSurfaceView';
 import {
   AgoraButton,
   AgoraDivider,
@@ -32,9 +31,11 @@ import {
   AgoraText,
   AgoraTextInput,
 } from '../../../components/ui';
-import { Card, List } from 'antd';
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
-import { rgbImageBufferToBase64 } from '../../../utils/base64';
+import Config from '../../../config/agora.config';
+
+import { getResourcePath } from '../../../utils';
+
+import { thumbImageBufferToBase64 } from '../../../utils/base64';
 
 interface State extends BaseVideoComponentState {
   videoDevices?: VideoDeviceInfo[];
@@ -91,7 +92,7 @@ export default class LocalVideoTranscoder
     this.engine.registerEventHandler(this);
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
@@ -106,7 +107,6 @@ export default class LocalVideoTranscoder
 
     this.enumerateDevices();
     this.getScreenCaptureSources();
-    (window as any).engine = this.engine;
   }
 
   /**
@@ -155,12 +155,20 @@ export default class LocalVideoTranscoder
 
   startCameraCapture = (deviceId: string) => {
     const type = this._getVideoSourceTypeCamera(deviceId);
+    if (type === undefined) {
+      this.error('type is invalid');
+      return;
+    }
     this.engine?.startCameraCapture(type, { deviceId });
   };
 
   stopCameraCapture = (deviceId: string) => {
     const type = this._getVideoSourceTypeCamera(deviceId);
-    this.engine?.stopScreenCapture(type);
+    if (type === undefined) {
+      this.error('type is invalid');
+      return;
+    }
+    this.engine?.stopCameraCapture(type);
   };
 
   /**
@@ -312,7 +320,7 @@ export default class LocalVideoTranscoder
     }
 
     if (imageUrl) {
-      const getImageType = (url) => {
+      const getImageType = (url: string): VideoSourceType | undefined => {
         if (url.endsWith('.png')) {
           return VideoSourceType.VideoSourceRtcImagePng;
         } else if (url.endsWith('.jepg') || url.endsWith('.jpg')) {
@@ -320,6 +328,7 @@ export default class LocalVideoTranscoder
         } else if (url.endsWith('.gif')) {
           return VideoSourceType.VideoSourceRtcImageGif;
         }
+        return undefined;
       };
       streams.push({
         sourceType: getImageType(imageUrl),
@@ -513,7 +522,7 @@ export default class LocalVideoTranscoder
         />
         {targetSource ? (
           <AgoraImage
-            source={rgbImageBufferToBase64(targetSource.thumbImage)}
+            source={thumbImageBufferToBase64(targetSource.thumbImage)}
           />
         ) : undefined}
         <AgoraButton

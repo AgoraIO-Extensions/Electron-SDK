@@ -1,10 +1,10 @@
+import { IAudioEncodedFrameObserver } from '../AgoraBase';
+import { IAudioSpectrumObserver } from '../AgoraMediaBase';
 import {
-  IRtcEngineEventHandler,
   IDirectCdnStreamingEventHandler,
   IMetadataObserver,
+  IRtcEngineEventHandler,
 } from '../IAgoraRtcEngine';
-import { IAudioSpectrumObserver } from '../AgoraMediaBase';
-import { IAudioEncodedFrameObserver } from '../AgoraBase';
 
 export type IRtcEngineEvent = IRtcEngineEventHandler &
   IDirectCdnStreamingEventHandler &
@@ -49,7 +49,7 @@ declare module '../IAgoraRtcEngine' {
      */
     removeListener<EventType extends keyof IRtcEngineEvent>(
       eventType: EventType,
-      listener: IRtcEngineEvent[EventType]
+      listener?: IRtcEngineEvent[EventType]
     ): void;
 
     /**

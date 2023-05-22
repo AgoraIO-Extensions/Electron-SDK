@@ -1,25 +1,25 @@
-import React from 'react';
 import {
   AudioMixingReasonType,
   AudioMixingStateType,
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
+import React from 'react';
 
-import Config from '../../../config/agora.config';
-
+import {
+  BaseAudioComponentState,
+  BaseComponent,
+} from '../../../components/BaseComponent';
 import {
   AgoraButton,
   AgoraDivider,
   AgoraSwitch,
   AgoraTextInput,
 } from '../../../components/ui';
-import {
-  BaseAudioComponentState,
-  BaseComponent,
-} from '../../../components/BaseComponent';
+import Config from '../../../config/agora.config';
+
 import { getResourcePath } from '../../../utils';
 
 interface State extends BaseAudioComponentState {
@@ -65,7 +65,7 @@ export default class AudioMixing
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });

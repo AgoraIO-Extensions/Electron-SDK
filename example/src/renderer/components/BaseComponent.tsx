@@ -1,4 +1,3 @@
-import React, { Component, ReactNode } from 'react';
 import {
   ErrorCodeType,
   IRtcEngine,
@@ -8,8 +7,11 @@ import {
   UserOfflineReasonType,
 } from 'agora-electron-sdk';
 import { Card, List } from 'antd';
+import React, { Component, ReactNode } from 'react';
 
 import AgoraStyle from '../examples/config/public.scss';
+
+import RtcSurfaceView from './RtcSurfaceView';
 import {
   AgoraButton,
   AgoraDivider,
@@ -17,7 +19,6 @@ import {
   AgoraTextInput,
   AgoraView,
 } from './ui';
-import RtcSurfaceView from './RtcSurfaceView';
 
 export interface BaseComponentState {
   appId: string;
@@ -51,14 +52,13 @@ export abstract class BaseComponent<
 {
   protected engine?: IRtcEngine;
 
-  protected constructor(props: P) {
+  constructor(props: P) {
     super(props);
     this.state = this.createState();
   }
 
   componentDidMount() {
     this.initRtcEngine();
-    // @ts-ignore
     window.agoraRtcEngine = this.engine;
   }
 

@@ -1,26 +1,25 @@
-import React from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   ExternalVideoSourceType,
   IRtcEngineEventHandler,
   IRtcEngineEx,
-  VideoBufferType,
-  VideoPixelFormat,
-  ScreenCaptureSourceInfo,
   RtcConnection,
   RtcStats,
+  ScreenCaptureSourceInfo,
+  VideoBufferType,
+  VideoPixelFormat,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React from 'react';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
 import { AgoraButton, AgoraDropdown, AgoraImage } from '../../../components/ui';
-import { rgbImageBufferToBase64 } from '../../../utils/base64';
+import Config from '../../../config/agora.config';
+import { thumbImageBufferToBase64 } from '../../../utils/base64';
 
 interface State extends BaseVideoComponentState {
   sources?: ScreenCaptureSourceInfo[];
@@ -61,7 +60,7 @@ export default class PushVideoFrame
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
@@ -188,7 +187,7 @@ export default class PushVideoFrame
         />
         {targetSource ? (
           <AgoraImage
-            source={rgbImageBufferToBase64(targetSource.thumbImage)}
+            source={thumbImageBufferToBase64(targetSource.thumbImage)}
           />
         ) : undefined}
       </>

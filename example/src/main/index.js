@@ -1,6 +1,7 @@
-import { app, BrowserWindow, systemPreferences } from 'electron';
 import path from 'path';
 import { format as formatUrl } from 'url';
+
+import { BrowserWindow, app, systemPreferences } from 'electron';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 app.allowRendererProcessReuse = false;

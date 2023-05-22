@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "4.1.1-build.3-dev.3",
+  "version": "4.1.1-build.3-dev.4",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk",
   "types": "types/AgoraSdk.d.ts",
@@ -10,10 +10,8 @@
     "ts",
     "types",
     "scripts",
-    "gulpfile.*",
-    "agora_node_ext",
-    "common",
-    "extra"
+    "gulpfile.js",
+    "!**/__tests__"
   ],
   "scripts": {
     "totalBuild": "cross-env-shell gulp totalBuild \\\"--INIT_CWD=$INIT_CWD\\\"",
@@ -56,9 +54,14 @@
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.21.5",
+    "@babel/preset-typescript": "^7.21.5",
     "@commitlint/config-conventional": "^17.0.2",
     "@evilmartians/lefthook": "^1.2.2",
     "@release-it/conventional-changelog": "^5.0.0",
+    "@types/jest": "^28.1.2",
+    "@types/json-bigint": "^1.0.1",
+    "@types/lodash.isequal": "^4.5.6",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
     "@typescript-eslint/parser": "^5.30.5",
     "cmake-js": "6.3.2",
@@ -66,9 +69,13 @@
     "eslint": "^8.4.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-auto-import": "^0.1.1",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jest": "^26.9.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "gulp-zip": "^5.1.0",
+    "jest": "^28.1.1",
     "patch-package": "^6.5.0",
     "prettier": "^2.0.5",
     "release-it": "^15.0.0",
@@ -79,6 +86,13 @@
     "node": ">= 14.0.0"
   },
   "packageManager": "^yarn@1.22.15",
+  "jest": {
+    "modulePathIgnorePatterns": [
+      "<rootDir>/example/node_modules",
+      "<rootDir>/js/",
+      "<rootDir>/types/"
+    ]
+  },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
@@ -102,101 +116,16 @@
       }
     }
   },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "es6": true,
-      "node": true,
-      "shared-node-browser": true
-    },
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "sourceType": "module"
-    },
-    "extends": [
-      "plugin:prettier/recommended",
-      "prettier"
-    ],
-    "plugins": [
-      "@typescript-eslint/eslint-plugin",
-      "auto-import",
-      "react",
-      "react-hooks"
-    ],
-    "settings": {
-      "react": {
-        "version": "detect"
-      }
-    },
-    "globals": {
-      "define": false,
-      "obj_attrib": false,
-      "info": false,
-      "NodeJS": false,
-      "window": false,
-      "alert": false,
-      "document": false,
-      "HTMLElement": false,
-      "HTMLDivElement": false,
-      "WebGL2RenderingContext": false,
-      "WebGLTexture": false,
-      "HTMLCanvasElement": false,
-      "ResizeObserver": false,
-      "name": false,
-      "Element": false
-    },
-    "rules": {
-      "prettier/prettier": [
-        "error",
-        {
-          "quoteProps": "consistent",
-          "singleQuote": true,
-          "tabWidth": 2,
-          "trailingComma": "es5",
-          "useTabs": false
-        }
-      ],
-      "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": "warn",
-      "auto-import/auto-import": [
-        "error",
-        {
-          "rootPath": "./ts/Private"
-        }
-      ]
-    }
-  },
-  "eslintIgnore": [
-    "node_modules/",
-    "build/",
-    "dist/",
-    "js/",
-    "types/",
-    "ts/Private/ti/"
-  ],
-  "prettier": {
-    "quoteProps": "consistent",
-    "singleQuote": true,
-    "tabWidth": 2,
-    "trailingComma": "es5",
-    "useTabs": false
-  },
   "dependencies": {
-    "bindings": "1.2.1",
     "buffer": "^6.0.3",
     "cross-env": "^7.0.3",
     "download": "^8.0.0",
     "eventemitter3": "^5.0.1",
-    "extract-zip": "^2.0.1",
-    "fs-extra": "^9.1.0",
+    "fs-extra": "^11.1.1",
     "gulp": "^4.0.2",
-    "gulp-cli": "^2.3.0",
-    "gulp-zip": "^5.1.0",
     "json-bigint": "^1.0.0",
-    "jsonfile": "^6.1.0",
     "lodash.isequal": "^4.5.0",
     "minimist": "^1.2.5",
-    "rimraf": "^3.0.0",
     "shelljs": "^0.8.4",
     "ts-interface-checker": "^1.0.2",
     "winston": "^3.3.3",

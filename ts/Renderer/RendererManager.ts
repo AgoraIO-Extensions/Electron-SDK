@@ -7,8 +7,8 @@ import {
   FormatRendererVideoConfig,
   RENDER_MODE,
   RenderConfig,
-  RendererVideoConfig,
   RenderMap,
+  RendererVideoConfig,
   ShareVideoFrame,
   UidMap,
   VideoFrameCacheConfig,
@@ -22,14 +22,16 @@ import {
   logInfo,
   logWarn,
 } from '../Utils';
-import GlRenderer from './GlRenderer';
+
 import { IRenderer, RenderFailCallback } from './IRenderer';
+import { IRendererManager } from './IRendererManager';
+import WebGLRenderer from './WebGLRenderer';
 import { YUVCanvasRenderer } from './YUVCanvasRenderer';
 
 /**
  * @ignore
  */
-export class RendererManager {
+export class RendererManager extends IRendererManager {
   /**
    * @ignore
    */
@@ -57,6 +59,7 @@ export class RendererManager {
   defaultRenderConfig: RendererVideoConfig;
 
   constructor() {
+    super();
     this.renderFps = 10;
     this.renderers = new Map();
     this.renderMode = this.checkWebglEnv()
@@ -71,7 +74,7 @@ export class RendererManager {
     };
   }
 
-  setRenderMode(mode: RENDER_MODE) {
+  public setRenderMode(mode: RENDER_MODE) {
     this.renderMode = mode;
     logInfo(
       'setRenderMode:  new render mode will take effect only if new view bind to render'
@@ -173,7 +176,7 @@ export class RendererManager {
     const render = this.bindHTMLElementToRender(formatConfig, view!);
 
     // render config
-    render.setRenderOption(rendererOptions);
+    render?.setRenderOption(rendererOptions);
 
     // enable iris videoFrame
     this.enableVideoFrameCache({
@@ -291,7 +294,7 @@ export class RendererManager {
     renderMap.clear();
   }
 
-  clear(): void {
+  public clear(): void {
     this.stopRender();
     this.removeAllRenderer();
   }
@@ -411,7 +414,7 @@ export class RendererManager {
     if (this.renderMode === RENDER_MODE.SOFTWARE) {
       return new YUVCanvasRenderer();
     } else {
-      return new GlRenderer(failCallback);
+      return new WebGLRenderer(failCallback);
     }
   }
 
@@ -446,7 +449,7 @@ export class RendererManager {
   private bindHTMLElementToRender(
     config: FormatRendererVideoConfig,
     view: HTMLElement
-  ): IRenderer {
+  ): IRenderer | undefined {
     this.ensureRendererConfig(config);
     const renders = this.getRenderers(config);
     const filterRenders =
@@ -597,14 +600,13 @@ export class RendererManager {
   /**
    * @ignore
    */
-  private updateVideoFrameCacheInMap(
+  public updateVideoFrameCacheInMap(
     config: VideoFrameCacheConfig,
     shareVideoFrame: ShareVideoFrame
   ): void {
     let rendererConfigMap = this.ensureRendererConfig(config);
     rendererConfigMap
-      ? // @ts-ignore
-        Object.assign(rendererConfigMap.get(config.uid), {
+      ? Object.assign(rendererConfigMap.get(config.uid) ?? {}, {
           shareVideoFrame,
         })
       : logWarn(

@@ -1,20 +1,20 @@
+import { GithubOutlined, SettingOutlined } from '@ant-design/icons';
+import { createAgoraRtcEngine } from 'agora-electron-sdk';
+import { Layout, Menu } from 'antd';
 import React from 'react';
 import {
-  BrowserRouter as Router,
   Link,
   Redirect,
   Route,
+  BrowserRouter as Router,
   Switch,
 } from 'react-router-dom';
-import { createAgoraRtcEngine } from 'agora-electron-sdk';
-import { GithubOutlined, SettingOutlined } from '@ant-design/icons';
-import { Layout, Menu } from 'antd';
 
 import './App.global.scss';
-import AuthInfoScreen from './examples/config/AuthInfoScreen';
-import basicRoute from './examples/basic';
-import hooksRoutes from './examples/hooks';
 import advanceRoute from './examples/advanced';
+import basicRoute from './examples/basic';
+import AuthInfoScreen from './examples/config/AuthInfoScreen';
+import hooksRoutes from './examples/hooks';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -30,7 +30,7 @@ class App extends React.Component {
     this.setState({ version: engine.getVersion() });
   }
 
-  onCollapse = (collapsed) => {
+  onCollapse = (collapsed: any) => {
     console.log(collapsed);
     this.setState({ collapsed });
   };

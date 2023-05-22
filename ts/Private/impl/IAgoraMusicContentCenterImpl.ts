@@ -1,16 +1,17 @@
-import { callIrisApi } from '../internal/IrisApiEngine';
 import {
+  IMusicContentCenter,
+  IMusicContentCenterEventHandler,
+  IMusicPlayer,
+  Music,
+  MusicCacheInfo,
   MusicChartCollection,
   MusicChartInfo,
   MusicCollection,
-  Music,
-  IMusicContentCenterEventHandler,
-  IMusicPlayer,
-  IMusicContentCenter,
   MusicContentCenterConfiguration,
-  MusicCacheInfo,
 } from '../IAgoraMusicContentCenter';
+
 import { IMediaPlayerImpl } from './IAgoraMediaPlayerImpl';
+
 // @ts-ignore
 export class MusicChartCollectionImpl implements MusicChartCollection {
   getCount(): number {
@@ -469,3 +470,5 @@ export class IMusicContentCenterImpl implements IMusicContentCenter {
     return 'MusicContentCenter_getLyric';
   }
 }
+
+import { callIrisApi } from '../internal/IrisApiEngine';
