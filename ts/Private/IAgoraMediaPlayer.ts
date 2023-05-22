@@ -13,6 +13,7 @@ import {
   PlayerStreamInfo,
 } from './AgoraMediaPlayerTypes';
 import { IMediaPlayerSourceObserver } from './IAgoraMediaPlayerSource';
+
 /**
  * This class provides media player functions and supports multiple instances.
  */
@@ -29,7 +30,7 @@ export abstract class IMediaPlayer {
    * Opens the media resource.
    * This method is called asynchronously.If you need to play a media file, make sure you receive the onPlayerSourceStateChanged callback reporting PlayerStateOpenCompleted before calling the play method to play the file.
    *
-   * @param url The path of the media file. Both local path and online path are supported.On the Android platform, if you need to open a file in URI format, use open .
+   * @param url The path of the media file. Both local path and online path are supported.
    * @param startPos The starting position (ms) for playback. Default value is 0.
    *
    * @returns
@@ -162,25 +163,24 @@ export abstract class IMediaPlayer {
   abstract setPlaybackSpeed(speed: number): number;
 
   /**
-   * @ignore
+   * Selects the audio track used during playback.
+   * After getting the track index of the audio file, you can call this method to specify any track to play. For example, if different tracks of a multi-track file store songs in different languages, you can call this method to set the playback language.You need to call this method after calling getStreamInfo to get the audio stream index value.
+   *
+   * @param index The index of the audio track.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
    */
   abstract selectAudioTrack(index: number): number;
 
   /**
-   * Sets the private options for the media player.
-   * The media player supports setting private options by key and value. Under normal circumstances, you do not need to know the private option settings, and just use the default option settings.Ensure that you call this method before open .If you need to push streams with SEI into the CDN, call setPlayerOptionInInt("sei_data_with_uuid", 1); otherwise, the loss of SEI might occurs.
-   *
-   * @param key The key of the option.
-   * @param value The value of the key.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
+   * @ignore
    */
   abstract setPlayerOptionInInt(key: string, value: number): number;
 
   /**
    * Sets the private options for the media player.
-   * The media player supports setting private options by key and value. Under normal circumstances, you do not need to know the private option settings, and just use the default option settings.Ensure that you call this method before open .If you need to push streams with SEI into the CDN, call setPlayerOptionInInt("sei_data_with_uuid", 1); otherwise, the loss of SEI might occurs.
+   * The media player supports setting private options by key and value. Under normal circumstances, you do not need to know the private option settings, and just use the default option settings.Ensure that you call this method before open .If you need to push streams with SEI into the CDN, call setPlayerOptionInString("sei_data_with_uuid", 1); otherwise, the loss of SEI might occurs.
    *
    * @param key The key of the option.
    * @param value The value of the key.
@@ -201,13 +201,7 @@ export abstract class IMediaPlayer {
   abstract selectInternalSubtitle(index: number): number;
 
   /**
-   * Stops pushing media streams to a CDN.
-   * Agora recommends that you use the server-side Media Push function. You can call this method to stop the live stream on the specified CDN address. This method can stop pushing media streams to only one CDN address at a time, so if you need to stop pushing streams to multiple addresses, call this method multiple times.After you call this method, the SDK triggers the onRtmpStreamingStateChanged callback on the local client to report the state of the streaming.
-   *
-   * @param url The address of Media Push. The format is RTMP or RTMPS. The character length cannot exceed 1024 bytes. Special characters such as Chinese characters are not supported.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
+   * @ignore
    */
   abstract setExternalSubtitle(url: string): number;
 
@@ -270,19 +264,25 @@ export abstract class IMediaPlayer {
    * Gets the volume of the media file for publishing.
    *
    * @returns
-   * The remote playback volume, if the method call succeeds.< 0: Failure.
+   * ≥ 0: The remote playback volume.< 0: Failure.
    */
   abstract getPublishSignalVolume(): number;
 
   /**
-   * Destroys a video renderer object.
+   * Sets the view.
    *
-   * @param view The HTMLElement object to be destroyed.
+   * @returns
+   * 0: Success.< 0: Failure.
    */
   abstract setView(view: any): number;
 
   /**
-   * @ignore
+   * Sets the render mode of the media player.
+   *
+   * @param renderMode Sets the render mode of the view. See RenderModeType .
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
    */
   abstract setRenderMode(renderMode: RenderModeType): number;
 
@@ -311,6 +311,56 @@ export abstract class IMediaPlayer {
   ): number;
 
   /**
+   * Registers an audio frame observer object.
+   *
+   * @param observer The audio frame observer, reporting the reception of each audio frame. See IAudioPcmFrameSink .
+   * @param mode The use mode of the audio frame. See RawAudioFrameOpModeType .
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
+  abstract registerAudioFrameObserver(
+    observer: IMediaPlayerAudioFrameObserver
+  ): number;
+
+  /**
+   * Unregisters an audio frame observer.
+   *
+   * @param observer The audio observer. See IAudioPcmFrameSink .
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
+  abstract unregisterAudioFrameObserver(
+    observer: IMediaPlayerAudioFrameObserver
+  ): number;
+
+  /**
+   * Registers a video frame observer object.
+   * You need to implement the IMediaPlayerVideoFrameObserver class in this method and register callbacks according to your scenarios. After you successfully register the video frame observer, the SDK triggers the registered callbacks each time a video frame is received.
+   *
+   * @param observer The video observer, reporting the reception of each video frame. See IMediaPlayerVideoFrameObserver .
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
+  abstract registerVideoFrameObserver(
+    observer: IMediaPlayerVideoFrameObserver
+  ): number;
+
+  /**
+   * Unregisters the video frame observer.
+   *
+   * @param observer The video observer, reporting the reception of each video frame. See IMediaPlayerVideoFrameObserver .
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
+  abstract unregisterVideoFrameObserver(
+    observer: IMediaPlayerVideoFrameObserver
+  ): number;
+
+  /**
    * @ignore
    */
   abstract registerMediaPlayerAudioSpectrumObserver(
@@ -319,12 +369,7 @@ export abstract class IMediaPlayer {
   ): number;
 
   /**
-   * Unregisters the encoded audio frame observer.
-   *
-   * @param observer The encoded audio observer. See IAudioEncodedFrameObserver .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
+   * @ignore
    */
   abstract unregisterMediaPlayerAudioSpectrumObserver(
     observer: IAudioSpectrumObserver
@@ -347,7 +392,10 @@ export abstract class IMediaPlayer {
   abstract getPlayerSdkVersion(): string;
 
   /**
-   * @ignore
+   * Gets the path of the media resource being played.
+   *
+   * @returns
+   * The path of the media resource being played.
    */
   abstract getPlaySrc(): string;
 
@@ -450,56 +498,6 @@ export abstract class IMediaPlayer {
    * @ignore
    */
   abstract setAudioPlaybackDelay(delayMs: number): number;
-
-  /**
-   * Registers an audio frame observer object.
-   * You need to implement the IMediaPlayerAudioFrameObserver class in this method and register callbacks according to your scenarios. After you successfully register the video frame observer, the SDK triggers the registered callbacks each time a video frame is received.
-   *
-   * @param observer The audio frame observer, reporting the reception of each audio frame. See IMediaPlayerAudioFrameObserver .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract registerAudioFrameObserver(
-    observer: IMediaPlayerAudioFrameObserver
-  ): number;
-
-  /**
-   * Unregisters an audio observer.
-   *
-   * @param observer The audio observer. See IMediaPlayerAudioFrameObserver .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract unregisterAudioFrameObserver(
-    observer: IMediaPlayerAudioFrameObserver
-  ): number;
-
-  /**
-   * Registers a video frame observer object.
-   * You need to implement the IMediaPlayerVideoFrameObserver class in this method and register callbacks according to your scenarios. After you successfully register the video frame observer, the SDK triggers the registered callbacks each time a video frame is received.
-   *
-   * @param observer The video observer, reporting the reception of each video frame. See IMediaPlayerVideoFrameObserver .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract registerVideoFrameObserver(
-    observer: IMediaPlayerVideoFrameObserver
-  ): number;
-
-  /**
-   * Unregisters the video frame observer.
-   *
-   * @param observer The video observer, reporting the reception of each video frame. See IMediaPlayerVideoFrameObserver .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract unregisterVideoFrameObserver(
-    observer: IMediaPlayerVideoFrameObserver
-  ): number;
 }
 
 /**
@@ -520,8 +518,7 @@ export abstract class IMediaPlayerCacheManager {
    * You can call this method to delete a cached media file when the storage space for the cached files is about to reach its limit. After you call this method, the SDK deletes the cached media file that is least used.The cached media file currently being played will not be deleted.
    *
    * @returns
-   * 0: Success.
-   *  < 0: Failure. See MediaPlayerError .
+   * 0: Success.< 0: Failure. See MediaPlayerError .
    */
   abstract removeOldCache(): number;
 
@@ -532,8 +529,7 @@ export abstract class IMediaPlayerCacheManager {
    * @param uri The URI (Uniform Resource Identifier) of the media file to be deleted.
    *
    * @returns
-   * 0: Success.
-   *  < 0: Failure. See MediaPlayerError .
+   * 0: Success.< 0: Failure. See MediaPlayerError .
    */
   abstract removeCacheByUri(uri: string): number;
 
@@ -565,7 +561,8 @@ export abstract class IMediaPlayerCacheManager {
    * @param cacheSize The maximum size (bytes) of the aggregate storage space for cached media files. The default value is 1 GB.
    *
    * @returns
-   * 0: Success.< 0: Failure. See MediaPlayerError .
+   * 0: Success.
+   *  < 0: Failure. See MediaPlayerError .
    */
   abstract setMaxCacheFileSize(cacheSize: number): number;
 
@@ -624,10 +621,7 @@ export abstract class IMediaPlayerCacheManager {
  */
 export interface IMediaPlayerAudioFrameObserver {
   /**
-   * Occurs each time the player receives an audio frame.
-   * After registering the audio frame observer, the callback occurs every time the player receives an audio frame, reporting the detailed information of the audio frame.
-   *
-   * @param frame Audio frame information. See AudioPcmFrame .
+   * @ignore
    */
   onFrame?(frame: AudioPcmFrame): void;
 }
