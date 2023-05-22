@@ -12,7 +12,6 @@ import {
 
 import { IMediaPlayerImpl } from './IAgoraMediaPlayerImpl';
 
-import { callIrisApi } from '../internal/IrisApiEngine';
 // @ts-ignore
 export class MusicChartCollectionImpl implements MusicChartCollection {
   getCount(): number {
@@ -471,3 +470,5 @@ export class IMusicContentCenterImpl implements IMusicContentCenter {
     return 'MusicContentCenter_getLyric';
   }
 }
+
+import { callIrisApi } from '../internal/IrisApiEngine';

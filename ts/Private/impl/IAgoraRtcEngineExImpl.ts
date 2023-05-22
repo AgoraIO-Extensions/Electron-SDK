@@ -21,7 +21,6 @@ import { IRtcEngineEx, RtcConnection } from '../IAgoraRtcEngineEx';
 
 import { IRtcEngineImpl } from './IAgoraRtcEngineImpl';
 
-import { callIrisApi } from '../internal/IrisApiEngine';
 // @ts-ignore
 export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
   joinChannelEx(
@@ -1500,3 +1499,5 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     return 'RtcEngineEx_startMediaRenderingTracingEx';
   }
 }
+
+import { callIrisApi } from '../internal/IrisApiEngine';

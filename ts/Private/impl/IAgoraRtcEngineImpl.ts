@@ -93,7 +93,6 @@ import {
 import { ILocalSpatialAudioEngine } from '../IAgoraSpatialAudio';
 import { IAudioDeviceManager } from '../IAudioDeviceManager';
 
-import { callIrisApi } from '../internal/IrisApiEngine';
 export function processIRtcEngineEventHandler(
   handler: IRtcEngineEventHandler,
   event: string,
@@ -6728,3 +6727,5 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_getNativeHandle';
   }
 }
+
+import { callIrisApi } from '../internal/IrisApiEngine';
