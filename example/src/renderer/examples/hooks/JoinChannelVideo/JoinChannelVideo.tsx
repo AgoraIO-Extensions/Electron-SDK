@@ -93,126 +93,155 @@ export default function JoinChannelVideo() {
     engine.current.leaveChannel();
   };
 
-  useEffect(() => {
-    initRtcEngine().then(() => {
-      engine.current.addListener(
-        'onError',
-        (err: ErrorCodeType, msg: string) => {
-          console.info('onError', 'err', err, 'msg', msg);
-        }
-      );
+  const onError = useCallback((err: ErrorCodeType, msg: string) => {
+    console.info('onError', 'err', err, 'msg', msg);
+  }, []);
 
-      engine.current.addListener(
+  const onJoinChannelSuccess = useCallback(
+    (connection: RtcConnection, elapsed: number) => {
+      console.info(
         'onJoinChannelSuccess',
-        (connection: RtcConnection, elapsed: number) => {
-          console.info(
-            'onJoinChannelSuccess',
-            'connection',
-            connection,
-            'elapsed',
-            elapsed
-          );
-          setJoinChannelSuccess(true);
-        }
+        'connection',
+        connection,
+        'elapsed',
+        elapsed
       );
+      setJoinChannelSuccess(true);
+    },
+    []
+  );
 
-      engine.current.addListener(
-        'onLeaveChannel',
-        (connection: RtcConnection, stats: RtcStats) => {
-          console.info(
-            'onLeaveChannel',
-            'connection',
-            connection,
-            'stats',
-            stats
-          );
-          setJoinChannelSuccess(false);
-          setRemoteUsers([]);
-        }
-      );
+  const onLeaveChannel = useCallback(
+    (connection: RtcConnection, stats: RtcStats) => {
+      console.info('onLeaveChannel', 'connection', connection, 'stats', stats);
+      setJoinChannelSuccess(false);
+      setRemoteUsers([]);
+    },
+    []
+  );
 
-      engine.current.addListener(
+  const onUserJoined = useCallback(
+    (connection: RtcConnection, remoteUid: number, elapsed: number) => {
+      console.info(
         'onUserJoined',
-        (connection: RtcConnection, remoteUid: number, elapsed: number) => {
-          console.info(
-            'onUserJoined',
-            'connection',
-            connection,
-            'remoteUid',
-            remoteUid,
-            'elapsed',
-            elapsed
-          );
-          setRemoteUsers((r) => {
-            if (r === undefined) return [];
-            return [...r, remoteUid];
-          });
-        }
+        'connection',
+        connection,
+        'remoteUid',
+        remoteUid,
+        'elapsed',
+        elapsed
       );
+      setRemoteUsers((r) => {
+        if (r === undefined) return [];
+        return [...remoteUsers, remoteUid];
+      });
+    },
+    [remoteUsers]
+  );
 
-      engine.current.addListener(
+  const onUserOffline = useCallback(
+    (
+      connection: RtcConnection,
+      remoteUid: number,
+      reason: UserOfflineReasonType
+    ) => {
+      console.info(
         'onUserOffline',
-        (
-          connection: RtcConnection,
-          remoteUid: number,
-          reason: UserOfflineReasonType
-        ) => {
-          console.info(
-            'onUserOffline',
-            'connection',
-            connection,
-            'remoteUid',
-            remoteUid,
-            'reason',
-            reason
-          );
-          setRemoteUsers((r) => {
-            if (r === undefined) return [];
-            return r.filter((value) => value !== remoteUid);
-          });
-        }
+        'connection',
+        connection,
+        'remoteUid',
+        remoteUid,
+        'reason',
+        reason
       );
+      setRemoteUsers((r) => {
+        if (r === undefined) return [];
+        return remoteUsers.filter((value) => value !== remoteUid);
+      });
+    },
+    [remoteUsers]
+  );
 
-      engine.current.addListener(
+  const onVideoDeviceStateChanged = useCallback(
+    (deviceId: string, deviceType: number, deviceState: number) => {
+      console.info(
         'onVideoDeviceStateChanged',
-        (deviceId: string, deviceType: number, deviceState: number) => {
-          console.info(
-            'onVideoDeviceStateChanged',
-            'deviceId',
-            deviceId,
-            'deviceType',
-            deviceType,
-            'deviceState',
-            deviceState
-          );
-        }
+        'deviceId',
+        deviceId,
+        'deviceType',
+        deviceType,
+        'deviceState',
+        deviceState
       );
+    },
+    []
+  );
 
-      engine.current.addListener(
+  const onLocalVideoStateChanged = useCallback(
+    (
+      source: VideoSourceType,
+      state: LocalVideoStreamState,
+      error: LocalVideoStreamError
+    ) => {
+      console.info(
         'onLocalVideoStateChanged',
-        (
-          source: VideoSourceType,
-          state: LocalVideoStreamState,
-          error: LocalVideoStreamError
-        ) => {
-          console.info(
-            'onLocalVideoStateChanged',
-            'source',
-            source,
-            'state',
-            state,
-            'error',
-            error
-          );
-        }
+        'source',
+        source,
+        'state',
+        state,
+        'error',
+        error
       );
-    });
+    },
+    []
+  );
+
+  useEffect(() => {
+    initRtcEngine();
+  }, [initRtcEngine]);
+
+  useEffect(() => {
+    engine.current.addListener('onError', onError);
+    engine.current.addListener('onJoinChannelSuccess', onJoinChannelSuccess);
+    engine.current.addListener('onLeaveChannel', onLeaveChannel);
+    engine.current.addListener('onUserJoined', onUserJoined);
+    engine.current.addListener('onUserOffline', onUserOffline);
+    engine.current.addListener(
+      'onVideoDeviceStateChanged',
+      onVideoDeviceStateChanged
+    );
+    engine.current.addListener(
+      'onLocalVideoStateChanged',
+      onLocalVideoStateChanged
+    );
 
     const engineCopy = engine.current;
     return () => {
+      engineCopy.removeListener('onError', onError);
+      engineCopy.removeListener('onJoinChannelSuccess', onJoinChannelSuccess);
+      engineCopy.removeListener('onLeaveChannel', onLeaveChannel);
+      engineCopy.removeListener('onUserJoined', onUserJoined);
+      engineCopy.removeListener('onUserOffline', onUserOffline);
+      engineCopy.removeListener(
+        'onVideoDeviceStateChanged',
+        onVideoDeviceStateChanged
+      );
+      engineCopy.removeListener(
+        'onLocalVideoStateChanged',
+        onLocalVideoStateChanged
+      );
+      engineCopy.removeAllListeners();
       engineCopy.release();
     };
-  }, [initRtcEngine]);
+  }, [
+    onError,
+    onJoinChannelSuccess,
+    onLeaveChannel,
+    onLocalVideoStateChanged,
+    onUserJoined,
+    onUserOffline,
+    onVideoDeviceStateChanged,
+  ]);
 
   const configuration = renderConfiguration();
   return (
