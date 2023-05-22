@@ -45,7 +45,8 @@ import { RtcConnection } from '../IAgoraRtcEngineEx';
 import { ILocalSpatialAudioEngine } from '../IAgoraSpatialAudio';
 import { IAudioDeviceManager } from '../IAudioDeviceManager';
 import { IRtcEngineEvent } from '../extension/IAgoraRtcEngineExtension';
-
+import { IRtcEngineExImpl } from '../impl/IAgoraRtcEngineExImpl';
+import { IVideoDeviceManagerImpl } from '../impl/IAgoraRtcEngineImpl';
 import AgoraBaseTI from '../ti/AgoraBase-ti';
 import AgoraMediaBaseTI from '../ti/AgoraMediaBase-ti';
 import IAgoraRtcEngineTI from '../ti/IAgoraRtcEngine-ti';
@@ -687,6 +688,3 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     );
   }
 }
-
-import { IRtcEngineExImpl } from '../impl/IAgoraRtcEngineExImpl';
-import { IVideoDeviceManagerImpl } from '../impl/IAgoraRtcEngineImpl';

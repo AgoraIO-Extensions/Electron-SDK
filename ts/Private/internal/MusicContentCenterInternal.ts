@@ -7,7 +7,11 @@ import {
   MusicCollection,
 } from '../IAgoraMusicContentCenter';
 import { IMusicContentCenterEvent } from '../extension/IAgoraMusicContentCenterExtension';
-
+import {
+  IMusicContentCenterImpl,
+  IMusicPlayerImpl,
+  MusicCollectionImpl,
+} from '../impl/IAgoraMusicContentCenterImpl';
 import IAgoraMusicContentCenterTI from '../ti/IAgoraMusicContentCenter-ti';
 const checkers = createCheckers(IAgoraMusicContentCenterTI);
 
@@ -201,9 +205,3 @@ export class MusicCollectionInternal extends MusicCollectionImpl {
     return this._musicCollection.getTotal();
   }
 }
-
-import {
-  IMusicContentCenterImpl,
-  IMusicPlayerImpl,
-  MusicCollectionImpl,
-} from '../impl/IAgoraMusicContentCenterImpl';

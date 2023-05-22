@@ -1,4 +1,5 @@
 ﻿import { AudioDeviceInfo } from '../IAgoraRtcEngine';
+import { IAudioDeviceManagerImpl } from '../impl/IAudioDeviceManagerImpl';
 
 import { callIrisApi } from './IrisApiEngine';
 
@@ -43,5 +44,3 @@ export class AudioDeviceManagerInternal extends IAudioDeviceManagerImpl {
     };
   }
 }
-
-import { IAudioDeviceManagerImpl } from '../impl/IAudioDeviceManagerImpl';

@@ -3,9 +3,8 @@ import { createCheckers } from 'ts-interface-checker';
 import { ErrorCodeType } from '../AgoraBase';
 import { IMediaRecorderObserver } from '../AgoraMediaBase';
 import { RtcConnection } from '../IAgoraRtcEngineEx';
-
 import { IMediaRecorderEvent } from '../extension/IAgoraMediaRecorderExtension';
-
+import { IMediaRecorderImpl } from '../impl/IAgoraMediaRecorderImpl';
 import AgoraMediaBaseTI from '../ti/AgoraMediaBase-ti';
 const checkers = createCheckers(AgoraMediaBaseTI);
 
@@ -95,5 +94,3 @@ export class MediaRecorderInternal extends IMediaRecorderImpl {
     DeviceEventEmitter.removeAllListeners(eventType);
   }
 }
-
-import { IMediaRecorderImpl } from '../impl/IAgoraMediaRecorderImpl';

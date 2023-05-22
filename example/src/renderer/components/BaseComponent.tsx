@@ -52,14 +52,13 @@ export abstract class BaseComponent<
 {
   protected engine?: IRtcEngine;
 
-  protected constructor(props: P) {
+  constructor(props: P) {
     super(props);
     this.state = this.createState();
   }
 
   componentDidMount() {
     this.initRtcEngine();
-    // @ts-ignore
     window.agoraRtcEngine = this.engine;
   }
 

@@ -252,7 +252,7 @@ export default function JoinChannelVideo() {
               xxl: 2,
             }}
             dataSource={[0, ...remoteUsers]}
-            renderItem={renderVideo.bind(window)}
+            renderItem={renderVideo}
           />
         ) : undefined}
       </>

@@ -14,7 +14,7 @@ import {
 } from '../IAgoraMediaPlayer';
 import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
 import { IMediaPlayerEvent } from '../extension/IAgoraMediaPlayerExtension';
-
+import { IMediaPlayerImpl } from '../impl/IAgoraMediaPlayerImpl';
 import AgoraMediaBaseTI from '../ti/AgoraMediaBase-ti';
 import IAgoraMediaPlayerTI from '../ti/IAgoraMediaPlayer-ti';
 import IAgoraMediaPlayerSourceTI from '../ti/IAgoraMediaPlayerSource-ti';
@@ -330,5 +330,3 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     );
   }
 }
-
-import { IMediaPlayerImpl } from '../impl/IAgoraMediaPlayerImpl';
