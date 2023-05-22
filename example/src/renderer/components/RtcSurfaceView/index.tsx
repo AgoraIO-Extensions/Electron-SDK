@@ -1,15 +1,16 @@
-import { Component } from 'react';
 import {
-  createAgoraRtcEngine,
   IMediaPlayer,
   IRtcEngineEx,
   RtcConnection,
   VideoCanvas,
   VideoMirrorModeType,
   VideoSourceType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
+import React, { Component } from 'react';
 
 import { getRandomInt } from '../../utils';
+
 import styles from './index.scss';
 
 interface Props {
@@ -23,11 +24,11 @@ interface State {
 }
 
 class RtcSurfaceView extends Component<Props, State> {
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       isMirror:
-        props.mirrorMode === VideoMirrorModeType.VideoMirrorModeDisabled,
+        props.canvas.mirrorMode === VideoMirrorModeType.VideoMirrorModeDisabled,
       uniqueId: getRandomInt(),
     };
   }

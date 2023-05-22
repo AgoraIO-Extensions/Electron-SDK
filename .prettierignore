@@ -1,0 +1,6 @@
+**/node_modules/*
+build/
+**/dist/*
+js/
+types/
+ts/Private/ti/

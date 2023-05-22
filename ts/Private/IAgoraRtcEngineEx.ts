@@ -1,27 +1,27 @@
 import './extension/IAgoraRtcEngineExExtension';
 import {
-  IRtcEngine,
-  ChannelMediaOptions,
-  LeaveChannelOptions,
-} from './IAgoraRtcEngine';
-import {
-  VideoEncoderConfiguration,
-  VideoCanvas,
-  VideoStreamType,
-  VideoSubscriptionOptions,
-  SpatialAudioParams,
-  VideoMirrorModeType,
-  ConnectionStateType,
-  EncryptionConfig,
-  DataStreamConfig,
-  WatermarkOptions,
-  LiveTranscoding,
   ChannelMediaRelayConfiguration,
-  UserInfo,
+  ConnectionStateType,
+  DataStreamConfig,
+  EncryptionConfig,
+  LiveTranscoding,
   SimulcastStreamConfig,
   SimulcastStreamMode,
+  SpatialAudioParams,
+  UserInfo,
+  VideoCanvas,
+  VideoEncoderConfiguration,
+  VideoMirrorModeType,
+  VideoStreamType,
+  VideoSubscriptionOptions,
+  WatermarkOptions,
 } from './AgoraBase';
 import { RenderModeType } from './AgoraMediaBase';
+import {
+  ChannelMediaOptions,
+  IRtcEngine,
+  LeaveChannelOptions,
+} from './IAgoraRtcEngine';
 /**
  * Contains connection information.
  */

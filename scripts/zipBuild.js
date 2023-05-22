@@ -1,6 +1,7 @@
-const { getOS } = require('./util');
 const { exec } = require('shelljs');
+
 const logger = require('./logger');
+const { getOS } = require('./util');
 
 const zipBuild = async () => {
   const isMac = getOS() === 'mac';

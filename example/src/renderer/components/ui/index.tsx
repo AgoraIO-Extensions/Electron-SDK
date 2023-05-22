@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import { DownOutlined } from '@ant-design/icons';
 import {
   Button,
   ButtonProps,
-  DividerProps,
   Divider,
-  InputProps,
-  Input,
-  Slider,
-  SliderSingleProps,
-  SwitchProps,
-  Switch,
-  ImageProps,
-  Image,
+  DividerProps,
   Dropdown,
   DropdownProps,
+  Image,
+  ImageProps,
+  Input,
+  InputProps,
   Menu,
+  Slider,
+  SliderSingleProps,
+  Switch,
+  SwitchProps,
 } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
 
 export const AgoraView = (
   props: React.DetailedHTMLProps<
@@ -226,31 +226,31 @@ export const AgoraDropdown = (
             }))}
             selectedKeys={
               _value?.map
-                ? _value.map((v) => v.toString())
+                ? _value.map((v: any) => v.toString())
                 : [_value?.toString()]
             }
             onSelect={(info) => {
-              let key;
+              let key: any;
               if (typeof _value === 'number') {
                 key = +info.key;
               } else {
                 key = info.key;
               }
               const index = _items?.findIndex(({ value }) => {
-                return value === key;
+                return value == key;
               });
               setValue(key);
               props.onValueChange?.call(this, key, index ?? -1);
             }}
             onDeselect={(info) => {
-              let key;
+              let key: any;
               if (typeof _value === 'number') {
                 key = +info.key;
               } else {
                 key = info.key;
               }
               const index = _items?.findIndex(({ value }) => {
-                return value === key;
+                return value == key;
               });
               setValue(key);
               props.onValueChange?.call(this, key, index ?? -1);
@@ -262,14 +262,14 @@ export const AgoraDropdown = (
           {_value?.map
             ? _value
                 ?.map(
-                  (v) =>
+                  (v: any) =>
                     _items?.find((item) => {
-                      return v === item.value;
+                      return v == item.value;
                     })?.label
                 )
                 ?.toString()
             : _items?.find((item) => {
-                return _value === item.value;
+                return _value == item.value;
               })?.label}
           <DownOutlined />
         </Button>

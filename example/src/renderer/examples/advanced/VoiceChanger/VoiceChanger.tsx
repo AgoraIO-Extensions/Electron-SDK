@@ -1,22 +1,30 @@
-import React from 'react';
 import {
   AudioEffectPreset,
   AudioEqualizationBandFrequency,
   AudioReverbType,
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
   VoiceBeautifierPreset,
   VoiceConversionPreset,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React from 'react';
 
 import {
   BaseAudioComponentState,
   BaseComponent,
 } from '../../../components/BaseComponent';
+
+import {
+  AgoraButton,
+  AgoraDivider,
+  AgoraDropdown,
+  AgoraSlider,
+} from '../../../components/ui';
+import Config from '../../../config/agora.config';
+import { enumToItems } from '../../../utils';
+
 import {
   AudioEffectPresetParam1Limit,
   AudioEffectPresetParam2Limit,
@@ -24,13 +32,6 @@ import {
   VoiceBeautifierPresetParam1Limit,
   VoiceBeautifierPresetParam2Limit,
 } from './VoiceChangerConfig';
-import {
-  AgoraButton,
-  AgoraDivider,
-  AgoraDropdown,
-  AgoraSlider,
-} from '../../../components/ui';
-import { enumToItems } from '../../../utils';
 
 interface State extends BaseAudioComponentState {
   voiceBeautifierPreset: VoiceBeautifierPreset;
@@ -83,7 +84,7 @@ export default class VoiceChanger
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });

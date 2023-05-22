@@ -1,8 +1,6 @@
-import React from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   ErrorCodeType,
   IRtcEngineEventHandler,
   LocalAudioStreamError,
@@ -11,15 +9,16 @@ import {
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React from 'react';
 
 import {
   BaseAudioComponentState,
   BaseComponent,
 } from '../../../components/BaseComponent';
 import { AgoraButton, AgoraDivider, AgoraSlider } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 
 interface State extends BaseAudioComponentState {
   enableLocalAudio: boolean;
@@ -60,7 +59,7 @@ export default class JoinChannelAudio
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });

@@ -15,8 +15,7 @@ const config = {
   token: '',
   channelId: 'testdcg',
   uid: 0,
-  pluginPath: '',
-  SDKLogPath: './agorasdk.log',
+  logFilePath: '',
 };
 
 export default config;

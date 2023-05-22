@@ -1,10 +1,8 @@
-import React from 'react';
 import {
   AudioFrame,
   AudioPcmFrame,
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IAudioFrameObserver,
   IMediaPlayer,
   IMediaPlayerAudioFrameObserver,
@@ -19,16 +17,17 @@ import {
   UserOfflineReasonType,
   VideoFrame,
   VideoSourceType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React from 'react';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import { AgoraButton, AgoraTextInput } from '../../../components/ui';
 import RtcSurfaceView from '../../../components/RtcSurfaceView';
+import { AgoraButton, AgoraTextInput } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 
 interface State extends BaseVideoComponentState {
   token2: string;
@@ -80,7 +79,7 @@ export default class SendMultiVideoStream
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });

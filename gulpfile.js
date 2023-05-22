@@ -1,11 +1,12 @@
 const gulp = require('gulp');
-const syncLib = require('./scripts/synclib');
+
 const build = require('./scripts/build');
-const getConfig = require('./scripts/getConfig');
-const downloadPrebuild = require('./scripts/downloadPrebuild');
-const { cleanBuildDir, cleanJSDir, cleanIrisDir } = require('./scripts/clean');
 const buildJS = require('./scripts/buildJS');
+const { cleanBuildDir, cleanJSDir, cleanIrisDir } = require('./scripts/clean');
+const downloadPrebuild = require('./scripts/downloadPrebuild');
+const getConfig = require('./scripts/getConfig');
 const logger = require('./scripts/logger');
+const syncLib = require('./scripts/synclib');
 const zipBuild = require('./scripts/zipBuild');
 
 const config = getConfig();

@@ -1,9 +1,9 @@
 import './extension/IAgoraMediaRecorderExtension';
-import { RtcConnection } from './IAgoraRtcEngineEx';
 import {
   IMediaRecorderObserver,
   MediaRecorderConfiguration,
 } from './AgoraMediaBase';
+import { RtcConnection } from './IAgoraRtcEngineEx';
 /**
  * Used for recording audio and video on the client.
  * IMediaRecorder can record the following:

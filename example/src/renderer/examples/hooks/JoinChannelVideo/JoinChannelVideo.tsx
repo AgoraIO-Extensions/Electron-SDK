@@ -1,8 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   ErrorCodeType,
   LocalVideoStreamError,
   LocalVideoStreamState,
@@ -10,12 +8,13 @@ import {
   RtcStats,
   UserOfflineReasonType,
   VideoSourceType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
 
-import Config from '../../../config/agora.config';
+import { Card, List } from 'antd';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import RtcSurfaceView from '../../../components/RtcSurfaceView';
-import { Card, List } from 'antd';
 
 import {
   AgoraButton,
@@ -24,6 +23,7 @@ import {
   AgoraTextInput,
   AgoraView,
 } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 import AgoraStyle from '../../config/public.scss';
 
 export default function JoinChannelVideo() {
@@ -48,7 +48,7 @@ export default function JoinChannelVideo() {
 
     engine.current.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });

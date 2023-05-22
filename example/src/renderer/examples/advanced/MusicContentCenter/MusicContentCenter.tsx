@@ -1,6 +1,4 @@
-import React from 'react';
 import {
-  createAgoraRtcEngine,
   IMediaPlayerSourceObserver,
   IMusicContentCenter,
   IMusicContentCenterEventHandler,
@@ -13,9 +11,9 @@ import {
   MusicCollection,
   MusicContentCenterStatusCode,
   PreloadStatusCode,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React from 'react';
 
 import {
   BaseComponent,
@@ -28,6 +26,7 @@ import {
   AgoraSlider,
   AgoraTextInput,
 } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 
 interface State extends BaseComponentState {
   rtmAppId: string;
@@ -90,7 +89,7 @@ export default class MusicContentCenter
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
     });
   }
 

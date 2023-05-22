@@ -1,17 +1,11 @@
-/*
- * @Author: zhangtao@agora.io
- * @Date: 2021-04-28 13:34:48
- * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-05-19 15:59:03
- */
-
-const YUVBuffer = require('yuv-buffer');
-const YUVCanvas = require('yuv-canvas');
-const isEqual = require('lodash.isequal');
+import isEqual from 'lodash.isequal';
 
 import { RenderModeType } from '../../Private/AgoraMediaBase';
 import { CanvasOptions, ShareVideoFrame } from '../../Types';
 import { IRenderer } from '../IRenderer';
+
+const YUVBuffer = require('yuv-buffer');
+const YUVCanvas = require('yuv-canvas');
 
 export class YUVCanvasRenderer extends IRenderer {
   private _cacheCanvasOptions?: CanvasOptions;
@@ -32,7 +26,7 @@ export class YUVCanvasRenderer extends IRenderer {
     };
   }
 
-  bind(element: HTMLElement) {
+  public bind(element: HTMLElement) {
     super.bind(element);
     let container = document.createElement('div');
     Object.assign(container.style, {
@@ -53,7 +47,7 @@ export class YUVCanvasRenderer extends IRenderer {
     });
   }
 
-  unbind() {
+  public unbind() {
     if (this._container) {
       this._container.replaceChildren();
       this._container = undefined;
@@ -70,7 +64,7 @@ export class YUVCanvasRenderer extends IRenderer {
     }
   }
 
-  zoom(
+  private zoom(
     vertical: boolean,
     contentMode: RenderModeType = RenderModeType.RenderModeFit,
     width: number,
@@ -107,7 +101,7 @@ export class YUVCanvasRenderer extends IRenderer {
     }
   }
 
-  updateCanvas(
+  private updateCanvas(
     options: CanvasOptions = {
       frameWidth: 0,
       frameHeight: 0,
@@ -165,7 +159,7 @@ export class YUVCanvasRenderer extends IRenderer {
     }
   }
 
-  drawFrame(frame: ShareVideoFrame) {
+  public drawFrame(frame: ShareVideoFrame) {
     if (!this._container || !this._yuvCanvasSink) {
       return;
     }
@@ -217,7 +211,7 @@ export class YUVCanvasRenderer extends IRenderer {
     this._yuvCanvasSink.drawFrame(yuvBufferFrame);
   }
 
-  refreshCanvas() {
+  public refreshCanvas() {
     if (this._cacheCanvasOptions) {
       this.zoom(
         this._cacheCanvasOptions.rotation === 90 ||

@@ -1,22 +1,20 @@
-import React from 'react';
 import {
   AudioCodecProfileType,
   AudioSampleRateType,
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
   LiveTranscoding,
-  RtmpStreamingEvent,
   RtmpStreamPublishErrorType,
   RtmpStreamPublishState,
+  RtmpStreamingEvent,
   TranscodingUser,
   VideoCodecProfileType,
   VideoCodecTypeForStream,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
+import React from 'react';
 import { SketchPicker } from 'react-color';
-
-import Config from '../../../config/agora.config';
 
 import {
   BaseComponent,
@@ -33,6 +31,7 @@ import {
   AgoraTextInput,
   AgoraView,
 } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 import { enumToItems } from '../../../utils';
 
 interface State extends BaseVideoComponentState {
@@ -113,7 +112,7 @@ export default class RTMPStreaming
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });

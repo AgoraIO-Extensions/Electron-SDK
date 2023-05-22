@@ -1,25 +1,27 @@
-import { callIrisApi } from '../internal/IrisApiEngine';
-import { IRtcEngineImpl } from './IAgoraRtcEngineImpl';
-import { IRtcEngineEx, RtcConnection } from '../IAgoraRtcEngineEx';
-import { ChannelMediaOptions, LeaveChannelOptions } from '../IAgoraRtcEngine';
 import {
-  VideoEncoderConfiguration,
-  VideoCanvas,
-  VideoStreamType,
-  VideoSubscriptionOptions,
-  SpatialAudioParams,
-  VideoMirrorModeType,
-  ConnectionStateType,
-  EncryptionConfig,
-  DataStreamConfig,
-  WatermarkOptions,
-  LiveTranscoding,
   ChannelMediaRelayConfiguration,
-  UserInfo,
+  ConnectionStateType,
+  DataStreamConfig,
+  EncryptionConfig,
+  LiveTranscoding,
   SimulcastStreamConfig,
   SimulcastStreamMode,
+  SpatialAudioParams,
+  UserInfo,
+  VideoCanvas,
+  VideoEncoderConfiguration,
+  VideoMirrorModeType,
+  VideoStreamType,
+  VideoSubscriptionOptions,
+  WatermarkOptions,
 } from '../AgoraBase';
 import { RenderModeType } from '../AgoraMediaBase';
+import { ChannelMediaOptions, LeaveChannelOptions } from '../IAgoraRtcEngine';
+import { IRtcEngineEx, RtcConnection } from '../IAgoraRtcEngineEx';
+
+import { IRtcEngineImpl } from './IAgoraRtcEngineImpl';
+
+import { callIrisApi } from '../internal/IrisApiEngine';
 // @ts-ignore
 export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
   joinChannelEx(

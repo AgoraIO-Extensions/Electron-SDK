@@ -26,7 +26,6 @@ import { IMediaEngine } from '../IAgoraMediaEngine';
 import { IMediaPlayer } from '../IAgoraMediaPlayer';
 import { IMediaRecorder } from '../IAgoraMediaRecorder';
 import { IMusicContentCenter } from '../IAgoraMusicContentCenter';
-import { RtcConnection } from '../IAgoraRtcEngineEx';
 import {
   ChannelMediaOptions,
   DirectCdnStreamingMediaOptions,
@@ -37,39 +36,32 @@ import {
   LeaveChannelOptions,
   MetadataType,
   RtcEngineContext,
-  ScreenCaptureSourceInfo,
   SDKBuildInfo,
-  Size,
   ScreenCaptureConfiguration,
+  ScreenCaptureSourceInfo,
+  Size,
 } from '../IAgoraRtcEngine';
+import { RtcConnection } from '../IAgoraRtcEngineEx';
 import { ILocalSpatialAudioEngine } from '../IAgoraSpatialAudio';
 import { IAudioDeviceManager } from '../IAudioDeviceManager';
-
 import { IRtcEngineEvent } from '../extension/IAgoraRtcEngineExtension';
-
-import { processIAudioEncodedFrameObserver } from '../impl/AgoraBaseImpl';
-import { processIAudioSpectrumObserver } from '../impl/AgoraMediaBaseImpl';
-import { IRtcEngineExImpl } from '../impl/IAgoraRtcEngineExImpl';
-import {
-  IVideoDeviceManagerImpl,
-  processIDirectCdnStreamingEventHandler,
-  processIMetadataObserver,
-  processIRtcEngineEventHandler,
-} from '../impl/IAgoraRtcEngineImpl';
 
 import AgoraBaseTI from '../ti/AgoraBase-ti';
 import AgoraMediaBaseTI from '../ti/AgoraMediaBase-ti';
 import IAgoraRtcEngineTI from '../ti/IAgoraRtcEngine-ti';
 
 import { AudioDeviceManagerInternal } from './AudioDeviceManagerInternal';
+import {
+  DeviceEventEmitter,
+  EVENT_TYPE,
+  EventProcessor,
+  callIrisApi,
+} from './IrisApiEngine';
 import { LocalSpatialAudioEngineInternal } from './LocalSpatialAudioEngineInternal';
 import { MediaEngineInternal } from './MediaEngineInternal';
 import { MediaPlayerInternal } from './MediaPlayerInternal';
 import { MediaRecorderInternal } from './MediaRecorderInternal';
 import { MusicContentCenterInternal } from './MusicContentCenterInternal';
-
-import { callIrisApi, DeviceEventEmitter, EVENT_TYPE } from './IrisApiEngine';
-import { RendererManager } from '../../Renderer/RendererManager';
 
 const checkers = createCheckers(
   AgoraBaseTI,
@@ -95,9 +87,12 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   private _local_spatial_audio_engine: ILocalSpatialAudioEngine =
     new LocalSpatialAudioEngineInternal();
 
-  initialize(context: RtcEngineContext): number {
-    AgoraEnv.AgoraRendererManager = new RendererManager();
-    AgoraEnv.AgoraRendererManager.enableRender();
+  override initialize(context: RtcEngineContext): number {
+    if (AgoraEnv.webEnvReady) {
+      const { RendererManager } = require('../../Renderer/RendererManager');
+      AgoraEnv.AgoraRendererManager = new RendererManager();
+    }
+    AgoraEnv.AgoraRendererManager?.enableRender();
     const ret = super.initialize(context);
     callIrisApi.call(this, 'RtcEngine_setAppType', {
       appType: 3,
@@ -105,8 +100,8 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return ret;
   }
 
-  release(sync: boolean = false) {
-    AgoraEnv.AgoraRendererManager?.enableRender(false);
+  override release(sync: boolean = false) {
+    AgoraEnv.AgoraRendererManager?.clear();
     AgoraEnv.AgoraRendererManager = undefined;
     this._audio_device_manager.release();
     this._video_device_manager.release();
@@ -191,40 +186,26 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     listener: IRtcEngineEvent[EventType]
   ): void {
     this._addListenerPreCheck(eventType);
-    const callback = (...data: any[]) => {
-      if (data[0] !== EVENT_TYPE.IRtcEngine) {
+    const callback = (eventProcessor: EventProcessor<any>, data: any) => {
+      if (eventProcessor.type(data) !== EVENT_TYPE.IRtcEngine) {
         return;
       }
-      processIRtcEngineEventHandler(
-        { [eventType]: listener },
-        eventType,
-        data[1]
-      );
-      processIDirectCdnStreamingEventHandler(
-        { [eventType]: listener },
-        eventType,
-        data[1]
-      );
-      processIMetadataObserver({ [eventType]: listener }, eventType, data[1]);
-      processIAudioEncodedFrameObserver(
-        { [eventType]: listener },
-        eventType,
-        data[1]
-      );
-      processIAudioSpectrumObserver(
-        { [eventType]: listener },
-        eventType,
-        data[1]
-      );
+      eventProcessor.func.map((it) => {
+        it({ [eventType]: listener }, eventType, data);
+      });
     };
+    listener!.prototype.callback = callback;
     DeviceEventEmitter.addListener(eventType, callback);
   }
 
   removeListener<EventType extends keyof IRtcEngineEvent>(
     eventType: EventType,
-    listener: IRtcEngineEvent[EventType]
+    listener?: IRtcEngineEvent[EventType]
   ) {
-    DeviceEventEmitter.removeListener(eventType, listener);
+    DeviceEventEmitter.removeListener(
+      eventType,
+      listener?.prototype.callback ?? listener
+    );
   }
 
   removeAllListeners<EventType extends keyof IRtcEngineEvent>(
@@ -233,7 +214,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     DeviceEventEmitter.removeAllListeners(eventType);
   }
 
-  getVersion(): SDKBuildInfo {
+  override getVersion(): SDKBuildInfo {
     const apiType = 'RtcEngine_getVersion';
     const jsonParams = {};
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);
@@ -243,7 +224,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     };
   }
 
-  registerEventHandler(eventHandler: IRtcEngineEventHandler): boolean {
+  override registerEventHandler(eventHandler: IRtcEngineEventHandler): boolean {
     if (
       !RtcEngineExInternal._event_handlers.find(
         (value) => value === eventHandler
@@ -254,7 +235,9 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return super.registerEventHandler(eventHandler);
   }
 
-  unregisterEventHandler(eventHandler: IRtcEngineEventHandler): boolean {
+  override unregisterEventHandler(
+    eventHandler: IRtcEngineEventHandler
+  ): boolean {
     RtcEngineExInternal._event_handlers =
       RtcEngineExInternal._event_handlers.filter(
         (value) => value !== eventHandler
@@ -262,19 +245,19 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return super.unregisterEventHandler(eventHandler);
   }
 
-  createMediaPlayer(): IMediaPlayer {
+  override createMediaPlayer(): IMediaPlayer {
     // @ts-ignore
     const mediaPlayerId = super.createMediaPlayer() as number;
     return new MediaPlayerInternal(mediaPlayerId);
   }
 
-  destroyMediaPlayer(mediaPlayer: IMediaPlayer): number {
+  override destroyMediaPlayer(mediaPlayer: IMediaPlayer): number {
     const ret = super.destroyMediaPlayer(mediaPlayer);
     mediaPlayer.release?.call(mediaPlayer);
     return ret;
   }
 
-  startDirectCdnStreaming(
+  override startDirectCdnStreaming(
     eventHandler: IDirectCdnStreamingEventHandler,
     publishUrl: string,
     options: DirectCdnStreamingMediaOptions
@@ -291,7 +274,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return super.startDirectCdnStreaming(eventHandler, publishUrl, options);
   }
 
-  registerMediaMetadataObserver(
+  override registerMediaMetadataObserver(
     observer: IMetadataObserver,
     type: MetadataType
   ): number {
@@ -305,7 +288,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return super.registerMediaMetadataObserver(observer, type);
   }
 
-  unregisterMediaMetadataObserver(
+  override unregisterMediaMetadataObserver(
     observer: IMetadataObserver,
     type: MetadataType
   ): number {
@@ -316,7 +299,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return super.unregisterMediaMetadataObserver(observer, type);
   }
 
-  protected getApiTypeFromJoinChannel(
+  protected override getApiTypeFromJoinChannel(
     token: string,
     channelId: string,
     uid: number,
@@ -328,13 +311,15 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return 'RtcEngine_joinChannel2';
   }
 
-  protected getApiTypeFromLeaveChannel(options?: LeaveChannelOptions): string {
+  protected override getApiTypeFromLeaveChannel(
+    options?: LeaveChannelOptions
+  ): string {
     return options === undefined
       ? 'RtcEngine_leaveChannel'
       : 'RtcEngine_leaveChannel2';
   }
 
-  protected getApiTypeFromSetClientRole(
+  protected override getApiTypeFromSetClientRole(
     role: ClientRoleType,
     options?: ClientRoleOptions
   ): string {
@@ -343,31 +328,31 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       : 'RtcEngine_setClientRole2';
   }
 
-  protected getApiTypeFromStartEchoTest(
+  protected override getApiTypeFromStartEchoTest(
     intervalInSeconds: number = 10
   ): string {
     return 'RtcEngine_startEchoTest2';
   }
 
-  protected getApiTypeFromStartPreview(
+  protected override getApiTypeFromStartPreview(
     sourceType: VideoSourceType = VideoSourceType.VideoSourceCameraPrimary
   ): string {
     return 'RtcEngine_startPreview2';
   }
 
-  protected getApiTypeFromStopPreview(
+  protected override getApiTypeFromStopPreview(
     sourceType: VideoSourceType = VideoSourceType.VideoSourceCameraPrimary
   ): string {
     return 'RtcEngine_stopPreview2';
   }
 
-  protected getApiTypeFromStartAudioRecording(
+  protected override getApiTypeFromStartAudioRecording(
     config: AudioRecordingConfiguration
   ): string {
     return 'RtcEngine_startAudioRecording3';
   }
 
-  protected getApiTypeFromStartAudioMixing(
+  protected override getApiTypeFromStartAudioMixing(
     filePath: string,
     loopback: boolean,
     cycle: number,
@@ -376,7 +361,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return 'RtcEngine_startAudioMixing2';
   }
 
-  protected getApiTypeFromEnableDualStreamMode(
+  protected override getApiTypeFromEnableDualStreamMode(
     enabled: boolean,
     streamConfig?: SimulcastStreamConfig
   ): string {
@@ -385,7 +370,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       : 'RtcEngine_enableDualStreamMode2';
   }
 
-  protected getApiTypeFromSetDualStreamMode(
+  protected override getApiTypeFromSetDualStreamMode(
     mode: SimulcastStreamMode,
     streamConfig?: SimulcastStreamConfig
   ): string {
@@ -394,25 +379,27 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       : 'RtcEngine_setDualStreamMode2';
   }
 
-  protected getApiTypeFromLeaveChannelEx(
+  protected override getApiTypeFromLeaveChannelEx(
     connection: RtcConnection,
     options?: LeaveChannelOptions
   ): string {
     return 'RtcEngineEx_leaveChannelEx2';
   }
 
-  protected getApiTypeFromCreateDataStream(config: DataStreamConfig): string {
+  protected override getApiTypeFromCreateDataStream(
+    config: DataStreamConfig
+  ): string {
     return 'RtcEngine_createDataStream2';
   }
 
-  protected getApiTypeFromAddVideoWatermark(
+  protected override getApiTypeFromAddVideoWatermark(
     watermarkUrl: string,
     options: WatermarkOptions
   ): string {
     return 'RtcEngine_addVideoWatermark2';
   }
 
-  protected getApiTypeFromJoinChannelWithUserAccount(
+  protected override getApiTypeFromJoinChannelWithUserAccount(
     token: string,
     channelId: string,
     userAccount: string,
@@ -426,51 +413,51 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       : 'RtcEngine_joinChannelWithUserAccount2';
   }
 
-  protected getApiTypeFromCreateDataStreamEx(
+  protected override getApiTypeFromCreateDataStreamEx(
     config: DataStreamConfig,
     connection: RtcConnection
   ): string {
     return 'RtcEngineEx_createDataStreamEx2';
   }
 
-  protected getApiTypeFromStartScreenCaptureDesktop(
+  protected override getApiTypeFromStartScreenCaptureDesktop(
     type: VideoSourceType,
     config: ScreenCaptureConfiguration
   ): string {
     return 'RtcEngine_startScreenCapture2';
   }
 
-  protected getApiTypeFromStopScreenCapture(
+  protected override getApiTypeFromStopScreenCapture(
     type: VideoSourceType = VideoSourceType.VideoSourceScreenPrimary
   ): string {
     return 'RtcEngine_stopScreenCapture2';
   }
 
-  getAudioDeviceManager(): IAudioDeviceManager {
+  override getAudioDeviceManager(): IAudioDeviceManager {
     return this._audio_device_manager;
   }
 
-  getVideoDeviceManager(): IVideoDeviceManager {
+  override getVideoDeviceManager(): IVideoDeviceManager {
     return this._video_device_manager;
   }
 
-  getMediaEngine(): IMediaEngine {
+  override getMediaEngine(): IMediaEngine {
     return this._media_engine;
   }
 
-  getMediaRecorder(): IMediaRecorder {
+  override getMediaRecorder(): IMediaRecorder {
     return this._media_recorder;
   }
 
-  getMusicContentCenter(): IMusicContentCenter {
+  override getMusicContentCenter(): IMusicContentCenter {
     return this._music_content_center;
   }
 
-  getLocalSpatialAudioEngine(): ILocalSpatialAudioEngine {
+  override getLocalSpatialAudioEngine(): ILocalSpatialAudioEngine {
     return this._local_spatial_audio_engine;
   }
 
-  registerAudioEncodedFrameObserver(
+  override registerAudioEncodedFrameObserver(
     config: AudioEncodedFrameObserverConfig,
     observer: IAudioEncodedFrameObserver
   ): number {
@@ -484,7 +471,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return super.registerAudioEncodedFrameObserver(config, observer);
   }
 
-  unregisterAudioEncodedFrameObserver(
+  override unregisterAudioEncodedFrameObserver(
     observer: IAudioEncodedFrameObserver
   ): number {
     RtcEngineExInternal._audio_encoded_frame_observers =
@@ -494,7 +481,9 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return super.unregisterAudioEncodedFrameObserver(observer);
   }
 
-  registerAudioSpectrumObserver(observer: IAudioSpectrumObserver): number {
+  override registerAudioSpectrumObserver(
+    observer: IAudioSpectrumObserver
+  ): number {
     if (
       !RtcEngineExInternal._audio_spectrum_observers.find(
         (value) => value === observer
@@ -505,7 +494,9 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return super.registerAudioSpectrumObserver(observer);
   }
 
-  unregisterAudioSpectrumObserver(observer: IAudioSpectrumObserver): number {
+  override unregisterAudioSpectrumObserver(
+    observer: IAudioSpectrumObserver
+  ): number {
     RtcEngineExInternal._audio_spectrum_observers =
       RtcEngineExInternal._audio_spectrum_observers.filter(
         (value) => value !== observer
@@ -513,7 +504,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return super.unregisterAudioSpectrumObserver(observer);
   }
 
-  getScreenCaptureSources(
+  override getScreenCaptureSources(
     thumbSize: Size,
     iconSize: Size,
     includeScreen: boolean
@@ -541,7 +532,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       });
   }
 
-  setupLocalVideo(canvas: VideoCanvas): number {
+  override setupLocalVideo(canvas: VideoCanvas): number {
     const {
       sourceType = VideoSourceType.VideoSourceCamera,
       uid,
@@ -563,7 +554,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     );
   }
 
-  setupRemoteVideo(canvas: VideoCanvas): number {
+  override setupRemoteVideo(canvas: VideoCanvas): number {
     const {
       sourceType = VideoSourceType.VideoSourceRemote,
       uid,
@@ -586,7 +577,10 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     );
   }
 
-  setupRemoteVideoEx(canvas: VideoCanvas, connection: RtcConnection): number {
+  override setupRemoteVideoEx(
+    canvas: VideoCanvas,
+    connection: RtcConnection
+  ): number {
     const {
       sourceType = VideoSourceType.VideoSourceRemote,
       uid,
@@ -609,7 +603,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     );
   }
 
-  setLocalRenderMode(
+  override setLocalRenderMode(
     renderMode: RenderModeType,
     mirrorMode: VideoMirrorModeType = VideoMirrorModeType.VideoMirrorModeAuto
   ): number {
@@ -626,7 +620,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     );
   }
 
-  setRemoteRenderMode(
+  override setRemoteRenderMode(
     uid: number,
     renderMode: RenderModeType,
     mirrorMode: VideoMirrorModeType
@@ -644,7 +638,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     );
   }
 
-  setRemoteRenderModeEx(
+  override setRemoteRenderModeEx(
     uid: number,
     renderMode: RenderModeType,
     mirrorMode: VideoMirrorModeType,
@@ -664,7 +658,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     );
   }
 
-  setLocalVideoMirrorMode(mirrorMode: VideoMirrorModeType): number {
+  override setLocalVideoMirrorMode(mirrorMode: VideoMirrorModeType): number {
     return (
       AgoraEnv.AgoraRendererManager?.setRenderOptionByConfig({
         videoSourceType: VideoSourceType.VideoSourceCamera,
@@ -677,11 +671,11 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     );
   }
 
-  destroyRendererByView(view: any) {
+  override destroyRendererByView(view: any) {
     AgoraEnv.AgoraRendererManager?.destroyRendererByView(view);
   }
 
-  destroyRendererByConfig(
+  override destroyRendererByConfig(
     videoSourceType: VideoSourceType,
     channelId?: Channel,
     uid?: number
@@ -693,3 +687,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     );
   }
 }
+
+import { IRtcEngineExImpl } from '../impl/IAgoraRtcEngineExImpl';
+import { IVideoDeviceManagerImpl } from '../impl/IAgoraRtcEngineImpl';

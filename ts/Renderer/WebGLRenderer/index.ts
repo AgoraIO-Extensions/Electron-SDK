@@ -1,12 +1,13 @@
+import { EventEmitter } from 'events';
+
 import { RenderModeType } from '../../Private/AgoraMediaBase';
 
-const createProgramFromSources =
-  require('./webgl-utils').createProgramFromSources;
-
-import { EventEmitter } from 'events';
 import { ShareVideoFrame } from '../../Types';
 import { logError, logWarn } from '../../Utils';
 import { IRenderer, RenderFailCallback } from '../IRenderer';
+
+const createProgramFromSources =
+  require('./webgl-utils').createProgramFromSources;
 
 const vertexShaderSource =
   'attribute vec2 a_position;' +
@@ -54,8 +55,10 @@ export class GlRenderer extends IRenderer {
   texCoordBuffer: any;
   surfaceBuffer: any;
 
+  // @ts-ignore
   parentElement: HTMLElement | undefined;
   container: HTMLElement | undefined;
+  // @ts-ignore
   canvas: HTMLCanvasElement | undefined;
   renderImageCount = 0;
   initWidth = 0;
@@ -80,28 +83,12 @@ export class GlRenderer extends IRenderer {
     this.failInitRenderCB = failCallback;
   }
 
-  bind(view: HTMLElement) {
+  public bind(view: HTMLElement) {
     super.bind(view);
-
-    // this.initCanvas(
-    //   view,
-    //   view.clientWidth,
-    //   view.clientHeight,
-    //   this.initRotation,
-    //   console.warn
-    // );
-    // const ResizeObserver = window.ResizeObserver;
-    // if (ResizeObserver) {
-    //   this.observer = new ResizeObserver(() => {
-    //     this.refreshCanvas && this.refreshCanvas();
-    //   });
-    //   this.observer.observe(view);
-    // }
   }
 
-  unbind() {
-    // @ts-ignore
-    this.observer && this.observer.unobserve && this.observer.disconnect();
+  public unbind() {
+    this.observer?.unobserve && this.observer.disconnect();
     this.program = undefined;
     this.positionLocation = undefined;
     this.texCoordLocation = undefined;
@@ -144,7 +131,7 @@ export class GlRenderer extends IRenderer {
     this.parentElement = undefined;
   }
 
-  updateViewZoomLevel(rotation: number, width: number, height: number) {
+  private updateViewZoomLevel(rotation: number, width: number, height: number) {
     if (!this.parentElement || !this.canvas) {
       return;
     }
@@ -199,7 +186,7 @@ export class GlRenderer extends IRenderer {
     return true;
   }
 
-  updateCanvas(rotation: number, width: number, height: number) {
+  private updateCanvas(rotation: number, width: number, height: number) {
     // if (this.canvasUpdated) {
     //   return;
     // }
@@ -286,7 +273,7 @@ export class GlRenderer extends IRenderer {
     gl.uniform2f(resolutionLocation, width, height);
   }
 
-  drawFrame(videoFrame: ShareVideoFrame) {
+  public drawFrame(videoFrame: ShareVideoFrame) {
     let error;
     try {
       this.renderImage({
@@ -314,7 +301,7 @@ export class GlRenderer extends IRenderer {
     }
   }
 
-  refreshCanvas() {
+  public refreshCanvas() {
     if (this.lastImageWidth) {
       this.updateViewZoomLevel(
         this.lastImageRotation,
@@ -324,7 +311,7 @@ export class GlRenderer extends IRenderer {
     }
   }
 
-  renderImage(image: {
+  private renderImage(image: {
     width: number;
     height: number;
     left: number;
@@ -396,7 +383,7 @@ export class GlRenderer extends IRenderer {
     }
   }
 
-  uploadYuv(
+  private uploadYuv(
     width: number,
     height: number,
     yplane: Uint8Array,
@@ -454,19 +441,19 @@ export class GlRenderer extends IRenderer {
     );
   }
 
-  deleteBuffer(buffer: any) {
+  private deleteBuffer(buffer: any) {
     if (buffer && this.gl) {
       this.gl.deleteBuffer(buffer);
     }
   }
 
-  deleteTexture(texture: any) {
+  private deleteTexture(texture: any) {
     if (texture && this.gl) {
       this.gl.deleteTexture(texture);
     }
   }
 
-  initCanvas(
+  private initCanvas(
     view: HTMLElement,
     width: number,
     height: number,
@@ -559,7 +546,8 @@ export class GlRenderer extends IRenderer {
 
     this.initTextures();
   }
-  initTextures() {
+
+  private initTextures() {
     let gl = this.gl;
     if (!gl) {
       return;

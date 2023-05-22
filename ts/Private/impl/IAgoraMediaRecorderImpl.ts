@@ -1,10 +1,12 @@
-import { callIrisApi } from '../internal/IrisApiEngine';
-import { IMediaRecorder } from '../IAgoraMediaRecorder';
-import { RtcConnection } from '../IAgoraRtcEngineEx';
 import {
   IMediaRecorderObserver,
   MediaRecorderConfiguration,
 } from '../AgoraMediaBase';
+import { IMediaRecorder } from '../IAgoraMediaRecorder';
+
+import { RtcConnection } from '../IAgoraRtcEngineEx';
+
+import { callIrisApi } from '../internal/IrisApiEngine';
 // @ts-ignore
 export class IMediaRecorderImpl implements IMediaRecorder {
   setMediaRecorderObserver(

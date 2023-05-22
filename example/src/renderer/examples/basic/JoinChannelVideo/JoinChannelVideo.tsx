@@ -1,8 +1,6 @@
-import React, { ReactNode } from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   ErrorCodeType,
   IRtcEngineEventHandler,
   LocalVideoStreamError,
@@ -11,17 +9,18 @@ import {
   RtcStats,
   UserOfflineReasonType,
   VideoSourceType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import { Card, List } from 'antd';
+import React, { ReactNode } from 'react';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import { AgoraButton, AgoraText } from '../../../components/ui';
 import RtcSurfaceView from '../../../components/RtcSurfaceView';
-import { Card, List } from 'antd';
+import { AgoraButton, AgoraText } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 
 interface State extends BaseVideoComponentState {}
 
@@ -54,7 +53,7 @@ export default class JoinChannelVideo
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
