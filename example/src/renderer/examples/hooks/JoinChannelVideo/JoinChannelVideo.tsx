@@ -41,7 +41,7 @@ export default function JoinChannelVideo() {
   /**
    * Step 1: initRtcEngine
    */
-  const initRtcEngine = useCallback(async () => {
+  const initRtcEngine = useCallback(() => {
     if (!appId) {
       console.error(`appId is invalid`);
     }
@@ -198,6 +198,11 @@ export default function JoinChannelVideo() {
 
   useEffect(() => {
     initRtcEngine();
+
+    const engineCopy = engine.current;
+    return () => {
+      engineCopy.release();
+    };
   }, [initRtcEngine]);
 
   useEffect(() => {
@@ -231,7 +236,6 @@ export default function JoinChannelVideo() {
         onLocalVideoStateChanged
       );
       engineCopy.removeAllListeners();
-      engineCopy.release();
     };
   }, [
     onError,
