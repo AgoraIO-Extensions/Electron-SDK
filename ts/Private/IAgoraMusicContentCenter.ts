@@ -1,5 +1,6 @@
 import './extension/IAgoraMusicContentCenterExtension';
 import { IMediaPlayer } from './IAgoraMediaPlayer';
+
 /**
  * @ignore
  */
@@ -260,6 +261,7 @@ export interface IMusicContentCenterEventHandler {
    */
   onLyricResult?(
     requestId: string,
+    songCode: number,
     lyricUrl: string,
     errorCode: MusicContentCenterStatusCode
   ): void;
@@ -267,7 +269,18 @@ export interface IMusicContentCenterEventHandler {
   /**
    * @ignore
    */
+  onSongSimpleInfoResult?(
+    requestId: string,
+    songCode: number,
+    simpleInfo: string,
+    errorCode: MusicContentCenterStatusCode
+  ): void;
+
+  /**
+   * @ignore
+   */
   onPreLoadEvent?(
+    requestId: string,
     songCode: number,
     percent: number,
     lyricUrl: string,
@@ -373,15 +386,27 @@ export abstract class IMusicContentCenter {
   /**
    * @ignore
    */
-  abstract preload(songCode: number, jsonOption?: string): number;
+  abstract preload(songCode: number, jsonOption: string): number;
 
   /**
    * @ignore
    */
+  abstract preloadWithRequestId(requestId: string, songCode: number): number;
+
+  /**
+   * 删除已缓存的音乐资源。
+   * 你可以调用该方法删除某一已缓存的音乐资源，如需删除多个音乐资源，你可以多次调用该方法。 The cached media file currently being played will not be deleted.
+   *
+   * @param songCode 待删除的音乐资源的编号。
+   *
+   * @returns
+   * 0: 方法调用成功，音乐资源已删除。< 0: Failure.
+   */
   abstract removeCache(songCode: number): number;
 
   /**
-   * @ignore
+   * 获取已缓存的音乐资源信息。
+   * 当你不再需要使用已缓存的音乐资源时，你需要及时释放内存以防止内存泄漏。
    */
   abstract getCaches(): { cacheInfo: MusicCacheInfo[]; cacheInfoSize: number };
 
@@ -394,4 +419,14 @@ export abstract class IMusicContentCenter {
    * @ignore
    */
   abstract getLyric(songCode: number, lyricType?: number): string;
+
+  /**
+   * @ignore
+   */
+  abstract getSongSimpleInfo(songCode: number): string;
+
+  /**
+   * @ignore
+   */
+  abstract getInternalSongCode(songCode: number, jsonOption: string): number;
 }
