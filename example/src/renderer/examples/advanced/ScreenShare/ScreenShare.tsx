@@ -541,14 +541,14 @@ export default class ScreenShare
                 })}
               value={excludeWindowList}
               onValueChange={(value, index) => {
-                if (excludeWindowList.indexOf(+value) === -1) {
+                if (excludeWindowList.indexOf(value) === -1) {
                   this.setState({
-                    excludeWindowList: [...excludeWindowList, +value],
+                    excludeWindowList: [...excludeWindowList, value],
                   });
                 } else {
                   this.setState({
                     excludeWindowList: excludeWindowList.filter(
-                      (v) => v !== +value
+                      (v) => v !== value
                     ),
                   });
                 }

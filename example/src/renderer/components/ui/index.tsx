@@ -270,30 +270,22 @@ export const AgoraDropdown = (
                 : [_value?.toString()]
             }
             onSelect={(info) => {
-              let key: any;
-              if (typeof _value === 'number') {
-                key = +info.key;
-              } else {
-                key = info.key;
-              }
-              const index = _items?.findIndex(({ value }) => {
-                return value == key;
-              });
+              const index =
+                _items?.findIndex(({ value }) => {
+                  return value == info.key;
+                }) ?? -1;
+              const key = items?.at(index)?.value;
               setValue(key);
-              props.onValueChange?.call(this, key, index ?? -1);
+              props.onValueChange?.call(this, key, index);
             }}
             onDeselect={(info) => {
-              let key: any;
-              if (typeof _value === 'number') {
-                key = +info.key;
-              } else {
-                key = info.key;
-              }
-              const index = _items?.findIndex(({ value }) => {
-                return value == key;
-              });
+              const index =
+                _items?.findIndex(({ value }) => {
+                  return value == info.key;
+                }) ?? -1;
+              const key = items?.at(index)?.value;
               setValue(key);
-              props.onValueChange?.call(this, key, index ?? -1);
+              props.onValueChange?.call(this, key, index);
             }}
           />
         }

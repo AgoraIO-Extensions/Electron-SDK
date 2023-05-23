@@ -471,11 +471,11 @@ export default function ScreenShare() {
                 })}
               value={excludeWindowList}
               onValueChange={(value, index) => {
-                if (excludeWindowList.indexOf(+value) === -1) {
-                  setExcludeWindowList(() => [...excludeWindowList, +value]);
+                if (excludeWindowList.indexOf(value) === -1) {
+                  setExcludeWindowList(() => [...excludeWindowList, value]);
                 } else {
                   setExcludeWindowList(() =>
-                    excludeWindowList.filter((v) => v !== +value)
+                    excludeWindowList.filter((v) => v !== value)
                   );
                 }
               }}
