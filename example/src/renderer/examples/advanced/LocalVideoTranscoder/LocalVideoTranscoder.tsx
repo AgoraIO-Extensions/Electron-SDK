@@ -100,7 +100,7 @@ export default class LocalVideoTranscoder
     this.engine.enableVideo();
 
     // Start preview before joinChannel
-    this.engine.startPreview();
+    // this.engine.startPreview();
     this.setState({ startPreview: true });
 
     this.enumerateDevices();
@@ -143,12 +143,16 @@ export default class LocalVideoTranscoder
       ?.getVideoDeviceManager()
       .enumerateVideoDevices();
 
-    this.setState({
-      videoDevices,
-      videoDeviceId: videoDevices?.length
-        ? [videoDevices!.at(0)!.deviceId!]
-        : [],
-    });
+    const deviceId = videoDevices?.at(0)?.deviceId ?? '';
+    this.setState(
+      {
+        videoDevices,
+        videoDeviceId: [deviceId],
+      },
+      () => {
+        this.startCameraCapture(deviceId);
+      }
+    );
   };
 
   startCameraCapture = (deviceId: string) => {
@@ -282,25 +286,27 @@ export default class LocalVideoTranscoder
 
   _getVideoSourceTypeCamera = (value: string) => {
     const { videoDeviceId } = this.state;
+    const index =
+      videoDeviceId?.findIndex((deviceId) => deviceId === value) ?? -1;
     return [
       VideoSourceType.VideoSourceCameraPrimary,
       VideoSourceType.VideoSourceCameraSecondary,
       VideoSourceType.VideoSourceCameraThird,
       VideoSourceType.VideoSourceCameraFourth,
-    ][videoDeviceId?.findIndex((deviceId) => deviceId === value) ?? -1];
+    ][index === -1 ? 0 : index];
   };
 
   _getVideoSourceTypeScreen = (value: ScreenCaptureSourceInfo) => {
     const { targetSources } = this.state;
+    const index =
+      targetSources?.findIndex(({ sourceId }) => sourceId === value.sourceId) ??
+      -1;
     return [
       VideoSourceType.VideoSourceScreenPrimary,
       VideoSourceType.VideoSourceScreenSecondary,
       VideoSourceType.VideoSourceScreenThird,
       VideoSourceType.VideoSourceScreenFourth,
-    ][
-      targetSources?.findIndex(({ sourceId }) => sourceId === value.sourceId) ??
-        -1
-    ];
+    ][index === -1 ? 0 : index];
   };
 
   _generateLocalTranscoderConfiguration = (): LocalTranscoderConfiguration => {
