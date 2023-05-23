@@ -60,7 +60,7 @@ export class RendererManager extends IRendererManager {
 
   constructor() {
     super();
-    this.renderFps = 10;
+    this.renderFps = 15;
     this.renderers = new Map();
     this.renderMode = this.checkWebglEnv()
       ? RENDER_MODE.WEBGL
