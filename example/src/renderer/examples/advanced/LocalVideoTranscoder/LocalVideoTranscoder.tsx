@@ -44,7 +44,7 @@ interface State extends BaseVideoComponentState {
   url: string;
   open: boolean;
   imageUrl: string;
-  startLocalVideoTranscoder: boolean;
+  startLocalVideoTranscoder?: boolean;
   VideoInputStreams: TranscodingVideoStream[];
 }
 
@@ -393,6 +393,7 @@ export default class LocalVideoTranscoder
     delete state.videoDeviceId;
     delete state.sources;
     delete state.targetSources;
+    delete state.startLocalVideoTranscoder;
     this.setState(state);
   }
 
