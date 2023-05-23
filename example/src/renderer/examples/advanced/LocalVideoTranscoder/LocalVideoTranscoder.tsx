@@ -195,7 +195,7 @@ export default class LocalVideoTranscoder
       this.error(`targetSource is invalid`);
     }
 
-    this.engine?.startScreenCaptureDesktop(
+    this.engine?.startScreenCaptureBySourceType(
       VideoSourceType.VideoSourceScreenPrimary,
       {
         isCaptureWindow:
@@ -224,7 +224,9 @@ export default class LocalVideoTranscoder
    * Step 3-4 (Optional): stopScreenCapture
    */
   stopScreenCapture = () => {
-    this.engine?.stopScreenCapture(VideoSourceType.VideoSourceScreenPrimary);
+    this.engine?.stopScreenCaptureBySourceType(
+      VideoSourceType.VideoSourceScreenPrimary
+    );
     this.setState({ startScreenCapture: false });
   };
 

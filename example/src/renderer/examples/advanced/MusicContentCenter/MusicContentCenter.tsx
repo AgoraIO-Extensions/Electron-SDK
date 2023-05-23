@@ -152,7 +152,7 @@ export default class MusicContentCenter
       this.error(`songCode is invalid`);
     }
 
-    this.musicContentCenter?.preload(songCode!);
+    this.musicContentCenter?.preload(songCode!, '');
   };
 
   /**
@@ -271,12 +271,13 @@ export default class MusicContentCenter
   }
 
   onPreLoadEvent(
+    requestId: string,
     songCode: number,
     percent: number,
     lyricUrl: string,
     status: PreloadStatusCode,
     errorCode: MusicContentCenterStatusCode
-  ) {
+  ): void {
     this.info('onPreLoadEvent', songCode, percent, lyricUrl, status, errorCode);
     if (songCode === this.state.songCode) {
       this.setState({
@@ -285,7 +286,12 @@ export default class MusicContentCenter
     }
   }
 
-  onLyricResult(requestId: string, lyricUrl: string) {
+  onLyricResult(
+    requestId: string,
+    songCode: number,
+    lyricUrl: string,
+    errorCode: MusicContentCenterStatusCode
+  ): void {
     this.info('onLyricResult', requestId, lyricUrl);
   }
 
