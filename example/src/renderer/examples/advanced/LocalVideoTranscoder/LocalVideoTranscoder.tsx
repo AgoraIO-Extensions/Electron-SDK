@@ -41,8 +41,7 @@ interface State extends BaseVideoComponentState {
   videoDevices?: VideoDeviceInfo[];
   videoDeviceId?: string[];
   sources?: ScreenCaptureSourceInfo[];
-  targetSource?: ScreenCaptureSourceInfo;
-  startScreenCapture: boolean;
+  targetSources?: ScreenCaptureSourceInfo[];
   url: string;
   open: boolean;
   imageUrl: string;
@@ -69,8 +68,7 @@ export default class LocalVideoTranscoder
       videoDevices: [],
       videoDeviceId: [],
       sources: [],
-      targetSource: undefined,
-      startScreenCapture: false,
+      targetSources: undefined,
       url: 'https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov',
       open: false,
       imageUrl: getResourcePath('png.png'),
@@ -182,52 +180,50 @@ export default class LocalVideoTranscoder
     );
     this.setState({
       sources,
-      targetSource: sources?.at(0),
+      targetSources: [],
     });
   };
 
   /**
    * Step 3-3 (Optional): startScreenCapture
    */
-  startScreenCapture = () => {
-    const { targetSource } = this.state;
-    if (!targetSource) {
-      this.error(`targetSource is invalid`);
+  startScreenCapture = (targetSource: ScreenCaptureSourceInfo) => {
+    const type = this._getVideoSourceTypeScreen(targetSource);
+    if (type === undefined) {
+      this.error('type is invalid');
+      return;
     }
+    this.engine?.startScreenCaptureBySourceType(type, {
+      isCaptureWindow:
+        targetSource.type ===
+        ScreenCaptureSourceType.ScreencapturesourcetypeWindow,
+      screenRect: { width: 0, height: 0, x: 0, y: 0 },
+      windowId: targetSource!.sourceId,
+      displayId: targetSource!.sourceId,
+      params: {
+        dimensions: { width: 1920, height: 1080 },
+        bitrate: 1000,
+        frameRate: 15,
+        captureMouseCursor: false,
+        windowFocus: false,
+        excludeWindowList: [],
+        excludeWindowCount: 0,
+      },
 
-    this.engine?.startScreenCaptureBySourceType(
-      VideoSourceType.VideoSourceScreenPrimary,
-      {
-        isCaptureWindow:
-          targetSource!.type ===
-          ScreenCaptureSourceType.ScreencapturesourcetypeWindow,
-        screenRect: { width: 0, height: 0, x: 0, y: 0 },
-        windowId: targetSource!.sourceId,
-        displayId: targetSource!.sourceId,
-        params: {
-          dimensions: { width: 1920, height: 1080 },
-          bitrate: 1000,
-          frameRate: 15,
-          captureMouseCursor: false,
-          windowFocus: false,
-          excludeWindowList: [],
-          excludeWindowCount: 0,
-        },
-
-        regionRect: { x: 0, y: 0, width: 0, height: 0 },
-      }
-    );
-    this.setState({ startScreenCapture: true });
+      regionRect: { x: 0, y: 0, width: 0, height: 0 },
+    });
   };
 
   /**
    * Step 3-4 (Optional): stopScreenCapture
    */
-  stopScreenCapture = () => {
-    this.engine?.stopScreenCaptureBySourceType(
-      VideoSourceType.VideoSourceScreenPrimary
-    );
-    this.setState({ startScreenCapture: false });
+  stopScreenCapture = (targetSource: ScreenCaptureSourceInfo) => {
+    const type = this._getVideoSourceTypeScreen(targetSource);
+    if (type === undefined) {
+      this.error('type is invalid');
+      return;
+    }
+    this.engine?.stopScreenCaptureBySourceType(type);
   };
 
   /**
@@ -285,17 +281,30 @@ export default class LocalVideoTranscoder
   };
 
   _getVideoSourceTypeCamera = (value: string) => {
-    const { videoDevices } = this.state;
+    const { videoDeviceId } = this.state;
     return [
       VideoSourceType.VideoSourceCameraPrimary,
       VideoSourceType.VideoSourceCameraSecondary,
       VideoSourceType.VideoSourceCameraThird,
       VideoSourceType.VideoSourceCameraFourth,
-    ][videoDevices?.findIndex(({ deviceId }) => deviceId === value) ?? -1];
+    ][videoDeviceId?.findIndex((deviceId) => deviceId === value) ?? -1];
+  };
+
+  _getVideoSourceTypeScreen = (value: ScreenCaptureSourceInfo) => {
+    const { targetSources } = this.state;
+    return [
+      VideoSourceType.VideoSourceScreenPrimary,
+      VideoSourceType.VideoSourceScreenSecondary,
+      VideoSourceType.VideoSourceScreenThird,
+      VideoSourceType.VideoSourceScreenFourth,
+    ][
+      targetSources?.findIndex(({ sourceId }) => sourceId === value.sourceId) ??
+        -1
+    ];
   };
 
   _generateLocalTranscoderConfiguration = (): LocalTranscoderConfiguration => {
-    const { videoDeviceId, startScreenCapture, open, imageUrl } = this.state;
+    const { videoDeviceId, targetSources, open, imageUrl } = this.state;
     const max_width = 1080,
       max_height = 720,
       width = 300,
@@ -308,11 +317,11 @@ export default class LocalVideoTranscoder
       });
     });
 
-    if (startScreenCapture) {
+    targetSources?.map((v) => {
       streams.push({
-        sourceType: VideoSourceType.VideoSourceScreenPrimary,
+        sourceType: this._getVideoSourceTypeScreen(v),
       });
-    }
+    });
 
     if (open) {
       streams.push({
@@ -381,7 +390,7 @@ export default class LocalVideoTranscoder
     delete state.videoDevices;
     delete state.videoDeviceId;
     delete state.sources;
-    delete state.targetSource;
+    delete state.targetSources;
     this.setState(state);
   }
 
@@ -477,8 +486,7 @@ export default class LocalVideoTranscoder
       videoDevices,
       videoDeviceId,
       sources,
-      targetSource,
-      startScreenCapture,
+      targetSources,
       url,
       open,
       imageUrl,
@@ -496,10 +504,14 @@ export default class LocalVideoTranscoder
           value={videoDeviceId}
           onValueChange={(value, index) => {
             if (videoDeviceId?.indexOf(value) === -1) {
-              this.startCameraCapture(value);
-              this.setState({
-                videoDeviceId: [...videoDeviceId, value],
-              });
+              this.setState(
+                {
+                  videoDeviceId: [...videoDeviceId, value],
+                },
+                () => {
+                  this.startCameraCapture(value);
+                }
+              );
             } else {
               this.stopCameraCapture(value);
               this.setState({
@@ -510,31 +522,43 @@ export default class LocalVideoTranscoder
         />
         <AgoraDivider />
         <AgoraDropdown
-          title={'targetSource'}
+          title={'targetSources'}
           items={sources?.map((value) => {
             return {
               value: value.sourceId!,
               label: value.sourceName!,
             };
           })}
-          value={targetSource?.sourceId}
+          value={targetSources?.map(({ sourceId }) => sourceId)}
           onValueChange={(value, index) => {
-            this.setState({ targetSource: sources?.at(index) });
+            if (
+              targetSources?.findIndex(({ sourceId }) => sourceId === value) ===
+              -1
+            ) {
+              this.setState(
+                {
+                  targetSources: [...targetSources, sources!.at(index)!],
+                },
+                () => {
+                  this.startScreenCapture(sources!.at(index)!);
+                }
+              );
+            } else {
+              this.stopScreenCapture(sources!.at(index)!);
+              this.setState({
+                targetSources: targetSources?.filter(
+                  ({ sourceId }) => sourceId !== value
+                ),
+              });
+            }
           }}
         />
-        {targetSource ? (
+        {targetSources?.map(({ sourceId, thumbImage }) => (
           <AgoraImage
-            source={thumbImageBufferToBase64(targetSource.thumbImage)}
+            key={sourceId}
+            source={thumbImageBufferToBase64(thumbImage)}
           />
-        ) : undefined}
-        <AgoraButton
-          title={`${startScreenCapture ? 'stop' : 'start'} Screen Capture`}
-          onPress={
-            startScreenCapture
-              ? this.stopScreenCapture
-              : this.startScreenCapture
-          }
-        />
+        ))}
         <AgoraDivider />
         <AgoraTextInput
           onChangeText={(text) => {

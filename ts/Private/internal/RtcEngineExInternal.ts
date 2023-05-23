@@ -90,6 +90,8 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
 
   override initialize(context: RtcEngineContext): number {
     if (AgoraEnv.webEnvReady) {
+      // @ts-ignore
+      window.AgoraEnv = AgoraEnv;
       if (AgoraEnv.AgoraRendererManager === undefined) {
         const { RendererManager } = require('../../Renderer/RendererManager');
         AgoraEnv.AgoraRendererManager = new RendererManager();
