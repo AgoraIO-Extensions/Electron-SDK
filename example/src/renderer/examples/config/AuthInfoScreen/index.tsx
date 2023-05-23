@@ -32,10 +32,9 @@ const onFinish = (values: any) => {
 
   config.logFilePath = values.SDKLogPath;
 
-  config.enableSDKLogging = values.enableSDKDebugLogging;
-  config.enableSDKDebugLogging = values.enableSDKLogging;
-  AgoraEnv.enableDebugLogging = values.enableSDKDebugLogging;
-  AgoraEnv.enableLogging = values.enableSDKLogging;
+  AgoraEnv.enableLogging = config.enableSDKLogging = values.enableSDKLogging;
+  AgoraEnv.enableDebugLogging = config.enableSDKDebugLogging =
+    values.enableSDKDebugLogging;
 };
 
 const onFinishFailed = (errorInfo: any) => {

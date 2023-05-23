@@ -13,7 +13,7 @@ import {
 import { IMediaPlayerVideoFrameObserver } from '../IAgoraMediaPlayer';
 import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
 import { IMediaPlayerEvent } from '../extension/IAgoraMediaPlayerExtension';
-
+import { IMediaPlayerImpl } from '../impl/IAgoraMediaPlayerImpl';
 import AgoraMediaBaseTI from '../ti/AgoraMediaBase-ti';
 import IAgoraMediaPlayerTI from '../ti/IAgoraMediaPlayer-ti';
 import IAgoraMediaPlayerSourceTI from '../ti/IAgoraMediaPlayerSource-ti';
@@ -130,7 +130,8 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
         it({ [eventType]: listener }, eventType, data);
       });
     };
-    listener!.prototype.callback = callback;
+    // @ts-ignore
+    listener!.agoraCallback = callback;
     DeviceEventEmitter.addListener(eventType, callback);
   }
 
@@ -140,7 +141,8 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   ) {
     DeviceEventEmitter.removeListener(
       eventType,
-      listener?.prototype.callback ?? listener
+      // @ts-ignore
+      listener?.agoraCallback ?? listener
     );
   }
 
@@ -330,5 +332,3 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     );
   }
 }
-
-import { IMediaPlayerImpl } from '../impl/IAgoraMediaPlayerImpl';

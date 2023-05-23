@@ -122,10 +122,6 @@
             "group": "unknown"
           },
           {
-            "pattern": "../impl/**",
-            "group": "unknown"
-          },
-          {
             "pattern": "./Private/impl/**",
             "group": "unknown"
           }
