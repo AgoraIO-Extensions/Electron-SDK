@@ -30,4 +30,4 @@ jobs:
           type=${type:-"sdk"}
           curl -X POST -sS -D- -o/dev/null ${{secrets.JENKINS_BUILD_URL}} \
           -H 'Content-Type: application/json' \
-          -d '{"branch": "${{github.ref_name}}, "type": "${type}"}'
+          -d "{\"branch\": \"${{github.ref_name}}\", \"type\": \"${type}\"}"
