@@ -65,4 +65,4 @@ jobs:
       - name: Release
         if: ${{ !inputs.dry-run }}
         run: |
-          yarn release ${{ inputs.increment }} --ci --no-npm --no-git.changelog
+          yarn release ${{ inputs.increment }} --ci --no-npm --no-git.commit
