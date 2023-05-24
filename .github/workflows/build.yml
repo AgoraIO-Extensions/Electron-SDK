@@ -2,41 +2,21 @@ name: Build Addon
 run-name: ${{ github.actor }} triggered this job
 on:
   workflow_dispatch:
+    inputs:
+      type:
+        description: 'Build type'
+        required: true
+        default: 'sdk'
+        type: choice
+        options:
+          - demo
+          - sdk
   release:
     types: [ published ]
 jobs:
-  build-macos:
-    strategy:
-      matrix:
-        arch: [ x64, arm64 ]
-    runs-on: macos-latest
+  build:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-          cache: 'yarn'
-      - run: yarn
-
-      - name: Prebuild
+      - name: Build
         run: |
-          yarn prebuild -a ${{ matrix.arch }} -u ${{ secrets.GH_TOKEN }}
-
-  build-windows:
-    strategy:
-      matrix:
-        arch: [ x86, x64 ]
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-          cache: 'yarn'
-      - run: yarn
-
-      - name: Prebuild
-        run: |
-          yarn prebuild -a ${{ matrix.arch }} -u ${{ secrets.GH_TOKEN }}
+          curl -X POST -sS -D- -o/dev/null ${{secrets.JENKINS_BUILD_URL}} -H 'Content-Type: application/json' -d '{"branch":"${{github.ref_name}}"}'
