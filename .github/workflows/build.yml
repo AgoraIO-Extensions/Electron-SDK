@@ -26,7 +26,8 @@ jobs:
     steps:
       - name: Build
         run: |
-          type=${${{inputs.type}}:-"sdk"}
+          type=${{inputs.type}}
+          type=${type:-"sdk"}
           curl -X POST -sS -D- -o/dev/null ${{secrets.JENKINS_BUILD_URL}} \
           -H 'Content-Type: application/json' \
           -d '{"branch": "${{github.ref_name}}, "type": "${type}"}'
