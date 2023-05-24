@@ -49,7 +49,7 @@ jobs:
           name=$(node -p "require('./package.json').name")
           version=$(node -p "require('./package.json').version")
           echo "name=${name}" >> "$GITHUB_OUTPUT"
-          echo "version=${version}"" >> "$GITHUB_OUTPUT"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
 
       - name: Update Example
         if: ${{ !inputs.dry-run }}
