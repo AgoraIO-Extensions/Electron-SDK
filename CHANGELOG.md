@@ -1,5 +1,36 @@
 
 
+## [4.1.1-build.7-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.1.1-build.3-rc.1...v4.1.1-build.7-rc.1) (2023-05-24)
+
+
+### Bug Fixes
+
+* NMS-13120 ([ad1bd5c](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/ad1bd5ce706f3bd55f8f5f15abc4ba6799d2d82b))
+
+
+### Features
+
+* support native 4.1.1.7 ([#1009](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1009)) ([c711f83](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/c711f83948ad14a6e1abd56cbf7345424ddcc0be)), closes [#1008](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1008)
+
+
+
+## [4.1.1-build.3-dev.4](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.1.1-build.3-rc.1...v4.1.1-build.7-rc.1) (2023-05-22)
+
+
+### Bug Fixes
+
+* `removeListener` not working ([#1006](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1006)) ([bcdad46](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/bcdad4646af1ab6ec1837a5328e9b507572cb0f7))
+
+
+
+## [4.1.1-build.3-dev.3](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.1.1-build.3-rc.1...v4.1.1-build.7-rc.1) (2023-05-18)
+
+
+### Bug Fixes
+
+* `removeListener` throw error ([6f3307a](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/6f3307a5cafe688655e3bcd68fc0f849eec36752))
+* set min node version as 14 ([07266a5](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/07266a58bdaae60fd357b202b753a8366b2fabd3))
+
 ## [4.1.1-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.1.0...v4.1.1-rc.1) (2023-02-16)
 
 # [4.1.0](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.1-rc.2...v4.1.0) (2022-12-20)
