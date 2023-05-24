@@ -48,8 +48,8 @@ jobs:
         run: |
           name=$(node -p "require('./package.json').name")
           version=$(node -p "require('./package.json').version")
-          echo '::set-output name=name::${name}'
-          echo '::set-output name=version::${version}'
+          echo '::set-output name=name::{name}'
+          echo '::set-output name=version::{version}'
 
       - name: Update Example
         if: ${{ !inputs.dry-run }}
