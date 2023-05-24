@@ -1,12 +1,19 @@
 name: Build Addon
 run-name: ${{ github.actor }} triggered this job
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       type:
         description: 'Build type'
         required: true
         default: 'sdk'
+        type: string
+  workflow_dispatch:
+    inputs:
+      type:
+        description: 'Build type'
+        required: true
+        default: 'demo'
         type: choice
         options:
           - demo
@@ -14,9 +21,12 @@ on:
   release:
     types: [ published ]
 jobs:
-  build:
+  reusable_workflow_job:
     runs-on: ubuntu-latest
     steps:
       - name: Build
         run: |
-          curl -X POST -sS -D- -o/dev/null ${{secrets.JENKINS_BUILD_URL}} -H 'Content-Type: application/json' -d '{"branch":"${{github.ref_name}}"}'
+          type=${${{inputs.type}}:-"sdk""}
+          curl -X POST -sS -D- -o/dev/null ${{secrets.JENKINS_BUILD_URL}} \
+          -H 'Content-Type: application/json' \
+          -d '{"branch": "${{github.ref_name}}, "type": "${type}"}'

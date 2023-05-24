@@ -11,6 +11,7 @@
     "types",
     "scripts",
     "gulpfile.js",
+    "CHANGELOG.md",
     "!**/__tests__"
   ],
   "scripts": {
