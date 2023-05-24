@@ -54,7 +54,7 @@ jobs:
       - name: Update Example
         if: ${{ !inputs.dry-run }}
         run: |
-          yarn example install ${{steps.package-info.outputs.name}}@${{steps.package-info.outputs.version}}
+          yarn example add ${{steps.package-info.outputs.name}}@${{steps.package-info.outputs.version}}
 
       - name: Commit Example
         if: ${{ !inputs.dry-run }}
