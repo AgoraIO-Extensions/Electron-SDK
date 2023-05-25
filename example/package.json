@@ -65,7 +65,7 @@
     ]
   },
   "dependencies": {
-    "agora-electron-sdk": "4.2.0-dev.15",
+    "agora-electron-sdk": "4.2.0-rc.6",
     "antd": "^4.20.3",
     "download": "^8.0.0",
     "ffi-napi": "^4.0.3",
