@@ -4,7 +4,7 @@ import {
   LocalVideoStreamState,
   VideoSourceType,
 } from 'agora-electron-sdk';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import * as log from '../../../utils/log';
 import { BaseComponent } from '../components/BaseComponent';
@@ -61,46 +61,62 @@ export default function JoinChannelVideo() {
     engine.current.leaveChannel();
   };
 
+  const onVideoDeviceStateChanged = useCallback(
+    (deviceId: string, deviceType: number, deviceState: number) => {
+      log.info(
+        'onVideoDeviceStateChanged',
+        'deviceId',
+        deviceId,
+        'deviceType',
+        deviceType,
+        'deviceState',
+        deviceState
+      );
+    },
+    []
+  );
+
+  const onLocalVideoStateChanged = useCallback(
+    (
+      source: VideoSourceType,
+      state: LocalVideoStreamState,
+      error: LocalVideoStreamError
+    ) => {
+      log.info(
+        'onLocalVideoStateChanged',
+        'source',
+        source,
+        'state',
+        state,
+        'error',
+        error
+      );
+    },
+    []
+  );
+
   useEffect(() => {
     engine.current.addListener(
       'onVideoDeviceStateChanged',
-      (deviceId: string, deviceType: number, deviceState: number) => {
-        log.info(
-          'onVideoDeviceStateChanged',
-          'deviceId',
-          deviceId,
-          'deviceType',
-          deviceType,
-          'deviceState',
-          deviceState
-        );
-      }
+      onVideoDeviceStateChanged
     );
-
     engine.current.addListener(
       'onLocalVideoStateChanged',
-      (
-        source: VideoSourceType,
-        state: LocalVideoStreamState,
-        error: LocalVideoStreamError
-      ) => {
-        log.info(
-          'onLocalVideoStateChanged',
-          'source',
-          source,
-          'state',
-          state,
-          'error',
-          error
-        );
-      }
+      onLocalVideoStateChanged
     );
 
     const engineCopy = engine.current;
     return () => {
-      engineCopy.removeAllListeners();
+      engineCopy.removeListener(
+        'onVideoDeviceStateChanged',
+        onVideoDeviceStateChanged
+      );
+      engineCopy.removeListener(
+        'onLocalVideoStateChanged',
+        onLocalVideoStateChanged
+      );
     };
-  }, [engine]);
+  }, [engine, onLocalVideoStateChanged, onVideoDeviceStateChanged]);
 
   return (
     <BaseComponent

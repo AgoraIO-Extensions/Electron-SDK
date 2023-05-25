@@ -5,7 +5,13 @@ import {
   ErrorCodeType,
   RtcConnection,
 } from 'agora-electron-sdk';
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import {
   AgoraButton,
@@ -89,45 +95,45 @@ export default function TakeSnapshot() {
     engine.current.leaveChannel();
   };
 
-  useEffect(() => {
-    engine.current.addListener(
-      'onSnapshotTaken',
-      (
-        connection: RtcConnection,
-        uid: number,
-        filePath: string,
-        width: number,
-        height: number,
-        errCode: number
-      ) => {
-        log.info(
-          'onSnapshotTaken',
-          'connection',
-          connection,
-          'uid',
-          uid,
-          'filePath',
-          filePath,
-          'width',
-          width,
-          'height',
-          height,
-          'errCode',
-          errCode
-        );
-        if (
-          filePath === `${osFilePath}/${targetUid}-${timestamp.current}.jpg`
-        ) {
-          setTakeSnapshot(errCode === ErrorCodeType.ErrOk);
-        }
+  const onSnapshotTaken = useCallback(
+    (
+      connection: RtcConnection,
+      uid: number,
+      filePath: string,
+      width: number,
+      height: number,
+      errCode: number
+    ) => {
+      log.info(
+        'onSnapshotTaken',
+        'connection',
+        connection,
+        'uid',
+        uid,
+        'filePath',
+        filePath,
+        'width',
+        width,
+        'height',
+        height,
+        'errCode',
+        errCode
+      );
+      if (filePath === `${osFilePath}/${targetUid}-${timestamp.current}.jpg`) {
+        setTakeSnapshot(errCode === ErrorCodeType.ErrOk);
       }
-    );
+    },
+    [osFilePath, targetUid]
+  );
+
+  useEffect(() => {
+    engine.current.addListener('onSnapshotTaken', onSnapshotTaken);
 
     const engineCopy = engine.current;
     return () => {
-      engineCopy.removeAllListeners();
+      engineCopy.removeListener('onSnapshotTaken', onSnapshotTaken);
     };
-  }, [engine, osFilePath, targetUid]);
+  }, [engine, onSnapshotTaken]);
 
   return (
     <BaseComponent

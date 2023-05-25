@@ -182,76 +182,114 @@ export default function DeviceManager() {
     getDeviceVolume();
   }, [enumerateDevices, getDeviceMute, getDeviceVolume]);
 
+  const onAudioDeviceStateChanged = useCallback(
+    (deviceId: string, deviceType: MediaDeviceType, deviceState: number) => {
+      log.info(
+        'onAudioDeviceStateChanged',
+        'deviceId',
+        deviceId,
+        'deviceType',
+        deviceType,
+        'deviceState',
+        deviceState
+      );
+    },
+    []
+  );
+
+  const onAudioDeviceVolumeChanged = useCallback(
+    (deviceType: MediaDeviceType, volume: number, muted: boolean) => {
+      log.info(
+        'onAudioDeviceVolumeChanged',
+        'deviceType',
+        deviceType,
+        'volume',
+        volume,
+        'muted',
+        muted
+      );
+    },
+    []
+  );
+
+  const onVideoDeviceStateChanged = useCallback(
+    (deviceId: string, deviceType: number, deviceState: number) => {
+      log.info(
+        'onVideoDeviceStateChanged',
+        'deviceId',
+        deviceId,
+        'deviceType',
+        deviceType,
+        'deviceState',
+        deviceState
+      );
+    },
+    []
+  );
+
+  const onLocalVideoStateChanged = useCallback(
+    (
+      source: VideoSourceType,
+      state: LocalVideoStreamState,
+      error: LocalVideoStreamError
+    ) => {
+      log.info(
+        'onLocalVideoStateChanged',
+        'source',
+        source,
+        'state',
+        state,
+        'error',
+        error
+      );
+    },
+    []
+  );
+
   useEffect(() => {
     engine.current.addListener(
       'onAudioDeviceStateChanged',
-      (deviceId: string, deviceType: MediaDeviceType, deviceState: number) => {
-        log.info(
-          'onAudioDeviceStateChanged',
-          'deviceId',
-          deviceId,
-          'deviceType',
-          deviceType,
-          'deviceState',
-          deviceState
-        );
-      }
+      onAudioDeviceStateChanged
     );
-
     engine.current.addListener(
       'onAudioDeviceVolumeChanged',
-      (deviceType: MediaDeviceType, volume: number, muted: boolean) => {
-        log.info(
-          'onAudioDeviceVolumeChanged',
-          'deviceType',
-          deviceType,
-          'volume',
-          volume,
-          'muted',
-          muted
-        );
-      }
+      onAudioDeviceVolumeChanged
     );
-
     engine.current.addListener(
       'onVideoDeviceStateChanged',
-      (deviceId: string, deviceType: number, deviceState: number) => {
-        log.info(
-          'onVideoDeviceStateChanged',
-          'deviceId',
-          deviceId,
-          'deviceType',
-          deviceType,
-          'deviceState',
-          deviceState
-        );
-      }
+      onVideoDeviceStateChanged
     );
-
     engine.current.addListener(
       'onLocalVideoStateChanged',
-      (
-        source: VideoSourceType,
-        state: LocalVideoStreamState,
-        error: LocalVideoStreamError
-      ) => {
-        log.info(
-          'onLocalVideoStateChanged',
-          'source',
-          source,
-          'state',
-          state,
-          'error',
-          error
-        );
-      }
+      onLocalVideoStateChanged
     );
 
     const engineCopy = engine.current;
     return () => {
-      engineCopy.removeAllListeners();
+      engineCopy.removeListener(
+        'onAudioDeviceStateChanged',
+        onAudioDeviceStateChanged
+      );
+      engineCopy.removeListener(
+        'onAudioDeviceVolumeChanged',
+        onAudioDeviceVolumeChanged
+      );
+      engineCopy.removeListener(
+        'onVideoDeviceStateChanged',
+        onVideoDeviceStateChanged
+      );
+      engineCopy.removeListener(
+        'onLocalVideoStateChanged',
+        onLocalVideoStateChanged
+      );
     };
-  }, [engine]);
+  }, [
+    engine,
+    onAudioDeviceStateChanged,
+    onAudioDeviceVolumeChanged,
+    onLocalVideoStateChanged,
+    onVideoDeviceStateChanged,
+  ]);
 
   return (
     <BaseComponent

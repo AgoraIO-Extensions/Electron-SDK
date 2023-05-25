@@ -230,95 +230,118 @@ export default function ScreenShare() {
     engine.current.leaveChannel();
   };
 
+  const onJoinChannelSuccess = useCallback(
+    (connection: RtcConnection, elapsed: number) => {
+      if (connection.localUid === uid2) {
+        log.info(
+          'onJoinChannelSuccess',
+          'connection',
+          connection,
+          'elapsed',
+          elapsed
+        );
+        setPublishScreenCapture(true);
+        return;
+      }
+    },
+    [uid2]
+  );
+
+  const onLeaveChannel = useCallback(
+    (connection: RtcConnection, stats: RtcStats) => {
+      log.info('onLeaveChannel', 'connection', connection, 'stats', stats);
+      if (connection.localUid === uid2) {
+        setPublishScreenCapture(false);
+        return;
+      }
+      resetSources();
+      resetTargetSource();
+    },
+    [resetSources, resetTargetSource, uid2]
+  );
+
+  const onUserJoined = useCallback(
+    (connection: RtcConnection, remoteUid: number, elapsed: number) => {
+      if (connection.localUid === uid2 || remoteUid === uid2) {
+        // ⚠️ mute the streams from screen sharing
+        engine.current.muteRemoteAudioStream(uid2, true);
+        engine.current.muteRemoteVideoStream(uid2, true);
+        return;
+      }
+    },
+    [engine, uid2]
+  );
+
+  const onUserOffline = useCallback(
+    (
+      connection: RtcConnection,
+      remoteUid: number,
+      reason: UserOfflineReasonType
+    ) => {
+      if (connection.localUid === uid2 || remoteUid === uid2) return;
+    },
+    [uid2]
+  );
+
+  const onLocalVideoStateChanged = useCallback(
+    (
+      source: VideoSourceType,
+      state: LocalVideoStreamState,
+      error: LocalVideoStreamError
+    ) => {
+      log.info(
+        'onLocalVideoStateChanged',
+        'source',
+        source,
+        'state',
+        state,
+        'error',
+        error
+      );
+      if (source === VideoSourceType.VideoSourceScreen) {
+        switch (state) {
+          case LocalVideoStreamState.LocalVideoStreamStateStopped:
+          case LocalVideoStreamState.LocalVideoStreamStateFailed:
+            break;
+          case LocalVideoStreamState.LocalVideoStreamStateCapturing:
+          case LocalVideoStreamState.LocalVideoStreamStateEncoding:
+            setStartScreenCapture(true);
+            break;
+        }
+      }
+    },
+    []
+  );
+
   useEffect(() => {
-    engine.current.addListener(
-      'onJoinChannelSuccess',
-      (connection: RtcConnection, elapsed: number) => {
-        if (connection.localUid === uid2) {
-          log.info(
-            'onJoinChannelSuccess',
-            'connection',
-            connection,
-            'elapsed',
-            elapsed
-          );
-          setPublishScreenCapture(true);
-          return;
-        }
-      }
-    );
-
-    engine.current.addListener(
-      'onLeaveChannel',
-      (connection: RtcConnection, stats: RtcStats) => {
-        log.info('onLeaveChannel', 'connection', connection, 'stats', stats);
-        if (connection.localUid === uid2) {
-          setPublishScreenCapture(false);
-          return;
-        }
-        resetSources();
-        resetTargetSource();
-      }
-    );
-
-    engine.current.addListener(
-      'onUserJoined',
-      (connection: RtcConnection, remoteUid: number, elapsed: number) => {
-        if (connection.localUid === uid2 || remoteUid === uid2) {
-          // ⚠️ mute the streams from screen sharing
-          engine.current.muteRemoteAudioStream(uid2, true);
-          engine.current.muteRemoteVideoStream(uid2, true);
-          return;
-        }
-      }
-    );
-
-    engine.current.addListener(
-      'onUserOffline',
-      (
-        connection: RtcConnection,
-        remoteUid: number,
-        reason: UserOfflineReasonType
-      ) => {
-        if (connection.localUid === uid2 || remoteUid === uid2) return;
-      }
-    );
-
+    engine.current.addListener('onJoinChannelSuccess', onJoinChannelSuccess);
+    engine.current.addListener('onLeaveChannel', onLeaveChannel);
+    engine.current.addListener('onUserJoined', onUserJoined);
+    engine.current.addListener('onUserOffline', onUserOffline);
     engine.current.addListener(
       'onLocalVideoStateChanged',
-      (
-        source: VideoSourceType,
-        state: LocalVideoStreamState,
-        error: LocalVideoStreamError
-      ) => {
-        log.info(
-          'onLocalVideoStateChanged',
-          'source',
-          source,
-          'state',
-          state,
-          'error',
-          error
-        );
-        if (source === VideoSourceType.VideoSourceScreen) {
-          switch (state) {
-            case LocalVideoStreamState.LocalVideoStreamStateStopped:
-            case LocalVideoStreamState.LocalVideoStreamStateFailed:
-              break;
-            case LocalVideoStreamState.LocalVideoStreamStateCapturing:
-            case LocalVideoStreamState.LocalVideoStreamStateEncoding:
-              setStartScreenCapture(true);
-              break;
-          }
-        }
-      }
+      onLocalVideoStateChanged
     );
 
     const engineCopy = engine.current;
     return () => {
-      engineCopy.removeAllListeners();
+      engineCopy.removeListener('onJoinChannelSuccess', onJoinChannelSuccess);
+      engineCopy.removeListener('onLeaveChannel', onLeaveChannel);
+      engineCopy.removeListener('onUserJoined', onUserJoined);
+      engineCopy.removeListener('onUserOffline', onUserOffline);
+      engineCopy.removeListener(
+        'onLocalVideoStateChanged',
+        onLocalVideoStateChanged
+      );
     };
-  }, [engine, resetSources, resetTargetSource, uid2]);
+  }, [
+    engine,
+    onJoinChannelSuccess,
+    onLeaveChannel,
+    onLocalVideoStateChanged,
+    onUserJoined,
+    onUserOffline,
+  ]);
 
   return (
     <BaseComponent

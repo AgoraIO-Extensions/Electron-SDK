@@ -262,7 +262,12 @@ export default function JoinMultipleChannel() {
 
     const engineCopy = engine.current;
     return () => {
-      engineCopy.removeAllListeners();
+      engineCopy.removeListener('onJoinChannelSuccess', onJoinChannelSuccess);
+      engineCopy.removeListener('onLeaveChannel', onLeaveChannel);
+      engineCopy.removeListener(
+        'onRemoteVideoStateChanged',
+        onRemoteVideoStateChanged
+      );
     };
   }, [engine, onJoinChannelSuccess, onLeaveChannel, onRemoteVideoStateChanged]);
 

@@ -83,7 +83,7 @@ export default function StringUid() {
 
     const engineCopy = engine.current;
     return () => {
-      engineCopy.removeAllListeners();
+      engineCopy.removeListener('onLocalUserRegistered', onLocalUserRegistered);
     };
   }, [engine, onLocalUserRegistered]);
 

@@ -5,7 +5,7 @@ import {
   MediaDeviceType,
   RtcConnection,
 } from 'agora-electron-sdk';
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 
 import { AgoraButton, AgoraDivider, AgoraSlider } from '../../../components/ui';
 import * as log from '../../../utils/log';
@@ -113,65 +113,97 @@ export default function JoinChannelAudio() {
     engine.current.leaveChannel();
   };
 
+  const onAudioDeviceStateChanged = useCallback(
+    (deviceId: string, deviceType: number, deviceState: number) => {
+      log.info(
+        'onAudioDeviceStateChanged',
+        'deviceId',
+        deviceId,
+        'deviceType',
+        deviceType,
+        'deviceState',
+        deviceState
+      );
+    },
+    []
+  );
+
+  const onAudioDeviceVolumeChanged = useCallback(
+    (deviceType: MediaDeviceType, volume: number, muted: boolean) => {
+      log.info(
+        'onAudioDeviceVolumeChanged',
+        'deviceType',
+        deviceType,
+        'volume',
+        volume,
+        'muted',
+        muted
+      );
+    },
+    []
+  );
+
+  const onLocalAudioStateChanged = useCallback(
+    (
+      connection: RtcConnection,
+      state: LocalAudioStreamState,
+      error: LocalAudioStreamError
+    ) => {
+      log.info(
+        'onLocalAudioStateChanged',
+        'connection',
+        connection,
+        'state',
+        state,
+        'error',
+        error
+      );
+    },
+    []
+  );
+
+  const onAudioRoutingChanged = useCallback((routing: number) => {
+    log.info('onAudioRoutingChanged', 'routing', routing);
+  }, []);
+
   useEffect(() => {
     engine.current.addListener(
       'onAudioDeviceStateChanged',
-      (deviceId: string, deviceType: number, deviceState: number) => {
-        log.info(
-          'onAudioDeviceStateChanged',
-          'deviceId',
-          deviceId,
-          'deviceType',
-          deviceType,
-          'deviceState',
-          deviceState
-        );
-      }
+      onAudioDeviceStateChanged
     );
-
     engine.current.addListener(
       'onAudioDeviceVolumeChanged',
-      (deviceType: MediaDeviceType, volume: number, muted: boolean) => {
-        log.info(
-          'onAudioDeviceVolumeChanged',
-          'deviceType',
-          deviceType,
-          'volume',
-          volume,
-          'muted',
-          muted
-        );
-      }
+      onAudioDeviceVolumeChanged
     );
-
     engine.current.addListener(
       'onLocalAudioStateChanged',
-      (
-        connection: RtcConnection,
-        state: LocalAudioStreamState,
-        error: LocalAudioStreamError
-      ) => {
-        log.info(
-          'onLocalAudioStateChanged',
-          'connection',
-          connection,
-          'state',
-          state,
-          'error',
-          error
-        );
-      }
+      onLocalAudioStateChanged
     );
-
-    engine.current.addListener('onAudioRoutingChanged', (routing: number) => {
-      log.info('onAudioRoutingChanged', 'routing', routing);
-    });
+    engine.current.addListener('onAudioRoutingChanged', onAudioRoutingChanged);
 
     const engineCopy = engine.current;
     return () => {
-      engineCopy.removeAllListeners();
+      engineCopy.removeListener(
+        'onAudioDeviceStateChanged',
+        onAudioDeviceStateChanged
+      );
+      engineCopy.removeListener(
+        'onAudioDeviceVolumeChanged',
+        onAudioDeviceVolumeChanged
+      );
+      engineCopy.removeListener(
+        'onLocalAudioStateChanged',
+        onLocalAudioStateChanged
+      );
+      engineCopy.removeListener('onAudioRoutingChanged', onAudioRoutingChanged);
     };
-  }, [engine]);
+  }, [
+    engine,
+    onAudioDeviceStateChanged,
+    onAudioDeviceVolumeChanged,
+    onAudioRoutingChanged,
+    onLocalAudioStateChanged,
+  ]);
 
   return (
     <BaseComponent

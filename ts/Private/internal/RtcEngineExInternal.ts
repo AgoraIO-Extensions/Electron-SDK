@@ -122,6 +122,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     MediaPlayerInternal._audio_frame_observers.clear();
     MediaPlayerInternal._video_frame_observers.clear();
     MediaPlayerInternal._audio_spectrum_observers.clear();
+    MediaRecorderInternal._observers.clear();
     this.removeAllListeners();
     super.release(sync);
   }
