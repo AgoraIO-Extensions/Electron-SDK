@@ -418,6 +418,9 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   videoFrame.height = height;
   videoFrame.width = width;
   videoFrame.yStride = yStride;
+  videoFrame.metadata_buffer = nullptr;
+  videoFrame.metadata_size = 0;
+  videoFrame.alphaBuffer = nullptr;
 
   bool isFresh = false;
   napi_value retObj;
