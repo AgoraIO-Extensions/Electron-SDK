@@ -1,26 +1,29 @@
-import React from 'react';
-import {
-  ChannelProfileType,
-  ClientRoleType,
-  createAgoraRtcEngine,
-  IRtcEngineEventHandler,
-} from 'agora-electron-sdk';
-import download from 'download';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import Config from '../../../config/agora.config';
+import {
+  ChannelProfileType,
+  ClientRoleType,
+  IRtcEngineEventHandler,
+  createAgoraRtcEngine,
+} from 'agora-electron-sdk';
+import download from 'download';
+import ffi, {
+  LibraryObject,
+  LibraryObjectDefinitionToLibraryDefinition,
+} from 'ffi-napi';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
 import { AgoraButton } from '../../../components/ui';
+import Config from '../../../config/agora.config';
+import { askMediaAccess } from '../../../utils/permissions';
 
-const ffi = require('ffi-napi');
-const Pointer = 'uint64';
-
+const pluginVersion = 'v4.2.0-dev.8';
 let pluginName = 'VideoObserverPlugin';
 let postfix = `_${process.arch}`;
 if (process.platform === 'darwin') {
@@ -30,6 +33,14 @@ if (process.platform === 'darwin') {
 }
 pluginName += postfix;
 
+type PluginType = {
+  EnablePlugin: ['bool', ['uint64']];
+  DisablePlugin: ['bool', ['uint64']];
+  CreateSamplePlugin: ['uint64', ['uint64']];
+  DestroySamplePlugin: ['void', ['uint64']];
+  CreateSampleAudioPlugin: ['uint64', ['uint64']];
+};
+
 interface State extends BaseVideoComponentState {
   enablePlugin: boolean;
 }
@@ -38,8 +49,11 @@ export default class ProcessVideoRawData
   extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler
 {
-  pluginLibrary?: any;
-  plugin?: any;
+  pluginLibrary?: LibraryObject<
+    LibraryObjectDefinitionToLibraryDefinition<PluginType>
+  >;
+  plugin?: string | number;
+  pluginAudio?: string | number;
 
   protected createState(): State {
     return {
@@ -67,11 +81,14 @@ export default class ProcessVideoRawData
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
@@ -112,25 +129,30 @@ export default class ProcessVideoRawData
    * Step 3: enablePlugin
    */
   enablePlugin = async () => {
-    const version = '4.1.0-beta.1';
-    const url = `https://github.com/AgoraIO-Extensions/RawDataPluginSample/releases/download/${version}/${pluginName}`;
+    const url = `https://github.com/AgoraIO-Extensions/RawDataPluginSample/releases/download/${pluginVersion}/${pluginName}`;
     const dllPath = path.resolve(os.tmpdir(), pluginName);
     if (!fs.existsSync(dllPath)) {
       console.log(`start downloading plugin ${url} to ${dllPath}`);
-      await download(url, os.tmpdir());
+      await download(encodeURI(url), os.tmpdir());
       console.log(`download success`);
     }
 
-    this.pluginLibrary ??= ffi.Library(dllPath, {
-      EnablePlugin: ['bool', [Pointer]],
-      DisablePlugin: ['bool', [Pointer]],
-      CreateSamplePlugin: [Pointer, [Pointer]],
-      DestroySamplePlugin: ['void', [Pointer]],
-    });
+    const plugin: PluginType = {
+      CreateSampleAudioPlugin: ['uint64', ['uint64']],
+      CreateSamplePlugin: ['uint64', ['uint64']],
+      DestroySamplePlugin: ['void', ['uint64']],
+      DisablePlugin: ['bool', ['uint64']],
+      EnablePlugin: ['bool', ['uint64']],
+    };
+    this.pluginLibrary ??= ffi.Library(dllPath, plugin);
 
     const handle = this.engine?.getNativeHandle();
-    this.plugin = this.pluginLibrary.CreateSamplePlugin(handle);
-    this.pluginLibrary.EnablePlugin(this.plugin);
+    if (handle !== undefined) {
+      this.plugin = this.pluginLibrary.CreateSamplePlugin(handle);
+      this.pluginLibrary.EnablePlugin(this.plugin);
+      this.pluginAudio = this.pluginLibrary.CreateSampleAudioPlugin(handle);
+      this.pluginLibrary.EnablePlugin(this.pluginAudio);
+    }
     this.setState({ enablePlugin: true });
   };
 
@@ -138,14 +160,21 @@ export default class ProcessVideoRawData
    * Step 4: disablePlugin
    */
   disablePlugin = () => {
-    if (!this.plugin) {
+    if (this.plugin) {
+      this.pluginLibrary?.DisablePlugin(this.plugin);
+      this.pluginLibrary?.DestroySamplePlugin(this.plugin);
+      this.plugin = undefined;
+    } else {
       this.error('plugin is invalid');
-      return;
     }
 
-    this.pluginLibrary.DisablePlugin(this.plugin);
-    this.pluginLibrary.DestroySamplePlugin(this.plugin);
-    this.plugin = undefined;
+    if (this.pluginAudio) {
+      this.pluginLibrary?.DisablePlugin(this.pluginAudio);
+      this.pluginLibrary?.DestroySamplePlugin(this.pluginAudio);
+      this.pluginAudio = undefined;
+    } else {
+      this.error('pluginAudio is invalid');
+    }
     this.setState({ enablePlugin: false });
   };
 
@@ -165,7 +194,7 @@ export default class ProcessVideoRawData
     this.engine?.release();
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { enablePlugin } = this.state;
     return (
       <>

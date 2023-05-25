@@ -1,13 +1,13 @@
-import React from 'react';
 import {
   AudioSpectrumData,
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IAudioSpectrumObserver,
   IRtcEngineEventHandler,
   UserAudioSpectrumInfo,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
+import React, { ReactElement } from 'react';
 import {
   CartesianGrid,
   Line,
@@ -16,13 +16,13 @@ import {
   YAxis,
 } from 'recharts';
 
-import Config from '../../../config/agora.config';
-
 import {
   BaseAudioComponentState,
   BaseComponent,
 } from '../../../components/BaseComponent';
 import { AgoraButton, AgoraTextInput } from '../../../components/ui';
+import Config from '../../../config/agora.config';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseAudioComponentState {
   intervalInMS: number;
@@ -43,7 +43,7 @@ export default class AudioSpectrum
       uid: Config.uid,
       joinChannelSuccess: false,
       remoteUsers: [],
-      intervalInMS: 100,
+      intervalInMS: 500,
       enableAudioSpectrumMonitor: false,
       audioSpectrumData: [],
     };
@@ -61,11 +61,14 @@ export default class AudioSpectrum
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone permission
+    await askMediaAccess(['microphone']);
 
     // Only need to enable audio on this case
     this.engine.enableAudio();
@@ -166,7 +169,7 @@ export default class AudioSpectrum
     return true;
   }
 
-  protected renderUsers(): React.ReactNode {
+  protected renderUsers(): ReactElement | undefined {
     const { enableAudioSpectrumMonitor, audioSpectrumData } = this.state;
     return (
       <>
@@ -192,7 +195,7 @@ export default class AudioSpectrum
     );
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     return (
       <>
         <AgoraTextInput
@@ -203,6 +206,7 @@ export default class AudioSpectrum
                 text === '' ? this.createState().intervalInMS : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`intervalInMS (defaults: ${
             this.createState().intervalInMS
           })`}
@@ -211,7 +215,7 @@ export default class AudioSpectrum
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { enableAudioSpectrumMonitor } = this.state;
     return (
       <>

@@ -1,19 +1,33 @@
 {
   "compilerOptions": {
-    "outDir": "./js",
-    "baseUrl": ".",
-    "target": "es2015",
-    "strict": true,
-    "module": "commonjs",
+    "baseUrl": "./",
+    "paths": {
+      "agora-electron-sdk": [
+        "./ts/AgoraSdk"
+      ]
+    },
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
     "esModuleInterop": true,
-    "declaration": true,
-    "allowJs": true,
+    "importsNotUsedAsValues": "remove",
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react",
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "module": "commonjs",
     "moduleResolution": "node",
-    "lib": ["es2015", "dom"],
-    "types": ["node"],
-    "typeRoots": ["node_modules/@types"],
-  },
-  "include": [
-    "./ts/**/*"
-  ]
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noImplicitUseStrict": false,
+    "noStrictGenericChecks": false,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "esnext"
+  }
 }

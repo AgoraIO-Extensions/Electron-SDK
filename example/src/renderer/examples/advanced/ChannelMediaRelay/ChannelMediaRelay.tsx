@@ -1,26 +1,21 @@
-import React from 'react';
 import {
   ChannelMediaRelayError,
   ChannelMediaRelayEvent,
   ChannelMediaRelayState,
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import {
-  AgoraButton,
-  AgoraDivider,
-  AgoraText,
-  AgoraTextInput,
-} from '../../../components/ui';
+import { AgoraButton, AgoraText, AgoraTextInput } from '../../../components/ui';
+import Config from '../../../config/agora.config';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   destChannelNames: string[];
@@ -60,11 +55,14 @@ export default class ChannelMediaRelay
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
@@ -216,7 +214,7 @@ export default class ChannelMediaRelay
     this.info('onChannelMediaRelayEvent', 'code', code);
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const { destChannelNames } = this.state;
     return (
       <>
@@ -232,7 +230,7 @@ export default class ChannelMediaRelay
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const {
       joinChannelSuccess,
       startChannelMediaRelay,

@@ -1,6 +1,4 @@
-import React from 'react';
 import {
-  createAgoraRtcEngine,
   IMediaPlayer,
   IMediaPlayerSourceObserver,
   IRtcEngineEventHandler,
@@ -8,9 +6,9 @@ import {
   MediaPlayerEvent,
   MediaPlayerState,
   VideoSourceType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
@@ -21,8 +19,9 @@ import {
   AgoraDivider,
   AgoraSlider,
   AgoraTextInput,
+  RtcSurfaceView,
 } from '../../../components/ui';
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
+import Config from '../../../config/agora.config';
 
 interface State extends BaseComponentState {
   url: string;
@@ -70,7 +69,7 @@ export default class MediaPlayer
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
     });
     this.engine.registerEventHandler(this);
 
@@ -283,11 +282,11 @@ export default class MediaPlayer
     );
   }
 
-  protected renderChannel(): React.ReactNode {
+  protected renderChannel(): ReactElement | undefined {
     return undefined;
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const { url, open, position, duration, playoutVolume } = this.state;
     return (
       <>
@@ -333,6 +332,7 @@ export default class MediaPlayer
               loopCount: text === '' ? this.createState().loopCount : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`loopCount (defaults: ${this.createState().loopCount})`}
         />
         <AgoraButton
@@ -344,14 +344,14 @@ export default class MediaPlayer
     );
   }
 
-  protected renderUsers(): React.ReactNode {
+  protected renderUsers(): ReactElement | undefined {
     const { open } = this.state;
     return (
       <>
         {open ? (
           <RtcSurfaceView
             canvas={{
-              uid: this.player?.getMediaPlayerId(),
+              mediaPlayerId: this.player?.getMediaPlayerId(),
               sourceType: VideoSourceType.VideoSourceMediaPlayer,
             }}
           />
@@ -360,7 +360,7 @@ export default class MediaPlayer
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { open, play, pause, mute } = this.state;
     return (
       <>

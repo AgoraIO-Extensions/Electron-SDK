@@ -1,5 +1,6 @@
 import './extension/IAudioDeviceManagerExtension';
 import { AudioDeviceInfo } from './IAgoraRtcEngine';
+
 /**
  * The maximum length of the device ID.
  */
@@ -58,13 +59,7 @@ export abstract class IAudioDeviceManager {
   abstract getPlaybackDeviceInfo(): AudioDeviceInfo;
 
   /**
-   * Sets the volume of the audio effects.
-   * Call this method after playEffect .
-   *
-   * @param volume The playback volume. The value range is [0, 100]. The default value is 100, which represents the original volume.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
+   * @ignore
    */
   abstract setPlaybackDeviceVolume(volume: number): number;
 
@@ -102,9 +97,9 @@ export abstract class IAudioDeviceManager {
 
   /**
    * Sets the volume of the audio capture device.
-   * This method applies to Windows only.
+   * This method is for Windows and macOS only.
    *
-   * @param volume The volume of the audio recording device. The value ranges between 0 (lowest volume) and 255 (highest volume). 0 means no sound, 255 means maximum volume.
+   * @param volume The volume of the audio recording device. The value range is [0,255]. 0 means no sound, 255 means maximum volume.
    *
    * @returns
    * 0: Success.< 0: Failure.
@@ -118,7 +113,7 @@ export abstract class IAudioDeviceManager {
 
   /**
    * Sets the loopback device.
-   * The SDK uses the current playback device as the loopback device by default. If you want to specify another audio device as the loopback device, call this method, and set deviceId to the loopback device you want to specify.You can call this method to change the audio route currently being used, but this does not change the default audio route. For example, if the default audio route is microphone, you call this method to set the audio route as a sound card before joinging a channel and then start a device test, the SDK conducts device test on the sound card. After the device test is completed and you join a channel, the SDK still uses the microphone for audio capturing.This method applies to Windows only.The scenarios where this method is applicable are as follows:Use app A to play music through a Bluetooth headset; when using app B for a video conference, play through the speakers.If the loopback device is set as the Bluetooth headset, the SDK publishes the music in app A to the remote end.If the loopback device is set as the speaker, the SDK does not publish the music in app A to the remote end.If you set the loopback device as the Bluetooth headset, and then use a wired headset to play the music in app A, you need to call this method again, set the loopback device as the wired headset, and the SDK continues to publish the music in app A to remote end.
+   * The SDK uses the current playback device as the loopback device by default. If you want to specify another audio device as the loopback device, call this method, and set deviceId to the loopback device you want to specify.You can call this method to change the audio route currently being used, but this does not change the default audio route. For example, if the default audio route is microphone, you call this method to set the audio route as a sound card before joinging a channel and then start a device test, the SDK conducts device test on the sound card. After the device test is completed and you join a channel, the SDK still uses the microphone for audio capturing.This method is for Windows and macOS only.The scenarios where this method is applicable are as follows:Use app A to play music through a Bluetooth headset; when using app B for a video conference, play through the speakers.If the loopback device is set as the Bluetooth headset, the SDK publishes the music in app A to the remote end.If the loopback device is set as the speaker, the SDK does not publish the music in app A to the remote end.If you set the loopback device as the Bluetooth headset, and then use a wired headset to play the music in app A, you need to call this method again, set the loopback device as the wired headset, and the SDK continues to publish the music in app A to remote end.
    *
    * @param deviceId Specifies the loopback device of the SDK. You can get the device ID by calling enumeratePlaybackDevices . Connecting or disconnecting the audio device does not change the value of deviceId.The maximum length is MaxDeviceIdLengthType .
    *
@@ -129,7 +124,7 @@ export abstract class IAudioDeviceManager {
 
   /**
    * Gets the current loopback device.
-   * This method applies to Windows only.
+   * This method is for Windows and macOS only.
    *
    * @returns
    * The ID of the current loopback device.
@@ -137,13 +132,7 @@ export abstract class IAudioDeviceManager {
   abstract getLoopbackDevice(): string;
 
   /**
-   * Stops or resumes subscribing to the video streams of all remote users.
-   * After successfully calling this method, the local user stops or resumes subscribing to the audio streams of all remote users, including all subsequent users.Call this method after joining a channel.If you do not want to subscribe the video streams of remote users before joining a channel, you can call joinChannel and set autoSubscribeVideo as false.
-   *
-   * @param mute Whether to stop subscribing to the video streams of all remote users.true: Stop subscribing to the video streams of all remote users.false: (Default) Subscribe to the audio streams of all remote users by default.
-   *
-   * @returns
-   * 0: Success. < 0: Failure.
+   * @ignore
    */
   abstract setPlaybackDeviceMute(mute: boolean): number;
 
@@ -153,13 +142,7 @@ export abstract class IAudioDeviceManager {
   abstract getPlaybackDeviceMute(): boolean;
 
   /**
-   * Stops or resumes subscribing to the video streams of all remote users.
-   * After successfully calling this method, the local user stops or resumes subscribing to the audio streams of all remote users, including all subsequent users.Call this method after joining a channel.If you do not want to subscribe the video streams of remote users before joining a channel, you can call joinChannel and set autoSubscribeVideo as false.
-   *
-   * @param mute Whether to stop subscribing to the video streams of all remote users.true: Stop subscribing to the video streams of all remote users.false: (Default) Subscribe to the audio streams of all remote users by default.
-   *
-   * @returns
-   * 0: Success. < 0: Failure.
+   * @ignore
    */
   abstract setRecordingDeviceMute(mute: boolean): number;
 
@@ -250,7 +233,7 @@ export abstract class IAudioDeviceManager {
 
   /**
    * Sets whether the loopback device follows the system default playback device.
-   * This method applies to Windows only.
+   * This method is for Windows and macOS only.
    *
    * @param enable Whether to follow the system default audio playback device:true: Follow the system default audio playback device. When the default playback device of the system is changed, the SDK immediately switches to the loopback device.false: Do not follow the system default audio playback device. The SDK switches the audio loopback device to the system default audio playback device only when the current audio playback device is disconnected.
    *

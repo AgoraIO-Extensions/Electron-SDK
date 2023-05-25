@@ -1,13 +1,11 @@
-import React from 'react';
 import {
   AudioFrame,
   AudioPcmFrame,
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IAudioFrameObserver,
+  IAudioPcmFrameSink,
   IMediaPlayer,
-  IMediaPlayerAudioFrameObserver,
   IMediaPlayerSourceObserver,
   IMediaPlayerVideoFrameObserver,
   IRtcEngineEventHandler,
@@ -19,16 +17,21 @@ import {
   UserOfflineReasonType,
   VideoFrame,
   VideoSourceType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import { AgoraButton, AgoraTextInput } from '../../../components/ui';
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
+import {
+  AgoraButton,
+  AgoraTextInput,
+  RtcSurfaceView,
+} from '../../../components/ui';
+import Config from '../../../config/agora.config';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   token2: string;
@@ -44,7 +47,7 @@ export default class SendMultiVideoStream
     IMediaPlayerSourceObserver,
     IAudioFrameObserver,
     IVideoFrameObserver,
-    IMediaPlayerAudioFrameObserver,
+    IAudioPcmFrameSink,
     IMediaPlayerVideoFrameObserver
 {
   // @ts-ignore
@@ -80,13 +83,16 @@ export default class SendMultiVideoStream
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
     // this.engine.getMediaEngine().registerAudioFrameObserver(this);
     // this.engine.getMediaEngine().registerVideoFrameObserver(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
@@ -129,8 +135,8 @@ export default class SendMultiVideoStream
     }
 
     this.player = this.engine?.createMediaPlayer();
-    // this.player.registerAudioFrameObserver(this);
-    // this.player.registerVideoFrameObserver(this);
+    // this.player?.registerAudioFrameObserver(this);
+    // this.player?.registerVideoFrameObserver(this);
     this.player?.registerPlayerSourceObserver(this);
     this.player?.open(url, 0);
   };
@@ -273,8 +279,11 @@ export default class SendMultiVideoStream
     return true;
   }
 
-  onCaptureVideoFrame(videoFrame: VideoFrame): boolean {
-    this.info('onCaptureVideoFrame', videoFrame);
+  onCaptureVideoFrame(
+    sourceType: VideoSourceType,
+    videoFrame: VideoFrame
+  ): boolean {
+    this.info('onCaptureVideoFrame', sourceType, videoFrame);
     return true;
   }
 
@@ -290,7 +299,7 @@ export default class SendMultiVideoStream
     this.info('onFrame', frame);
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const { uid2, url } = this.state;
     return (
       <>
@@ -301,6 +310,7 @@ export default class SendMultiVideoStream
               uid2: text === '' ? this.createState().uid2 : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`uid2 (must > 0)`}
           value={uid2 > 0 ? uid2.toString() : ''}
         />
@@ -315,7 +325,7 @@ export default class SendMultiVideoStream
     );
   }
 
-  protected renderUsers(): React.ReactNode {
+  protected renderUsers(): ReactElement | undefined {
     const { open } = this.state;
     return (
       <>
@@ -323,7 +333,7 @@ export default class SendMultiVideoStream
         {open ? (
           <RtcSurfaceView
             canvas={{
-              uid: this.player?.getMediaPlayerId(),
+              mediaPlayerId: this.player?.getMediaPlayerId(),
               sourceType: VideoSourceType.VideoSourceMediaPlayer,
             }}
           />
@@ -332,7 +342,7 @@ export default class SendMultiVideoStream
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { open } = this.state;
     return (
       <>

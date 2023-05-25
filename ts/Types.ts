@@ -1,20 +1,28 @@
-import { VideoSourceType } from './Private/AgoraBase';
-import { RenderModeType } from './Private/AgoraMediaBase';
-import { IRenderer } from './Renderer/IRenderer';
-import { RendererManager } from './Renderer/RendererManager';
+import { RenderModeType, VideoSourceType } from './Private/AgoraMediaBase';
+import { IRenderer, IRendererManager } from './Renderer';
 
 /**
  * @ignore
  */
-export interface AgoraEnvType {
+export interface AgoraEnvOptions {
   /**
    * @ignore
    */
-  enableLogging: boolean;
+  enableLogging?: boolean;
   /**
    * @ignore
    */
-  enableDebugLogging: boolean;
+  enableDebugLogging?: boolean;
+  /**
+   * @ignore
+   */
+  webEnvReady?: boolean;
+}
+
+/**
+ * @ignore
+ */
+export interface AgoraEnvType extends AgoraEnvOptions {
   /**
    * @ignore
    */
@@ -22,7 +30,7 @@ export interface AgoraEnvType {
   /**
    * @ignore
    */
-  AgoraRendererManager?: RendererManager;
+  AgoraRendererManager?: IRendererManager;
 }
 
 /**
@@ -172,6 +180,10 @@ export interface ShareVideoFrame {
   /**
    * @ignore
    */
+  yStride: number;
+  /**
+   * @ignore
+   */
   yBuffer: Buffer | Uint8Array;
   /**
    * @ignore
@@ -221,6 +233,9 @@ export interface Result {
  * @ignore
  */
 export interface AgoraElectronBridge {
+  /**
+   * @ignore
+   */
   OnEvent(
     callbackName: string,
     callback: (
@@ -243,40 +258,21 @@ export interface AgoraElectronBridge {
 
   ReleaseEnv(): void;
 
+  ReleaseRenderer(): void;
+
   EnableVideoFrameCache(config: VideoFrameCacheConfig): void;
 
   DisableVideoFrameCache(config: VideoFrameCacheConfig): void;
 
   GetBuffer(ptr: number, length: number): Buffer;
 
-  /**
-   * @ignore
-   */
   GetVideoFrame(streamInfo: ShareVideoFrame): {
     ret: number;
-    /**
-     * @ignore
-     */
     isNewFrame: boolean;
-    /**
-     * @ignore
-     */
     yStride: number;
-    /**
-     * @ignore
-     */
     width: number;
-    /**
-     * @ignore
-     */
     height: number;
-    /**
-     * @ignore
-     */
     rotation: number;
-    /**
-     * @ignore
-     */
     timestamp: number;
   };
 

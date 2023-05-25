@@ -1,18 +1,18 @@
-import React from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
 import { AgoraButton, AgoraTextInput } from '../../../components/ui';
+import Config from '../../../config/agora.config';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   path: string;
@@ -54,11 +54,14 @@ export default class Extension
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
@@ -83,7 +86,9 @@ export default class Extension
       return;
     }
 
-    this.engine?.loadExtensionProvider(path);
+    if (process.platform === 'win32') {
+      this.engine?.loadExtensionProvider(path);
+    }
 
     this.engine?.enableExtension(provider, extension, true);
     this.setState({ enableExtension: true });
@@ -187,19 +192,21 @@ export default class Extension
     this.setState({ enableExtension: false });
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const { path, provider, extension } = this.state;
     return (
       <>
-        <AgoraTextInput
-          onChangeText={(text) => {
-            this.setState({
-              path: text,
-            });
-          }}
-          placeholder={'path'}
-          value={path}
-        />
+        {process.platform === 'win32' ? (
+          <AgoraTextInput
+            onChangeText={(text) => {
+              this.setState({
+                path: text,
+              });
+            }}
+            placeholder={'path'}
+            value={path}
+          />
+        ) : undefined}
         <AgoraTextInput
           onChangeText={(text) => {
             this.setState({
@@ -222,7 +229,7 @@ export default class Extension
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { joinChannelSuccess, enableExtension } = this.state;
     return (
       <>

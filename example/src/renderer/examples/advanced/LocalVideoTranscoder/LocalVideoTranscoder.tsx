@@ -1,12 +1,13 @@
-import React from 'react';
 import createAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
   IMediaPlayer,
   IMediaPlayerSourceObserver,
   IRtcEngineEventHandler,
+  LocalTranscoderConfiguration,
   MediaPlayerError,
   MediaPlayerState,
+  RenderModeType,
   RtcConnection,
   RtcStats,
   ScreenCaptureSourceInfo,
@@ -14,13 +15,9 @@ import createAgoraRtcEngine, {
   TranscodingVideoStream,
   VideoDeviceInfo,
   VideoSourceType,
-  MediaSourceType,
-  LocalTranscoderConfiguration,
 } from 'agora-electron-sdk';
+import React, { ReactElement } from 'react';
 
-import Config from '../../../config/agora.config';
-
-import { getResourcePath } from '../../../utils';
 import {
   BaseComponent,
   BaseVideoComponentState,
@@ -30,23 +27,24 @@ import {
   AgoraDivider,
   AgoraDropdown,
   AgoraImage,
-  AgoraText,
   AgoraTextInput,
+  RtcSurfaceView,
 } from '../../../components/ui';
-import { Card, List } from 'antd';
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
-import { rgbImageBufferToBase64 } from '../../../utils/base64';
+import Config from '../../../config/agora.config';
+
+import { getResourcePath } from '../../../utils';
+import { thumbImageBufferToBase64 } from '../../../utils/base64';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   videoDevices?: VideoDeviceInfo[];
   videoDeviceId?: string[];
   sources?: ScreenCaptureSourceInfo[];
-  targetSource?: ScreenCaptureSourceInfo;
-  startScreenCapture: boolean;
+  targetSources?: ScreenCaptureSourceInfo[];
   url: string;
   open: boolean;
   imageUrl: string;
-  startLocalVideoTranscoder: boolean;
+  startLocalVideoTranscoder?: boolean;
   VideoInputStreams: TranscodingVideoStream[];
 }
 
@@ -69,11 +67,10 @@ export default class LocalVideoTranscoder
       videoDevices: [],
       videoDeviceId: [],
       sources: [],
-      targetSource: undefined,
-      startScreenCapture: false,
+      targetSources: undefined,
       url: 'https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov',
       open: false,
-      imageUrl: getResourcePath('png.png'),
+      imageUrl: getResourcePath('agora-logo.png'),
       startLocalVideoTranscoder: false,
       VideoInputStreams: [],
     };
@@ -92,22 +89,24 @@ export default class LocalVideoTranscoder
     this.engine.registerEventHandler(this);
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera', 'screen']);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();
 
     // Start preview before joinChannel
-    this.engine.startPreview();
+    // this.engine.startPreview();
     this.setState({ startPreview: true });
 
     this.enumerateDevices();
     this.getScreenCaptureSources();
-    (window as any).engine = this.engine;
   }
 
   /**
@@ -134,7 +133,7 @@ export default class LocalVideoTranscoder
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       publishMicrophoneTrack: false,
       publishCameraTrack: false,
-      publishTrancodedVideoTrack: true,
+      publishTranscodedVideoTrack: true,
     });
   }
 
@@ -146,46 +145,34 @@ export default class LocalVideoTranscoder
       ?.getVideoDeviceManager()
       .enumerateVideoDevices();
 
-    this.setState({
-      videoDevices,
-      videoDeviceId: videoDevices?.length
-        ? [videoDevices!.at(0)!.deviceId!]
-        : [],
-    });
+    const deviceId = videoDevices?.at(0)?.deviceId ?? '';
+    this.setState(
+      {
+        videoDevices,
+        videoDeviceId: [deviceId],
+      },
+      () => {
+        this.startCameraCapture(deviceId);
+      }
+    );
   };
 
   startCameraCapture = (deviceId: string) => {
-    if (
-      VideoSourceType.VideoSourceCameraPrimary ===
-      this._getVideoSourceTypeCamera(deviceId)
-    ) {
-      this.engine?.startPrimaryCameraCapture({
-        deviceId,
-      });
+    const sourceType = this._getVideoSourceTypeCamera(deviceId);
+    if (sourceType === undefined) {
+      this.error('sourceType is invalid');
+      return;
     }
-    if (
-      VideoSourceType.VideoSourceCameraSecondary ===
-      this._getVideoSourceTypeCamera(deviceId)
-    ) {
-      this.engine?.startSecondaryCameraCapture({
-        deviceId,
-      });
-    }
+    this.engine?.startCameraCapture(sourceType, { deviceId });
   };
 
   stopCameraCapture = (deviceId: string) => {
-    if (
-      VideoSourceType.VideoSourceCameraPrimary ===
-      this._getVideoSourceTypeCamera(deviceId)
-    ) {
-      this.engine?.stopPrimaryCameraCapture();
+    const sourceType = this._getVideoSourceTypeCamera(deviceId);
+    if (sourceType === undefined) {
+      this.error('sourceType is invalid');
+      return;
     }
-    if (
-      VideoSourceType.VideoSourceCameraSecondary ===
-      this._getVideoSourceTypeCamera(deviceId)
-    ) {
-      this.engine?.stopSecondaryCameraCapture();
-    }
+    this.engine?.stopCameraCapture(sourceType);
   };
 
   /**
@@ -199,22 +186,22 @@ export default class LocalVideoTranscoder
     );
     this.setState({
       sources,
-      targetSource: sources?.at(0),
+      targetSources: [],
     });
   };
 
   /**
    * Step 3-3 (Optional): startScreenCapture
    */
-  startScreenCapture = () => {
-    const { targetSource } = this.state;
-    if (!targetSource) {
-      this.error(`targetSource is invalid`);
+  startScreenCapture = (targetSource: ScreenCaptureSourceInfo) => {
+    const sourceType = this._getVideoSourceTypeScreen(targetSource);
+    if (sourceType === undefined) {
+      this.error('sourceType is invalid');
+      return;
     }
-
-    this.engine?.startPrimaryScreenCapture({
+    this.engine?.startScreenCaptureBySourceType(sourceType, {
       isCaptureWindow:
-        targetSource!.type ===
+        targetSource.type ===
         ScreenCaptureSourceType.ScreencapturesourcetypeWindow,
       screenRect: { width: 0, height: 0, x: 0, y: 0 },
       windowId: targetSource!.sourceId,
@@ -228,18 +215,20 @@ export default class LocalVideoTranscoder
         excludeWindowList: [],
         excludeWindowCount: 0,
       },
-
       regionRect: { x: 0, y: 0, width: 0, height: 0 },
     });
-    this.setState({ startScreenCapture: true });
   };
 
   /**
    * Step 3-4 (Optional): stopScreenCapture
    */
-  stopScreenCapture = () => {
-    this.engine?.stopPrimaryScreenCapture();
-    this.setState({ startScreenCapture: false });
+  stopScreenCapture = (targetSource: ScreenCaptureSourceInfo) => {
+    const sourceType = this._getVideoSourceTypeScreen(targetSource);
+    if (sourceType === undefined) {
+      this.error('sourceType is invalid');
+      return;
+    }
+    this.engine?.stopScreenCaptureBySourceType(sourceType);
   };
 
   /**
@@ -276,6 +265,7 @@ export default class LocalVideoTranscoder
     const config = this._generateLocalTranscoderConfiguration();
 
     this.engine?.startLocalVideoTranscoder(config);
+    this.engine?.startPreview(VideoSourceType.VideoSourceTranscoded);
     this.setState({ startLocalVideoTranscoder: true });
   };
 
@@ -297,49 +287,67 @@ export default class LocalVideoTranscoder
   };
 
   _getVideoSourceTypeCamera = (value: string) => {
-    const { videoDevices } = this.state;
+    const { videoDeviceId } = this.state;
+    const index =
+      videoDeviceId?.findIndex((deviceId) => deviceId === value) ?? -1;
     return [
       VideoSourceType.VideoSourceCameraPrimary,
       VideoSourceType.VideoSourceCameraSecondary,
-    ][videoDevices?.findIndex(({ deviceId }) => deviceId === value) ?? -1];
+      VideoSourceType.VideoSourceCameraThird,
+      VideoSourceType.VideoSourceCameraFourth,
+    ][index === -1 ? 0 : index];
+  };
+
+  _getVideoSourceTypeScreen = (value: ScreenCaptureSourceInfo) => {
+    const { targetSources } = this.state;
+    const index =
+      targetSources?.findIndex(({ sourceId }) => sourceId === value.sourceId) ??
+      -1;
+    return [
+      VideoSourceType.VideoSourceScreenPrimary,
+      VideoSourceType.VideoSourceScreenSecondary,
+      VideoSourceType.VideoSourceScreenThird,
+      VideoSourceType.VideoSourceScreenFourth,
+    ][index === -1 ? 0 : index];
   };
 
   _generateLocalTranscoderConfiguration = (): LocalTranscoderConfiguration => {
-    const { videoDeviceId, startScreenCapture, open, imageUrl } = this.state;
+    const { videoDeviceId, targetSources, open, imageUrl } = this.state;
     const max_width = 1080,
       max_height = 720,
       width = 300,
       height = 300;
 
     const streams: TranscodingVideoStream[] = [];
-    if (videoDeviceId?.length) {
+    videoDeviceId?.map((v) => {
       streams.push({
-        sourceType: MediaSourceType.PrimaryCameraSource,
+        sourceType: this._getVideoSourceTypeCamera(v),
       });
-    }
+    });
 
-    if (startScreenCapture) {
+    targetSources?.map((v) => {
       streams.push({
-        sourceType: MediaSourceType.PrimaryScreenSource,
+        sourceType: this._getVideoSourceTypeScreen(v),
       });
-    }
+    });
 
     if (open) {
       streams.push({
-        sourceType: MediaSourceType.MediaPlayerSource,
-        imageUrl: this.player?.getMediaPlayerId().toString(),
+        sourceType: VideoSourceType.VideoSourceMediaPlayer,
+        mediaPlayerId: this.player?.getMediaPlayerId(),
       });
     }
 
     if (imageUrl) {
-      const getImageType = (url) => {
+      const getImageType = (url: string): VideoSourceType | undefined => {
         if (url.endsWith('.png')) {
-          return MediaSourceType.RtcImagePngSource;
+          return VideoSourceType.VideoSourceRtcImagePng;
         } else if (url.endsWith('.jepg') || url.endsWith('.jpg')) {
-          return MediaSourceType.RtcImageJpegSource;
+          return VideoSourceType.VideoSourceRtcImageJpeg;
         } else if (url.endsWith('.gif')) {
-          return MediaSourceType.RtcImageGifSource;
+          return VideoSourceType.VideoSourceRtcImageGif;
         }
+        return undefined;
       };
       streams.push({
         sourceType: getImageType(imageUrl),
@@ -357,12 +365,12 @@ export default class LocalVideoTranscoder
       value.height = height;
       value.zOrder = 1;
       value.alpha = 1;
-      value.mirror = true;
+      value.mirror = false;
     });
 
     return {
       streamCount: streams.length,
-      VideoInputStreams: streams,
+      videoInputStreams: streams,
       videoOutputConfiguration: {
         dimensions: { width: max_width, height: max_height },
       },
@@ -390,7 +398,8 @@ export default class LocalVideoTranscoder
     delete state.videoDevices;
     delete state.videoDeviceId;
     delete state.sources;
-    delete state.targetSource;
+    delete state.targetSources;
+    delete state.startLocalVideoTranscoder;
     this.setState(state);
   }
 
@@ -435,57 +444,40 @@ export default class LocalVideoTranscoder
     }
   }
 
-  protected renderVideo(uid: number, channelId?: string): React.ReactNode {
-    const { startLocalVideoTranscoder } = this.state;
-    const sourceType =
-      uid === 0
-        ? startLocalVideoTranscoder
-          ? VideoSourceType.VideoSourceTranscoded
-          : VideoSourceType.VideoSourceCamera
-        : VideoSourceType.VideoSourceRemote;
-
-    return (
-      <List.Item>
-        <Card title={`ChannelId: ${channelId} Uid: ${uid}`}>
-          <AgoraText>Click view to mirror</AgoraText>
-          <RtcSurfaceView
-            canvas={{
-              uid,
-              sourceType,
-            }}
-          />
-        </Card>
-      </List.Item>
-    );
-  }
-
-  protected renderUsers(): React.ReactNode {
-    const { videoDeviceId, channelId } = this.state;
+  protected renderUsers(): ReactElement | undefined {
+    const {
+      startPreview,
+      joinChannelSuccess,
+      startLocalVideoTranscoder,
+      videoDeviceId,
+    } = this.state;
     return (
       <>
-        {super.renderUsers()}
-        {videoDeviceId?.map((value) => {
-          return (
-            <RtcSurfaceView
-              key={value}
-              canvas={{
+        {startLocalVideoTranscoder
+          ? this.renderUser({
+              renderMode: RenderModeType.RenderModeFit,
+              uid: 0,
+              sourceType: VideoSourceType.VideoSourceTranscoded,
+            })
+          : undefined}
+        {startPreview || joinChannelSuccess
+          ? videoDeviceId?.map((value) =>
+              this.renderUser({
                 uid: 0,
                 sourceType: this._getVideoSourceTypeCamera(value),
-              }}
-            />
-          );
-        })}
+              })
+            )
+          : undefined}
       </>
     );
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const {
       videoDevices,
       videoDeviceId,
       sources,
-      targetSource,
-      startScreenCapture,
+      targetSources,
       url,
       open,
       imageUrl,
@@ -503,10 +495,14 @@ export default class LocalVideoTranscoder
           value={videoDeviceId}
           onValueChange={(value, index) => {
             if (videoDeviceId?.indexOf(value) === -1) {
-              this.startCameraCapture(value);
-              this.setState({
-                videoDeviceId: [...videoDeviceId, value],
-              });
+              this.setState(
+                {
+                  videoDeviceId: [...videoDeviceId, value],
+                },
+                () => {
+                  this.startCameraCapture(value);
+                }
+              );
             } else {
               this.stopCameraCapture(value);
               this.setState({
@@ -517,31 +513,43 @@ export default class LocalVideoTranscoder
         />
         <AgoraDivider />
         <AgoraDropdown
-          title={'targetSource'}
+          title={'targetSources'}
           items={sources?.map((value) => {
             return {
               value: value.sourceId!,
               label: value.sourceName!,
             };
           })}
-          value={targetSource?.sourceId}
+          value={targetSources?.map(({ sourceId }) => sourceId)}
           onValueChange={(value, index) => {
-            this.setState({ targetSource: sources?.at(index) });
+            if (
+              targetSources?.findIndex(({ sourceId }) => sourceId === value) ===
+              -1
+            ) {
+              this.setState(
+                {
+                  targetSources: [...targetSources, sources!.at(index)!],
+                },
+                () => {
+                  this.startScreenCapture(sources!.at(index)!);
+                }
+              );
+            } else {
+              this.stopScreenCapture(sources!.at(index)!);
+              this.setState({
+                targetSources: targetSources?.filter(
+                  ({ sourceId }) => sourceId !== value
+                ),
+              });
+            }
           }}
         />
-        {targetSource ? (
+        {targetSources?.map(({ sourceId, thumbImage }) => (
           <AgoraImage
-            source={rgbImageBufferToBase64(targetSource.thumbImage)}
+            key={sourceId}
+            source={thumbImageBufferToBase64(thumbImage)}
           />
-        ) : undefined}
-        <AgoraButton
-          title={`${startScreenCapture ? 'stop' : 'start'} Screen Capture`}
-          onPress={
-            startScreenCapture
-              ? this.stopScreenCapture
-              : this.startScreenCapture
-          }
-        />
+        ))}
         <AgoraDivider />
         <AgoraTextInput
           onChangeText={(text) => {
@@ -553,7 +561,7 @@ export default class LocalVideoTranscoder
         {open ? (
           <RtcSurfaceView
             canvas={{
-              uid: this.player?.getMediaPlayerId(),
+              mediaPlayerId: this.player?.getMediaPlayerId(),
               sourceType: VideoSourceType.VideoSourceMediaPlayer,
             }}
           />
@@ -574,7 +582,7 @@ export default class LocalVideoTranscoder
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { startLocalVideoTranscoder } = this.state;
     return (
       <>

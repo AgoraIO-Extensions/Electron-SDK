@@ -1,17 +1,11 @@
-/*
- * @Author: zhangtao@agora.io
- * @Date: 2021-04-28 13:34:48
- * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-05-19 15:59:03
- */
-
-const YUVBuffer = require('yuv-buffer');
-const YUVCanvas = require('yuv-canvas');
-const isEqual = require('lodash.isequal');
+import isEqual from 'lodash.isequal';
 
 import { RenderModeType } from '../../Private/AgoraMediaBase';
 import { CanvasOptions, ShareVideoFrame } from '../../Types';
 import { IRenderer } from '../IRenderer';
+
+const YUVBuffer = require('yuv-buffer');
+const YUVCanvas = require('yuv-canvas');
 
 export class YUVCanvasRenderer extends IRenderer {
   private _cacheCanvasOptions?: CanvasOptions;
@@ -25,6 +19,7 @@ export class YUVCanvasRenderer extends IRenderer {
       rotation: 0,
       width: 0,
       height: 0,
+      yStride: 0,
       yBuffer: new Uint8Array(0),
       uBuffer: new Uint8Array(0),
       vBuffer: new Uint8Array(0),
@@ -32,7 +27,7 @@ export class YUVCanvasRenderer extends IRenderer {
     };
   }
 
-  bind(element: HTMLElement) {
+  public bind(element: HTMLElement) {
     super.bind(element);
     let container = document.createElement('div');
     Object.assign(container.style, {
@@ -53,7 +48,7 @@ export class YUVCanvasRenderer extends IRenderer {
     });
   }
 
-  unbind() {
+  public unbind() {
     if (this._container) {
       this._container.replaceChildren();
       this._container = undefined;
@@ -70,7 +65,7 @@ export class YUVCanvasRenderer extends IRenderer {
     }
   }
 
-  zoom(
+  private zoom(
     vertical: boolean,
     contentMode: RenderModeType = RenderModeType.RenderModeFit,
     width: number,
@@ -107,7 +102,7 @@ export class YUVCanvasRenderer extends IRenderer {
     }
   }
 
-  updateCanvas(
+  private updateCanvas(
     options: CanvasOptions = {
       frameWidth: 0,
       frameHeight: 0,
@@ -155,17 +150,15 @@ export class YUVCanvasRenderer extends IRenderer {
         options.clientHeight
       );
 
-      // @ts-ignore
-      this.canvas.style.zoom = scale.toString();
+      this.canvas.style.transform = `scale(${scale.toString()})`;
 
       if (transformItems.length > 0) {
-        let transform = `${transformItems.join(' ')}`;
-        this.canvas.style.transform = transform;
+        this.canvas.style.transform = `${transformItems.join(' ')}`;
       }
     }
   }
 
-  drawFrame(frame: ShareVideoFrame) {
+  public drawFrame(frame: ShareVideoFrame) {
     if (!this._container || !this._yuvCanvasSink) {
       return;
     }
@@ -174,14 +167,18 @@ export class YUVCanvasRenderer extends IRenderer {
     let frameHeight = frame.height;
 
     if (
-      this._videoFrame.width === 0 ||
+      this._videoFrame.yStride === 0 ||
       this._videoFrame.height === 0 ||
-      this._videoFrame.width != frame.width ||
+      this._videoFrame.yStride != frame.yStride ||
       this._videoFrame.height != frame.height
     ) {
-      this._videoFrame.yBuffer = new Uint8Array(frameWidth * frameHeight);
-      this._videoFrame.uBuffer = new Uint8Array((frameWidth * frameHeight) / 4);
-      this._videoFrame.vBuffer = new Uint8Array((frameWidth * frameHeight) / 4);
+      this._videoFrame.yBuffer = new Uint8Array(frame.yStride * frameHeight);
+      this._videoFrame.uBuffer = new Uint8Array(
+        (frame.yStride * frameHeight) / 4
+      );
+      this._videoFrame.vBuffer = new Uint8Array(
+        (frame.yStride * frameHeight) / 4
+      );
     }
 
     this._videoFrame.yBuffer.set(frame.yBuffer);
@@ -190,11 +187,12 @@ export class YUVCanvasRenderer extends IRenderer {
 
     this._videoFrame.width = frame.width;
     this._videoFrame.height = frame.height;
+    this._videoFrame.yStride = frame.yStride;
     this._videoFrame.rotation = frame.rotation;
 
     let options: CanvasOptions = {
-      frameWidth: frame.width,
-      frameHeight: frame.height,
+      frameWidth,
+      frameHeight,
       rotation: frame.rotation ? frame.rotation : 0,
       contentMode: this.contentMode,
       clientWidth: this._container.clientWidth,
@@ -208,16 +206,28 @@ export class YUVCanvasRenderer extends IRenderer {
       height: frameHeight,
       chromaWidth: frameWidth / 2,
       chromaHeight: frameHeight / 2,
+      cropLeft: frame.yStride - frameWidth,
     });
 
-    let y = YUVBuffer.lumaPlane(format, this._videoFrame.yBuffer);
-    let u = YUVBuffer.chromaPlane(format, this._videoFrame.uBuffer);
-    let v = YUVBuffer.chromaPlane(format, this._videoFrame.vBuffer);
-    let yuvBufferFrame = YUVBuffer.frame(format, y, u, v);
+    let yuvBufferFrame = YUVBuffer.frame(
+      format,
+      {
+        bytes: this._videoFrame.yBuffer,
+        stride: frame.yStride,
+      },
+      {
+        bytes: this._videoFrame.uBuffer,
+        stride: frame.yStride / 2,
+      },
+      {
+        bytes: this._videoFrame.vBuffer,
+        stride: frame.yStride / 2,
+      }
+    );
     this._yuvCanvasSink.drawFrame(yuvBufferFrame);
   }
 
-  refreshCanvas() {
+  public refreshCanvas() {
     if (this._cacheCanvasOptions) {
       this.zoom(
         this._cacheCanvasOptions.rotation === 90 ||

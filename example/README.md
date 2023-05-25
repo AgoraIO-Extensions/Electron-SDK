@@ -22,7 +22,7 @@ Then do the following:
 git clone git@github.com:AgoraIO-Extensions/Electron-SDK.git
 cd example
 yarn
-yarn dev
+yarn start
 ```
 
 #### (Optional) Build From Local SDK
@@ -57,12 +57,15 @@ cd example && yarn link "agora-electron-sdk"
 
 | Demo                                                                         | Description                                        | APIs                                                                                                                                               |
 | ---------------------------------------------------------------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [JoinChannelAudio](src/renderer/examples/hooks/JoinChannelAudio/JoinChannelAudio.tsx) | basic demo to show audio call                      | getAudioDeviceManager, setAudioProfile,setRecordingDevice, adjustRecordingSignalVolume, adjustAudioMixingPlayoutVolume, adjustPlaybackSignalVolume |
-| [JoinChannelVideo](src/renderer/examples/hooks/JoinChannelVideo/JoinChannelVideo.tsx) | video demo with role selection in Editor Inspector | enableVideo, getVideoDeviceManager,setChannelProfile, joinChannelEx, setAudioProfile, setVideoEncoderConfiguration                                 |
-| [StringUid](src/renderer/examples/hooks/StringUid/StringUid.tsx)               | basic demo with string uid                         | joinChannelWithUserAccount                                                                                                                         |
-| [JoinMultipleChannel](src/renderer/examples/hooks/JoinMultipleChannel/JoinMultipleChannel.tsx)               | Joins a channel with the connection ID                         | joinChannelEx, updateChannelMediaOptionsEx                                                                                                                         |
-| [DeviceManager](src/renderer/examples/hooks/DeviceManager/DeviceManager.tsx)               | Management tool that can switch microphone and camera                         | getVideoDeviceManager, getAudioDeviceManager                                                                                                                         |
-| [VirtualBackground](src/renderer/examples/hooks/VirtualBackground/VirtualBackground.tsx)               | Enables/Disables the virtual background (beta feature)                         | enableExtension, enableVirtualBackground                                                                                                                          |
+| [JoinChannelAudio](src/renderer/examples/hook/JoinChannelAudio/JoinChannelAudio.tsx) | basic demo to show audio call | getAudioDeviceManager, setAudioProfile,setRecordingDevice, adjustRecordingSignalVolume, adjustAudioMixingPlayoutVolume, adjustPlaybackSignalVolume |
+| [JoinChannelVideo](src/renderer/examples/hook/JoinChannelVideo/JoinChannelVideo.tsx) | video demo with role selection in Editor Inspector | enableVideo, getVideoDeviceManager,setChannelProfile, joinChannelEx, setAudioProfile, setVideoEncoderConfiguration |
+| [StringUid](src/renderer/examples/hook/StringUid/StringUid.tsx) | basic demo with string uid | joinChannelWithUserAccount |
+| [JoinMultipleChannel](src/renderer/examples/hook/JoinMultipleChannel/JoinMultipleChannel.tsx) | Joins a channel with the connection ID | joinChannelEx, updateChannelMediaOptionsEx |
+| [DeviceManager](src/renderer/examples/hook/DeviceManager/DeviceManager.tsx) | Management tool that can switch microphone and camera | getVideoDeviceManager, getAudioDeviceManager |
+| [VirtualBackground](src/renderer/examples/hook/VirtualBackground/VirtualBackground.tsx) | Enables/Disables the virtual background (beta feature) | enableExtension, enableVirtualBackground |
+| [AudioMixing](src/renderer/examples/hook/AudioMixing/AudioMixing.tsx) | Starts playing the music file | startAudioMixing, pauseAudioMixing, resumeAudioMixing |
+| [TakeSnapshot](src/renderer/examples/hook/TakeSnapshot/TakeSnapshot.tsx) | Takes a snapshot of a video stream | takeSnapshot |
+| [ScreenShare](src/renderer/examples/hook/ScreenShare/ScreenShare.tsx) | sharing application screen view | getScreenCaptureSources, startPrimaryScreenCapture, startSecondaryScreenCapture,joinChannelEx |
 
 ## 👏 Feedback
 

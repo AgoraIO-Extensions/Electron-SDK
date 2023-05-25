@@ -1,15 +1,13 @@
-import React from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   EncryptionErrorType,
   EncryptionMode,
   IRtcEngineEventHandler,
   RtcConnection,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
@@ -22,7 +20,9 @@ import {
   AgoraText,
   AgoraTextInput,
 } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 import { enumToItems } from '../../../utils';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   encryptionMode: EncryptionMode;
@@ -64,11 +64,14 @@ export default class Encryption
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
@@ -152,7 +155,7 @@ export default class Encryption
     );
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const { encryptionMode, encryptionKey, encryptionKdfSalt } = this.state;
     return (
       <>
@@ -178,6 +181,7 @@ export default class Encryption
               encryptionKdfSalt: text.split(' ').map((value) => +value),
             });
           }}
+          numberKeyboard={true}
           placeholder={'encryptionKdfSalt (split by blank)'}
           value={encryptionKdfSalt.join(' ')}
         />
@@ -186,7 +190,7 @@ export default class Encryption
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { joinChannelSuccess, enableEncryption } = this.state;
     return (
       <>

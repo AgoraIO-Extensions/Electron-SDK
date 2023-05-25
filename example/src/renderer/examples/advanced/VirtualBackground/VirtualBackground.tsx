@@ -1,15 +1,13 @@
-import React from 'react';
 import {
   BackgroundBlurDegree,
   BackgroundSourceType,
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
+import React, { ReactElement } from 'react';
 import { SketchPicker } from 'react-color';
-
-import Config from '../../../config/agora.config';
 
 import {
   BaseComponent,
@@ -20,7 +18,9 @@ import {
   AgoraDropdown,
   AgoraTextInput,
 } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 import { enumToItems, getResourcePath } from '../../../utils';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   background_source_type: BackgroundSourceType;
@@ -46,7 +46,7 @@ export default class VirtualBackground
       startPreview: false,
       background_source_type: BackgroundSourceType.BackgroundColor,
       color: 0xffffff,
-      source: getResourcePath('png.png'),
+      source: getResourcePath('agora-logo.png'),
       blur_degree: BackgroundBlurDegree.BlurDegreeMedium,
       enableVirtualBackground: false,
     };
@@ -64,11 +64,14 @@ export default class VirtualBackground
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
 
     this.engine?.enableExtension(
       'agora_video_filters_segmentation',
@@ -160,7 +163,7 @@ export default class VirtualBackground
     this.engine?.release();
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const { background_source_type, color, source, blur_degree } = this.state;
     return (
       <>
@@ -209,7 +212,7 @@ export default class VirtualBackground
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { startPreview, joinChannelSuccess, enableVirtualBackground } =
       this.state;
     return (

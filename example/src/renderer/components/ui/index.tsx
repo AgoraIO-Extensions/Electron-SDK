@@ -1,28 +1,40 @@
-import React, { useEffect, useState } from 'react';
+import { DownOutlined } from '@ant-design/icons';
 import {
   Button,
   ButtonProps,
-  DividerProps,
+  Card,
+  CardProps,
   Divider,
-  InputProps,
-  Input,
-  Slider,
-  SliderSingleProps,
-  SwitchProps,
-  Switch,
-  ImageProps,
-  Image,
+  DividerProps,
   Dropdown,
   DropdownProps,
+  Image,
+  ImageProps,
+  Input,
+  InputProps,
+  List,
+  ListProps,
   Menu,
+  Slider,
+  SliderSingleProps,
+  Switch,
+  SwitchProps,
 } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import { ListItemProps } from 'antd/lib/list';
+import React, {
+  DetailedHTMLProps,
+  HTMLAttributes,
+  MouseEventHandler,
+  useEffect,
+  useState,
+} from 'react';
+
+import css from './public.scss';
+
+export { RtcSurfaceView } from '../RtcSurfaceView';
 
 export const AgoraView = (
-  props: React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLDivElement>,
-    HTMLDivElement
-  >
+  props: DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
 ) => {
   return (
     <>
@@ -32,10 +44,7 @@ export const AgoraView = (
 };
 
 export const AgoraText = (
-  props: React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLDivElement>,
-    HTMLDivElement
-  >
+  props: DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
 ) => {
   return (
     <>
@@ -46,7 +55,7 @@ export const AgoraText = (
 
 export const AgoraButton = (
   props: Omit<ButtonProps, 'onClick'> & {
-    onPress?: React.MouseEventHandler<HTMLElement>;
+    onPress?: MouseEventHandler<HTMLElement>;
   }
 ) => {
   const { title, onPress, ...others } = props;
@@ -74,11 +83,12 @@ export const AgoraDivider = (props: DividerProps) => {
 
 export const AgoraTextInput = (
   props: InputProps & {
+    numberKeyboard?: boolean;
     editable?: boolean;
     onChangeText?: (text: string) => void;
   }
 ) => {
-  const { value, editable, onChangeText, ...others } = props;
+  const { value, numberKeyboard, editable, onChangeText, ...others } = props;
 
   const [_value, setValue] = useState(value);
 
@@ -91,6 +101,7 @@ export const AgoraTextInput = (
       <Input
         style={{ marginTop: 10, marginBottom: 10 }}
         disabled={editable === undefined ? false : !editable}
+        type={numberKeyboard ? 'number' : 'text'}
         {...others}
         onChange={({ target: { value: text } }) => {
           setValue(text);
@@ -186,6 +197,35 @@ export const AgoraImage = (
   );
 };
 
+export const AgoraListItem = (props: ListItemProps) => {
+  return <List.Item {...props} />;
+};
+
+export function AgoraList<T>(
+  props: Omit<ListProps<T>, 'dataSource'> & { data: T[] }
+) {
+  const { data, renderItem, ...others } = props;
+  return (
+    <List
+      style={{ width: '100%' }}
+      grid={{ column: 2 }}
+      {...others}
+      dataSource={data}
+      renderItem={(item: T, index: number) => {
+        return (
+          <AgoraListItem>
+            {renderItem ? renderItem(item, index) : undefined}
+          </AgoraListItem>
+        );
+      }}
+    />
+  );
+}
+
+export const AgoraCard = (props: CardProps) => {
+  return <Card {...props} />;
+};
+
 export interface AgoraDropdownItem {
   label: string;
   value: any;
@@ -226,34 +266,26 @@ export const AgoraDropdown = (
             }))}
             selectedKeys={
               _value?.map
-                ? _value.map((v) => v.toString())
+                ? _value.map((v: any) => v.toString())
                 : [_value?.toString()]
             }
             onSelect={(info) => {
-              let key;
-              if (typeof _value === 'number') {
-                key = +info.key;
-              } else {
-                key = info.key;
-              }
-              const index = _items?.findIndex(({ value }) => {
-                return value === key;
-              });
+              const index =
+                _items?.findIndex(({ value }) => {
+                  return value == info.key;
+                }) ?? -1;
+              const key = items?.at(index)?.value;
               setValue(key);
-              props.onValueChange?.call(this, key, index ?? -1);
+              props.onValueChange?.call(this, key, index);
             }}
             onDeselect={(info) => {
-              let key;
-              if (typeof _value === 'number') {
-                key = +info.key;
-              } else {
-                key = info.key;
-              }
-              const index = _items?.findIndex(({ value }) => {
-                return value === key;
-              });
+              const index =
+                _items?.findIndex(({ value }) => {
+                  return value == info.key;
+                }) ?? -1;
+              const key = items?.at(index)?.value;
               setValue(key);
-              props.onValueChange?.call(this, key, index ?? -1);
+              props.onValueChange?.call(this, key, index);
             }}
           />
         }
@@ -262,14 +294,14 @@ export const AgoraDropdown = (
           {_value?.map
             ? _value
                 ?.map(
-                  (v) =>
+                  (v: any) =>
                     _items?.find((item) => {
-                      return v === item.value;
+                      return v == item.value;
                     })?.label
                 )
                 ?.toString()
             : _items?.find((item) => {
-                return _value === item.value;
+                return _value == item.value;
               })?.label}
           <DownOutlined />
         </Button>
@@ -279,37 +311,13 @@ export const AgoraDropdown = (
 };
 
 export const AgoraStyle = {
-  fullWidth: {
-    width: '100%',
+  ...css,
+  image: {
+    width: 120,
+    height: 120,
   },
   fullSize: {
     display: 'flex',
     flex: 1,
-  },
-  input: {
-    height: 50,
-    color: 'black',
-  },
-  videoContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-  },
-  videoLarge: {
-    flex: 1,
-  },
-  videoSmall: {
-    width: 120,
-    height: 120,
-  },
-  float: {
-    position: 'absolute',
-    right: 0,
-    bottom: 0,
-    alignItems: 'flex-end',
-  },
-  slider: {
-    width: '100%',
-    height: 40,
   },
 };

@@ -1,8 +1,6 @@
-import React from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   LocalVideoStreamError,
@@ -11,12 +9,13 @@ import {
   RtcConnection,
   RtcStats,
   ScreenCaptureSourceInfo,
+  ScreenCaptureSourceType,
   UserOfflineReasonType,
   VideoSourceType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
+import React, { ReactElement } from 'react';
 import { SketchPicker } from 'react-color';
-
-import Config from '../../../config/agora.config';
 
 import {
   BaseComponent,
@@ -31,10 +30,11 @@ import {
   AgoraSwitch,
   AgoraTextInput,
   AgoraView,
+  RtcSurfaceView,
 } from '../../../components/ui';
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
-import { rgbImageBufferToBase64 } from '../../../utils/base64';
-import { ScreenCaptureSourceType } from '../../../../../../ts/Private/IAgoraRtcEngine';
+import Config from '../../../config/agora.config';
+import { thumbImageBufferToBase64 } from '../../../utils/base64';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   token2: string;
@@ -103,11 +103,14 @@ export default class ScreenShare
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera', 'screen']);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
@@ -388,7 +391,7 @@ export default class ScreenShare
     }
   }
 
-  protected renderUsers(): React.ReactNode {
+  protected renderUsers(): ReactElement | undefined {
     const { startScreenCapture } = this.state;
     return (
       <>
@@ -406,7 +409,7 @@ export default class ScreenShare
     );
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const {
       sources,
       targetSource,
@@ -436,7 +439,7 @@ export default class ScreenShare
         />
         {targetSource ? (
           <AgoraImage
-            source={rgbImageBufferToBase64(targetSource.thumbImage)}
+            source={thumbImageBufferToBase64(targetSource.thumbImage)}
           />
         ) : undefined}
         <AgoraTextInput
@@ -447,6 +450,7 @@ export default class ScreenShare
               uid2: text === '' ? this.createState().uid2 : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`uid2 (must > 0)`}
           value={uid2 > 0 ? uid2.toString() : ''}
         />
@@ -458,6 +462,7 @@ export default class ScreenShare
                 width: text === '' ? this.createState().width : +text,
               });
             }}
+            numberKeyboard={true}
             placeholder={`width (defaults: ${this.createState().width})`}
           />
           <AgoraTextInput
@@ -467,6 +472,7 @@ export default class ScreenShare
                 height: text === '' ? this.createState().height : +text,
               });
             }}
+            numberKeyboard={true}
             placeholder={`height (defaults: ${this.createState().height})`}
           />
         </AgoraView>
@@ -477,6 +483,7 @@ export default class ScreenShare
               frameRate: text === '' ? this.createState().frameRate : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`frameRate (defaults: ${this.createState().frameRate})`}
         />
         <AgoraTextInput
@@ -486,6 +493,7 @@ export default class ScreenShare
               bitrate: text === '' ? this.createState().bitrate : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`bitrate (defaults: ${this.createState().bitrate})`}
         />
         {targetSource?.type ===
@@ -533,14 +541,14 @@ export default class ScreenShare
                 })}
               value={excludeWindowList}
               onValueChange={(value, index) => {
-                if (excludeWindowList.indexOf(+value) === -1) {
+                if (excludeWindowList.indexOf(value) === -1) {
                   this.setState({
-                    excludeWindowList: [...excludeWindowList, +value],
+                    excludeWindowList: [...excludeWindowList, value],
                   });
                 } else {
                   this.setState({
                     excludeWindowList: excludeWindowList.filter(
-                      (v) => v !== +value
+                      (v) => v !== value
                     ),
                   });
                 }
@@ -574,7 +582,7 @@ export default class ScreenShare
             <AgoraDivider />
             <SketchPicker
               onChangeComplete={(color) => {
-                const { a, r, g, b } = color.rgb;
+                const { a = 1, r, g, b } = color.rgb;
                 const argbHex =
                   `${((a * 255) | (1 << 8)).toString(16).slice(1)}` +
                   `${(r | (1 << 8)).toString(16).slice(1)}` +
@@ -604,7 +612,7 @@ export default class ScreenShare
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { startScreenCapture, publishScreenCapture } = this.state;
     return (
       <>

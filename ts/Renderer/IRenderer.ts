@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+
 import { RenderModeType } from '../Private/AgoraMediaBase';
 import { RendererOptions, ShareVideoFrame } from '../Types';
 
@@ -7,32 +8,30 @@ export type RenderFailCallback =
   | undefined
   | null;
 
-export class IRenderer {
+export abstract class IRenderer {
   parentElement?: HTMLElement;
   canvas?: HTMLCanvasElement;
   event?: EventEmitter;
   contentMode = RenderModeType.RenderModeFit;
   mirror?: boolean;
 
-  snapshot(fileType = 'image/png') {
+  public snapshot(fileType = 'image/png') {
     if (this.canvas && this.canvas.toDataURL) {
       return this.canvas.toDataURL(fileType);
     }
     return null;
   }
 
-  bind(element: HTMLElement) {
+  public bind(element: HTMLElement) {
     if (!element) {
       throw new Error('You have pass a element');
     }
     this.parentElement = element;
   }
 
-  unbind() {
-    throw new Error('You have to declare your own custom render');
-  }
+  abstract unbind(): void;
 
-  equalsElement(element: Element): boolean {
+  public equalsElement(element: Element): boolean {
     if (!element) {
       throw new Error('You have pass a element');
     }
@@ -42,11 +41,9 @@ export class IRenderer {
     return element === this.parentElement;
   }
 
-  drawFrame(imageData: ShareVideoFrame) {
-    throw new Error('You have to declare your own custom render');
-  }
+  abstract drawFrame(imageData: ShareVideoFrame): void;
 
-  setRenderOption({ contentMode, mirror }: RendererOptions) {
+  public setRenderOption({ contentMode, mirror }: RendererOptions) {
     this.contentMode = contentMode ?? RenderModeType.RenderModeFit;
     this.mirror = mirror;
     Object.assign(this.parentElement!.style, {
@@ -54,7 +51,5 @@ export class IRenderer {
     });
   }
 
-  refreshCanvas() {
-    throw new Error('You have to declare your own custom render');
-  }
+  abstract refreshCanvas(): void;
 }

@@ -1,6 +1,4 @@
-import React from 'react';
 import {
-  createAgoraRtcEngine,
   IMediaPlayerSourceObserver,
   IMusicContentCenter,
   IMusicContentCenterEventHandler,
@@ -13,9 +11,9 @@ import {
   MusicCollection,
   MusicContentCenterStatusCode,
   PreloadStatusCode,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
@@ -28,6 +26,7 @@ import {
   AgoraSlider,
   AgoraTextInput,
 } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 
 interface State extends BaseComponentState {
   rtmAppId: string;
@@ -90,7 +89,7 @@ export default class MusicContentCenter
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
     });
   }
 
@@ -133,12 +132,12 @@ export default class MusicContentCenter
    */
   getMusicCollectionByMusicChartId = () => {
     const { musicChartId, page, pageSize } = this.state;
-    if (!musicChartId) {
+    if (musicChartId < 0) {
       this.error(`musicChartId is invalid`);
     }
 
     this.musicContentCenter?.getMusicCollectionByMusicChartId(
-      musicChartId!,
+      musicChartId,
       page,
       pageSize
     );
@@ -153,7 +152,7 @@ export default class MusicContentCenter
       this.error(`songCode is invalid`);
     }
 
-    this.musicContentCenter?.preload(songCode!);
+    this.musicContentCenter?.preload(songCode);
   };
 
   /**
@@ -175,7 +174,7 @@ export default class MusicContentCenter
     }
 
     this.createMusicPlayer();
-    this.player?.openWithSongCode(songCode!, 0);
+    this.player?.openWithSongCode(songCode, 0);
   };
 
   /**
@@ -250,19 +249,19 @@ export default class MusicContentCenter
 
   onMusicChartsResult(
     requestId: string,
-    status: MusicContentCenterStatusCode,
-    result: MusicChartInfo[]
+    result: MusicChartInfo[],
+    errorCode: MusicContentCenterStatusCode
   ) {
-    this.info('onMusicChartsResult', requestId, status, result);
+    this.info('onMusicChartsResult', requestId, result, errorCode);
     this.setState({ musicChartInfos: result });
   }
 
   onMusicCollectionResult(
     requestId: string,
-    status: MusicContentCenterStatusCode,
-    result: MusicCollection
+    result: MusicCollection,
+    errorCode: MusicContentCenterStatusCode
   ) {
-    this.info('onMusicCollectionResult', requestId, status, result);
+    this.info('onMusicCollectionResult', requestId, result, errorCode);
     this.setState({
       musicCollection: result,
       musics: Array.from({ length: result.getCount() }, (value, index) => {
@@ -274,11 +273,11 @@ export default class MusicContentCenter
   onPreLoadEvent(
     songCode: number,
     percent: number,
+    lyricUrl: string,
     status: PreloadStatusCode,
-    msg: string,
-    lyricUrl?: string
+    errorCode: MusicContentCenterStatusCode
   ) {
-    this.info('onPreLoadEvent', songCode, percent, status, msg, lyricUrl);
+    this.info('onPreLoadEvent', songCode, percent, lyricUrl, status, errorCode);
     if (songCode === this.state.songCode) {
       this.setState({
         preload: status === PreloadStatusCode.KPreloadStatusCompleted,
@@ -300,7 +299,7 @@ export default class MusicContentCenter
       case MediaPlayerState.PlayerStateOpenCompleted:
         this.setState({
           open: true,
-          duration: this.player?.getDuration()!,
+          duration: this.player?.getDuration() ?? 0,
         });
         break;
       case MediaPlayerState.PlayerStatePlaying:
@@ -360,11 +359,11 @@ export default class MusicContentCenter
     );
   }
 
-  protected renderChannel(): React.ReactNode {
+  protected renderChannel(): ReactElement | undefined {
     return undefined;
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const {
       rtmAppId,
       rtmToken,
@@ -489,24 +488,20 @@ export default class MusicContentCenter
     );
   }
 
-  protected renderUsers(): React.ReactNode {
+  protected renderUsers(): ReactElement | undefined {
     const { musics, songCode } = this.state;
-    return (
-      <>
-        {songCode >= 0 ? (
-          <AgoraImage
-            source={
-              musics.find((value) => {
-                return value.songCode === songCode;
-              })?.poster
-            }
-          />
-        ) : undefined}
-      </>
-    );
+    return +songCode >= 0 ? (
+      <AgoraImage
+        source={
+          musics.find((value) => {
+            return value.songCode == songCode;
+          })?.poster
+        }
+      />
+    ) : undefined;
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { open, play, pause } = this.state;
     return (
       <>

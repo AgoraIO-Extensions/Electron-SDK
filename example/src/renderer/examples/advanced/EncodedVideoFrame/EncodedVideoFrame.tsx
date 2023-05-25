@@ -1,8 +1,8 @@
-import React from 'react';
+import { Buffer } from 'buffer';
+
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   EncodedVideoFrameInfo,
   ExternalVideoSourceType,
   IRtcEngineEventHandler,
@@ -11,16 +11,17 @@ import {
   RtcConnection,
   VideoCodecType,
   VideoFrameType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import { Buffer } from 'buffer';
-
-import Config from '../../../config/agora.config';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
 import { AgoraButton, AgoraTextInput } from '../../../components/ui';
+import Config from '../../../config/agora.config';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   imageBuffer: string;
@@ -59,11 +60,14 @@ export default class EncodedVideoFrame
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
@@ -196,7 +200,7 @@ export default class EncodedVideoFrame
     return true;
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const { imageBuffer } = this.state;
     return (
       <>
@@ -211,7 +215,7 @@ export default class EncodedVideoFrame
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { joinChannelSuccess } = this.state;
     return (
       <>

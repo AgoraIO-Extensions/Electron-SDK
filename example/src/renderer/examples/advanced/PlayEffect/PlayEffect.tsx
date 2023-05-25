@@ -1,12 +1,10 @@
-import React from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React, { ReactElement } from 'react';
 
 import {
   BaseAudioComponentState,
@@ -19,7 +17,9 @@ import {
   AgoraSwitch,
   AgoraTextInput,
 } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 import { getResourcePath } from '../../../utils';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseAudioComponentState {
   soundId: number;
@@ -48,7 +48,7 @@ export default class PlayEffect
       joinChannelSuccess: false,
       remoteUsers: [],
       soundId: 0,
-      filePath: getResourcePath('audioeffect.mp3'),
+      filePath: getResourcePath('effect.mp3'),
       loopCount: 1,
       pitch: 1.0,
       pan: 0,
@@ -72,11 +72,14 @@ export default class PlayEffect
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone permission
+    await askMediaAccess(['microphone']);
 
     // Only need to enable audio on this case
     this.engine.enableAudio();
@@ -191,7 +194,7 @@ export default class PlayEffect
     this.setState({ playEffect: false });
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const { filePath, pitch, pan, gain, publish } = this.state;
     return (
       <>
@@ -202,6 +205,7 @@ export default class PlayEffect
               soundId: text === '' ? this.createState().soundId : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`soundId (defaults: ${this.createState().soundId})`}
         />
         <AgoraTextInput
@@ -218,6 +222,7 @@ export default class PlayEffect
               loopCount: text === '' ? this.createState().loopCount : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`loopCount (defaults: ${this.createState().loopCount})`}
         />
         <AgoraSlider
@@ -268,13 +273,14 @@ export default class PlayEffect
               startPos: text === '' ? this.createState().startPos : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`startPos (defaults: ${this.createState().startPos})`}
         />
       </>
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { playEffect, pauseEffect } = this.state;
     return (
       <>

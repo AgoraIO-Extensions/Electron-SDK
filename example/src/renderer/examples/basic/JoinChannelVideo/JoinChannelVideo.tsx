@@ -1,8 +1,6 @@
-import React, { ReactNode } from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   ErrorCodeType,
   IRtcEngineEventHandler,
   LocalVideoStreamError,
@@ -10,18 +8,18 @@ import {
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
+  VideoCanvas,
   VideoSourceType,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import { ReactElement } from 'react';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import { AgoraButton, AgoraText } from '../../../components/ui';
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
-import { Card, List } from 'antd';
+import Config from '../../../config/agora.config';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {}
 
@@ -54,11 +52,14 @@ export default class JoinChannelVideo
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
@@ -166,47 +167,11 @@ export default class JoinChannelVideo
     );
   }
 
-  protected renderUsers(): React.ReactNode {
-    const { startPreview, joinChannelSuccess, remoteUsers } = this.state;
-    return (
-      <>
-        {startPreview || joinChannelSuccess ? (
-          <List
-            style={{ width: '100%' }}
-            grid={{
-              gutter: 16,
-              xs: 1,
-              sm: 1,
-              md: 1,
-              lg: 1,
-              xl: 1,
-              xxl: 2,
-            }}
-            dataSource={[0, ...remoteUsers]}
-            renderItem={this.renderVideo.bind(this)}
-          />
-        ) : undefined}
-      </>
-    );
+  protected renderUsers(): ReactElement | undefined {
+    return super.renderUsers();
   }
 
-  protected renderVideo(uid: number): ReactNode {
-    const { enableVideo, remoteUsers } = this.state;
-    return (
-      <List.Item>
-        <Card title={`${uid === 0 ? 'Local' : 'Remote'} Uid: ${uid}`}>
-          <AgoraText>Click view to mirror</AgoraText>
-          {enableVideo ? <RtcSurfaceView canvas={{ uid }} /> : undefined}
-          <AgoraButton
-            title={`Append`}
-            onPress={() => {
-              this.setState({
-                remoteUsers: [...remoteUsers!, uid],
-              });
-            }}
-          />
-        </Card>
-      </List.Item>
-    );
+  protected renderVideo(user: VideoCanvas): ReactElement | undefined {
+    return super.renderVideo(user);
   }
 }

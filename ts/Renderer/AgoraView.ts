@@ -1,5 +1,4 @@
-import { VideoSourceType } from '../Private/AgoraBase';
-import { RenderModeType } from '../Private/AgoraMediaBase';
+import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
 import { AgoraEnv } from '../Utils';
 
 const VIDEO_SOURCE_TYPE_STRING = 'video-source-type';
@@ -83,6 +82,7 @@ export default class AgoraView extends HTMLElement {
       this.removeAttribute(VIDEO_SOURCE_TYPE_STRING);
     }
   }
+
   get uid(): number {
     const number = Number(this.getAttribute(UID_STRING));
     return isNaN(number) ? 0 : number;

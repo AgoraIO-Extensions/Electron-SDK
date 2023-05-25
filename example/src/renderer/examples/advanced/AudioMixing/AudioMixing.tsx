@@ -1,26 +1,26 @@
-import React from 'react';
 import {
   AudioMixingReasonType,
   AudioMixingStateType,
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
+import React, { ReactElement } from 'react';
 
-import Config from '../../../config/agora.config';
-
+import {
+  BaseAudioComponentState,
+  BaseComponent,
+} from '../../../components/BaseComponent';
 import {
   AgoraButton,
   AgoraDivider,
   AgoraSwitch,
   AgoraTextInput,
 } from '../../../components/ui';
-import {
-  BaseAudioComponentState,
-  BaseComponent,
-} from '../../../components/BaseComponent';
+import Config from '../../../config/agora.config';
 import { getResourcePath } from '../../../utils';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseAudioComponentState {
   filePath: string;
@@ -44,7 +44,7 @@ export default class AudioMixing
       uid: Config.uid,
       joinChannelSuccess: false,
       remoteUsers: [],
-      filePath: getResourcePath('audioeffect.mp3'),
+      filePath: getResourcePath('effect.mp3'),
       loopback: false,
       cycle: -1,
       startPos: 0,
@@ -65,11 +65,14 @@ export default class AudioMixing
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone permission
+    await askMediaAccess(['microphone']);
 
     // Only need to enable audio on this case
     this.engine.enableAudio();
@@ -196,7 +199,7 @@ export default class AudioMixing
     this.info('AudioMixingFinished');
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const { filePath, loopback } = this.state;
     return (
       <>
@@ -222,6 +225,7 @@ export default class AudioMixing
               cycle: text === '' ? this.createState().cycle : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`cycle (defaults: ${this.createState().cycle})`}
         />
         <AgoraTextInput
@@ -231,13 +235,14 @@ export default class AudioMixing
               startPos: text === '' ? this.createState().startPos : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`startPos (defaults: ${this.createState().startPos})`}
         />
       </>
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { startAudioMixing, pauseAudioMixing } = this.state;
     return (
       <>

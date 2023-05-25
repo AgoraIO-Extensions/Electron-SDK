@@ -1,8 +1,6 @@
-import React from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   RemoteVideoState,
@@ -10,17 +8,25 @@ import {
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
+  VideoCanvas,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import { Card, List } from 'antd';
-
-import Config from '../../../config/agora.config';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import { AgoraButton, AgoraText, AgoraTextInput } from '../../../components/ui';
-import RtcSurfaceView from '../../../components/RtcSurfaceView';
+import {
+  AgoraButton,
+  AgoraCard,
+  AgoraList,
+  AgoraText,
+  AgoraTextInput,
+  RtcSurfaceView,
+} from '../../../components/ui';
+import Config from '../../../config/agora.config';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   channelId2: string;
@@ -67,11 +73,14 @@ export default class JoinMultipleChannel
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
@@ -232,12 +241,15 @@ export default class JoinMultipleChannel
       'elapsed',
       elapsed
     );
-    const { channelId, channelId2 } = this.state;
-    if (connection.channelId === channelId) {
+    const { channelId, channelId2, uid, uid2 } = this.state;
+    if (connection.channelId === channelId && connection.localUid === uid) {
       this.setState({
         joinChannelSuccess: true,
       });
-    } else if (connection.channelId === channelId2) {
+    } else if (
+      connection.channelId === channelId2 &&
+      connection.localUid === uid2
+    ) {
       this.setState({
         joinChannelSuccess2: true,
       });
@@ -246,13 +258,16 @@ export default class JoinMultipleChannel
 
   onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
     this.info('onLeaveChannel', 'connection', connection, 'stats', stats);
-    const { channelId, channelId2 } = this.state;
-    if (connection.channelId === channelId) {
+    const { channelId, channelId2, uid, uid2 } = this.state;
+    if (connection.channelId === channelId && connection.localUid === uid) {
       this.setState({
         joinChannelSuccess: false,
         remoteUsers: [],
       });
-    } else if (connection.channelId === channelId2) {
+    } else if (
+      connection.channelId === channelId2 &&
+      connection.localUid === uid2
+    ) {
       this.setState({
         joinChannelSuccess2: false,
         remoteUsers2: [],
@@ -310,19 +325,26 @@ export default class JoinMultipleChannel
       'elapsed',
       elapsed
     );
-    const { channelId, channelId2, remoteUsers, remoteUsers2 } = this.state;
+    const { channelId, channelId2, uid, uid2, remoteUsers, remoteUsers2 } =
+      this.state;
     if (state === RemoteVideoState.RemoteVideoStateStarting) {
-      if (connection.channelId === channelId) {
+      if (connection.channelId === channelId && connection.localUid === uid) {
         this.setState({ remoteUsers: [...remoteUsers, remoteUid] });
-      } else if (connection.channelId === channelId2) {
+      } else if (
+        connection.channelId === channelId2 &&
+        connection.localUid === uid2
+      ) {
         this.setState({ remoteUsers2: [...remoteUsers2, remoteUid] });
       }
     } else if (state === RemoteVideoState.RemoteVideoStateStopped) {
-      if (connection.channelId === channelId) {
+      if (connection.channelId === channelId && connection.localUid === uid) {
         this.setState({
           remoteUsers: remoteUsers.filter((value) => value !== remoteUid),
         });
-      } else if (connection.channelId === channelId2) {
+      } else if (
+        connection.channelId === channelId2 &&
+        connection.localUid === uid2
+      ) {
         this.setState({
           remoteUsers2: remoteUsers2.filter((value) => value !== remoteUid),
         });
@@ -330,7 +352,7 @@ export default class JoinMultipleChannel
     }
   }
 
-  protected renderChannel(): React.ReactNode {
+  protected renderChannel(): ReactElement | undefined {
     const {
       channelId,
       channelId2,
@@ -355,6 +377,7 @@ export default class JoinMultipleChannel
               uid: text === '' ? this.createState().uid : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`uid (must > 0)`}
           value={uid > 0 ? uid.toString() : ''}
         />
@@ -378,6 +401,7 @@ export default class JoinMultipleChannel
               uid2: text === '' ? this.createState().uid2 : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`uid2 (must > 0)`}
           value={uid2 > 0 ? uid2.toString() : ''}
         />
@@ -391,11 +415,13 @@ export default class JoinMultipleChannel
     );
   }
 
-  protected renderUsers(): React.ReactNode {
+  protected renderUsers(): ReactElement | undefined {
     const {
       startPreview,
       channelId,
       channelId2,
+      uid,
+      uid2,
       joinChannelSuccess,
       joinChannelSuccess2,
       remoteUsers,
@@ -404,22 +430,13 @@ export default class JoinMultipleChannel
     return (
       <>
         {startPreview || joinChannelSuccess || joinChannelSuccess2 ? (
-          <List
-            style={{ width: '100%' }}
-            grid={{
-              gutter: 16,
-              xs: 1,
-              sm: 1,
-              md: 1,
-              lg: 1,
-              xl: 1,
-              xxl: 2,
-            }}
-            dataSource={[0, ...remoteUsers, ...remoteUsers2]}
+          <AgoraList
+            data={[0, ...remoteUsers, ...remoteUsers2]}
             renderItem={(item) => {
               return this.renderVideo(
-                item,
-                remoteUsers2.indexOf(item) === -1 ? channelId : channelId2
+                { uid: item },
+                remoteUsers2.indexOf(item) === -1 ? channelId : channelId2,
+                remoteUsers2.indexOf(item) === -1 ? uid : uid2
               );
             }}
           />
@@ -428,18 +445,20 @@ export default class JoinMultipleChannel
     );
   }
 
-  protected renderVideo(uid: number, channelId?: string): React.ReactNode {
+  protected renderVideo(
+    user: VideoCanvas,
+    channelId?: string,
+    localUid?: number
+  ): ReactElement | undefined {
     return (
-      <List.Item>
-        <Card title={`ChannelId: ${channelId} Uid: ${uid}`}>
-          <AgoraText>Click view to mirror</AgoraText>
-          <RtcSurfaceView canvas={{ uid }} connection={{ channelId }} />
-        </Card>
-      </List.Item>
+      <AgoraCard title={`${channelId} - ${user.uid}`}>
+        <AgoraText>Click view to mirror</AgoraText>
+        <RtcSurfaceView canvas={user} connection={{ channelId, localUid }} />
+      </AgoraCard>
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { joinChannelSuccess, joinChannelSuccess2 } = this.state;
     return (
       <>

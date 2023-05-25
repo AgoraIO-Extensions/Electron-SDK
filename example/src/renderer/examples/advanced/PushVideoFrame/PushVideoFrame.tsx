@@ -1,26 +1,26 @@
-import React from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
-  createAgoraRtcEngine,
   ExternalVideoSourceType,
   IRtcEngineEventHandler,
   IRtcEngineEx,
-  VideoBufferType,
-  VideoPixelFormat,
-  ScreenCaptureSourceInfo,
   RtcConnection,
   RtcStats,
+  ScreenCaptureSourceInfo,
+  VideoBufferType,
+  VideoPixelFormat,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
 import { AgoraButton, AgoraDropdown, AgoraImage } from '../../../components/ui';
-import { rgbImageBufferToBase64 } from '../../../utils/base64';
+import Config from '../../../config/agora.config';
+import { thumbImageBufferToBase64 } from '../../../utils/base64';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   sources?: ScreenCaptureSourceInfo[];
@@ -61,11 +61,14 @@ export default class PushVideoFrame
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
@@ -169,7 +172,7 @@ export default class PushVideoFrame
     this.setState(state);
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const { sources, targetSource } = this.state;
     return (
       <>
@@ -188,14 +191,14 @@ export default class PushVideoFrame
         />
         {targetSource ? (
           <AgoraImage
-            source={rgbImageBufferToBase64(targetSource.thumbImage)}
+            source={thumbImageBufferToBase64(targetSource.thumbImage)}
           />
         ) : undefined}
       </>
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { joinChannelSuccess } = this.state;
     return (
       <>

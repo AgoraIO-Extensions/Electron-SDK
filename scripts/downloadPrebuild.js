@@ -1,19 +1,21 @@
 const path = require('path');
+
 const download = require('download');
 const fs = require('fs-extra');
-const { getOS } = require('./util');
-const logger = require('./logger');
-const { cleanBuildDir, cleanJSDir, buildDir } = require('./clean');
+
+const { cleanBuildDir, buildDir } = require('./clean');
 const getConfig = require('./getConfig');
+const logger = require('./logger');
+const { getOS } = require('./util');
 
 const { platform, packageVersion, arch, no_symbol } = getConfig();
 
 const workspaceDir = `${path.join(__dirname, '..')}`;
 
 const getDownloadURL = () => {
-  let downloadUrl = `http://download.agora.io/sdk/release/Electron-${getOS()}-${packageVersion}-napi.zip`;
+  let downloadUrl = `https://download.agora.io/sdk/release/Electron-${getOS()}-${packageVersion}-napi.zip`;
   if (platform === 'win32' && arch === 'x64') {
-    downloadUrl = `http://download.agora.io/sdk/release/Electron-win64-${packageVersion}-napi.zip`;
+    downloadUrl = `https://download.agora.io/sdk/release/Electron-win64-${packageVersion}-napi.zip`;
   }
   return downloadUrl;
 };
@@ -67,9 +69,8 @@ const removeFileByFilter = async () => {
   logger.info('Success: Download and cleanup finished');
 };
 
-module.exports = async (cb) => {
+module.exports = async () => {
   await cleanBuildDir();
-  // cleanJSDir();
 
   const downloadUrl = getDownloadURL();
 
@@ -80,14 +81,17 @@ module.exports = async (cb) => {
   logger.info('Download URL  %s ', downloadUrl);
 
   logger.info('Downloading prebuilt C++ addon for Agora Electron SDK...');
-  try {
-    await download(downloadUrl, buildDir, {
-      strip: 1,
-      extract: true,
-    });
-  } catch (error) {
-    logger.error('Agora sdk download base sdk error', error);
-  }
+  await download(downloadUrl, buildDir, {
+    strip: 1,
+    extract: true,
+    filter: (file) => {
+      return (
+        file.type !== 'directory' &&
+        !file.path.endsWith(path.sep) &&
+        file.data.length !== 0
+      );
+    },
+  });
 
   if (no_symbol) {
     await removeFileByFilter();

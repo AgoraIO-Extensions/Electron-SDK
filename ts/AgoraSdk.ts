@@ -1,7 +1,8 @@
+import { IMediaPlayerCacheManager } from './Private/IAgoraMediaPlayer';
 import { IRtcEngineEx } from './Private/IAgoraRtcEngineEx';
 import { RtcEngineExInternal } from './Private/internal/RtcEngineExInternal';
-import { IMediaPlayerCacheManager } from './Private/IAgoraMediaPlayer';
-import { IMediaPlayerCacheManagerImpl } from './Private/impl/IAgoraMediaPlayerImpl';
+import { AgoraEnvOptions } from './Types';
+import { AgoraEnv } from './Utils';
 
 export * from './Private/AgoraBase';
 export * from './Private/AgoraMediaBase';
@@ -17,20 +18,21 @@ export * from './Private/IAgoraRtcEngine';
 export * from './Private/IAgoraRtcEngineEx';
 export * from './Private/IAgoraSpatialAudio';
 export * from './Private/IAudioDeviceManager';
-export * from './Renderer/RendererManager';
+export * from './Renderer';
 export * from './Types';
 export * from './Utils';
 
 const instance = new RtcEngineExInternal();
 
 /**
- * Creates an IRtcEngine object.
- * Currently, the Agora RTC SDK v4.x supports creating only one IRtcEngine object for each app.
+ * Creates one IRtcEngineEx object.
+ * Currently, the Agora RTC SDK v4.x supports creating only one IRtcEngineEx object for each app.
  *
  * @returns
- * One IRtcEngine object.
+ * One IRtcEngineEx object.
  */
-export function createAgoraRtcEngine(): IRtcEngineEx {
+export function createAgoraRtcEngine(options?: AgoraEnvOptions): IRtcEngineEx {
+  Object.assign(AgoraEnv, options);
   return instance;
 }
 
@@ -46,3 +48,5 @@ export function getMediaPlayerCacheManager(): IMediaPlayerCacheManager {
 }
 
 export default createAgoraRtcEngine;
+
+import { IMediaPlayerCacheManagerImpl } from './Private/impl/IAgoraMediaPlayerImpl';

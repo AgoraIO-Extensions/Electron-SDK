@@ -46,13 +46,15 @@ napi_value AgoraElectronBridge::Init(napi_env env, napi_value exports) {
       DECLARE_NAPI_METHOD("GetVideoFrame", GetVideoFrame),
       DECLARE_NAPI_METHOD("SetAddonLogFile", SetAddonLogFile),
       DECLARE_NAPI_METHOD("InitializeEnv", InitializeEnv),
-      DECLARE_NAPI_METHOD("ReleaseEnv", ReleaseEnv)};
+      DECLARE_NAPI_METHOD("ReleaseEnv", ReleaseEnv),
+      DECLARE_NAPI_METHOD("ReleaseRenderer", ReleaseRenderer)};
 
   napi_value cons;
 
   // method count !!!
-  status = napi_define_class(env, _class_name, NAPI_AUTO_LENGTH, New, nullptr,
-                             9, properties, &cons);
+  status = napi_define_class(
+      env, _class_name, NAPI_AUTO_LENGTH, New, nullptr,
+      sizeof(properties) / sizeof(napi_property_descriptor), properties, &cons);
   assert(status == napi_ok);
 
   AgoraElectronBridge::_ref_construcotr_ptr = new napi_ref();
@@ -285,19 +287,17 @@ napi_value AgoraElectronBridge::EnableVideoFrameCache(napi_env env,
   status =
       napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
 
-  IrisVideoFrameBufferConfig config;
+  IrisRtcVideoFrameConfig config = EmptyIrisRtcVideoFrameConfig;
   napi_value obj = args[0];
 
-  int videoSourceType;
   std::string channelId = "";
   unsigned int width = 0;
   unsigned int height = 0;
 
-  napi_obj_get_property(env, obj, "uid", config.id);
-  napi_obj_get_property(env, obj, "videoSourceType", videoSourceType);
-  config.type = (IrisVideoSourceType) videoSourceType;
+  napi_obj_get_property(env, obj, "uid", config.uid);
+  napi_obj_get_property(env, obj, "videoSourceType", config.video_source_type);
   napi_obj_get_property(env, obj, "channelId", channelId);
-  strcpy(config.key, channelId.c_str());
+  strcpy(config.channelId, channelId.c_str());
   napi_obj_get_property(env, obj, "width", width);
   napi_obj_get_property(env, obj, "height", height);
 
@@ -305,15 +305,12 @@ napi_value AgoraElectronBridge::EnableVideoFrameCache(napi_env env,
   memset(result, '\0', kBasicStringLength);
   int ret = ERR_FAILED;
 
-  if (!agoraElectronBridge->_iris_video_frame_buffer_manager) {
+  if (!agoraElectronBridge->_iris_rendering) {
     ret = ERR_NOT_INITIALIZED;
-    LOG_F(INFO, "IrisVideoFrameBufferManager Not Init");
+    LOG_F(INFO, "IrisRtcRendering Not Init");
   } else {
     try {
-      iris::IrisVideoFrameBuffer buffer(
-          IrisVideoFrameType::kVideoFrameTypeYUV420);
-      agoraElectronBridge->_iris_video_frame_buffer_manager
-          ->EnableVideoFrameBuffer(buffer, &config);
+      agoraElectronBridge->_iris_rendering->AddVideoFrameCacheKey(config);
       ret = ERR_OK;
     } catch (std::exception &e) {
       LOG_F(INFO, "%s catch exception %s", __FUNCTION__, e.what());
@@ -338,28 +335,25 @@ AgoraElectronBridge::DisableVideoFrameCache(napi_env env,
       napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
 
   napi_value obj = args[0];
-  IrisVideoFrameBufferConfig config;
+  IrisRtcVideoFrameConfig config = EmptyIrisRtcVideoFrameConfig;
 
-  int videoSourceType;
   std::string channelId = "";
 
-  napi_obj_get_property(env, obj, "uid", config.id);
-  napi_obj_get_property(env, obj, "videoSourceType", videoSourceType);
-  config.type = (IrisVideoSourceType) videoSourceType;
+  napi_obj_get_property(env, obj, "uid", config.uid);
+  napi_obj_get_property(env, obj, "videoSourceType", config.video_source_type);
   napi_obj_get_property(env, obj, "channelId", channelId);
-  strcpy(config.key, channelId.c_str());
+  strcpy(config.channelId, channelId.c_str());
 
   char result[kBasicStringLength];
   memset(result, '\0', kBasicStringLength);
   int ret = ERR_FAILED;
 
-  if (!agoraElectronBridge->_iris_video_frame_buffer_manager) {
+  if (!agoraElectronBridge->_iris_rendering) {
     ret = ERR_NOT_INITIALIZED;
-    LOG_F(INFO, "IrisVideoFrameBufferManager Not Init");
+    LOG_F(INFO, "IrisRtcRendering Not Init");
   } else {
     try {
-      agoraElectronBridge->_iris_video_frame_buffer_manager
-          ->DisableVideoFrameBuffer(&config);
+      agoraElectronBridge->_iris_rendering->RemoveVideoFrameCacheKey(config);
       ret = ERR_OK;
     } catch (std::exception &e) {
       LOG_F(INFO, "%s catch exception %s", __FUNCTION__, e.what());
@@ -381,7 +375,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   AgoraElectronBridge *agoraElectronBridge;
   status =
       napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
-  IrisVideoFrameBufferConfig config;
+  IrisRtcVideoFrameConfig config = EmptyIrisRtcVideoFrameConfig;
 
   napi_value obj = args[0];
   int videoSourceType;
@@ -397,12 +391,12 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   size_t v_length;
   int height;
   int width;
+  int yStride;
 
-  napi_obj_get_property(env, obj, "uid", config.id);
-  napi_obj_get_property(env, obj, "videoSourceType", videoSourceType);
-  config.type = (IrisVideoSourceType) videoSourceType;
+  napi_obj_get_property(env, obj, "uid", config.uid);
+  napi_obj_get_property(env, obj, "videoSourceType", config.video_source_type);
   napi_obj_get_property(env, obj, "channelId", channel_id);
-  strcpy(config.key, channel_id.c_str());
+  strcpy(config.channelId, channel_id.c_str());
 
   napi_obj_get_property(env, obj, "yBuffer", y_buffer_obj);
   napi_get_buffer_info(env, y_buffer_obj, &y_buffer, &y_length);
@@ -415,36 +409,41 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
 
   napi_obj_get_property(env, obj, "height", height);
   napi_obj_get_property(env, obj, "width", width);
+  napi_obj_get_property(env, obj, "yStride", yStride);
 
-  IrisVideoFrame videoFrame = IrisVideoFrame_default;
-  videoFrame.y_buffer = y_buffer;
-  videoFrame.u_buffer = u_buffer;
-  videoFrame.v_buffer = v_buffer;
+  IrisCVideoFrame videoFrame;
+  videoFrame.yBuffer = (uint8_t *) y_buffer;
+  videoFrame.uBuffer = (uint8_t *) u_buffer;
+  videoFrame.vBuffer = (uint8_t *) v_buffer;
   videoFrame.height = height;
   videoFrame.width = width;
+  videoFrame.yStride = yStride;
+  videoFrame.metadata_buffer = nullptr;
+  videoFrame.metadata_size = 0;
+  videoFrame.alphaBuffer = nullptr;
 
   bool isFresh = false;
   napi_value retObj;
   int32_t ret = ERR_NOT_INITIALIZED;
   status = napi_create_object(env, &retObj);
 
-  if (!agoraElectronBridge->_iris_video_frame_buffer_manager.get()) {
+  if (!agoraElectronBridge->_iris_rendering) {
     napi_obj_set_property(env, retObj, "ret", ret);
-    LOG_F(INFO, "IrisVideoFrameBufferManager Not Init");
+    LOG_F(INFO, "IrisRtcRendering Not Init");
     return retObj;
   }
 
-  ret = agoraElectronBridge->_iris_video_frame_buffer_manager->GetVideoFrame(
-      videoFrame, isFresh, &config);
+  ret = agoraElectronBridge->_iris_rendering->GetVideoFrameCache(
+      config, &videoFrame, isFresh);
 
   unsigned int rotation = 0;
   napi_obj_set_property(env, retObj, "ret", ret);
   napi_obj_set_property(env, retObj, "isNewFrame", isFresh);
   napi_obj_set_property(env, retObj, "width", videoFrame.width);
   napi_obj_set_property(env, retObj, "height", videoFrame.height);
-  napi_obj_set_property(env, retObj, "yStride", videoFrame.y_stride);
+  napi_obj_set_property(env, retObj, "yStride", videoFrame.yStride);
   napi_obj_set_property(env, retObj, "rotation", rotation);
-  napi_obj_set_property(env, retObj, "timestamp", videoFrame.render_time_ms);
+  napi_obj_set_property(env, retObj, "timestamp", videoFrame.renderTimeMs);
   return retObj;
 }
 
@@ -484,29 +483,41 @@ napi_value AgoraElectronBridge::ReleaseEnv(napi_env env,
   return retValue;
 }
 
+napi_value AgoraElectronBridge::ReleaseRenderer(napi_env env,
+                                                napi_callback_info info) {
+  napi_status status;
+  napi_value jsthis;
+  size_t argc = 2;
+  napi_value args[2];
+  status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
+
+  AgoraElectronBridge *agoraElectronBridge;
+  status =
+      napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
+
+  agoraElectronBridge->_iris_rendering.reset();
+  LOG_F(INFO, __FUNCTION__);
+  napi_value retValue = nullptr;
+  return retValue;
+}
+
 void AgoraElectronBridge::Init() {
   if (!_iris_api_engine) {
     LOG_F(INFO, __FUNCTION__);
     // create
     auto engine = createIrisRtcEngine(nullptr);
-    auto bufferManager = std::make_shared<iris::IrisVideoFrameBufferManager>();
     ::enableUseJsonArray(true);
-
-    // combine
-    engine->Attach(bufferManager.get());
 
     // assign
     _iris_api_engine.reset(engine);
-    _iris_video_frame_buffer_manager = bufferManager;
+    _iris_rendering.reset(iris::IrisRtcRendering::Create(engine));
   }
 }
 
 void AgoraElectronBridge::Release() {
   if (_iris_api_engine) {
-    // uncontrol
-    _iris_api_engine->Detach(_iris_video_frame_buffer_manager.get());
     // reset
-    _iris_video_frame_buffer_manager.reset();
+    _iris_rendering.reset();
     _iris_api_engine.reset();
   }
   LOG_F(INFO, __FUNCTION__);

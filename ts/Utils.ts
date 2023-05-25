@@ -1,4 +1,4 @@
-import { VideoSourceType } from './Private/AgoraBase';
+import { VideoSourceType } from './Private/AgoraMediaBase';
 import {
   AgoraEnvType,
   FormatRendererVideoConfig,
@@ -106,7 +106,7 @@ export const formatConfigByVideoSourceType = (
   videoSourceType: VideoSourceType;
 } => {
   if (videoSourceType === undefined || videoSourceType === null) {
-    throw new Error(`must set videoSourceType`);
+    throw new Error(`must set videoSourceType:${videoSourceType}`);
   }
   let uid = originUid;
   let channelId = originChannelId;
@@ -122,13 +122,13 @@ export const formatConfigByVideoSourceType = (
       break;
     case VideoSourceType.VideoSourceRemote:
       if (!uid || !channelId) {
-        throw new Error(`must set uid:${uid}} and channelId:${channelId}`);
+        throw new Error(`must set uid:${uid} and channelId:${channelId}`);
       }
       break;
     case VideoSourceType.VideoSourceMediaPlayer:
       channelId = '';
       if (!uid) {
-        throw new Error(`must set uid(mediaPlayerId):${uid}}}`);
+        throw new Error(`must set mediaPlayerId:${uid}`);
       }
       break;
     default:
@@ -195,8 +195,6 @@ const agora = require('../build/Release/agora_node_ext');
 export const AgoraEnv: AgoraEnvType = {
   enableLogging: true,
   enableDebugLogging: false,
+  webEnvReady: true,
   AgoraElectronBridge: new agora.AgoraElectronBridge(),
 };
-
-// @ts-ignore
-(window || global).AgoraEnv = AgoraEnv;

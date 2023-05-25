@@ -1,15 +1,13 @@
-import React from 'react';
 import {
   ChannelProfileType,
   ClientRoleType,
   ContentInspectModule,
   ContentInspectResult,
   ContentInspectType,
-  createAgoraRtcEngine,
   IRtcEngineEventHandler,
+  createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-
-import Config from '../../../config/agora.config';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
@@ -23,7 +21,9 @@ import {
   AgoraTextInput,
   AgoraView,
 } from '../../../components/ui';
+import Config from '../../../config/agora.config';
 import { enumToItems } from '../../../utils';
+import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   modules: ContentInspectModule[];
@@ -65,11 +65,14 @@ export default class ContentInspect
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
-      logConfig: { filePath: Config.SDKLogPath },
+      logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
@@ -150,7 +153,7 @@ export default class ContentInspect
     this.info('onContentInspectResult', 'result', result);
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const { modules, type, interval } = this.state;
     return (
       <>
@@ -195,13 +198,14 @@ export default class ContentInspect
               interval: text === '' ? this.createState().interval : +text,
             });
           }}
+          numberKeyboard={true}
           placeholder={`interval (defaults: ${this.createState().interval})`}
         />
       </>
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { startPreview, joinChannelSuccess, enableContentInspect } =
       this.state;
     return (

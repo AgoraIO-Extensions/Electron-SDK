@@ -1,4 +1,3 @@
-import React, { Component, ReactNode } from 'react';
 import {
   ErrorCodeType,
   IRtcEngine,
@@ -6,18 +5,22 @@ import {
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
+  VideoCanvas,
+  VideoSourceType,
 } from 'agora-electron-sdk';
-import { Card, List } from 'antd';
+import React, { Component, ReactElement } from 'react';
 
-import AgoraStyle from '../examples/config/public.scss';
 import {
   AgoraButton,
+  AgoraCard,
   AgoraDivider,
+  AgoraList,
+  AgoraStyle,
   AgoraText,
   AgoraTextInput,
   AgoraView,
+  RtcSurfaceView,
 } from './ui';
-import RtcSurfaceView from './RtcSurfaceView';
 
 export interface BaseComponentState {
   appId: string;
@@ -51,14 +54,13 @@ export abstract class BaseComponent<
 {
   protected engine?: IRtcEngine;
 
-  protected constructor(props: P) {
+  constructor(props: P) {
     super(props);
     this.state = this.createState();
   }
 
   componentDidMount() {
     this.initRtcEngine();
-    // @ts-ignore
     window.agoraRtcEngine = this.engine;
   }
 
@@ -135,18 +137,19 @@ export abstract class BaseComponent<
   }
 
   render() {
+    const users = this.renderUsers();
     const configuration = this.renderConfiguration();
     return (
       <AgoraView className={AgoraStyle.screen}>
         <AgoraView className={AgoraStyle.content}>
-          {this.renderUsers()}
+          {users ? this.renderUsers() : undefined}
         </AgoraView>
         <AgoraView className={AgoraStyle.rightBar}>
           {this.renderChannel()}
           {configuration ? (
             <>
               <AgoraDivider>
-                The Configuration of {this.constructor.name}
+                {`The Configuration of ${this.constructor.name}`}
               </AgoraDivider>
               {configuration}
             </>
@@ -158,7 +161,7 @@ export abstract class BaseComponent<
     );
   }
 
-  protected renderChannel(): ReactNode {
+  protected renderChannel(): ReactElement | undefined {
     const { channelId, joinChannelSuccess } = this.state;
     return (
       <>
@@ -179,66 +182,57 @@ export abstract class BaseComponent<
     );
   }
 
-  protected renderUsers(): ReactNode {
-    const {
-      enableVideo,
-      startPreview,
-      channelId,
-      joinChannelSuccess,
-      remoteUsers,
-    } = this.state;
+  protected renderUsers(): ReactElement | undefined {
+    const { startPreview, joinChannelSuccess, remoteUsers } = this.state;
     return (
       <>
-        {startPreview || joinChannelSuccess ? (
-          <List
-            style={{ width: '100%' }}
-            grid={
-              enableVideo
-                ? {
-                    gutter: 16,
-                    xs: 1,
-                    sm: 1,
-                    md: 1,
-                    lg: 1,
-                    xl: 1,
-                    xxl: 2,
-                  }
-                : {
-                    gutter: 16,
-                    column: 4,
-                  }
+        {!!startPreview || joinChannelSuccess
+          ? this.renderUser({
+              uid: 0,
+              sourceType: VideoSourceType.VideoSourceCamera,
+            })
+          : undefined}
+        {!!startPreview || joinChannelSuccess ? (
+          <AgoraList
+            data={remoteUsers ?? []}
+            renderItem={(item) =>
+              this.renderUser({
+                uid: item,
+                sourceType: VideoSourceType.VideoSourceRemote,
+              })
             }
-            dataSource={[0, ...(remoteUsers ?? [])]}
-            renderItem={(item) => {
-              return this.renderVideo(item, channelId);
-            }}
           />
         ) : undefined}
       </>
     );
   }
 
-  protected renderVideo(uid: number, channelId?: string): ReactNode {
+  protected renderUser(user: VideoCanvas): ReactElement | undefined {
     const { enableVideo } = this.state;
     return (
-      <List.Item>
-        <Card title={`${uid === 0 ? 'Local' : 'Remote'} Uid: ${uid}`}>
-          {enableVideo ? (
-            <>
-              <AgoraText>Click view to mirror</AgoraText>
-              <RtcSurfaceView canvas={{ uid }} />
-            </>
-          ) : undefined}
-        </Card>
-      </List.Item>
+      <AgoraCard
+        key={`${user.uid} - ${user.sourceType}`}
+        title={`${user.uid} - ${user.sourceType}`}
+      >
+        {enableVideo ? (
+          <>
+            <AgoraText>Click view to mirror</AgoraText>
+            {this.renderVideo(user)}
+          </>
+        ) : undefined}
+      </AgoraCard>
     );
   }
 
-  protected renderConfiguration(): ReactNode {
+  protected renderVideo(user: VideoCanvas): ReactElement | undefined {
+    return <RtcSurfaceView canvas={user} />;
+  }
+
+  protected renderConfiguration(): ReactElement | undefined {
     return undefined;
   }
 
-  protected renderAction(): ReactNode {
+  protected renderAction(): ReactElement | undefined {
     return undefined;
   }
 
