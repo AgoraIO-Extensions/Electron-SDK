@@ -1,5 +1,19 @@
 
 
+# [4.2.0-rc.6](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.1.1-rc.1...v4.2.0-rc.6) (2023-05-25)
+
+
+### Bug Fixes
+
+* `RendererManager` memory leak ([#952](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/952)) ([421f802](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/421f802a2c27102ba8ff3e165fafe1c65fe26077))
+* `setLocalRenderMode` `setRemoteRenderMode` `setRemoteRenderModeEx` `setLocalVideoMirrorMode` not working ([#951](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/951)) ([27897f2](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/27897f2efbaa1f2cde92b4c578d2d52956c46c82))
+* `setupRemoteVideo` not working ([#950](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/950)) ([1eb1877](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/1eb1877b6c91fba4a7a1f631521292368e4b8361))
+
+
+### Features
+
+* support 4.2.0 ([#995](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/995)) ([459bf51](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/459bf51858cc4704a0783f5784fb9178fddd6803)), closes [#967](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/967) [#972](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/972) [#973](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/973) [#974](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/974) [#980](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/980) [#982](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/982) [#1001](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1001) [#1005](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1005) [#1010](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1010)
+
 ## [4.1.1-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.1.0...v4.1.1-rc.1) (2023-02-16)
 
 # [4.1.0](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.1-rc.2...v4.1.0) (2022-12-20)
