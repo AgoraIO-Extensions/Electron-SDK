@@ -1,5 +1,5 @@
-name: Build Addon
-run-name: ${{ github.actor }} triggered this job
+name: Build API Example / Addon
+
 on:
   workflow_call:
     inputs:
@@ -20,8 +20,9 @@ on:
           - sdk
   release:
     types: [ published ]
+
 jobs:
-  reusable_workflow_job:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Build
