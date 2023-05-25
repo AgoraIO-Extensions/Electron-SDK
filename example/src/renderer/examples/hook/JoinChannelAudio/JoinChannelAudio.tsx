@@ -5,7 +5,7 @@ import {
   MediaDeviceType,
   RtcConnection,
 } from 'agora-electron-sdk';
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 
 import { AgoraButton, AgoraDivider, AgoraSlider } from '../../../components/ui';
 import * as log from '../../../utils/log';
@@ -229,7 +229,7 @@ export default function JoinChannelAudio() {
     />
   );
 
-  function renderConfiguration(): ReactNode {
+  function renderConfiguration(): ReactElement | undefined {
     return (
       <>
         <AgoraSlider
@@ -265,7 +265,7 @@ export default function JoinChannelAudio() {
     );
   }
 
-  function renderAction(): ReactNode {
+  function renderAction(): ReactElement | undefined {
     return (
       <>
         <AgoraButton

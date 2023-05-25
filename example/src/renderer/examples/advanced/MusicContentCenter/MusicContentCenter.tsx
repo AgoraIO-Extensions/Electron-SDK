@@ -13,7 +13,7 @@ import {
   PreloadStatusCode,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
@@ -359,11 +359,11 @@ export default class MusicContentCenter
     );
   }
 
-  protected renderChannel(): React.ReactNode {
+  protected renderChannel(): ReactElement | undefined {
     return undefined;
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const {
       rtmAppId,
       rtmToken,
@@ -488,7 +488,7 @@ export default class MusicContentCenter
     );
   }
 
-  protected renderUsers(): React.ReactNode {
+  protected renderUsers(): ReactElement | undefined {
     const { musics, songCode } = this.state;
     return +songCode >= 0 ? (
       <AgoraImage
@@ -501,7 +501,7 @@ export default class MusicContentCenter
     ) : undefined;
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { open, play, pause } = this.state;
     return (
       <>

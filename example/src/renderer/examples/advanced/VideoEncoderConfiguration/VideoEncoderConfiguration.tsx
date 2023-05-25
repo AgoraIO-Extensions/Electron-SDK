@@ -8,7 +8,7 @@ import {
   VideoMirrorModeType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
@@ -165,7 +165,7 @@ export default class VideoEncoderConfiguration
     this.engine?.release();
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const { codecType, orientationMode, degradationPreference, mirrorMode } =
       this.state;
     return (
@@ -265,7 +265,7 @@ export default class VideoEncoderConfiguration
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     return (
       <>
         <AgoraButton

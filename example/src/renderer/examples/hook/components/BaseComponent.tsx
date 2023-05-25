@@ -1,13 +1,13 @@
-import React, { ReactNode } from 'react';
+import React, { ReactElement } from 'react';
 
 import { AgoraDivider, AgoraStyle, AgoraView } from '../../../components/ui';
 
 interface Props {
   name: string;
-  renderConfiguration?: () => ReactNode;
-  renderChannel: () => ReactNode;
-  renderUsers?: () => ReactNode;
-  renderAction?: () => ReactNode;
+  renderConfiguration?: () => ReactElement | undefined;
+  renderChannel: () => ReactElement | undefined;
+  renderUsers?: () => ReactElement | undefined;
+  renderAction?: () => ReactElement | undefined;
 }
 
 export function BaseComponent({

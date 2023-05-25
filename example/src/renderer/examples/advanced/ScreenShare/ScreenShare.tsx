@@ -14,7 +14,7 @@ import {
   VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { SketchPicker } from 'react-color';
 
 import {
@@ -391,7 +391,7 @@ export default class ScreenShare
     }
   }
 
-  protected renderUsers(): React.ReactNode {
+  protected renderUsers(): ReactElement | undefined {
     const { startScreenCapture } = this.state;
     return (
       <>
@@ -409,7 +409,7 @@ export default class ScreenShare
     );
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const {
       sources,
       targetSource,
@@ -612,7 +612,7 @@ export default class ScreenShare
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { startScreenCapture, publishScreenCapture } = this.state;
     return (
       <>

@@ -9,7 +9,7 @@ import {
   VoiceConversionPreset,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import {
   BaseAudioComponentState,
@@ -206,7 +206,7 @@ export default class VoiceChanger
     this.engine?.release();
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     return (
       <>
         {this._renderVoiceBeautifierPreset()}

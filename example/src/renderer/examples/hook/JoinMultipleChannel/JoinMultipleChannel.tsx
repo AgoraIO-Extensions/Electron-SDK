@@ -6,13 +6,7 @@ import {
   RtcStats,
   VideoCanvas,
 } from 'agora-electron-sdk';
-import React, {
-  ReactElement,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 
 import {
   AgoraButton,
@@ -280,7 +274,7 @@ export default function JoinMultipleChannel() {
     />
   );
 
-  function renderChannel(): ReactNode {
+  function renderChannel(): ReactElement | undefined {
     return (
       <>
         <AgoraTextInput
@@ -331,7 +325,7 @@ export default function JoinMultipleChannel() {
     );
   }
 
-  function renderUsers(): ReactNode {
+  function renderUsers(): ReactElement | undefined {
     return (
       <>
         {startPreview || joinChannelSuccess || joinChannelSuccess2 ? (
@@ -354,7 +348,7 @@ export default function JoinMultipleChannel() {
     user: VideoCanvas,
     channelId?: string,
     localUid?: number
-  ): ReactElement {
+  ): ReactElement | undefined {
     return (
       <AgoraCard title={`${channelId} - ${user.uid}`}>
         <AgoraText>Click view to mirror</AgoraText>
@@ -363,7 +357,7 @@ export default function JoinMultipleChannel() {
     );
   }
 
-  function renderAction(): ReactNode {
+  function renderAction(): ReactElement | undefined {
     return (
       <>
         <AgoraButton

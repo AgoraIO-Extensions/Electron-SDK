@@ -3,7 +3,7 @@ import {
   AudioMixingStateType,
   ClientRoleType,
 } from 'agora-electron-sdk';
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 
 import {
   AgoraButton,
@@ -191,7 +191,7 @@ export default function AudioMixing() {
     />
   );
 
-  function renderConfiguration(): ReactNode {
+  function renderConfiguration(): ReactElement | undefined {
     return (
       <>
         <AgoraTextInput
@@ -229,7 +229,7 @@ export default function AudioMixing() {
     );
   }
 
-  function renderAction(): ReactNode {
+  function renderAction(): ReactElement | undefined {
     return (
       <>
         <AgoraButton

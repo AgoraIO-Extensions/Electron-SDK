@@ -1,7 +1,7 @@
 import { GithubOutlined, SettingOutlined } from '@ant-design/icons';
 import { createAgoraRtcEngine } from 'agora-electron-sdk';
 import { Layout, Menu } from 'antd';
-import React from 'react';
+import React, { Component } from 'react';
 import {
   Link,
   Redirect,
@@ -22,7 +22,7 @@ const DATA = [Basic, Advanced, Hooks];
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
-class App extends React.Component {
+class App extends Component {
   state = {
     collapsed: false,
     version: { version: undefined, build: undefined },

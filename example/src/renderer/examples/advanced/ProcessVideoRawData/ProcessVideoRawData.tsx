@@ -13,7 +13,7 @@ import ffi, {
   LibraryObject,
   LibraryObjectDefinitionToLibraryDefinition,
 } from 'ffi-napi';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
@@ -194,7 +194,7 @@ export default class ProcessVideoRawData
     this.engine?.release();
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { enablePlugin } = this.state;
     return (
       <>

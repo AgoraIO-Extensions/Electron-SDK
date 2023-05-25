@@ -12,7 +12,7 @@ import {
   VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 
 import {
   BaseComponent,
@@ -167,11 +167,11 @@ export default class JoinChannelVideo
     );
   }
 
-  protected renderUsers(): React.ReactNode {
+  protected renderUsers(): ReactElement | undefined {
     return super.renderUsers();
   }
 
-  protected renderVideo(user: VideoCanvas): ReactElement {
+  protected renderVideo(user: VideoCanvas): ReactElement | undefined {
     return super.renderVideo(user);
   }
 }

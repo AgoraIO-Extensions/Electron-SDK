@@ -7,7 +7,7 @@ import {
   IRtcEngineEventHandler,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
@@ -214,7 +214,7 @@ export default class ChannelMediaRelay
     this.info('onChannelMediaRelayEvent', 'code', code);
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const { destChannelNames } = this.state;
     return (
       <>
@@ -230,7 +230,7 @@ export default class ChannelMediaRelay
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const {
       joinChannelSuccess,
       startChannelMediaRelay,

@@ -12,7 +12,7 @@ import {
   VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import React, { ReactNode } from 'react';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
@@ -317,7 +317,7 @@ export default class DeviceManager
     );
   }
 
-  protected renderConfiguration(): ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const {
       playbackDevices,
       playbackDeviceId,

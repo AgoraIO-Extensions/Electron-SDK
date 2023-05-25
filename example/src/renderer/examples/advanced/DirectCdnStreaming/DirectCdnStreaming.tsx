@@ -14,7 +14,7 @@ import {
   VideoMirrorModeType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
@@ -242,7 +242,7 @@ export default class DirectCdnStreaming
     this.info('onDirectCdnStreamingStats', 'stats', stats);
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const {
       url,
       codecType,
@@ -354,7 +354,7 @@ export default class DirectCdnStreaming
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { startDirectCdnStreaming } = this.state;
     return (
       <>

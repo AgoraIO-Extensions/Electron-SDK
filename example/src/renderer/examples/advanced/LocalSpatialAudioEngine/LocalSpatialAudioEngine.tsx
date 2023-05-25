@@ -5,7 +5,7 @@ import {
   IRtcEngineEventHandler,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import {
   BaseAudioComponentState,
@@ -174,7 +174,7 @@ export default class LocalSpatialAudioEngine
     this.engine?.release();
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const {
       joinChannelSuccess,
       remoteUsers,
@@ -286,7 +286,7 @@ export default class LocalSpatialAudioEngine
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { joinChannelSuccess, targetUid } = this.state;
     return (
       <>

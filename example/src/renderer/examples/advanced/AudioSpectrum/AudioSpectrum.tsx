@@ -7,7 +7,7 @@ import {
   UserAudioSpectrumInfo,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import {
   CartesianGrid,
   Line,
@@ -169,7 +169,7 @@ export default class AudioSpectrum
     return true;
   }
 
-  protected renderUsers(): React.ReactNode {
+  protected renderUsers(): ReactElement | undefined {
     const { enableAudioSpectrumMonitor, audioSpectrumData } = this.state;
     return (
       <>
@@ -195,7 +195,7 @@ export default class AudioSpectrum
     );
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     return (
       <>
         <AgoraTextInput
@@ -215,7 +215,7 @@ export default class AudioSpectrum
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { enableAudioSpectrumMonitor } = this.state;
     return (
       <>

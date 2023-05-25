@@ -21,17 +21,20 @@ import {
   SwitchProps,
 } from 'antd';
 import { ListItemProps } from 'antd/lib/list';
-import React, { useEffect, useState } from 'react';
+import React, {
+  DetailedHTMLProps,
+  HTMLAttributes,
+  MouseEventHandler,
+  useEffect,
+  useState,
+} from 'react';
 
 import css from './public.scss';
 
 export { RtcSurfaceView } from '../RtcSurfaceView';
 
 export const AgoraView = (
-  props: React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLDivElement>,
-    HTMLDivElement
-  >
+  props: DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
 ) => {
   return (
     <>
@@ -41,10 +44,7 @@ export const AgoraView = (
 };
 
 export const AgoraText = (
-  props: React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLDivElement>,
-    HTMLDivElement
-  >
+  props: DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
 ) => {
   return (
     <>
@@ -55,7 +55,7 @@ export const AgoraText = (
 
 export const AgoraButton = (
   props: Omit<ButtonProps, 'onClick'> & {
-    onPress?: React.MouseEventHandler<HTMLElement>;
+    onPress?: MouseEventHandler<HTMLElement>;
   }
 ) => {
   const { title, onPress, ...others } = props;

@@ -16,7 +16,7 @@ import createAgoraRtcEngine, {
   VideoDeviceInfo,
   VideoSourceType,
 } from 'agora-electron-sdk';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
@@ -444,7 +444,7 @@ export default class LocalVideoTranscoder
     }
   }
 
-  protected renderUsers(): React.ReactNode {
+  protected renderUsers(): ReactElement | undefined {
     const {
       startPreview,
       joinChannelSuccess,
@@ -472,7 +472,7 @@ export default class LocalVideoTranscoder
     );
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const {
       videoDevices,
       videoDeviceId,
@@ -582,7 +582,7 @@ export default class LocalVideoTranscoder
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { startLocalVideoTranscoder } = this.state;
     return (
       <>

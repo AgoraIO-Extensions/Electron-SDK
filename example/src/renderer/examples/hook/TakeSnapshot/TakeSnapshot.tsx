@@ -6,7 +6,7 @@ import {
   RtcConnection,
 } from 'agora-electron-sdk';
 import React, {
-  ReactNode,
+  ReactElement,
   useCallback,
   useEffect,
   useRef,
@@ -159,7 +159,7 @@ export default function TakeSnapshot() {
     />
   );
 
-  function renderConfiguration(): ReactNode {
+  function renderConfiguration(): ReactElement | undefined {
     return (
       <>
         <AgoraDropdown
@@ -183,7 +183,7 @@ export default function TakeSnapshot() {
     );
   }
 
-  function renderAction(): ReactNode {
+  function renderAction(): ReactElement | undefined {
     return (
       <>
         <AgoraButton

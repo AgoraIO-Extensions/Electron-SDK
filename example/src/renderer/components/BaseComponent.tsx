@@ -8,7 +8,7 @@ import {
   VideoCanvas,
   VideoSourceType,
 } from 'agora-electron-sdk';
-import React, { Component, ReactElement, ReactNode } from 'react';
+import React, { Component, ReactElement } from 'react';
 
 import {
   AgoraButton,
@@ -161,7 +161,7 @@ export abstract class BaseComponent<
     );
   }
 
-  protected renderChannel(): ReactNode {
+  protected renderChannel(): ReactElement | undefined {
     const { channelId, joinChannelSuccess } = this.state;
     return (
       <>
@@ -182,7 +182,7 @@ export abstract class BaseComponent<
     );
   }
 
-  protected renderUsers(): ReactNode {
+  protected renderUsers(): ReactElement | undefined {
     const { startPreview, joinChannelSuccess, remoteUsers } = this.state;
     return (
       <>
@@ -207,7 +207,7 @@ export abstract class BaseComponent<
     );
   }
 
-  protected renderUser(user: VideoCanvas): ReactElement {
+  protected renderUser(user: VideoCanvas): ReactElement | undefined {
     const { enableVideo } = this.state;
     return (
       <AgoraCard
@@ -224,15 +224,15 @@ export abstract class BaseComponent<
     );
   }
 
-  protected renderVideo(user: VideoCanvas): ReactElement {
+  protected renderVideo(user: VideoCanvas): ReactElement | undefined {
     return <RtcSurfaceView canvas={user} />;
   }
 
-  protected renderConfiguration(): ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     return undefined;
   }
 
-  protected renderAction(): ReactNode {
+  protected renderAction(): ReactElement | undefined {
     return undefined;
   }
 

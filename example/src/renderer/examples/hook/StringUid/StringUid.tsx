@@ -1,5 +1,5 @@
 import { ClientRoleType } from 'agora-electron-sdk';
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 
 import { AgoraButton, AgoraTextInput } from '../../../components/ui';
 import * as log from '../../../utils/log';
@@ -111,7 +111,7 @@ export default function StringUid() {
     />
   );
 
-  function renderConfiguration(): ReactNode {
+  function renderConfiguration(): ReactElement | undefined {
     return (
       <>
         <AgoraTextInput
@@ -126,7 +126,7 @@ export default function StringUid() {
     );
   }
 
-  function renderAction(): ReactNode {
+  function renderAction(): ReactElement | undefined {
     return (
       <>
         <AgoraButton

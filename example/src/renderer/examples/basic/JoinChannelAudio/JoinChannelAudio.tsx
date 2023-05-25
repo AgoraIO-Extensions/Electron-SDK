@@ -11,7 +11,7 @@ import {
   UserOfflineReasonType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import {
   BaseAudioComponentState,
@@ -238,7 +238,7 @@ export default class JoinChannelAudio
     this.info('onAudioRoutingChanged', 'routing', routing);
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const { recordingSignalVolume, playbackSignalVolume } = this.state;
     return (
       <>
@@ -275,7 +275,7 @@ export default class JoinChannelAudio
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { enableLocalAudio, muteLocalAudioStream } = this.state;
     return (
       <>

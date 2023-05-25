@@ -7,7 +7,7 @@ import {
   RtcConnection,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
@@ -155,7 +155,7 @@ export default class Encryption
     );
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const { encryptionMode, encryptionKey, encryptionKdfSalt } = this.state;
     return (
       <>
@@ -190,7 +190,7 @@ export default class Encryption
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { joinChannelSuccess, enableEncryption } = this.state;
     return (
       <>

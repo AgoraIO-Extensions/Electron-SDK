@@ -7,7 +7,7 @@ import {
   VideoDeviceInfo,
   VideoSourceType,
 } from 'agora-electron-sdk';
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 
 import {
   AgoraButton,
@@ -315,7 +315,7 @@ export default function DeviceManager() {
     />
   );
 
-  function renderConfiguration(): ReactNode {
+  function renderConfiguration(): ReactElement | undefined {
     return (
       <>
         <AgoraDropdown

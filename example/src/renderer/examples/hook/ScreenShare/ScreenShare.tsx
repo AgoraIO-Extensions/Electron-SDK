@@ -10,7 +10,7 @@ import {
   UserOfflineReasonType,
   VideoSourceType,
 } from 'agora-electron-sdk';
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 
 import { SketchPicker } from 'react-color';
 
@@ -361,7 +361,7 @@ export default function ScreenShare() {
     />
   );
 
-  function renderUsers(): ReactNode {
+  function renderUsers(): ReactElement | undefined {
     return (
       <>
         <BaseRenderUsers
@@ -383,7 +383,7 @@ export default function ScreenShare() {
     );
   }
 
-  function renderConfiguration(): ReactNode {
+  function renderConfiguration(): ReactElement | undefined {
     return (
       <>
         <AgoraDropdown
@@ -557,7 +557,7 @@ export default function ScreenShare() {
     );
   }
 
-  function renderAction(): ReactNode {
+  function renderAction(): ReactElement | undefined {
     return (
       <>
         <AgoraButton

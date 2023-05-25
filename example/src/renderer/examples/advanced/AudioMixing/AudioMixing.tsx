@@ -6,7 +6,7 @@ import {
   IRtcEngineEventHandler,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import {
   BaseAudioComponentState,
@@ -199,7 +199,7 @@ export default class AudioMixing
     this.info('AudioMixingFinished');
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const { filePath, loopback } = this.state;
     return (
       <>
@@ -242,7 +242,7 @@ export default class AudioMixing
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { startAudioMixing, pauseAudioMixing } = this.state;
     return (
       <>

@@ -3,7 +3,7 @@ import {
   BackgroundSourceType,
   ClientRoleType,
 } from 'agora-electron-sdk';
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
 
 import {
@@ -143,7 +143,7 @@ export default function VirtualBackground() {
     />
   );
 
-  function renderConfiguration(): ReactNode {
+  function renderConfiguration(): ReactElement | undefined {
     return (
       <>
         <AgoraDropdown
@@ -187,7 +187,7 @@ export default function VirtualBackground() {
     );
   }
 
-  function renderAction(): ReactNode {
+  function renderAction(): ReactElement | undefined {
     return (
       <>
         <AgoraButton

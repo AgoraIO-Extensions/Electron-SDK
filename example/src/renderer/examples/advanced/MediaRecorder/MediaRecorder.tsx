@@ -13,7 +13,7 @@ import {
   RecorderState,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
@@ -229,7 +229,7 @@ export default class MediaRecorder
     }
   }
 
-  protected renderConfiguration(): React.ReactNode {
+  protected renderConfiguration(): ReactElement | undefined {
     const {
       storagePath,
       containerFormat,
@@ -290,7 +290,7 @@ export default class MediaRecorder
     );
   }
 
-  protected renderAction(): React.ReactNode {
+  protected renderAction(): ReactElement | undefined {
     const { joinChannelSuccess, startRecoding } = this.state;
     return (
       <>
