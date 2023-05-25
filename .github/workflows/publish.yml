@@ -18,10 +18,16 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      SSH_AUTH_SOCK: /tmp/ssh_agent.sock
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - name: Setup SSH Keys and known_hosts
+        run: |
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -40,7 +46,7 @@ jobs:
         run: |
           git config --global user.email "${{ secrets.GIT_EMAIL }}"
           git config --global user.name "${{ secrets.GIT_USERNAME }}"
-          yarn release ${{ inputs.increment }} --ci --no-git.tag --no-github.release --npm.allowSameVersion --github.skipChecks
+          yarn release ${{ inputs.increment }} --ci --no-git.tag --no-github.release --npm.allowSameVersion
 
       - name: Get Package Info
         if: ${{ !inputs.dry-run }}
@@ -65,4 +71,4 @@ jobs:
       - name: Release
         if: ${{ !inputs.dry-run }}
         run: |
-          yarn release ${{ inputs.increment }} --ci --no-npm --no-git.commit --github.skipChecks
+          yarn release ${{ inputs.increment }} --ci --no-npm --no-git.commit
