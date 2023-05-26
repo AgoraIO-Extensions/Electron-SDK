@@ -55,6 +55,7 @@ function Package($archNum,$electronVersion,$example_sdk_mode){
   if ($example_sdk_mode -eq 1) {
     yarn config set agora-electron-sdk-pre-built 0
   } else {
+    npm config delete agora_electron_sdk_pre_built
     yarn config delete agora-electron-sdk-pre-built
   }
 

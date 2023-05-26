@@ -78,7 +78,6 @@ echo release_version: %release_version%
 echo short_version: %short_version%
 echo pwd: %cd%
 
-
 echo isBuildSdk: %isBuildSdk%
 echo isBuildDemo: %isBuildDemo%
 echo Upload_CDN: %Upload_CDN%
@@ -103,7 +102,6 @@ del /a /f /s example\dist
 pushd ..\Electron-SDK
 
 if %isBuildSdk% == true (
-
   call ci\electron-sdk-build-windows-release.bat %arch%
   echo 执行上传electron.zip到artifactory
   echo path:%WORKSPACE%\\%build_time%_windows_%arch%.zip
