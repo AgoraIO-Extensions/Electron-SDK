@@ -3,18 +3,18 @@ dir
 call npm -v
 call node -v
 call npm config list
+call yarn config set agora-electron-sdk-pre-built 0
 if %1 == ia32 (
     echo sdk_ia32
-    call yarn config set agora-electron-sdk-pre-built 0
     call npm install --verbose --agora_electron_sdk_arch=ia32
     call npm run totalBuild --verbose --agora_electron_sdk_arch=ia32
 )
 if %1 == x64 (
     echo sdk_x64
-    call yarn config set agora-electron-sdk-pre-built 0
     call npm install --verbose --agora_electron_sdk_arch=x64
     call npm run totalBuild --verbose --agora_electron_sdk_arch=x64
 )
+call yarn config delete agora-electron-sdk-pre-built
 
 set count=0
 :loop

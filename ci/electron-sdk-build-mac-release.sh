@@ -15,6 +15,7 @@ yarn config set agora-electron-sdk-pre-built 0
 npm install --verbose
 npm run totalBuild --verbose
 npm run zipBuild
+yarn config delete agora-electron-sdk-pre-built
 #
 # Example 3
 # npm run build  -- --prebuilt=false --electronVersion=5.0.8 --arch=x64
