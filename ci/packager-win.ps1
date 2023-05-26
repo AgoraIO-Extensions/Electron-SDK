@@ -52,6 +52,12 @@ function Package($archNum,$electronVersion,$example_sdk_mode){
   # choose arch
   ChooseArch -type $archNum
 
+  if ($example_sdk_mode -eq 1) {
+    yarn config set agora-electron-sdk-pre-built 0
+  } else {
+    yarn config delete agora-electron-sdk-pre-built
+  }
+
   if ([String]::IsNullOrEmpty($electronVersion))
   {
     Write-Host "安装example 依赖"
@@ -60,6 +66,7 @@ function Package($archNum,$electronVersion,$example_sdk_mode){
     Write-Host "选择了 electron_version:$electronVersion"
     yarn add --dev electron@$electronVersion --no-lockfile
   }
+
   if ($example_sdk_mode -eq 1) {
     Remove-Item -Path  node_modules/agora-electron-sdk/build -Recurse -Force -ErrorAction Ignore;
     Remove-Item -Path  node_modules/agora-electron-sdk/js -Recurse -Force -ErrorAction Ignore;
