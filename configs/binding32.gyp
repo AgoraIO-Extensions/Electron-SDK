@@ -72,7 +72,8 @@
                 'link_settings': {
                     'libraries': [
                         '-lagora_rtc_sdk.lib',
-                        '-lws2_32.lib'
+                        '-lws2_32.lib',
+                        'lDbghelp.lib'
                     ]
                 },
                 'link_settings!': [
