@@ -2804,6 +2804,11 @@ export abstract class IRtcEngine {
   abstract queryCodecCapability(): { codecInfo: CodecCapInfo[]; size: number };
 
   /**
+   * @ignore
+   */
+  abstract queryDeviceScore(): number;
+
+  /**
    * Joins a channel with media options.
    * This method enables users to join a channel. Users in the same channel can talk to each other, and multiple users in the same channel can start a group chat. Users with different App IDs cannot call each other.A successful call of this method triggers the following callbacks:The local client: The onJoinChannelSuccess and onConnectionStateChanged callbacks.The remote client: onUserJoined , if the user joining the channel is in the Communication profile or is a host in the Live-broadcasting profile.When the connection between the client and Agora's server is interrupted due to poor network conditions, the SDK tries reconnecting to the server. When the local client successfully rejoins the channel, the SDK triggers the onRejoinChannelSuccess callback on the local client.This method allows users to join only one channel at a time.Ensure that the app ID you use to generate the token is the same app ID that you pass in the initialize method; otherwise, you may fail to join the channel by token.
    *
