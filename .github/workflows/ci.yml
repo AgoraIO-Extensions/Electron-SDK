@@ -28,9 +28,7 @@ jobs:
 
       - name: Typecheck files
         run: |
-          set +e
           yarn example install --frozen-lockfile
-          set -e
           yarn typecheck
 
   build:

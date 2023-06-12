@@ -87,7 +87,6 @@ echo example_electron_version: $example_electron_version
 echo example_sdk_mode: $example_sdk_mode
 echo package_version: $package_version
 
-
 pushd /tmp/jenkins/Electron-SDK
 
 rm -rf *.zip || true
@@ -123,4 +122,5 @@ then
   echo 执行上传electronDemo.zip到artifactory
   cp -f electronDemo.zip $WORKSPACE/${build_time}_mac_${package_version}_electron_demo.zip
 fi
+
 popd

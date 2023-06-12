@@ -11,10 +11,11 @@ rm -rf tmp
 # npm install --verbose
 #
 # Example 2
-yarn config set agora-electron-sdk-pre-built 0
+npm config set agora_electron_sdk_pre_built false
 npm install --verbose
 npm run totalBuild --verbose
 npm run zipBuild
+npm config delete agora_electron_sdk_pre_built
 #
 # Example 3
 # npm run build  -- --prebuilt=false --electronVersion=5.0.8 --arch=x64

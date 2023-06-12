@@ -1,5 +1,5 @@
 name: Publish to NPM
-run-name: ${{ github.actor }} triggered this job
+
 on:
   workflow_dispatch:
     inputs:
@@ -15,13 +15,14 @@ on:
 
 jobs:
   release-it:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -35,9 +36,34 @@ jobs:
         run: |
           yarn release ${{ inputs.increment }} -d --ci
 
-      - name: Release
+      - name: NPM Publish
         if: ${{ !inputs.dry-run }}
         run: |
           git config --global user.email "${{ secrets.GIT_EMAIL }}"
           git config --global user.name "${{ secrets.GIT_USERNAME }}"
-          yarn release ${{ inputs.increment }} --ci
+          yarn release ${{ inputs.increment }} --ci --no-git.tag --no-github.release --npm.allowSameVersion
+
+      - name: Get Package Info
+        if: ${{ !inputs.dry-run }}
+        id: package-info
+        run: |
+          name=$(node -p "require('./package.json').name")
+          version=$(node -p "require('./package.json').version")
+          echo "name=${name}" >> "$GITHUB_OUTPUT"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Update Example
+        if: ${{ !inputs.dry-run }}
+        run: |
+          yarn example add ${{steps.package-info.outputs.name}}@${{steps.package-info.outputs.version}}
+
+      - name: Commit Example
+        if: ${{ !inputs.dry-run }}
+        run: |
+          git add example
+          git commit -m "chore(example): update example to install ${{steps.package-info.outputs.name}}@${{steps.package-info.outputs.version}}"
+      
+      - name: Release
+        if: ${{ !inputs.dry-run }}
+        run: |
+          yarn release ${{ inputs.increment }} --ci --no-npm --no-git.commit
