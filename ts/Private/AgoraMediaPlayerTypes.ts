@@ -408,6 +408,10 @@ export class MediaSource {
    */
   enableCache?: boolean;
   /**
+   * @ignore
+   */
+  enableMultiAudioTrack?: boolean;
+  /**
    * Whether the media resource to be opened is a live stream or on-demand video distributed through Media Broadcast service:true: The media resource to be played is a live or on-demand video distributed through Media Broadcast service.false: (Default) The media resource is not a live stream or on-demand video distributed through Media Broadcast service.If you need to open a live stream or on-demand video distributed through Broadcast Streaming service, pass in the URL of the media resource to url, and set isAgoraSource as true; otherwise, you don't need to set the isAgoraSource parameter.
    */
   isAgoraSource?: boolean;

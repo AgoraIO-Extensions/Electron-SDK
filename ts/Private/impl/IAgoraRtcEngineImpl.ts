@@ -1184,6 +1184,17 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_queryCodecCapability';
   }
 
+  queryDeviceScore(): number {
+    const apiType = this.getApiTypeFromQueryDeviceScore();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromQueryDeviceScore(): string {
+    return 'RtcEngine_queryDeviceScore';
+  }
+
   joinChannel(
     token: string,
     channelId: string,

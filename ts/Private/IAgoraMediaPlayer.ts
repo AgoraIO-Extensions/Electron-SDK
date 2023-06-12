@@ -176,6 +176,14 @@ export abstract class IMediaPlayer {
   /**
    * @ignore
    */
+  abstract selectMultiAudioTrack(
+    playoutTrackIndex: number,
+    publishTrackIndex: number
+  ): number;
+
+  /**
+   * @ignore
+   */
   abstract setPlayerOptionInInt(key: string, value: number): number;
 
   /**

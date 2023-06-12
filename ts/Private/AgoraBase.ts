@@ -2364,6 +2364,10 @@ export class LocalAudioStats {
    * @ignore
    */
   audioPlayoutDelay?: number;
+  /**
+   * @ignore
+   */
+  earMonitorDelay?: number;
 }
 
 /**

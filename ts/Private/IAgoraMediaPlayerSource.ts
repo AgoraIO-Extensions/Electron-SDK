@@ -30,7 +30,7 @@ export interface IMediaPlayerSourceObserver {
    *
    * @param position The playback position (ms) of media files.
    */
-  onPositionChanged?(positionMs: number): void;
+  onPositionChanged?(positionMs: number, timestampMs: number): void;
 
   /**
    * Reports the player events.
