@@ -1,0 +1,34 @@
+name: Build API Example / Addon
+
+on:
+  workflow_call:
+    inputs:
+      type:
+        description: 'Build type'
+        required: true
+        default: 'sdk'
+        type: string
+  workflow_dispatch:
+    inputs:
+      type:
+        description: 'Build type'
+        required: true
+        default: 'demo'
+        type: choice
+        options:
+          - demo
+          - sdk
+  release:
+    types: [ published ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build
+        run: |
+          type=${{inputs.type}}
+          type=${type:-"sdk"}
+          curl -X POST -sS -D- -o/dev/null ${{secrets.JENKINS_BUILD_URL}} \
+          -H 'Content-Type: application/json' \
+          -d "{\"branch\": \"${{github.ref_name}}\", \"type\": \"${type}\"}"
