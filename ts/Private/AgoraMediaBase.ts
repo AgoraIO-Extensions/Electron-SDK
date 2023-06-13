@@ -267,6 +267,10 @@ export enum ContentInspectType {
    * @ignore
    */
   ContentInspectSupervision = 2,
+  /**
+   * @ignore
+   */
+  ContentInspectImageModeration = 3,
 }
 
 /**
@@ -735,6 +739,10 @@ export class AudioFrame {
    */
   renderTimeMs?: number;
   /**
+   * @ignore
+   */
+  audioTrackNumber?: number;
+  /**
    * Reserved for future use.
    */
   avsync_type?: number;
@@ -1046,11 +1054,11 @@ export enum ExternalVideoSourceType {
 }
 
 /**
- * The format of the recording file.
+ * @ignore
  */
 export enum MediaRecorderContainerFormat {
   /**
-   * 1: (Default) MP4.
+   * @ignore
    */
   FormatMp4 = 1,
 }

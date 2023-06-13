@@ -6,7 +6,7 @@ import * as t from "ts-interface-checker";
 
 export const IMediaPlayerSourceObserver = t.iface([], {
   "onPlayerSourceStateChanged": t.opt(t.func("void", t.param("state", "MediaPlayerState"), t.param("ec", "MediaPlayerError"))),
-  "onPositionChanged": t.opt(t.func("void", t.param("positionMs", "number"))),
+  "onPositionChanged": t.opt(t.func("void", t.param("positionMs", "number"), t.param("timestampMs", "number"))),
   "onPlayerEvent": t.opt(t.func("void", t.param("eventCode", "MediaPlayerEvent"), t.param("elapsedTime", "number"), t.param("message", "string"))),
   "onMetaData": t.opt(t.func("void", t.param("data", "Uint8Array"), t.param("length", "number"))),
   "onPlayBufferUpdated": t.opt(t.func("void", t.param("playCachedBuffer", "number"))),
