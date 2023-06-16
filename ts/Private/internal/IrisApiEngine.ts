@@ -195,13 +195,7 @@ export const EVENT_PROCESSORS: EventProcessors = {
       },
       buffers: Uint8Array[]
     ) => {
-      switch (event) {
-        case 'OnRecordAudioEncodedFrame':
-        case 'OnPlaybackAudioEncodedFrame':
-        case 'OnMixedAudioEncodedFrame':
-          data.frameBuffer = buffers[0];
-          break;
-      }
+      data.frameBuffer = buffers[0];
     },
     handlers: () => RtcEngineExInternal._audio_encoded_frame_observers,
   },
@@ -216,11 +210,7 @@ export const EVENT_PROCESSORS: EventProcessors = {
       },
       buffers: Uint8Array[]
     ) => {
-      switch (event) {
-        case 'onEncodedVideoFrameReceived':
-          data.imageBuffer = buffers[0];
-          break;
-      }
+      data.imageBuffer = buffers[0];
     },
     handlers: () => MediaEngineInternal._video_encoded_frame_observers,
   },
@@ -286,12 +276,8 @@ export const EVENT_PROCESSORS: EventProcessors = {
       data: { metadata?: Metadata },
       buffers: Uint8Array[]
     ) => {
-      switch (event) {
-        case 'onMetadataReceived':
-          if (data.metadata) {
-            data.metadata.buffer = buffers[0];
-          }
-          break;
+      if (data.metadata) {
+        data.metadata.buffer = buffers[0];
       }
     },
     handlers: () => RtcEngineExInternal._metadata_observer,
