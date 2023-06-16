@@ -8,6 +8,7 @@ export const IAudioEncodedFrameObserver = t.iface([], {
   "onRecordAudioEncodedFrame": t.opt(t.func("void", t.param("frameBuffer", "Uint8Array"), t.param("length", "number"), t.param("audioEncodedFrameInfo", "EncodedAudioFrameInfo"))),
   "onPlaybackAudioEncodedFrame": t.opt(t.func("void", t.param("frameBuffer", "Uint8Array"), t.param("length", "number"), t.param("audioEncodedFrameInfo", "EncodedAudioFrameInfo"))),
   "onMixedAudioEncodedFrame": t.opt(t.func("void", t.param("frameBuffer", "Uint8Array"), t.param("length", "number"), t.param("audioEncodedFrameInfo", "EncodedAudioFrameInfo"))),
+  "onPublishAudioEncodedFrame": t.opt(t.func("void", t.param("frameBuffer", "Uint8Array"), t.param("length", "number"), t.param("audioEncodedFrameInfo", "EncodedAudioFrameInfo"))),
 });
 
 const exportedTypeSuite: t.ITypeSuite = {

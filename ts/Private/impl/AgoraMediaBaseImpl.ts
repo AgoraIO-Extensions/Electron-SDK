@@ -19,6 +19,15 @@ export function processIAudioFrameObserverBase(
       }
       break;
 
+    case 'onPublishAudioFrame':
+      if (handler.onPublishAudioFrame !== undefined) {
+        handler.onPublishAudioFrame(
+          jsonParams.channelId,
+          jsonParams.audioFrame
+        );
+      }
+      break;
+
     case 'onPlaybackAudioFrame':
       if (handler.onPlaybackAudioFrame !== undefined) {
         handler.onPlaybackAudioFrame(
