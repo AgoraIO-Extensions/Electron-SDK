@@ -341,28 +341,24 @@ export class IMusicContentCenterImpl implements IMusicContentCenter {
   }
 
   searchMusic(
-    requestId: string,
     keyWord: string,
     page: number,
     pageSize: number,
     jsonOption?: string
-  ): number {
+  ): string {
     const apiType = this.getApiTypeFromSearchMusic(
-      requestId,
       keyWord,
       page,
       pageSize,
       jsonOption
     );
     const jsonParams = {
-      requestId: requestId,
       keyWord: keyWord,
       page: page,
       pageSize: pageSize,
       jsonOption: jsonOption,
       toJSON: () => {
         return {
-          requestId: requestId,
           keyWord: keyWord,
           page: page,
           pageSize: pageSize,
@@ -371,11 +367,11 @@ export class IMusicContentCenterImpl implements IMusicContentCenter {
       },
     };
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
+    const requestId = jsonResults.requestId;
+    return requestId;
   }
 
   protected getApiTypeFromSearchMusic(
-    requestId: string,
     keyWord: string,
     page: number,
     pageSize: number,
@@ -384,23 +380,22 @@ export class IMusicContentCenterImpl implements IMusicContentCenter {
     return 'MusicContentCenter_searchMusic';
   }
 
-  preload(requestId: string, songCode: number): number {
-    const apiType = this.getApiTypeFromPreload(requestId, songCode);
+  preload(songCode: number): string {
+    const apiType = this.getApiTypeFromPreload(songCode);
     const jsonParams = {
-      requestId: requestId,
       songCode: songCode,
       toJSON: () => {
         return {
-          requestId: requestId,
           songCode: songCode,
         };
       },
     };
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
+    const requestId = jsonResults.requestId;
+    return requestId;
   }
 
-  protected getApiTypeFromPreload(requestId: string, songCode: number): string {
+  protected getApiTypeFromPreload(songCode: number): string {
     return 'MusicContentCenter_preload';
   }
 
@@ -438,7 +433,7 @@ export class IMusicContentCenterImpl implements IMusicContentCenter {
     return 'MusicContentCenter_getCaches';
   }
 
-  isPreloaded(songCode: number): number {
+  isPreloaded(songCode: number): boolean {
     const apiType = this.getApiTypeFromIsPreloaded(songCode);
     const jsonParams = {
       songCode: songCode,

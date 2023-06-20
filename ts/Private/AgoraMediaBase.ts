@@ -830,7 +830,7 @@ export interface IAudioFrameObserverBase {
    * @returns
    * Reserved for future use.
    */
-  onRecordAudioFrame?(channelId: string, audioFrame: AudioFrame): boolean;
+  onRecordAudioFrame?(channelId: string, audioFrame: AudioFrame): void;
 
   /**
    * Gets the raw audio frame for playback.
@@ -843,7 +843,7 @@ export interface IAudioFrameObserverBase {
    * @returns
    * Reserved for future use.
    */
-  onPlaybackAudioFrame?(channelId: string, audioFrame: AudioFrame): boolean;
+  onPlaybackAudioFrame?(channelId: string, audioFrame: AudioFrame): void;
 
   /**
    * Retrieves the mixed captured and playback audio frame.
@@ -856,7 +856,7 @@ export interface IAudioFrameObserverBase {
    * @returns
    * Reserved for future use.
    */
-  onMixedAudioFrame?(channelId: string, audioFrame: AudioFrame): boolean;
+  onMixedAudioFrame?(channelId: string, audioFrame: AudioFrame): void;
 
   /**
    * Gets the in-ear monitoring audio frame.
@@ -868,7 +868,7 @@ export interface IAudioFrameObserverBase {
    * @returns
    * Reserved for future use.
    */
-  onEarMonitoringAudioFrame?(audioFrame: AudioFrame): boolean;
+  onEarMonitoringAudioFrame?(audioFrame: AudioFrame): void;
 }
 
 /**
@@ -889,7 +889,7 @@ export interface IAudioFrameObserver extends IAudioFrameObserverBase {
     channelId: string,
     uid: number,
     audioFrame: AudioFrame
-  ): boolean;
+  ): void;
 }
 
 /**
@@ -934,7 +934,7 @@ export interface IAudioSpectrumObserver {
    * @returns
    * Whether the spectrum data is received: true : Spectrum data is received. false : No spectrum data is received.
    */
-  onLocalAudioSpectrum?(data: AudioSpectrumData): boolean;
+  onLocalAudioSpectrum?(data: AudioSpectrumData): void;
 
   /**
    * Gets the remote audio spectrum.
@@ -950,7 +950,7 @@ export interface IAudioSpectrumObserver {
   onRemoteAudioSpectrum?(
     spectrums: UserAudioSpectrumInfo[],
     spectrumNumber: number
-  ): boolean;
+  ): void;
 }
 
 /**
@@ -975,7 +975,7 @@ export interface IVideoEncodedFrameObserver {
     imageBuffer: Uint8Array,
     length: number,
     videoEncodedFrameInfo: EncodedVideoFrameInfo
-  ): boolean;
+  ): void;
 }
 
 /**
@@ -1010,7 +1010,7 @@ export interface IVideoFrameObserver {
   onCaptureVideoFrame?(
     sourceType: VideoSourceType,
     videoFrame: VideoFrame
-  ): boolean;
+  ): void;
 
   /**
    * Occurs each time the SDK receives a video frame before encoding.
@@ -1018,31 +1018,6 @@ export interface IVideoFrameObserver {
    * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data before encoding and then process the data according to your particular scenarios. After processing, you can send the processed video data back to the SDK in this callback. The video data that this callback gets has been preprocessed, with its content cropped and rotated, and the image enhanced.
    *
    * @param sourceType The type of the video source. See VideoSourceType.
-   * @param videoFrame The video frame. See VideoFrame.The default value of the video frame data format obtained through this callback is as follows:macOS: YUV 420Windows: YUV 420
-   *
-   * @returns
-   * When the video processing mode is ProcessModeReadOnly : true : Reserved for future use. false : Reserved for future use. When the video processing mode is ProcessModeReadWrite : true : Sets the SDK to receive the video frame. false : Sets the SDK to discard the video frame.
-   */
-  onPreEncodeVideoFrame?(
-    sourceType: VideoSourceType,
-    videoFrame: VideoFrame
-  ): boolean;
-
-  /**
-   * @ignore
-   */
-  onMediaPlayerVideoFrame?(
-    videoFrame: VideoFrame,
-    mediaPlayerId: number
-  ): boolean;
-
-  /**
-   * Occurs each time the SDK receives a video frame sent by the remote user.
-   *
-   * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data sent from the remote end before rendering, and then process it according to the particular scenarios. If the video data type you get is RGBA, the SDK does not support processing the data of the alpha channel.
-   *
-   * @param channelId The channel ID.
-   * @param remoteUid The user ID of the remote user who sends the current video frame.
    * @param videoFrame The video frame. See VideoFrame.The default value of the video frame data format obtained through this callback is as follows:
    *  macOS: YUV 420
    *  Windows: YUV 420
@@ -1054,16 +1029,38 @@ export interface IVideoFrameObserver {
    *  true : Sets the SDK to receive the video frame.
    *  false : Sets the SDK to discard the video frame.
    */
-  onRenderVideoFrame?(
-    channelId: string,
-    remoteUid: number,
+  onPreEncodeVideoFrame?(
+    sourceType: VideoSourceType,
     videoFrame: VideoFrame
-  ): boolean;
+  ): void;
 
   /**
    * @ignore
    */
-  onTranscodedVideoFrame?(videoFrame: VideoFrame): boolean;
+  onMediaPlayerVideoFrame?(videoFrame: VideoFrame, mediaPlayerId: number): void;
+
+  /**
+   * Occurs each time the SDK receives a video frame sent by the remote user.
+   *
+   * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data sent from the remote end before rendering, and then process it according to the particular scenarios. If the video data type you get is RGBA, the SDK does not support processing the data of the alpha channel.
+   *
+   * @param channelId The channel ID.
+   * @param remoteUid The user ID of the remote user who sends the current video frame.
+   * @param videoFrame The video frame. See VideoFrame.The default value of the video frame data format obtained through this callback is as follows:macOS: YUV 420Windows: YUV 420
+   *
+   * @returns
+   * When the video processing mode is ProcessModeReadOnly : true : Reserved for future use. false : Reserved for future use. When the video processing mode is ProcessModeReadWrite : true : Sets the SDK to receive the video frame. false : Sets the SDK to discard the video frame.
+   */
+  onRenderVideoFrame?(
+    channelId: string,
+    remoteUid: number,
+    videoFrame: VideoFrame
+  ): void;
+
+  /**
+   * @ignore
+   */
+  onTranscodedVideoFrame?(videoFrame: VideoFrame): void;
 }
 
 /**
