@@ -453,6 +453,14 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return 'RtcEngine_stopScreenCapture2';
   }
 
+  protected override getApiTypeFromPreloadChannelWithUserAccount(
+    token: string,
+    channelId: string,
+    userAccount: string
+  ): string {
+    return 'RtcEngine_preloadChannelWithUserAccount2';
+  }
+
   override getAudioDeviceManager(): IAudioDeviceManager {
     return this._audio_device_manager;
   }
