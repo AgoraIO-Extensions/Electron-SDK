@@ -376,17 +376,16 @@ export abstract class IMusicContentCenter {
    * @ignore
    */
   abstract searchMusic(
-    requestId: string,
     keyWord: string,
     page: number,
     pageSize: number,
     jsonOption?: string
-  ): number;
+  ): string;
 
   /**
    * @ignore
    */
-  abstract preload(requestId: string, songCode: number): number;
+  abstract preload(songCode: number): string;
 
   /**
    * @ignore
@@ -401,7 +400,7 @@ export abstract class IMusicContentCenter {
   /**
    * @ignore
    */
-  abstract isPreloaded(songCode: number): number;
+  abstract isPreloaded(songCode: number): boolean;
 
   /**
    * @ignore

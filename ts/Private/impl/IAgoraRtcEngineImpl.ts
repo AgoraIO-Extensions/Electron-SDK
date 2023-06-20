@@ -26,8 +26,10 @@ import {
   LocalAccessPointConfiguration,
   LocalTranscoderConfiguration,
   LowlightEnhanceOptions,
+  NetworkType,
   RecorderStreamInfo,
   Rectangle,
+  ScreenCaptureFramerateCapability,
   ScreenCaptureParameters,
   ScreenCaptureParameters2,
   ScreenScenarioType,
@@ -3502,21 +3504,15 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_setLogFileSize';
   }
 
-  uploadLogFile(requestId: string): number {
-    const apiType = this.getApiTypeFromUploadLogFile(requestId);
-    const jsonParams = {
-      requestId: requestId,
-      toJSON: () => {
-        return {
-          requestId: requestId,
-        };
-      },
-    };
+  uploadLogFile(): string {
+    const apiType = this.getApiTypeFromUploadLogFile();
+    const jsonParams = {};
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
+    const requestId = jsonResults.requestId;
+    return requestId;
   }
 
-  protected getApiTypeFromUploadLogFile(requestId: string): string {
+  protected getApiTypeFromUploadLogFile(): string {
     return 'RtcEngine_uploadLogFile';
   }
 
@@ -5157,7 +5153,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_updateScreenCapture';
   }
 
-  queryScreenCaptureCapability(): number {
+  queryScreenCaptureCapability(): ScreenCaptureFramerateCapability {
     const apiType = this.getApiTypeFromQueryScreenCaptureCapability();
     const jsonParams = {};
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);
@@ -6651,7 +6647,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_enableWirelessAccelerate';
   }
 
-  getNetworkType(): number {
+  getNetworkType(): NetworkType {
     const apiType = this.getApiTypeFromGetNetworkType();
     const jsonParams = {};
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);

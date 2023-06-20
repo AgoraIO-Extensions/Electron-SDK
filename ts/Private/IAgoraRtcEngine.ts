@@ -61,6 +61,7 @@ import {
   RtmpStreamPublishErrorType,
   RtmpStreamPublishState,
   RtmpStreamingEvent,
+  ScreenCaptureFramerateCapability,
   ScreenCaptureParameters,
   ScreenCaptureParameters2,
   ScreenScenarioType,
@@ -2500,16 +2501,7 @@ export class RtcEngineContext {
    */
   areaCode?: number;
   /**
-   * The SDK log files are: agorasdk.log, agorasdk.1.log, agorasdk.2.log, agorasdk.3.log, and agorasdk.4.log.
-   *  The API call log files are: agoraapi.log, agoraapi.1.log, agoraapi.2.log, agoraapi.3.log, and agoraapi.4.log.
-   *  The default size for each SDK log file is 1,024 KB; the default size for each API call log file is 2,048 KB. These log files are encoded in UTF-8.
-   *  The SDK writes the latest logs in agorasdk.log or agoraapi.log.
-   *  When agorasdk.log is full, the SDK processes the log files in the following order:
-   *  Delete the agorasdk.4.log file (if any).
-   *  Rename agorasdk.3.log to agorasdk.4.log.
-   *  Rename agorasdk.2.log to agorasdk.3.log.
-   *  Rename agorasdk.1.log to agorasdk.2.log.
-   *  Create a new agorasdk.log file. The overwrite rules for the agoraapi.log file are the same as for agorasdk.log. Sets the log file size. See LogConfig.By default, the SDK generates five SDK log files and five API call log files with the following rules:
+   * The SDK log files are: agorasdk.log, agorasdk.1.log, agorasdk.2.log, agorasdk.3.log, and agorasdk.4.log.The API call log files are: agoraapi.log, agoraapi.1.log, agoraapi.2.log, agoraapi.3.log, and agoraapi.4.log.The default size for each SDK log file is 1,024 KB; the default size for each API call log file is 2,048 KB. These log files are encoded in UTF-8.The SDK writes the latest logs in agorasdk.log or agoraapi.log.When agorasdk.log is full, the SDK processes the log files in the following order:Delete the agorasdk.4.log file (if any).Rename agorasdk.3.log to agorasdk.4.log.Rename agorasdk.2.log to agorasdk.3.log.Rename agorasdk.1.log to agorasdk.2.log.Create a new agorasdk.log file.The overwrite rules for the agoraapi.log file are the same as for agorasdk.log.Sets the log file size. See LogConfig.By default, the SDK generates five SDK log files and five API call log files with the following rules:
    */
   logConfig?: LogConfig;
   /**
@@ -3512,7 +3504,9 @@ export abstract class IRtcEngine {
    *
    * This method mixes the specified local or online audio file with the audio from the microphone, or replaces the microphone's audio with the specified local or remote audio file. A successful method call triggers the onAudioMixingStateChanged ( AudioMixingStatePlaying ) callback. When the audio mixing file playback finishes, the SDK triggers the onAudioMixingStateChanged ( AudioMixingStateStopped ) callback on the local client. For the audio file formats supported by this method, see What formats of audio files does the Agora RTC SDK support . You can call this method either before or after joining a channel. If you need to call startAudioMixing multiple times, ensure that the time interval between calling this method is more than 500 ms. If the local music file does not exist, the SDK does not support the file format, or the the SDK cannot access the music file URL, the SDK reports 701.
    *
-   * @param filePath File path:Windows: The absolute path or URL address (including the suffixes of the filename) of the audio effect file. For example: C:\music\audio.mp4.macOS: The absolute path or URL address (including the suffixes of the filename) of the audio effect file. For example: /var/mobile/Containers/Data/audio.mp4.
+   * @param filePath File path:
+   *  Windows: The absolute path or URL address (including the suffixes of the filename) of the audio effect file. For example: C:\music\audio.mp4.
+   *  macOS: The absolute path or URL address (including the suffixes of the filename) of the audio effect file. For example: /var/mobile/Containers/Data/audio.mp4.
    * @param loopback Whether to only play music files on the local client:true: Only play music files on the local client so that only the local user can hear the music.false: Publish music files to remote clients so that both the local user and remote users can hear the music.
    * @param cycle The number of times the music file plays.≥ 0: The number of playback times. For example, 0 means that the SDK does not play the music file while 1 means that the SDK plays once.-1: Play the audio file in an infinite loop.
    * @param startPos The playback position (ms) of the music file.
@@ -3879,7 +3873,9 @@ export abstract class IRtcEngine {
    *
    * Call this method after joining a channel.
    *
-   * @param filePath File path:Windows: The absolute path or URL address (including the suffixes of the filename) of the audio effect file. For example: C:\music\audio.mp4.macOS: The absolute path or URL address (including the suffixes of the filename) of the audio effect file. For example: /var/mobile/Containers/Data/audio.mp4.
+   * @param filePath File path:
+   *  Windows: The absolute path or URL address (including the suffixes of the filename) of the audio effect file. For example: C:\music\audio.mp4.
+   *  macOS: The absolute path or URL address (including the suffixes of the filename) of the audio effect file. For example: /var/mobile/Containers/Data/audio.mp4.
    *
    * @returns
    * The total duration (ms) of the specified audio effect file, if the method call succeeds. < 0: Failure.
@@ -4181,7 +4177,7 @@ export abstract class IRtcEngine {
   /**
    * @ignore
    */
-  abstract uploadLogFile(requestId: string): number;
+  abstract uploadLogFile(): string;
 
   /**
    * Updates the display mode of the local video view.
@@ -4434,7 +4430,10 @@ export abstract class IRtcEngine {
    *
    * This method adjusts the playback volume that is the mixed volume of all remote users. You can call this method either before or after joining a channel.
    *
-   * @param volume The volume of the user. The value range is [0,400].0: Mute.If you only need to mute the audio signal, Agora recommends that you use muteRecordingSignal instead.100: (Default) The original volume.400: Four times the original volume (amplifying the audio signals by four times).
+   * @param volume The volume of the user. The value range is [0,400].
+   *  0: Mute.If you only need to mute the audio signal, Agora recommends that you use muteRecordingSignal instead.
+   *  100: (Default) The original volume.
+   *  400: Four times the original volume (amplifying the audio signals by four times).
    *
    * @returns
    * 0: Success. < 0: Failure.
@@ -4577,7 +4576,9 @@ export abstract class IRtcEngine {
    *
    * @param provider The name of the extension provider.
    * @param extension The name of the extension.
-   * @param type Type of media source. See MediaSourceType.In this method, this parameter supports only the following two settings:The default value is UnknownMediaSource.If you want to use the second camera to capture video, set this parameter to SecondaryCameraSource.
+   * @param type Type of media source. See MediaSourceType.In this method, this parameter supports only the following two settings:
+   *  The default value is UnknownMediaSource.
+   *  If you want to use the second camera to capture video, set this parameter to SecondaryCameraSource.
    *
    * @returns
    * 0: Success. < 0: Failure.
@@ -4902,7 +4903,9 @@ export abstract class IRtcEngine {
    * @param contentHint The content hint for screen sharing. See VideoContentHint.
    *
    * @returns
-   * 0: Success. < 0: Failure. -2: The parameter is invalid. -8: The screen sharing state is invalid. Probably because you have shared other screens or windows. Try calling stopScreenCapture to stop the current sharing and start sharing the screen again.
+   * 0: Success. < 0: Failure.
+   *  -2: The parameter is invalid.
+   *  -8: The screen sharing state is invalid. Probably because you have shared other screens or windows. Try calling stopScreenCapture to stop the current sharing and start sharing the screen again.
    */
   abstract setScreenCaptureContentHint(contentHint: VideoContentHint): number;
 
@@ -4914,9 +4917,7 @@ export abstract class IRtcEngine {
    * @param regionRect The relative location of the screen-share area to the screen or window. If you do not set this parameter, the SDK shares the whole screen or window. See Rectangle. If the specified region overruns the screen or window, the SDK shares only the region within it; if you set width or height as 0, the SDK shares the whole screen or window.
    *
    * @returns
-   * 0: Success. < 0: Failure.
-   *  -2: The parameter is invalid.
-   *  -8: The screen sharing state is invalid. Probably because you have shared other screens or windows. Try calling stopScreenCapture to stop the current sharing and start sharing the screen again.
+   * 0: Success. < 0: Failure. -2: The parameter is invalid. -8: The screen sharing state is invalid. Probably because you have shared other screens or windows. Try calling stopScreenCapture to stop the current sharing and start sharing the screen again.
    */
   abstract updateScreenCaptureRegion(regionRect: Rectangle): number;
 
@@ -4928,7 +4929,9 @@ export abstract class IRtcEngine {
    * @param captureParams The screen sharing encoding parameters. The default video resolution is 1920 × 1080, that is, 2,073,600 pixels. Agora uses the value of this parameter to calculate the charges. See ScreenCaptureParameters
    *
    * @returns
-   * 0: Success. < 0: Failure. -2: The parameter is invalid. -8: The screen sharing state is invalid. Probably because you have shared other screens or windows. Try calling stopScreenCapture to stop the current sharing and start sharing the screen again.
+   * 0: Success. < 0: Failure.
+   *  -2: The parameter is invalid.
+   *  -8: The screen sharing state is invalid. Probably because you have shared other screens or windows. Try calling stopScreenCapture to stop the current sharing and start sharing the screen again.
    */
   abstract updateScreenCaptureParameters(
     captureParams: ScreenCaptureParameters
@@ -4960,7 +4963,7 @@ export abstract class IRtcEngine {
   /**
    * @ignore
    */
-  abstract queryScreenCaptureCapability(): number;
+  abstract queryScreenCaptureCapability(): ScreenCaptureFramerateCapability;
 
   /**
    * Sets the screen sharing scenario.
@@ -5039,11 +5042,7 @@ export abstract class IRtcEngine {
    * @param url The address of Media Push. The format is RTMP or RTMPS. The character length cannot exceed 1024 bytes. Special characters such as Chinese characters are not supported.
    *
    * @returns
-   * 0: Success.
-   *  < 0: Failure.
-   *  -2: The URL is null or the string length is 0.
-   *  -7: The SDK is not initialized before calling this method.
-   *  -19: The Media Push URL is already in use, use another URL instead.
+   * 0: Success. < 0: Failure. -2: The URL is null or the string length is 0. -7: The SDK is not initialized before calling this method. -19: The Media Push URL is already in use, use another URL instead.
    */
   abstract startRtmpStreamWithoutTranscoding(url: string): number;
 
@@ -5770,7 +5769,7 @@ export abstract class IRtcEngine {
    * @returns
    * ≥ 0: The method call is successful, and the local network connection type is returned. 0: The SDK disconnects from the network. 1: The network type is LAN. 2: The network type is Wi-Fi (including hotspots). 3: The network type is mobile 2G. 4: The network type is mobile 3G. 5: The network type is mobile 4G. 6: The network type is mobile 5G. < 0: The method call failed with an error code. -1: The network type is unknown.
    */
-  abstract getNetworkType(): number;
+  abstract getNetworkType(): NetworkType;
 
   /**
    * Provides technical preview functionalities or special customizations by configuring the SDK with JSON options.
@@ -5895,12 +5894,7 @@ export abstract class IRtcEngine {
    * Destroys multiple video renderer objects at one time.
    *
    * @param sourceType The type of the video source. See VideoSourceType.
-   * @param channelId The channel name. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters:
-   *  All lowercase English letters: a to z.
-   *  All uppercase English letters: A to Z.
-   *  All numeric characters: 0 to 9.
-   *  Space
-   *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "= ", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
+   * @param channelId The channel name. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters:All lowercase English letters: a to z.All uppercase English letters: A to Z.All numeric characters: 0 to 9.Space"!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "= ", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
    * @param uid The user ID of the remote user.
    */
   abstract destroyRendererByConfig(
