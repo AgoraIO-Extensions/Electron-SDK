@@ -36,7 +36,7 @@ typedef agora::rtc::Rectangle ScreenIDType;
 
 typedef struct DisplayInfo {
   DisplayInfo() : idVal(0) {}
-  unsigned int idVal;
+  int idVal;
 } DisplayInfo;
 
 /**
