@@ -2749,7 +2749,7 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceStartScreenCaptureByDisplayId) {
     Local<Object> displayIdObj;
     status = napi_get_value_object_(isolate, args[0], displayIdObj);
     CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_uint32_(isolate, displayIdObj, "id",
+    status = napi_get_object_property_int32_(isolate, displayIdObj, "id",
                                               displayInfo.idVal);
     CHECK_NAPI_STATUS(pEngine, status);
 
@@ -2829,7 +2829,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByDisplayId) {
     Local<Object> displayIdObj;
     status = napi_get_value_object_(isolate, args[0], displayIdObj);
     CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_uint32_(isolate, displayIdObj, "id",
+    status = napi_get_object_property_int32_(isolate, displayIdObj, "id",
                                               displayInfo.idVal);
     CHECK_NAPI_STATUS(pEngine, status);
 
