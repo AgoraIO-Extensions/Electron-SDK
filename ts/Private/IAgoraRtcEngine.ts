@@ -61,7 +61,6 @@ import {
   RtmpStreamPublishErrorType,
   RtmpStreamPublishState,
   RtmpStreamingEvent,
-  ScreenCaptureFramerateCapability,
   ScreenCaptureParameters,
   ScreenCaptureParameters2,
   ScreenScenarioType,
@@ -4963,7 +4962,7 @@ export abstract class IRtcEngine {
   /**
    * @ignore
    */
-  abstract queryScreenCaptureCapability(): ScreenCaptureFramerateCapability;
+  abstract queryScreenCaptureCapability(): number;
 
   /**
    * Sets the screen sharing scenario.
@@ -5769,7 +5768,7 @@ export abstract class IRtcEngine {
    * @returns
    * ≥ 0: The method call is successful, and the local network connection type is returned. 0: The SDK disconnects from the network. 1: The network type is LAN. 2: The network type is Wi-Fi (including hotspots). 3: The network type is mobile 2G. 4: The network type is mobile 3G. 5: The network type is mobile 4G. 6: The network type is mobile 5G. < 0: The method call failed with an error code. -1: The network type is unknown.
    */
-  abstract getNetworkType(): NetworkType;
+  abstract getNetworkType(): number;
 
   /**
    * Provides technical preview functionalities or special customizations by configuring the SDK with JSON options.
