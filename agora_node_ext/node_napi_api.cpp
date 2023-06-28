@@ -840,13 +840,18 @@ napi_status napi_get_object_property_arraybuffer_(Isolate* isolate,
     return napi_invalid_arg;
   }
 
+#if _MSC_VER && NODE_MODULE_VERSION >= 89
+  memcpy(buffer, node::Buffer::Data(value), node::Buffer::Length(value));
+#else
   auto localBuf = Local<v8::ArrayBuffer>::Cast(value);
   auto buf = *localBuf;
-  #if V8_MAJOR_VERSION >= 8
-    memcpy(buffer, buf->GetBackingStore()->Data(), buf->GetBackingStore()->ByteLength());
-  #else
-    memcpy(buffer, buf->GetContents().Data(), buf->GetContents().ByteLength());
-  #endif
+#if V8_MAJOR_VERSION >= 8
+  memcpy(buffer, buf->GetBackingStore()->Data(),
+         buf->GetBackingStore()->ByteLength());
+#else
+  memcpy(buffer, buf->GetContents().Data(), buf->GetContents().ByteLength());
+#endif
+#endif
   return napi_ok;
 }
 
@@ -878,17 +883,22 @@ napi_status napi_get_value_arraybuffer_(const Local<Value> &value,
   if (!value->IsArrayBuffer()) {
     return napi_invalid_arg;
   }
+
+#if _MSC_VER && NODE_MODULE_VERSION >= 89
+  memcpy(buffer, node::Buffer::Data(value), node::Buffer::Length(value));
+#else
   auto localBuf = Local<v8::ArrayBuffer>::Cast(value);
   auto buf = *localBuf;
-  #if V8_MAJOR_VERSION >= 8
-    length = buf->GetBackingStore()->ByteLength();
-    buffer.resize(length);
-    std::memcpy(&buffer[0], buf->GetBackingStore()->Data(), length);
-  #else
-    length = buf->GetContents().ByteLength();
-    buffer.resize(length);
-    std::memcpy(&buffer[0], buf->GetContents().Data(), length);
-  #endif
+#if V8_MAJOR_VERSION >= 8
+  length = buf->GetBackingStore()->ByteLength();
+  buffer.resize(length);
+  std::memcpy(&buffer[0], buf->GetBackingStore()->Data(), length);
+#else
+  length = buf->GetContents().ByteLength();
+  buffer.resize(length);
+  std::memcpy(&buffer[0], buf->GetContents().Data(), length);
+#endif
+#endif
   return napi_ok;
 }
 
