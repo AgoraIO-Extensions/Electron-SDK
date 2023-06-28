@@ -5485,7 +5485,7 @@ NAPI_API_DEFINE(NodeRtcEngine, sendCustomReportMessage) {
 
 #if _MSC_VER && NODE_MODULE_VERSION >= 89
 #define NODE_NEW_ARRAYBUFFER(isolate, it)                                      \
-  auto nodeBuffer = node::Buffer::New(isolate, it.buffer, 0, it.length)        \
+  auto nodeBuffer = node::Buffer::New(isolate, it.buffer, it.length)           \
                         .ToLocalChecked()                                      \
                         .As<v8::TypedArray>();                                 \
   Local<v8::ArrayBuffer> buff = nodeBuffer.As<v8::TypedArray>()->Buffer();
