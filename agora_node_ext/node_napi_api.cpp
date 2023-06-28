@@ -400,38 +400,44 @@ void NodeVideoFrameTransporter::setFPS(uint32_t fps) {
       }                                                                  \
     }                                                                    \
   }
-#define NODE_SET_OBJ_PROP_HEADER(obj, it)                                    \
-  {                                                                          \
-    Local<Value> propName =                                                  \
-        String::NewFromUtf8(isolate, "header", NewStringType::kInternalized) \
-            .ToLocalChecked();                                               \
-    Local<v8::ArrayBuffer> buff =                                            \
-        v8::ArrayBuffer::New(isolate, (it)->buffer, (it)->length);           \
-    v8::Maybe<bool> ret =                                                    \
-        obj->Set(isolate->GetCurrentContext(), propName, buff);              \
-    if (!ret.IsNothing()) {                                                  \
-      if (!ret.ToChecked()) {                                                \
-        break;                                                               \
-      }                                                                      \
-    }                                                                        \
+#define NODE_SET_OBJ_PROP_HEADER(obj, it)                                      \
+  {                                                                            \
+    Local<Value> propName =                                                    \
+        String::NewFromUtf8(isolate, "header", NewStringType::kInternalized)   \
+            .ToLocalChecked();                                                 \
+    std::unique_ptr<v8::BackingStore> backing =                                \
+        v8::ArrayBuffer::NewBackingStore(isolate, it->length);                 \
+    Local<v8::ArrayBuffer> buff =                                              \
+        v8::ArrayBuffer::New(isolate, std::move(backing));                     \
+    memcpy(buff->GetBackingStore()->Data(), it->buffer, it->length);           \
+    v8::Maybe<bool> ret =                                                      \
+        obj->Set(isolate->GetCurrentContext(), propName, buff);                \
+    if (!ret.IsNothing()) {                                                    \
+      if (!ret.ToChecked()) {                                                  \
+        break;                                                                 \
+      }                                                                        \
+    }                                                                          \
   }
 
-#define NODE_SET_OBJ_PROP_DATA(obj, name, it)                            \
-  {                                                                      \
-    Local<Value> propName =                                              \
-        String::NewFromUtf8(isolate, name, NewStringType::kInternalized) \
-            .ToLocalChecked();                                           \
-    Local<v8::ArrayBuffer> buff =                                        \
-        v8::ArrayBuffer::New(isolate, (it)->buffer, (it)->length);       \
-    Local<v8::Uint8Array> dataarray =                                    \
-        v8::Uint8Array::New(buff, 0, it->length);                        \
-    v8::Maybe<bool> ret =                                                \
-        obj->Set(isolate->GetCurrentContext(), propName, dataarray);     \
-    if (!ret.IsNothing()) {                                              \
-      if (!ret.ToChecked()) {                                            \
-        break;                                                           \
-      }                                                                  \
-    }                                                                    \
+#define NODE_SET_OBJ_PROP_DATA(obj, name, it)                                  \
+  {                                                                            \
+    Local<Value> propName =                                                    \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized)       \
+            .ToLocalChecked();                                                 \
+    std::unique_ptr<v8::BackingStore> backing =                                \
+        v8::ArrayBuffer::NewBackingStore(isolate, it->length);                 \
+    Local<v8::ArrayBuffer> buff =                                              \
+        v8::ArrayBuffer::New(isolate, std::move(backing));                     \
+    memcpy(buff->GetBackingStore()->Data(), it->buffer, it->length);           \
+    Local<v8::Uint8Array> dataarray =                                          \
+        v8::Uint8Array::New(buff, 0, it->length);                              \
+    v8::Maybe<bool> ret =                                                      \
+        obj->Set(isolate->GetCurrentContext(), propName, dataarray);           \
+    if (!ret.IsNothing()) {                                                    \
+      if (!ret.ToChecked()) {                                                  \
+        break;                                                                 \
+      }                                                                        \
+    }                                                                          \
   }
 
 bool AddObj(Isolate* isolate,
@@ -821,7 +827,7 @@ napi_status napi_get_object_property_arraybuffer_(Isolate* isolate,
 
   auto localBuf = Local<v8::ArrayBuffer>::Cast(value);
   auto buf = *localBuf;
-  memcpy(buffer, buf->GetContents().Data(), buf->GetContents().ByteLength());
+  memcpy(buffer, buf->GetBackingStore()->Data(), buf->GetBackingStore()->ByteLength());
   return napi_ok;
 }
 
@@ -855,9 +861,9 @@ napi_status napi_get_value_arraybuffer_(const Local<Value> &value,
   }
   auto localBuf = Local<v8::ArrayBuffer>::Cast(value);
   auto buf = *localBuf;
-  length = buf->GetContents().ByteLength();
+  length = buf->GetBackingStore()->ByteLength();
   buffer.resize(length);
-  std::memcpy(&buffer[0], buf->GetContents().Data(), length);
+  std::memcpy(&buffer[0], buf->GetBackingStore()->Data(), length);
   return napi_ok;
 }
 

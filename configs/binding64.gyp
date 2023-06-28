@@ -179,10 +179,10 @@
                 ],
                 'defines!': [
                 '_HAS_EXCEPTIONS=0',
-                '-std=gnu++14'
+                '-std=gnu++17'
                 ],
                 'OTHER_CFLAGS' : [
-                    '-std=c++11',
+                    '-std=c++17',
                     '-stdlib=libc++',
                     '-fexceptions'
                 ],
@@ -424,10 +424,10 @@
                 ],
                 'defines!': [
                     '_NOEXCEPT',
-                    '-std=c++11'
+                    '-std=c++17'
                 ],
                 'OTHER_CFLAGS' : [
-                    '-std=c++11',
+                    '-std=c++17',
                     '-stdlib=libc++',
                     '-fexceptions'
                 ],
@@ -445,7 +445,7 @@
                             # 'CLANG_CXX_LANGUAGE_STANDARD': 'c++0x',
                             # 'CLANG_CXX_LIBRARY': 'libc++',
                             "OTHER_CPLUSPLUSFLAGS": [
-                                "-std=c++14",
+                                "-std=c++17",
                                 "-stdlib=libc++"
                                 ],
                          }
