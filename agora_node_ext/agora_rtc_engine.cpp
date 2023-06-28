@@ -5483,7 +5483,7 @@ NAPI_API_DEFINE(NodeRtcEngine, sendCustomReportMessage) {
     }                                                                    \
   }
 
-#if _MSC_VER && NODE_RUNTIME_ELECTRON && NODE_MODULE_VERSION >= 89
+#if _MSC_VER && NODE_MODULE_VERSION >= 89
 #define NODE_NEW_ARRAYBUFFER(isolate, it)                                      \
   auto nodeBuffer = node::Buffer::New(isolate, it.buffer, 0, it.length)        \
                         .ToLocalChecked()                                      \
