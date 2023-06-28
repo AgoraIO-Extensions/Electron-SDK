@@ -885,7 +885,10 @@ napi_status napi_get_value_arraybuffer_(const Local<Value> &value,
   }
 
 #if _MSC_VER && NODE_MODULE_VERSION >= 89
-  memcpy(buffer, node::Buffer::Data(value), node::Buffer::Length(value));
+  length = node::Buffer::Length(value);
+  buffer.resize(length);
+  std::memcpy(&buffer[0], node::Buffer::Data(value),
+              node::Buffer::Length(value));
 #else
   auto localBuf = Local<v8::ArrayBuffer>::Cast(value);
   auto buf = *localBuf;
