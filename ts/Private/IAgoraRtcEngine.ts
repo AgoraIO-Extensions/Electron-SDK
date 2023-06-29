@@ -1088,6 +1088,10 @@ export class ChannelMediaOptions {
    */
   publishTrancodedVideoTrack?: boolean;
   /**
+   * @ignore
+   */
+  publishMixedAudioTrack?: boolean;
+  /**
    * Whether to automatically subscribe to all remote audio streams when the user joins a channel:true: Subscribe to all remote audio streams.false: Do not automatically subscribe to any remote audio streams.
    */
   autoSubscribeAudio?: boolean;
@@ -4152,6 +4156,15 @@ export abstract class IRtcEngine {
     sampleRate: number,
     channel: number,
     mode: RawAudioFrameOpModeType,
+    samplesPerCall: number
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract setPublishAudioFrameParameters(
+    sampleRate: number,
+    channel: number,
     samplesPerCall: number
   ): number;
 

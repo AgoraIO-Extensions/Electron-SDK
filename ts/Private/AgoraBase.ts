@@ -3711,6 +3711,10 @@ export enum AudioFileRecordingType {
    * 3: Records the mixed audio of the local and all remote users.
    */
   AudioFileRecordingMixed = 3,
+  /**
+   * @ignore
+   */
+  AudioFileRecordingPublish = 4,
 }
 
 /**
@@ -3827,6 +3831,15 @@ export interface IAudioEncodedFrameObserver {
    * @param audioEncodedFrameInfo Audio information after encoding. See EncodedAudioFrameInfo .
    */
   onMixedAudioEncodedFrame?(
+    frameBuffer: Uint8Array,
+    length: number,
+    audioEncodedFrameInfo: EncodedAudioFrameInfo
+  ): void;
+
+  /**
+   * @ignore
+   */
+  onPublishAudioEncodedFrame?(
     frameBuffer: Uint8Array,
     length: number,
     audioEncodedFrameInfo: EncodedAudioFrameInfo

@@ -3618,6 +3618,40 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_setRecordingAudioFrameParameters';
   }
 
+  setPublishAudioFrameParameters(
+    sampleRate: number,
+    channel: number,
+    samplesPerCall: number
+  ): number {
+    const apiType = this.getApiTypeFromSetPublishAudioFrameParameters(
+      sampleRate,
+      channel,
+      samplesPerCall
+    );
+    const jsonParams = {
+      sampleRate: sampleRate,
+      channel: channel,
+      samplesPerCall: samplesPerCall,
+      toJSON: () => {
+        return {
+          sampleRate: sampleRate,
+          channel: channel,
+          samplesPerCall: samplesPerCall,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSetPublishAudioFrameParameters(
+    sampleRate: number,
+    channel: number,
+    samplesPerCall: number
+  ): string {
+    return 'RtcEngine_setPublishAudioFrameParameters';
+  }
+
   setPlaybackAudioFrameParameters(
     sampleRate: number,
     channel: number,

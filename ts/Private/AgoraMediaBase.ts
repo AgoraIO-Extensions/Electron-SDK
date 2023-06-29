@@ -776,6 +776,10 @@ export enum AudioFramePosition {
    * @ignore
    */
   AudioFramePositionEarMonitoring = 0x0010,
+  /**
+   * @ignore
+   */
+  AudioFramePositionBeforePublish = 0x0020,
 }
 
 /**
@@ -816,6 +820,11 @@ export interface IAudioFrameObserverBase {
    * Reserved for future use.
    */
   onRecordAudioFrame?(channelId: string, audioFrame: AudioFrame): boolean;
+
+  /**
+   * @ignore
+   */
+  onPublishAudioFrame?(channelId: string, audioFrame: AudioFrame): boolean;
 
   /**
    * Gets the raw audio frame for playback.

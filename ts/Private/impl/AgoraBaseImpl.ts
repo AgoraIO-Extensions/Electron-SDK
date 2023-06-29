@@ -35,5 +35,15 @@ export function processIAudioEncodedFrameObserver(
         );
       }
       break;
+
+    case 'OnPublishAudioEncodedFrame':
+      if (handler.onPublishAudioEncodedFrame !== undefined) {
+        handler.onPublishAudioEncodedFrame(
+          jsonParams.frameBuffer,
+          jsonParams.length,
+          jsonParams.audioEncodedFrameInfo
+        );
+      }
+      break;
   }
 }
