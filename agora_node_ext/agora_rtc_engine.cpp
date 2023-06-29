@@ -445,8 +445,8 @@ DEFINE_CLASS(NodeRtcChannel);
  * To declared class and member functions that could be used in JS layer
  * directly.
  */
-void NodeRtcEngine::Init(Local<Object>& module) {
-  Isolate* isolate = module->GetIsolate();
+NAN_MODULE_INIT(NodeRtcEngine::Init) {
+  Isolate* isolate = target->GetIsolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   BEGIN_PROPERTY_DEFINE(NodeRtcEngine, createInstance, 5)
   PROPERTY_METHOD_DEFINE(onEvent)
@@ -800,7 +800,7 @@ void NodeRtcEngine::Init(Local<Object>& module) {
   PROPERTY_METHOD_DEFINE(sendStreamMessageWithArrayBuffer);
   PROPERTY_METHOD_DEFINE(videoSourceSetScreenCaptureScenario);
   EN_PROPERTY_DEFINE()
-  module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
+  target->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
               tpl->GetFunction(context).ToLocalChecked());
 }
 

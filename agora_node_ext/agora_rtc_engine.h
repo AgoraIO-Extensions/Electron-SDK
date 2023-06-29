@@ -68,7 +68,7 @@ class NodeRtcEngine : public node::ObjectWrap {
    * Helper function, used to declare all supported native interface that are
    * exposed to nodejs.
    */
-  static void Init(Local<Object>& module);
+  static void Init(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE target);
 
   /*
    * Wrapper for RtcEngine functions
