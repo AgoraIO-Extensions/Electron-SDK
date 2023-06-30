@@ -821,7 +821,7 @@ export interface IAudioFrameObserverBase {
    * @returns
    * Reserved for future use.
    */
-  onRecordAudioFrame?(channelId: string, audioFrame: AudioFrame): boolean;
+  onRecordAudioFrame?(channelId: string, audioFrame: AudioFrame): void;
 
   /**
    * Gets the raw audio frame for playback.
@@ -833,7 +833,7 @@ export interface IAudioFrameObserverBase {
    * @returns
    * Reserved for future use.
    */
-  onPlaybackAudioFrame?(channelId: string, audioFrame: AudioFrame): boolean;
+  onPlaybackAudioFrame?(channelId: string, audioFrame: AudioFrame): void;
 
   /**
    * Retrieves the mixed captured and playback audio frame.
@@ -845,7 +845,7 @@ export interface IAudioFrameObserverBase {
    * @returns
    * Reserved for future use.
    */
-  onMixedAudioFrame?(channelId: string, audioFrame: AudioFrame): boolean;
+  onMixedAudioFrame?(channelId: string, audioFrame: AudioFrame): void;
 
   /**
    * Gets the in-ear monitoring audio frame.
@@ -856,7 +856,7 @@ export interface IAudioFrameObserverBase {
    * @returns
    * Reserved for future use.
    */
-  onEarMonitoringAudioFrame?(audioFrame: AudioFrame): boolean;
+  onEarMonitoringAudioFrame?(audioFrame: AudioFrame): void;
 }
 
 /**
@@ -877,7 +877,7 @@ export interface IAudioFrameObserver extends IAudioFrameObserverBase {
     channelId: string,
     uid: number,
     audioFrame: AudioFrame
-  ): boolean;
+  ): void;
 }
 
 /**
@@ -921,7 +921,7 @@ export interface IAudioSpectrumObserver {
    * @returns
    * Whether the spectrum data is received:true: Spectrum data is received.false: No spectrum data is received.
    */
-  onLocalAudioSpectrum?(data: AudioSpectrumData): boolean;
+  onLocalAudioSpectrum?(data: AudioSpectrumData): void;
 
   /**
    * Gets the remote audio spectrum.
@@ -936,7 +936,7 @@ export interface IAudioSpectrumObserver {
   onRemoteAudioSpectrum?(
     spectrums: UserAudioSpectrumInfo[],
     spectrumNumber: number
-  ): boolean;
+  ): void;
 }
 
 /**
@@ -960,7 +960,7 @@ export interface IVideoEncodedFrameObserver {
     imageBuffer: Uint8Array,
     length: number,
     videoEncodedFrameInfo: EncodedVideoFrameInfo
-  ): boolean;
+  ): void;
 }
 
 /**
@@ -994,7 +994,7 @@ export interface IVideoFrameObserver {
   onCaptureVideoFrame?(
     sourceType: VideoSourceType,
     videoFrame: VideoFrame
-  ): boolean;
+  ): void;
 
   /**
    * Occurs each time the SDK receives a video frame before encoding.
@@ -1015,15 +1015,12 @@ export interface IVideoFrameObserver {
   onPreEncodeVideoFrame?(
     sourceType: VideoSourceType,
     videoFrame: VideoFrame
-  ): boolean;
+  ): void;
 
   /**
    * @ignore
    */
-  onMediaPlayerVideoFrame?(
-    videoFrame: VideoFrame,
-    mediaPlayerId: number
-  ): boolean;
+  onMediaPlayerVideoFrame?(videoFrame: VideoFrame, mediaPlayerId: number): void;
 
   /**
    * Occurs each time the SDK receives a video frame sent by the remote user.
@@ -1040,12 +1037,12 @@ export interface IVideoFrameObserver {
     channelId: string,
     remoteUid: number,
     videoFrame: VideoFrame
-  ): boolean;
+  ): void;
 
   /**
    * @ignore
    */
-  onTranscodedVideoFrame?(videoFrame: VideoFrame): boolean;
+  onTranscodedVideoFrame?(videoFrame: VideoFrame): void;
 }
 
 /**
@@ -1063,11 +1060,11 @@ export enum ExternalVideoSourceType {
 }
 
 /**
- * The format of the recording file.
+ * @ignore
  */
 export enum MediaRecorderContainerFormat {
   /**
-   * 1: (Default) MP4.
+   * @ignore
    */
   FormatMp4 = 1,
 }

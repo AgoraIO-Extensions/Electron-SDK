@@ -803,6 +803,32 @@ export enum ScreenCaptureFramerateCapability {
 }
 
 /**
+ * @ignore
+ */
+export enum VideoCodecCapabilityLevel {
+  /**
+   * @ignore
+   */
+  CodecCapabilityLevelUnspecified = -1,
+  /**
+   * @ignore
+   */
+  CodecCapabilityLevelBasicSupport = 5,
+  /**
+   * @ignore
+   */
+  CodecCapabilityLevel1080p30fps = 10,
+  /**
+   * @ignore
+   */
+  CodecCapabilityLevel1080p60fps = 20,
+  /**
+   * @ignore
+   */
+  CodecCapabilityLevel4k60fps = 30,
+}
+
+/**
  * Video codec types.
  */
 export enum VideoCodecType {
@@ -1235,6 +1261,20 @@ export enum CodecCapMask {
 }
 
 /**
+ * @ignore
+ */
+export class CodecCapLevels {
+  /**
+   * @ignore
+   */
+  hwDecodingLevel?: VideoCodecCapabilityLevel;
+  /**
+   * @ignore
+   */
+  swDecodingLevel?: VideoCodecCapabilityLevel;
+}
+
+/**
  * The codec capability of the device.
  */
 export class CodecCapInfo {
@@ -1246,6 +1286,10 @@ export class CodecCapInfo {
    * The bit mask of the codec type. See CodecCapMask .
    */
   codecCapMask?: number;
+  /**
+   * @ignore
+   */
+  codecLevels?: CodecCapLevels;
 }
 
 /**
@@ -1643,19 +1687,19 @@ export enum ExperiencePoorReason {
 }
 
 /**
- * AI noise reduction modes.
+ * AI noise suppression modes.
  */
 export enum AudioAinsMode {
   /**
-   * 0: (Default) Balance mode. This mode allows for a balanced performance on noice reduction and time delay.
+   * 0: (Default) Balance mode. This mode allows for a balanced performance on noice suppression and time delay.
    */
   AinsModeBalanced = 0,
   /**
-   * 1: Aggressive mode. In scenarios where high performance on noise reduction is required, such as live streaming outdoor events, This mode reduces nosies more dramatically, but may sometimes affect the original character of the audio.
+   * 1: Aggressive mode. In scenarios where high performance on noise suppression is required, such as live streaming outdoor events, this mode reduces nosie more dramatically, but may sometimes affect the original character of the audio.
    */
   AinsModeAggressive = 1,
   /**
-   * 2: Aggressive mode with low latency. The noise reduction delay of this mode is about only half of that of the balance and aggressive modes. It is suitable for scenarios that have high requirements on noise reduction with low latency, such as sing together online in real time.
+   * 2: Aggressive mode with low latency. The noise suppression delay of this mode is about only half of that of the balance and aggressive modes. It is suitable for scenarios that have high requirements on noise suppression with low latency, such as sing together online in real time.
    */
   AinsModeUltralowlatency = 2,
 }
@@ -3138,6 +3182,10 @@ export class VideoCanvas {
    * The user ID.
    */
   uid?: number;
+  /**
+   * @ignore
+   */
+  backgroundColor?: number;
   /**
    * The rendering mode of the video. See RenderModeType .
    */
