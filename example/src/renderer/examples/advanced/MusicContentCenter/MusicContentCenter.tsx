@@ -271,13 +271,22 @@ export default class MusicContentCenter
   }
 
   onPreLoadEvent(
+    requestId: string,
     songCode: number,
     percent: number,
     lyricUrl: string,
     status: PreloadStatusCode,
     errorCode: MusicContentCenterStatusCode
   ) {
-    this.info('onPreLoadEvent', songCode, percent, lyricUrl, status, errorCode);
+    this.info(
+      'onPreLoadEvent',
+      requestId,
+      songCode,
+      percent,
+      lyricUrl,
+      status,
+      errorCode
+    );
     if (songCode === this.state.songCode) {
       this.setState({
         preload: status === PreloadStatusCode.KPreloadStatusCompleted,
@@ -285,8 +294,13 @@ export default class MusicContentCenter
     }
   }
 
-  onLyricResult(requestId: string, lyricUrl: string) {
-    this.info('onLyricResult', requestId, lyricUrl);
+  onLyricResult(
+    requestId: string,
+    songCode: number,
+    lyricUrl: string,
+    errorCode: MusicContentCenterStatusCode
+  ) {
+    this.info('onLyricResult', requestId, songCode, lyricUrl, errorCode);
   }
 
   onPlayerSourceStateChanged(state: MediaPlayerState, ec: MediaPlayerError) {
