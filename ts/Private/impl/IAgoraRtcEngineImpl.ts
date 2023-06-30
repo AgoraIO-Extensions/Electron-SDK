@@ -3424,21 +3424,15 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_setLogFileSize';
   }
 
-  uploadLogFile(requestId: string): number {
-    const apiType = this.getApiTypeFromUploadLogFile(requestId);
-    const jsonParams = {
-      requestId: requestId,
-      toJSON: () => {
-        return {
-          requestId: requestId,
-        };
-      },
-    };
+  uploadLogFile(): string {
+    const apiType = this.getApiTypeFromUploadLogFile();
+    const jsonParams = {};
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
+    const requestId = jsonResults.requestId;
+    return requestId;
   }
 
-  protected getApiTypeFromUploadLogFile(requestId: string): string {
+  protected getApiTypeFromUploadLogFile(): string {
     return 'RtcEngine_uploadLogFile';
   }
 

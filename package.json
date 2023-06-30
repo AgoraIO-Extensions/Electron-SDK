@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "4.2.0-build.230-dev.1",
+  "version": "4.2.0-build.231-rc.1",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk",
   "types": "types/AgoraSdk.d.ts",
@@ -134,7 +134,7 @@
     "yuv-canvas": "1.2.6"
   },
   "agora_electron": {
-    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.2.0.230-build.1_DCG_Windows_Video_20230612_0536.zip",
-    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.2.0.230-build.1_DCG_Mac_Video_20230612_0536.zip"
+    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.2.0.231-build.1_DCG_Windows_Video_20230630_0121.zip",
+    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.2.0.231-build.1_DCG_Mac_Video_20230630_0121.zip"
   }
 }
