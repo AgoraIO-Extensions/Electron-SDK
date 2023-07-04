@@ -153,7 +153,7 @@ export class YUVCanvasRenderer extends IRenderer {
       this.canvas.style.transform = `scale(${scale.toString()})`;
 
       if (transformItems.length > 0) {
-        this.canvas.style.transform = `${transformItems.join(' ')}`;
+        this.canvas.style.transform += ` ${transformItems.join(' ')}`;
       }
     }
   }
