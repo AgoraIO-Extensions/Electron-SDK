@@ -46,7 +46,6 @@ const yuvShaderSource =
 
 export class GlRenderer extends IRenderer {
   gl: WebGL2RenderingContext | undefined | null;
-  handleContextLost: any;
   program: any;
   positionLocation: any;
   texCoordLocation: any;
@@ -127,6 +126,12 @@ export class GlRenderer extends IRenderer {
       logWarn('webgl renderer unbind happen some error', e);
     }
 
+    this.canvas &&
+      this.canvas.removeEventListener(
+        'webglcontextlost',
+        this.handleContextLost,
+        false
+      );
     this.canvas = undefined;
     this.container = undefined;
     this.parentElement = undefined;
@@ -448,6 +453,25 @@ export class GlRenderer extends IRenderer {
     }
   }
 
+  private handleContextLost = () => {
+    try {
+      this.canvas &&
+        this.canvas.removeEventListener(
+          'webglcontextlost',
+          this.handleContextLost,
+          false
+        );
+    } catch (error) {
+      logWarn('webglcontextlost error', error);
+    } finally {
+      this.gl = undefined;
+      this.failInitRenderCB &&
+        this.failInitRenderCB({
+          error: 'Browser not support! No WebGL detected.',
+        });
+    }
+  };
+
   private initCanvas(
     view: HTMLElement,
     width: number,
@@ -487,28 +511,9 @@ export class GlRenderer extends IRenderer {
         preserveDrawingBuffer: true,
       });
       // context list after toggle resolution on electron 12.0.6
-      let handleContextLost = () => {
-        try {
-          this.gl = null;
-          this.canvas &&
-            this.canvas.removeEventListener(
-              'webglcontextlost',
-              handleContextLost,
-              false
-            );
-        } catch (error) {
-          logWarn('webglcontextlost error', error);
-        } finally {
-          this.gl = undefined;
-          this.failInitRenderCB &&
-            this.failInitRenderCB({
-              error: 'Browser not support! No WebGL detected.',
-            });
-        }
-      };
       this.canvas.addEventListener(
         'webglcontextlost',
-        handleContextLost,
+        this.handleContextLost,
         false
       );
     } catch (e) {
