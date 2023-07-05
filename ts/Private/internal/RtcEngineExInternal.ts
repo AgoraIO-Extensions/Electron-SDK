@@ -458,7 +458,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     channelId: string,
     userAccount: string
   ): string {
-    return 'RtcEngine_preloadChannelWithUserAccount2';
+    return 'RtcEngine_preloadChannel2';
   }
 
   override getAudioDeviceManager(): IAudioDeviceManager {
