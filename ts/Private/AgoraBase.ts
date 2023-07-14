@@ -1281,15 +1281,15 @@ export enum CodecCapMask {
 }
 
 /**
- * @ignore
+ * The level of the codec capability.
  */
 export class CodecCapLevels {
   /**
-   * @ignore
+   * Hardware decoding capability level, which represents the device's ability to perform hardware decoding on videos of different quality. See VIDEO_CODEC_CAPABILITY_LEVEL.
    */
   hwDecodingLevel?: VideoCodecCapabilityLevel;
   /**
-   * @ignore
+   * Software decoding capability level, which represents the device's ability to perform software decoding on videos of different quality. See VIDEO_CODEC_CAPABILITY_LEVEL.
    */
   swDecodingLevel?: VideoCodecCapabilityLevel;
 }
@@ -1307,7 +1307,7 @@ export class CodecCapInfo {
    */
   codecCapMask?: number;
   /**
-   * @ignore
+   * The level of the codec capability. See CodecCapLevels.
    */
   codecLevels?: CodecCapLevels;
 }
@@ -2230,7 +2230,7 @@ export enum RemoteVideoStateReason {
    */
   RemoteVideoStateReasonSdkInBackground = 12,
   /**
-   * @ignore
+   * 13: The local video decoder does not support decoding the remote video stream.
    */
   RemoteVideoStateReasonCodecNotSupport = 13,
 }
@@ -3261,7 +3261,7 @@ export enum VideoViewSetupMode {
  */
 export class VideoCanvas {
   /**
-   * Video display window.
+   * The video display window.
    */
   view?: any;
   /**
@@ -3269,7 +3269,7 @@ export class VideoCanvas {
    */
   uid?: number;
   /**
-   * @ignore
+   * The background color of the video canvas in RGBA format. The default value is 0x00000000, which represents completely transparent black.
    */
   backgroundColor?: number;
   /**
@@ -4290,7 +4290,7 @@ export class ChannelMediaRelayConfiguration {
    */
   destInfos?: ChannelMediaInfo[];
   /**
-   * The number of target channels. The default value is 0, and the value range is from 0 to 4. Ensure that the value of this parameter corresponds to the number of ChannelMediaInfo structs you define in destInfo.
+   * The number of target channels. The default value is 0, and the value range is from 0 to 6. Ensure that the value of this parameter corresponds to the number of ChannelMediaInfo structs you define in destInfo.
    */
   destCount?: number;
 }
@@ -4692,7 +4692,7 @@ export class ScreenCaptureParameters2 {
 }
 
 /**
- * The rendering state of the media frame. `
+ * The rendering state of the media frame.
  */
 export enum MediaTraceEvent {
   /**

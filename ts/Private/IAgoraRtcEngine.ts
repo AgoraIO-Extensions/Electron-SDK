@@ -1046,15 +1046,15 @@ export class ChannelMediaOptions {
    */
   publishCameraTrack?: boolean;
   /**
-   * Whether to publish the video captured by the second camera: true : Publish the video captured by the second camera. false : (Default) Do not publish the video captured by the second camera.
+   * Whether to publish the video captured by the second camera: true : Publish the video captured by the second camera. false : Do not publish the video captured by the second camera.
    */
   publishSecondaryCameraTrack?: boolean;
   /**
-   * @ignore
+   * Whether to publish the video captured by the third camera: true : Publish the video captured by the third camera. false : Do not publish the video captured by the third camera.
    */
   publishThirdCameraTrack?: boolean;
   /**
-   * @ignore
+   * Whether to publish the video captured by the fourth camera: true : Publish the video captured by the fourth camera. false : Do not publish the video captured by the fourth camera.
    */
   publishFourthCameraTrack?: boolean;
   /**
@@ -1066,7 +1066,7 @@ export class ChannelMediaOptions {
    */
   publishScreenCaptureVideo?: boolean;
   /**
-   * Whether to publish the audio captured from the screen: true : Publish the audio captured from the screen. false : Publish the audio captured from the screen. This parameter applies to Android and iOS only.
+   * @ignore
    */
   publishScreenCaptureAudio?: boolean;
   /**
@@ -1078,11 +1078,11 @@ export class ChannelMediaOptions {
    */
   publishSecondaryScreenTrack?: boolean;
   /**
-   * @ignore
+   * Whether to publish the video captured from the third screen: true : Publish the captured video from the third screen. false : Do not publish the video captured from the third screen.
    */
   publishThirdScreenTrack?: boolean;
   /**
-   * @ignore
+   * Whether to publish the video captured from the fourth screen: true : Publish the captured video from the fourth screen. false : Do not publish the video captured from the fourth screen.
    */
   publishFourthScreenTrack?: boolean;
   /**
@@ -1236,7 +1236,7 @@ export class LeaveChannelOptions {
 }
 
 /**
- * IRtcEngineEventHandler The SDK uses the interface to send event notifications to your app. Your app can get those notifications through methods that inherit this interface.
+ * The SDK uses the IRtcEngineEventHandler interface to send event notifications to your app. Your app can get those notifications through methods that inherit this interface.
  */
 export interface IRtcEngineEventHandler {
   /**
@@ -2888,7 +2888,33 @@ export abstract class IRtcEngine {
   abstract queryCodecCapability(): { codecInfo: CodecCapInfo[]; size: number };
 
   /**
-   * @ignore
+   * Preloads a channel with token, channelId uid
+   *
+   * When audience members need to switch between different channels frequently, calling the method can help shortening the time of joining a channel, thus reducing the time it takes for audience members to hear and see the host. As it may take a while for the SDK to preload a channel, Agora recommends that you call this method as soon as possible after obtaining the channel name and user ID to join a channel.
+   *  When calling this method, ensure you set the user role as audience and do not set the audio scenario as AudioScenarioChorus, otherwise, this method does not take effect.
+   *  You also need to make sure that the channel name, user ID and token passed in for preloading are the same as the values passed in when joinning the channel, otherwise, this method does not take effect.
+   *  One IRtcEngine instance supports preloading 20 channels at most. When exceeding this limit, the latest 20 preloaded channels take effect.
+   *  Failing to preload a channel does not mean that you can't join a channel, nor will it increase the time of joining a channel. If you join a preloaded channel, leave it and want to rejoin the same channel, you do not need to call this method unless the token for preloading the channel expires.
+   *
+   * @param token The token generated on your server for authentication. When the token for preloading channels expires, you can update the token based on the number of channels you preload.
+   *  When preloading one channel, calling this method to pass in the new token.
+   *  When preloading more than one channels:
+   *  If you use a wildcard token for all preloaded channels, call updatePreloadChannelToken to update the token.
+   *  If you use different tokens to preload different channels, call this method to pass in your user ID, channel name and the new token.
+   * @param channelId The channel name that you want to preload. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters (89 characters in total):
+   *  All lowercase English letters: a to z.
+   *  All uppercase English letters: A to Z.
+   *  All numeric characters: 0 to 9.
+   *  Space
+   *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
+   * @param uid The user ID. This parameter is used to identify the user in the channel for real-time audio and video interaction. You need to set and manage user IDs yourself, and ensure that each user ID in the same channel is unique. This parameter is a 32-bit unsigned integer. The value range is 1 to 2 32 -1. If the user ID is not assigned (or set to 0), the SDK assigns a random user ID and returns it in the onJoinChannelSuccess callback. Your application must record and maintain the returned user ID, because the SDK does not do so.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
+   *  -2: The parameter is invalid. For example, the token is invalid. You need to pass in a valid parameter and join the channel again.
+   *  -7: The IRtcEngine object has not been initialized. You need to initialize the IRtcEngine object before calling this method.
+   *  -102: The channel name is invalid. You need to pass in a valid channel name and join the channel again.
    */
   abstract preloadChannel(
     token: string,
@@ -2897,7 +2923,38 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
-   * @ignore
+   * Preloads a channel with token, channelId userAccount.
+   *
+   * When audience members need to switch between different channels frequently, calling the method can help shortening the time of joining a channel, thus reducing the time it takes for audience members to hear and see the host. As it may take a while for the SDK to preload a channel, Agora recommends that you call this method as soon as possible after obtaining the channel name and user ID to join a channel. If you join a preloaded channel, leave it and want to rejoin the same channel, you do not need to call this method unless the token for preloading the channel expires.
+   *  Failing to preload a channel does not mean that you can't join a channel, nor will it increase the time of joining a channel.
+   *  One IRtcEngine instance supports preloading 20 channels at most. When exceeding this limit, the latest 20 preloaded channels take effect.
+   *  When calling this method, ensure you set the user role as audience and do not set the audio scenario as AudioScenarioChorus, otherwise, this method does not take effect.
+   *  You also need to make sure that the User Account, channel ID and token passed in for preloading are the same as the values passed in when joining the channel, otherwise, this method does not take effect.
+   *
+   * @param token The token generated on your server for authentication. When the token for preloading channels expires, you can update the token based on the number of channels you preload.
+   *  When preloading one channel, calling this method to pass in the new token.
+   *  When preloading more than one channels:
+   *  If you use a wildcard token for all preloaded channels, call updatePreloadChannelToken to update the token.
+   *  If you use different tokens to preload different channels, call this method to pass in your user ID, channel name and the new token.
+   * @param channelId The channel name that you want to preload. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters (89 characters in total):
+   *  All lowercase English letters: a to z.
+   *  All uppercase English letters: A to Z.
+   *  All numeric characters: 0 to 9.
+   *  Space
+   *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
+   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as NULL. Supported characters are (89 in total):
+   *  The 26 lowercase English letters: a to z.
+   *  The 26 uppercase English letters: A to Z.
+   *  All numeric characters: 0 to 9.
+   *  Space
+   *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "= ", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
+   *  -2: The parameter is invalid. For example, an invalid token or User Account is used. You need to pass in a valid parameter and join the channel again.
+   *  -7: The IRtcEngine object has not been initialized. You need to initialize the IRtcEngine object before calling this method.
+   *  -102: The channel name is invalid. You need to pass in a valid channel name and join the channel again.
    */
   abstract preloadChannelWithUserAccount(
     token: string,
@@ -2906,7 +2963,17 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
-   * @ignore
+   * Updates the wildcard token for preloading channels.
+   *
+   * You need to maintain the life cycle of the wildcard token by yourself. When the token expires, you need to generate a new wildcard token and then call this method to pass in the new token.
+   *
+   * @param token The new token.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
+   *  -2: The parameter is invalid. For example, the token is invalid. You need to pass in a valid parameter and join the channel again.
+   *  -7: The IRtcEngine object has not been initialized. You need to initialize the IRtcEngine object before calling this method.
    */
   abstract updatePreloadChannelToken(token: string): number;
 
@@ -3118,9 +3185,9 @@ export abstract class IRtcEngine {
   /**
    * Enables the local video preview and specifies the video source for the preview.
    *
-   * You can call this method to enable local video preview. Before calling this method, ensure that you do the following:
-   *  Call setView to set the local preview window.
-   *  Call enableVideo to enable the video.
+   * You can call this method to enable local video preview. Call this method after the following:
+   *  Call setView to initialize the local preview.
+   *  Call enableVideo to enable the video module.
    *  The local preview enables the mirror mode by default.
    *  After the local video preview is enabled, if you call leaveChannel to exit the channel, the local preview remains until you call stopPreview to disable it.
    *  The video source type set in this method needs to be consistent with the video source type of VideoCanvas you set in setupLocalVideo.
@@ -3141,7 +3208,8 @@ export abstract class IRtcEngine {
    * @param sourceType The type of the video source. See VideoSourceType.
    *
    * @returns
-   * < 0: Failure.
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract stopPreview(sourceType?: VideoSourceType): number;
 
@@ -3331,7 +3399,7 @@ export abstract class IRtcEngine {
   /**
    * Initializes the local video view.
    *
-   * This method initializes the video view of a local stream on the local device. It affects only the video view that the local user sees, not the published local video stream. Call this method to bind the local video stream to a video view and to set the rendering and mirror modes of the video view. After initialization, call this method to set the local video and then join the channel. The local video still binds to the view after you leave the channel. To unbind the local video from the view, set the view parameter as NULL.
+   * This method initializes the video view of a local stream on the local device. It affects only the video view that the local user sees, not the published local video stream. Call this method to bind the local video stream to a video view (view) and to set the rendering and mirror modes of the video view. After initialization, call this method to set the local video and then join the channel. The local video still binds to the view after you leave the channel. To unbind the local video from the view, set the view parameter as NULL.
    *  You can call this method either before or after joining a channel.
    *
    * @param canvas The local video view and settings. See VideoCanvas.
@@ -5710,7 +5778,8 @@ export abstract class IRtcEngine {
   /**
    * Sets the rotation angle of the captured video.
    *
-   * This method applies to Windows only. This method must be called after the camera is turned on, such as calling after startPreview and enableVideo. When the video capture device does not have the gravity sensing function, you can call this method to manually adjust the rotation angle of the captured video.
+   * This method applies to Windows only.
+   *  When the video capture device does not have the gravity sensing function, you can call this method to manually adjust the rotation angle of the captured video.
    *
    * @param type The video source type. See VideoSourceType.
    * @param orientation The clockwise rotation angle. See VideoOrientation.
@@ -6139,7 +6208,7 @@ export abstract class IRtcEngine {
   /**
    * Starts relaying media streams across channels or updates channels for media relay.
    *
-   * The first successful call to this method starts relaying media streams from the source channel to the destination channels. To relay the media stream to other channels, or exit one of the current media relays, you can call this method again to update the destination channels. After a successful method call, the SDK triggers the onChannelMediaRelayStateChanged callback, and this callback returns the state of the media stream relay. Common states are as follows:
+   * The first successful call to this method starts relaying media streams from the source channel to the destination channels. To relay the media stream to other channels, or exit one of the current media relays, you can call this method again to update the destination channels. This feature supports relaying media streams to a maximum of six destination channels. After a successful method call, the SDK triggers the onChannelMediaRelayStateChanged callback, and this callback returns the state of the media stream relay. Common states are as follows:
    *  If the onChannelMediaRelayStateChanged callback returns RelayStateRunning (2) and RelayOk (0), it means that the SDK starts relaying media streams from the source channel to the destination channel.
    *  If the onChannelMediaRelayStateChanged callback returns RelayStateFailure (3), an exception occurs during the media stream relay.
    *  Call this method after joining the channel.
@@ -6154,8 +6223,8 @@ export abstract class IRtcEngine {
    *  < 0: Failure.
    *  -1: A general error occurs (no specified reason).
    *  -2: The parameter is invalid.
-   *  -7: The method call was rejected. It may be because the SDK has not been initialized successfully, or the user role is not an host.
-   *  -8: Internal state error. Probably because the user is not an audience member.
+   *  -7: The method call was rejected. It may be because the SDK has not been initialized successfully, or the user role is not a host.
+   *  -8: Internal state error. Probably because the user is not a broadcaster.
    */
   abstract startOrUpdateChannelMediaRelay(
     configuration: ChannelMediaRelayConfiguration
@@ -6180,8 +6249,8 @@ export abstract class IRtcEngine {
    *  < 0: Failure.
    *  -1: A general error occurs (no specified reason).
    *  -2: The parameter is invalid.
-   *  -7: The method call was rejected. It may be because the SDK has not been initialized successfully, or the user role is not an host.
-   *  -8: Internal state error. Probably because the user is not an audience member.
+   *  -7: The method call was rejected. It may be because the SDK has not been initialized successfully, or the user role is not a host.
+   *  -8: Internal state error. Probably because the user is not a broadcaster.
    */
   abstract startChannelMediaRelay(
     configuration: ChannelMediaRelayConfiguration
