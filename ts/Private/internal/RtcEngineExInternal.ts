@@ -551,26 +551,30 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       },
     };
     const { result, sources } = callIrisApi.call(this, apiType, jsonParams);
-    const screenCaptureSources = result.map((value: ScreenCaptureSourceInfo) => {
-      if (!value.thumbImage?.buffer || !value.thumbImage?.length) {
-        value.thumbImage!.buffer = undefined;
-      } else {
-        value.thumbImage!.buffer = AgoraEnv.AgoraElectronBridge.GetBuffer(
-          value.thumbImage!.buffer as unknown as number,
-          value.thumbImage.length!
-        );
+    const screenCaptureSources = result.map(
+      (value: ScreenCaptureSourceInfo) => {
+        if (!value.thumbImage?.buffer || !value.thumbImage?.length) {
+          value.thumbImage!.buffer = undefined;
+        } else {
+          value.thumbImage!.buffer = AgoraEnv.AgoraElectronBridge.GetBuffer(
+            value.thumbImage!.buffer as unknown as number,
+            value.thumbImage.length!
+          );
+        }
+        if (!value.iconImage?.buffer || !value.iconImage?.length) {
+          value.iconImage!.buffer = undefined;
+        } else {
+          value.iconImage.buffer = AgoraEnv.AgoraElectronBridge.GetBuffer(
+            value.iconImage!.buffer as unknown as number,
+            value.iconImage.length!
+          );
+        }
+        return value;
       }
-      if (!value.iconImage?.buffer || !value.iconImage?.length) {
-        value.iconImage!.buffer = undefined;
-      } else {
-        value.iconImage.buffer = AgoraEnv.AgoraElectronBridge.GetBuffer(
-          value.iconImage!.buffer as unknown as number,
-          value.iconImage.length!
-        );
-      }
-      return value;
+    );
+    callIrisApi.call(this, 'RtcEngine_releaseScreenCaptureSources', {
+      sources,
     });
-    callIrisApi.call(this, 'RtcEngine_releaseScreenCaptureSources', { sources });
     return screenCaptureSources;
   }
 
