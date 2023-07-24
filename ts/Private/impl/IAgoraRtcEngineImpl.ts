@@ -1252,7 +1252,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     channelId: string,
     userAccount: string
   ): string {
-    return 'RtcEngine_preloadChannelWithUserAccount';
+    return 'RtcEngine_preloadChannel2';
   }
 
   updatePreloadChannelToken(token: string): number {
