@@ -15,8 +15,8 @@ export function processIMediaPlayerSourceObserver(
     case 'onPositionChanged':
       if (handler.onPositionChanged !== undefined) {
         handler.onPositionChanged(
-          jsonParams.position_ms,
-          jsonParams.timestamp_ms
+          jsonParams.positionMs,
+          jsonParams.timestampMs
         );
       }
       break;
