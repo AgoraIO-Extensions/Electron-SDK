@@ -835,10 +835,10 @@ export interface IAudioFrameObserverBase {
    */
   onRecordAudioFrame?(channelId: string, audioFrame: AudioFrame): void;
 
-  onPublishAudioFrame?(channelId: string): {
-    audioFrame: AudioFrame;
-    result: boolean;
-  };
+  /**
+   * @ignore
+   */
+  onPublishAudioFrame?(channelId: string, audioFrame: AudioFrame): void;
 
   /**
    * Gets the raw audio frame for playback.

@@ -6,10 +6,7 @@ import * as t from "ts-interface-checker";
 
 export const IAudioFrameObserverBase = t.iface([], {
   "onRecordAudioFrame": t.opt(t.func("void", t.param("channelId", "string"), t.param("audioFrame", "AudioFrame"))),
-  "onPublishAudioFrame": t.opt(t.func(t.iface([], {
-    "audioFrame": "AudioFrame",
-    "result": "boolean",
-  }), t.param("channelId", "string"))),
+  "onPublishAudioFrame": t.opt(t.func("void", t.param("channelId", "string"), t.param("audioFrame", "AudioFrame"))),
   "onPlaybackAudioFrame": t.opt(t.func("void", t.param("channelId", "string"), t.param("audioFrame", "AudioFrame"))),
   "onMixedAudioFrame": t.opt(t.func("void", t.param("channelId", "string"), t.param("audioFrame", "AudioFrame"))),
   "onEarMonitoringAudioFrame": t.opt(t.func("void", t.param("audioFrame", "AudioFrame"))),
