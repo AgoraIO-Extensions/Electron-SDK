@@ -55,6 +55,10 @@ export enum MusicContentCenterStatusCode {
    * @ignore
    */
   KMusicContentCenterStatusErrMusicDecryption = 6,
+  /**
+   * @ignore
+   */
+  KMusicContentCenterStatusErHttpInternalError = 7,
 }
 
 /**
@@ -376,12 +380,11 @@ export abstract class IMusicContentCenter {
    * @ignore
    */
   abstract searchMusic(
-    requestId: string,
     keyWord: string,
     page: number,
     pageSize: number,
     jsonOption?: string
-  ): number;
+  ): string;
 
   /**
    * @ignore
@@ -391,7 +394,7 @@ export abstract class IMusicContentCenter {
   /**
    * @ignore
    */
-  abstract preloadWithRequestId(requestId: string, songCode: number): number;
+  abstract preloadWithRequestId(songCode: number): string;
 
   /**
    * @ignore
@@ -406,7 +409,7 @@ export abstract class IMusicContentCenter {
   /**
    * @ignore
    */
-  abstract isPreloaded(songCode: number): number;
+  abstract isPreloaded(songCode: number): boolean;
 
   /**
    * @ignore
