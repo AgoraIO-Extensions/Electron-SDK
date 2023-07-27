@@ -1,5 +1,17 @@
 
 
+## [4.1.1-build.12-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.1.1-build.9-rc.1...v4.1.1-build.12-rc.1) (2023-07-27)
+
+
+### Bug Fixes
+
+* CSD-57699 removeEventListener `webglcontextlost` while unbind ([1372e24](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/1372e24c89a5cf70c356a2338c65f6db17c5de83))
+
+
+### Features
+
+* support native 4.1.1.12 ([#1042](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1042)) ([c7c9c29](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/c7c9c2941f1effc08147f890dd677608b5509456)), closes [#1041](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1041)
+
 ## [4.1.1-build.9-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.1.1-build.8-rc.1...v4.1.1-build.9-rc.1) (2023-06-29)
 
 
