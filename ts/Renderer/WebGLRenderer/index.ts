@@ -24,7 +24,8 @@ const vertexShaderSource =
 const yuvShaderSource =
   'precision mediump float;' +
   'uniform sampler2D Ytex;' +
-  'uniform sampler2D Utex,Vtex;' +
+  'uniform sampler2D Utex;' +
+  'uniform sampler2D Vtex;' +
   'varying vec2 v_texCoord;' +
   'void main(void) {' +
   '  float nx,ny,r,g,b,y,u,v;' +
@@ -45,7 +46,6 @@ const yuvShaderSource =
 
 export class GlRenderer extends IRenderer {
   gl: WebGL2RenderingContext | undefined | null;
-  handleContextLost: any;
   program: any;
   positionLocation: any;
   texCoordLocation: any;
@@ -126,6 +126,12 @@ export class GlRenderer extends IRenderer {
       logWarn('webgl renderer unbind happen some error', e);
     }
 
+    this.canvas &&
+      this.canvas.removeEventListener(
+        'webglcontextlost',
+        this.handleContextLost,
+        false
+      );
     this.canvas = undefined;
     this.container = undefined;
     this.parentElement = undefined;
@@ -143,39 +149,33 @@ export class GlRenderer extends IRenderer {
         // Cover
         if (rotation === 0 || rotation === 180) {
           if (this.clientWidth / this.clientHeight > width / height) {
-            // @ts-ignore
-            this.canvas.style.zoom = this.clientWidth / width;
+            this.canvas.style.transform = `scale(${this.clientWidth / width})`;
           } else {
-            // @ts-ignore
-            this.canvas.style.zoom = this.clientHeight / height;
+            this.canvas.style.transform = `scale(${
+              this.clientHeight / height
+            })`;
           }
         } else {
           // 90, 270
           if (this.clientHeight / this.clientWidth > width / height) {
-            // @ts-ignore
-            this.canvas.style.zoom = this.clientHeight / width;
+            this.canvas.style.transform = `scale(${this.clientHeight / width})`;
           } else {
-            // @ts-ignore
-            this.canvas.style.zoom = this.clientWidth / height;
+            this.canvas.style.transform = `scale(${this.clientWidth / height})`;
           }
         }
         // Contain
       } else if (rotation === 0 || rotation === 180) {
         if (this.clientWidth / this.clientHeight > width / height) {
-          // @ts-ignore
-          this.canvas.style.zoom = this.clientHeight / height;
+          this.canvas.style.transform = `scale(${this.clientHeight / height})`;
         } else {
-          // @ts-ignore
-          this.canvas.style.zoom = this.clientWidth / width;
+          this.canvas.style.transform = `scale(${this.clientWidth / width})`;
         }
       } else {
         // 90, 270
         if (this.clientHeight / this.clientWidth > width / height) {
-          // @ts-ignore
-          this.canvas.style.zoom = this.clientWidth / height;
+          this.canvas.style.transform = `scale(${this.clientWidth / height})`;
         } else {
-          // @ts-ignore
-          this.canvas.style.zoom = this.clientHeight / width;
+          this.canvas.style.transform = `scale(${this.clientHeight / width})`;
         }
       }
     } catch (e) {
@@ -453,6 +453,25 @@ export class GlRenderer extends IRenderer {
     }
   }
 
+  private handleContextLost = () => {
+    try {
+      this.canvas &&
+        this.canvas.removeEventListener(
+          'webglcontextlost',
+          this.handleContextLost,
+          false
+        );
+    } catch (error) {
+      logWarn('webglcontextlost error', error);
+    } finally {
+      this.gl = undefined;
+      this.failInitRenderCB &&
+        this.failInitRenderCB({
+          error: 'Browser not support! No WebGL detected.',
+        });
+    }
+  };
+
   private initCanvas(
     view: HTMLElement,
     width: number,
@@ -492,28 +511,9 @@ export class GlRenderer extends IRenderer {
         preserveDrawingBuffer: true,
       });
       // context list after toggle resolution on electron 12.0.6
-      let handleContextLost = () => {
-        try {
-          this.gl = null;
-          this.canvas &&
-            this.canvas.removeEventListener(
-              'webglcontextlost',
-              handleContextLost,
-              false
-            );
-        } catch (error) {
-          logWarn('webglcontextlost error', error);
-        } finally {
-          this.gl = undefined;
-          this.failInitRenderCB &&
-            this.failInitRenderCB({
-              error: 'Browser not support! No WebGL detected.',
-            });
-        }
-      };
       this.canvas.addEventListener(
         'webglcontextlost',
-        handleContextLost,
+        this.handleContextLost,
         false
       );
     } catch (e) {
