@@ -128,7 +128,7 @@ export default class VideoEncoderConfiguration
   }
 
   /**
-   * Step 3-1: setRenderMode
+   * Step 3-1: setRenderMode,need leave and join channel again
    */
   setRenderMode = () => {
     const { renderMode } = this.state;
