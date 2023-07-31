@@ -132,6 +132,7 @@ export default class VideoEncoderConfiguration
    */
   setRenderMode = () => {
     const { renderMode } = this.state;
+    // @ts-ignore
     AgoraEnv?.AgoraRendererManager?.['setRenderMode'](renderMode);
   };
 
