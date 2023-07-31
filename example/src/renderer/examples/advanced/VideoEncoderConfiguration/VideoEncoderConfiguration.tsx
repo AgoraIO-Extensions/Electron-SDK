@@ -64,7 +64,7 @@ export default class VideoEncoderConfiguration
       bitrate: 0,
       minBitrate: -1,
       orientationMode: OrientationMode.OrientationModeAdaptive,
-      renderMode: RENDER_MODE.SOFTWARE,
+      renderMode: RENDER_MODE.WEBGL,
       renderModeType: RenderModeType.RenderModeFit,
       degradationPreference: DegradationPreference.MaintainQuality,
       mirrorMode: VideoMirrorModeType.VideoMirrorModeDisabled,
@@ -132,7 +132,7 @@ export default class VideoEncoderConfiguration
    */
   setRenderMode = () => {
     const { renderMode } = this.state;
-    AgoraEnv?.AgoraRendererManager?.setRenderMode(renderMode);
+    AgoraEnv?.AgoraRendererManager?.['setRenderMode'](renderMode);
   };
 
   /**
