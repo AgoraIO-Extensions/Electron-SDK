@@ -1,5 +1,20 @@
 
 
+## [4.2.2-dev.6](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.1...v4.2.2-dev.6) (2023-07-31)
+
+
+### Bug Fixes
+
+* CSD-57577 ex callback issue ([#1032](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1032)) ([82b53ac](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/82b53ac89ee8d4c18ce2fe3608d176d1b4140103))
+* CSD-57615 render mode not working on software renderer ([1097ebc](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/1097ebcdf21cb6f5c66821174e8f46ec470976db))
+* CSD-57699 removeEventListener `webglcontextlost` while unbind ([2a280c8](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/2a280c87242fe3abecb61bc23ffb0996029d6fec))
+* CSD-58183 getScreenCaptureSources memory leak ([0bc9ee6](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/0bc9ee6700a52979fa2c1d72cb3b738d5786f8a8))
+* getApiTypeFromPreload ([d79444d](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/d79444d169abaa08b5361cad382fa8e03e7fdf5b))
+* getApiTypeFromPreloadChannelWithUserAccount ([426f1d8](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/426f1d8073647321b7290b5495c7cacc65ae77a7))
+* jira NMS-13855 ([04baa1e](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/04baa1edf4acc900a7c2e0e9798b613c367ed9e5))
+* NMS-14097 app css issue ([8e1a2cc](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/8e1a2cccf93ff5a908f437dfc8e8c582051968d7))
+* some error ([4e74203](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/4e7420350c516e7b940c9e7a9ca3b9571c587239))
+
 ## [4.2.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.0...v4.2.1) (2023-06-30)
 
 
