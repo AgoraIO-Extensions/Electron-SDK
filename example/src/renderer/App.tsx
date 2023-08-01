@@ -24,7 +24,6 @@ const { SubMenu } = Menu;
 
 class App extends Component {
   state = {
-    collapsed: false,
     version: { version: undefined, build: undefined },
   };
 
@@ -33,17 +32,21 @@ class App extends Component {
     this.setState({ version: engine.getVersion() });
   }
 
-  onCollapse = (collapsed: any) => {
-    console.log(collapsed);
-    this.setState({ collapsed });
-  };
-
   render() {
-    const { collapsed, version } = this.state;
+    const { version } = this.state;
     return (
       <Router>
-        <Layout style={{ minHeight: '100vh' }}>
-          <Sider collapsible collapsed={collapsed} onCollapse={this.onCollapse}>
+        <Layout hasSider style={{ height: '100vh' }}>
+          <Sider
+            style={{
+              overflow: 'auto',
+              height: '100vh',
+              position: 'fixed',
+              left: 0,
+              top: 0,
+              bottom: 0,
+            }}
+          >
             <div className="logo" />
             <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
               <Menu.Item key="1" icon={<SettingOutlined />}>
@@ -68,8 +71,8 @@ class App extends Component {
               })}
             </Menu>
           </Sider>
-          <Layout className="site-layout">
-            <Content style={{ flex: 1 }}>
+          <Layout className="site-layout" style={{ marginLeft: 200 }}>
+            <Content>
               <Switch>
                 <Route path="/" children={<AuthInfoScreen />} exact={true} />
                 {DATA.map((value) => {

@@ -453,6 +453,14 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return 'RtcEngine_stopScreenCapture2';
   }
 
+  protected override getApiTypeFromPreloadChannelWithUserAccount(
+    token: string,
+    channelId: string,
+    userAccount: string
+  ): string {
+    return 'RtcEngine_preloadChannel2';
+  }
+
   override getAudioDeviceManager(): IAudioDeviceManager {
     return this._audio_device_manager;
   }
@@ -525,27 +533,49 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     iconSize: Size,
     includeScreen: boolean
   ): ScreenCaptureSourceInfo[] {
-    return super
-      .getScreenCaptureSources(thumbSize, iconSize, includeScreen)
-      .map((value: any) => {
-        if (value.thumbImage.buffer == 0) {
-          value.thumbImage.buffer = undefined;
+    const apiType = this.getApiTypeFromGetScreenCaptureSources(
+      thumbSize,
+      iconSize,
+      includeScreen
+    );
+    const jsonParams = {
+      thumbSize: thumbSize,
+      iconSize: iconSize,
+      includeScreen: includeScreen,
+      toJSON: () => {
+        return {
+          thumbSize: thumbSize,
+          iconSize: iconSize,
+          includeScreen: includeScreen,
+        };
+      },
+    };
+    const { result, sources } = callIrisApi.call(this, apiType, jsonParams);
+    const screenCaptureSources = result.map(
+      (value: ScreenCaptureSourceInfo) => {
+        if (!value.thumbImage?.buffer || !value.thumbImage?.length) {
+          value.thumbImage!.buffer = undefined;
         } else {
-          value.thumbImage.buffer = AgoraEnv.AgoraElectronBridge.GetBuffer(
-            value.thumbImage.buffer,
-            value.thumbImage?.length
+          value.thumbImage!.buffer = AgoraEnv.AgoraElectronBridge.GetBuffer(
+            value.thumbImage!.buffer as unknown as number,
+            value.thumbImage.length!
           );
         }
-        if (value.iconImage.buffer == 0) {
-          value.iconImage.buffer = undefined;
+        if (!value.iconImage?.buffer || !value.iconImage?.length) {
+          value.iconImage!.buffer = undefined;
         } else {
           value.iconImage.buffer = AgoraEnv.AgoraElectronBridge.GetBuffer(
-            value.iconImage.buffer,
-            value.iconImage.length
+            value.iconImage!.buffer as unknown as number,
+            value.iconImage.length!
           );
         }
         return value;
-      });
+      }
+    );
+    callIrisApi.call(this, 'RtcEngine_releaseScreenCaptureSources', {
+      sources,
+    });
+    return screenCaptureSources;
   }
 
   override setupLocalVideo(canvas: VideoCanvas): number {
