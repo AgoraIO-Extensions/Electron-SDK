@@ -1,5 +1,18 @@
 
 
+## [4.2.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.1...v4.2.2) (2023-08-01)
+
+
+### Bug Fixes
+
+* CSD-57615 render mode not working on software renderer ([1097ebc](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/1097ebcdf21cb6f5c66821174e8f46ec470976db))
+* CSD-57699 removeEventListener `webglcontextlost` while unbind ([2a280c8](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/2a280c87242fe3abecb61bc23ffb0996029d6fec))
+
+
+### Features
+
+* support native 4.2.2 ([#1033](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1033)) ([f151e69](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/f151e69abf22286eb5fbec3bcee8f703188c7515))
+
 ## [4.2.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.0...v4.2.1) (2023-06-30)
 
 
