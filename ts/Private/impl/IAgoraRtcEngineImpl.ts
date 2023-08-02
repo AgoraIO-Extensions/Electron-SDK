@@ -411,9 +411,7 @@ export function processIRtcEngineEventHandler(
 
     case 'onLocalVideoStats':
       if (handler.onLocalVideoStats !== undefined) {
-        if ('source' in jsonParams) {
-          handler.onLocalVideoStats(jsonParams.source, jsonParams.stats);
-        }
+        handler.onLocalVideoStats(jsonParams.source, jsonParams.stats);
       }
       break;
 

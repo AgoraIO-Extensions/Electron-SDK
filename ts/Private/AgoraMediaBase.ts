@@ -433,6 +433,10 @@ export enum VideoPixelFormat {
    * 16: The format is I422.
    */
   VideoPixelI422 = 16,
+  /**
+   * @ignore
+   */
+  VideoTextureId3d11texture2d = 17,
 }
 
 /**
@@ -575,6 +579,14 @@ export class ExternalVideoFrame {
    * @ignore
    */
   alphaBuffer?: Uint8Array;
+  /**
+   * @ignore
+   */
+  d3d11_texture_2d?: any;
+  /**
+   * @ignore
+   */
+  texture_slice_index?: number;
 }
 
 /**
@@ -643,6 +655,10 @@ export class VideoFrame {
    * This parameter only applies to video data in Texture format. Texture ID.
    */
   textureId?: number;
+  /**
+   * @ignore
+   */
+  d3d11Texture2d?: any;
   /**
    * This parameter only applies to video data in Texture format. Incoming 4 × 4 transformational matrix. The typical value is a unit matrix.
    */

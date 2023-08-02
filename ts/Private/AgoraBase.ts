@@ -2081,6 +2081,18 @@ export enum LocalVideoStreamError {
    * @ignore
    */
   LocalVideoStreamErrorScreenCaptureNoPermission = 22,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorScreenCapturePaused = 23,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorScreenCaptureResumed = 24,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorScreenCaptureWindowRecoverFromMinimized = 25,
 }
 
 /**
@@ -3126,6 +3138,10 @@ export enum ConnectionChangedReasonType {
    * @ignore
    */
   ConnectionChangedLicenseValidationFailure = 21,
+  /**
+   * @ignore
+   */
+  ConnectionChangedCertificationVeryfyFailure = 22,
 }
 
 /**

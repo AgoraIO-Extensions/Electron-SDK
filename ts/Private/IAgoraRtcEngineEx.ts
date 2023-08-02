@@ -78,7 +78,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    *
    * This method lets the user leave the channel, for example, by hanging up or exiting the call. After calling joinChannelEx to join the channel, this method must be called to end the call before starting the next call. This method can be called whether or not a call is currently in progress. This method releases all resources related to the session. This method call is asynchronous. When this method returns, it does not necessarily mean that the user has left the channel. After you leave the channel, the SDK triggers the onLeaveChannel callback. After actually leaving the channel, the local user triggers the onLeaveChannel callback; after the user in the communication scenario and the host in the live streaming scenario leave the channel, the remote user triggers the onUserOffline callback.
    *  If you call release immediately after calling this method, the SDK does not trigger the onLeaveChannel callback.
-   *  Calling leaveChannel will leave the channels when calling joinChannel and joinChannelEx at the same time.
+   *  Calling leaveChannel will leave the channels joined by calling joinChannel and joinChannelEx.
    *
    * @param connection The connection information. See RtcConnection.
    * @param options The options for leaving the channel. See LeaveChannelOptions. This parameter only supports the stopMicrophoneRecording member in the LeaveChannelOptions settings; setting other members does not take effect.
@@ -522,7 +522,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * Creates a data stream.
    *
-   * Creates a data stream. Each user can create up to five data streams in a single channel. Compared with createDataStreamEx, this method does not support data reliability. If a data packet is not received five seconds after it was sent, the SDK directly discards the data.
+   * Creates a data stream. Each user can create up to five data streams in a single channel.
    *
    * @param config The configurations for the data stream. See DataStreamConfig.
    * @param connection The connection information. See RtcConnection.
