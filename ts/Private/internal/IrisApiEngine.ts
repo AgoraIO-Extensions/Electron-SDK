@@ -339,9 +339,9 @@ export const EVENT_PROCESSORS: EventProcessors = {
 
 // some events are not needed, so ignore them
 function isIgnoredEvent(event: string, data: any) {
-  if(event === 'onLocalVideoStats' && 'connection' in data){
+  if (event === 'onLocalVideoStats' && 'connection' in data) {
     return true;
-  }else{
+  } else {
     return false;
   }
 }
@@ -379,7 +379,7 @@ function handleEvent(...[event, data, buffers]: any) {
     _event = _event.replace(/Ex$/g, '');
   }
 
-  if(isIgnoredEvent(_event, _data)){
+  if (isIgnoredEvent(_event, _data)) {
     return false;
   }
   const _buffers: Uint8Array[] = buffers;
