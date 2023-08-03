@@ -337,6 +337,15 @@ export const EVENT_PROCESSORS: EventProcessors = {
   },
 };
 
+// some events are not needed, so ignore them
+function isIgnoredEvent(event: string, data: any) {
+  if(event === 'onLocalVideoStats' && 'connection' in data){
+    return true;
+  }else{
+    return false;
+  }
+}
+
 function handleEvent(...[event, data, buffers]: any) {
   if (isDebuggable()) {
     console.info('onEvent', event, data, buffers);
@@ -370,6 +379,9 @@ function handleEvent(...[event, data, buffers]: any) {
     _event = _event.replace(/Ex$/g, '');
   }
 
+  if(isIgnoredEvent(_event, _data)){
+    return false;
+  }
   const _buffers: Uint8Array[] = buffers;
   if (processor.preprocess) {
     processor.preprocess(_event, _data, _buffers);
@@ -386,6 +398,8 @@ function handleEvent(...[event, data, buffers]: any) {
   }
 
   emitEvent(_event, processor, _data);
+
+  return true;
 }
 
 /**
