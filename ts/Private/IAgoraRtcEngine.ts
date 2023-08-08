@@ -1038,7 +1038,7 @@ export class ImageTrackOptions {
 /**
  * The channel media options.
  *
- * Agora supports publishing multiple audio streams and one video stream at the same time and in the same RtcConnection. For example, publishMicrophoneTrack, publishAudioTrack, publishCustomAudioTrack, and publishMediaPlayerAudioTrack can be set as true at the same time, but only one of publishCameraTrack, publishScreenTrack, publishCustomVideoTrack, or publishEncodedVideoTrack can be set as true. Agora recommends that you set member parameter values yourself according to your business scenario, otherwise the SDK will automatically assign values to member parameters.
+ * Agora supports publishing multiple audio streams and one video stream at the same time and in the same RtcConnection. For example, publishMicrophoneTrack, publishCustomAudioTrack, and publishMediaPlayerAudioTrack can be set as true at the same time, but only one of publishCameraTrack, publishScreenTrack, publishCustomVideoTrack, or publishEncodedVideoTrack can be set as true. Agora recommends that you set member parameter values yourself according to your business scenario, otherwise the SDK will automatically assign values to member parameters.
  */
 export class ChannelMediaOptions {
   /**
@@ -1878,7 +1878,7 @@ export interface IRtcEngineEventHandler {
    *
    * When the token expires during a call, the SDK triggers this callback to remind the app to renew the token. When receiving this callback, you need to generate a new token on your token server and you can renew your token through one of the following ways:
    *  Call renewToken to pass in the new token.
-   *  Call to leave the current channel and then pass in the new token when you call joinChannel to join a channel.
+   *  Call leaveChannel to leave the current channel and then pass in the new token when you call joinChannel to join a channel.
    *
    * @param connection The connection information. See RtcConnection.
    */
@@ -2051,7 +2051,7 @@ export interface IRtcEngineEventHandler {
   /**
    * Occurs when the user role switching fails in the interactive live streaming.
    *
-   * In the live broadcasting channel profile, when the local user calls to switch the user role after joining the channel but the switch fails, the SDK triggers this callback to report the reason for the failure and the current user role.
+   * In the live broadcasting channel profile, when the local user calls setClientRole to switch the user role after joining the channel but the switch fails, the SDK triggers this callback to report the reason for the failure and the current user role.
    *
    * @param connection The connection information. See RtcConnection.
    * @param reason The reason for a user role switch failure. See ClientRoleChangeFailedReason.
@@ -3130,13 +3130,13 @@ export abstract class IRtcEngine {
    *
    * In scenarios where there are existing cameras to capture video, Agora recommends that you use the following steps to capture and publish video with multiple cameras:
    *  Call this method to enable multi-channel camera capture.
-   *  Call to start the local video preview.
+   *  Call startPreview to start the local video preview.
    *  Call startCameraCapture, and set sourceType to start video capture with the second camera.
    *  Call joinChannelEx, and set publishSecondaryCameraTrack to true to publish the video stream captured by the second camera in the channel. If you want to disable multi-channel camera capture, use the following steps:
    *  Call stopCameraCapture.
-   *  Call this method with enabled set to false. You can call this method before and after to enable multi-camera capture:
-   *  If it is enabled before, the local video preview shows the image captured by the two cameras at the same time.
-   *  If it is enabled after, the SDK stops the current camera capture first, and then enables the primary camera and the second camera. The local video preview appears black for a short time, and then automatically returns to normal. When using this function, ensure that the system version is 13.0 or later. The minimum iOS device types that support multi-camera capture are as follows:
+   *  Call this method with enabled set to false. You can call this method before and after startPreview to enable multi-camera capture:
+   *  If it is enabled before startPreview, the local video preview shows the image captured by the two cameras at the same time.
+   *  If it is enabled after startPreview, the SDK stops the current camera capture first, and then enables the primary camera and the second camera. The local video preview appears black for a short time, and then automatically returns to normal. When using this function, ensure that the system version is 13.0 or later. The minimum iOS device types that support multi-camera capture are as follows:
    *  iPhone XR
    *  iPhone XS
    *  iPhone XS Max
@@ -3257,12 +3257,14 @@ export abstract class IRtcEngine {
    * Sets the image enhancement options.
    *
    * Enables or disables image enhancement, and sets the options.
-   *  Call this method before calling enableVideo or.
+   *  Call this method before calling enableVideo or startPreview.
    *  This method relies on the video enhancement dynamic library libagora_clear_vision_extension.dll. If the dynamic library is deleted, the function cannot be enabled normally.
    *
    * @param enabled Whether to enable the image enhancement function: true : Enable the image enhancement function. false : (Default) Disable the image enhancement function.
    * @param options The image enhancement options. See BeautyOptions.
-   * @param type The type of the video source, see MediaSourceType.
+   * @param type Type of media source. See MediaSourceType. In this method, this parameter supports only the following two settings:
+   *  The default value is UnknownMediaSource.
+   *  If you want to use the second camera to capture video, set this parameter to SecondaryCameraSource.
    *
    * @returns
    * 0: Success.
@@ -3352,7 +3354,7 @@ export abstract class IRtcEngine {
   /**
    * Enables/Disables the virtual background.
    *
-   * The virtual background feature enables the local user to replace their original background with a static image, dynamic video, blurred background, or portrait-background segmentation to achieve picture-in-picture effect. Once the virtual background feature is enabled, all users in the channel can see the custom background. Call this method before calling enableVideo or.
+   * The virtual background feature enables the local user to replace their original background with a static image, dynamic video, blurred background, or portrait-background segmentation to achieve picture-in-picture effect. Once the virtual background feature is enabled, all users in the channel can see the custom background. Call this method before calling enableVideo or startPreview.
    *  This feature requires high performance devices. Agora recommends that you implement it on devices equipped with the following chips:
    *  Devices with an i5 CPU and better
    *  Agora recommends that you use this feature in scenarios that meet the following conditions:
@@ -5170,7 +5172,9 @@ export abstract class IRtcEngine {
    * @param extension The name of the extension.
    * @param key The key of the extension.
    * @param value The value of the extension key.
-   * @param type The type of the video source, see MediaSourceType.
+   * @param type Type of media source. See MediaSourceType. In this method, this parameter supports only the following two settings:
+   *  The default value is UnknownMediaSource.
+   *  If you want to use the second camera to capture video, set this parameter to SecondaryCameraSource.
    *
    * @returns
    * 0: Success.
@@ -5780,6 +5784,7 @@ export abstract class IRtcEngine {
    * Sets the rotation angle of the captured video.
    *
    * This method applies to Windows only.
+   *  You must call this method after enableVideo. The setting result will take effect after the camera is successfully turned on, that is, after the SDK triggers the onLocalVideoStateChanged callback and returns the local video state as LocalVideoStreamStateCapturing (1).
    *  When the video capture device does not have the gravity sensing function, you can call this method to manually adjust the rotation angle of the captured video.
    *
    * @param type The video source type. See VideoSourceType.
