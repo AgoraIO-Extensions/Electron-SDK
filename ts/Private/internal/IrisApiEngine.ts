@@ -370,13 +370,12 @@ function handleEvent(...[event, data, buffers]: any) {
 
   Object.values(EVENT_PROCESSORS).some((it) => {
     const p = it as EventProcessor<any>;
-    if (
-      _event.startsWith(p.suffix) &&
-      processor.handlers(_data) !== undefined
-    ) {
-      processor = p;
+    if (_event.startsWith(p.suffix)) {
       const reg = new RegExp(`^${processor.suffix}`, 'g');
       _event = _event.replace(reg, '');
+    }
+    if (processor.handlers(_event, _data, buffers) !== undefined) {
+      processor = p;
       return true;
     }
     return false;
@@ -392,7 +391,7 @@ function handleEvent(...[event, data, buffers]: any) {
   }
 
   if (processor.handlers) {
-    processor.handlers(_data)?.map((value) => {
+    processor.handlers(_event, _data, buffers)?.map((value) => {
       if (value) {
         processor.func.map((it) => {
           it(value, _event, _data);
