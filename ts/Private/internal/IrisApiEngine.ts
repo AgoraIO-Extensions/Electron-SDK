@@ -92,7 +92,11 @@ export type EventProcessor<T extends ProcessorType> = {
   type: (data: any) => EVENT_TYPE;
   func: Function[];
   preprocess?: (event: string, data: any, buffers: Uint8Array[]) => void;
-  handlers: (data: any) => (T | undefined)[] | undefined;
+  handlers: (
+    event: string,
+    data: any,
+    buffers: Uint8Array[]
+  ) => (T | undefined)[] | undefined;
 };
 
 export enum EVENT_TYPE {
@@ -151,7 +155,8 @@ export const EVENT_PROCESSORS: EventProcessors = {
         data.audioFrame.buffer = buffers[0];
       }
     },
-    handlers: () => MediaEngineInternal._audio_frame_observers,
+    handlers: (event: string, data: any) =>
+      MediaEngineInternal._audio_frame_observers,
   },
   IVideoFrameObserver: {
     suffix: 'VideoFrameObserver_',
@@ -170,14 +175,15 @@ export const EVENT_PROCESSORS: EventProcessors = {
         data.videoFrame.alphaBuffer = buffers[4];
       }
     },
-    handlers: () => MediaEngineInternal._video_frame_observers,
+    handlers: (event: string, data: any) =>
+      MediaEngineInternal._video_frame_observers,
   },
   IAudioSpectrumObserver: {
     suffix: 'AudioSpectrumObserver_',
     type: (data: any) =>
       data.playerId === 0 ? EVENT_TYPE.IRtcEngine : EVENT_TYPE.IMediaPlayer,
     func: [processIAudioSpectrumObserver],
-    handlers: (data: any) =>
+    handlers: (event: string, data: any) =>
       data.playerId === 0
         ? RtcEngineExInternal._audio_spectrum_observers
         : MediaPlayerInternal._audio_spectrum_observers.get(data.playerId),
@@ -201,7 +207,8 @@ export const EVENT_PROCESSORS: EventProcessors = {
           break;
       }
     },
-    handlers: () => RtcEngineExInternal._audio_encoded_frame_observers,
+    handlers: (event: string, data: any) =>
+      RtcEngineExInternal._audio_encoded_frame_observers,
   },
   IVideoEncodedFrameObserver: {
     suffix: 'VideoEncodedFrameObserver_',
@@ -220,13 +227,14 @@ export const EVENT_PROCESSORS: EventProcessors = {
           break;
       }
     },
-    handlers: () => MediaEngineInternal._video_encoded_frame_observers,
+    handlers: (event: string, data: any) =>
+      MediaEngineInternal._video_encoded_frame_observers,
   },
   IMediaPlayerSourceObserver: {
     suffix: 'MediaPlayerSourceObserver_',
     type: () => EVENT_TYPE.IMediaPlayer,
     func: [processIMediaPlayerSourceObserver],
-    handlers: (data: any) =>
+    handlers: (event: string, data: any) =>
       MediaPlayerInternal._source_observers.get(data.playerId),
   },
   IAudioPcmFrameSink: {
@@ -242,7 +250,7 @@ export const EVENT_PROCESSORS: EventProcessors = {
         data.frame.data_ = Array.from(buffers[0] ?? []);
       }
     },
-    handlers: (data: any) =>
+    handlers: (event: string, data: any) =>
       MediaPlayerInternal._audio_frame_observers.get(data.playerId),
   },
   IMediaPlayerVideoFrameObserver: {
@@ -262,14 +270,14 @@ export const EVENT_PROCESSORS: EventProcessors = {
         data.frame.alphaBuffer = buffers[4];
       }
     },
-    handlers: (data: any) =>
+    handlers: (event: string, data: any) =>
       MediaPlayerInternal._video_frame_observers.get(data.playerId),
   },
   IMediaRecorderObserver: {
     suffix: 'MediaRecorderObserver_',
     type: () => EVENT_TYPE.IMediaRecorder,
     func: [processIMediaRecorderObserver],
-    handlers: (data: any) => [
+    handlers: (event: string, data: any) => [
       MediaRecorderInternal._observers.get(data.nativeHandle),
     ],
   },
@@ -290,13 +298,15 @@ export const EVENT_PROCESSORS: EventProcessors = {
           break;
       }
     },
-    handlers: () => RtcEngineExInternal._metadata_observer,
+    handlers: (event: string, data: any) =>
+      RtcEngineExInternal._metadata_observer,
   },
   IDirectCdnStreamingEventHandler: {
     suffix: 'DirectCdnStreamingEventHandler_',
     type: () => EVENT_TYPE.IRtcEngine,
     func: [processIDirectCdnStreamingEventHandler],
-    handlers: () => RtcEngineExInternal._direct_cdn_streaming_event_handler,
+    handlers: (event: string, data: any) =>
+      RtcEngineExInternal._direct_cdn_streaming_event_handler,
   },
   IRtcEngineEventHandler: {
     suffix: 'RtcEngineEventHandler_',
@@ -314,7 +324,12 @@ export const EVENT_PROCESSORS: EventProcessors = {
           break;
       }
     },
-    handlers: () => RtcEngineExInternal._event_handlers,
+    handlers: (event: string, data: any) => {
+      if (event === 'onLocalVideoStats' && 'connection' in data) {
+        return undefined;
+      }
+      return RtcEngineExInternal._event_handlers;
+    },
   },
   IMusicContentCenterEventHandler: {
     suffix: 'MusicContentCenterEventHandler_',
@@ -333,18 +348,10 @@ export const EVENT_PROCESSORS: EventProcessors = {
         }
       }
     },
-    handlers: () => MusicContentCenterInternal._event_handlers,
+    handlers: (event: string, data: any) =>
+      MusicContentCenterInternal._event_handlers,
   },
 };
-
-// some events are not needed, so ignore them
-function isIgnoredEvent(event: string, data: any) {
-  if (event === 'onLocalVideoStats' && 'connection' in data) {
-    return true;
-  } else {
-    return false;
-  }
-}
 
 function handleEvent(...[event, data, buffers]: any) {
   if (isDebuggable()) {
@@ -379,9 +386,6 @@ function handleEvent(...[event, data, buffers]: any) {
     _event = _event.replace(/Ex$/g, '');
   }
 
-  if (isIgnoredEvent(_event, _data)) {
-    return false;
-  }
   const _buffers: Uint8Array[] = buffers;
   if (processor.preprocess) {
     processor.preprocess(_event, _data, _buffers);
@@ -398,8 +402,6 @@ function handleEvent(...[event, data, buffers]: any) {
   }
 
   emitEvent(_event, processor, _data);
-
-  return true;
 }
 
 /**
