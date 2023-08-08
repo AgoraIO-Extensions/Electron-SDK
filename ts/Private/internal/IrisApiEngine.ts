@@ -369,7 +369,7 @@ function handleEvent(...[event, data, buffers]: any) {
     return;
   }
 
-  // for replace preprocess to undefined
+  // allow replace preprocess to undefined for avoid call more than once
   processor = { ...processor };
 
   const reg = new RegExp(`^${processor.suffix}`, 'g');
@@ -392,6 +392,7 @@ function handleEvent(...[event, data, buffers]: any) {
     if (handlers !== undefined) {
       if (processor.preprocess) {
         processor.preprocess(_event, _data, _buffers);
+        // call preprocess only once
         processor.preprocess = undefined;
       }
       handlers.map((value) => {
@@ -553,6 +554,7 @@ export function emitEvent<EventType extends keyof T, T extends ProcessorType>(
   }
   if (eventProcessor.preprocess) {
     eventProcessor.preprocess(eventType as string, data, buffers ?? []);
+    // call preprocess only once
     eventProcessor.preprocess = undefined;
   }
   DeviceEventEmitter.emit(eventType as string, eventProcessor, data);
