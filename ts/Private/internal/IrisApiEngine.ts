@@ -369,6 +369,9 @@ function handleEvent(...[event, data, buffers]: any) {
     return;
   }
 
+  // for replace preprocess to undefined
+  processor = { ...processor };
+
   const reg = new RegExp(`^${processor.suffix}`, 'g');
   _event = _event.replace(reg, '');
   if (_event.endsWith('Ex')) {
@@ -389,6 +392,7 @@ function handleEvent(...[event, data, buffers]: any) {
     if (handlers !== undefined) {
       if (processor.preprocess) {
         processor.preprocess(_event, _data, _buffers);
+        processor.preprocess = undefined;
       }
       handlers.map((value) => {
         if (value) {
@@ -400,7 +404,7 @@ function handleEvent(...[event, data, buffers]: any) {
     }
   }
 
-  emitEvent(_event, processor, _data);
+  emitEvent(_event, processor, _data, _buffers);
 }
 
 /**
@@ -541,7 +545,15 @@ export function callIrisApi(funcName: string, params: any): any {
 export function emitEvent<EventType extends keyof T, T extends ProcessorType>(
   eventType: EventType,
   eventProcessor: EventProcessor<T>,
-  data: any
+  data: any,
+  buffers: Uint8Array[]
 ): void {
+  if (DeviceEventEmitter.listenerCount(eventType as string) === 0) {
+    return;
+  }
+  if (eventProcessor.preprocess) {
+    eventProcessor.preprocess(eventType as string, data, buffers);
+    eventProcessor.preprocess = undefined;
+  }
   DeviceEventEmitter.emit(eventType as string, eventProcessor, data);
 }
