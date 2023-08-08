@@ -358,6 +358,23 @@ function handleEvent(...[event, data, buffers]: any) {
     console.info('onEvent', event, data, buffers);
   }
 
+  let _event: string = event;
+  let processor: EventProcessor<any> | undefined = Object.values(
+    EVENT_PROCESSORS
+  ).find((it) => {
+    return _event.startsWith(it.suffix);
+  });
+
+  if (processor === undefined) {
+    return;
+  }
+
+  const reg = new RegExp(`^${processor.suffix}`, 'g');
+  _event = _event.replace(reg, '');
+  if (_event.endsWith('Ex')) {
+    _event = _event.replace(/Ex$/g, '');
+  }
+
   let _data: any;
   try {
     _data = JSON.parse(data) ?? {};
@@ -365,39 +382,22 @@ function handleEvent(...[event, data, buffers]: any) {
     _data = {};
   }
 
-  let _event: string = event;
-  let processor: EventProcessor<any> = EVENT_PROCESSORS.IRtcEngineEventHandler;
-
-  Object.values(EVENT_PROCESSORS).some((it) => {
-    const p = it as EventProcessor<any>;
-    if (_event.startsWith(p.suffix)) {
-      const reg = new RegExp(`^${processor.suffix}`, 'g');
-      _event = _event.replace(reg, '');
-    }
-    if (processor.handlers(_event, _data, buffers) !== undefined) {
-      processor = p;
-      return true;
-    }
-    return false;
-  });
-
-  if (_event.endsWith('Ex')) {
-    _event = _event.replace(/Ex$/g, '');
-  }
-
   const _buffers: Uint8Array[] = buffers;
-  if (processor.preprocess) {
-    processor.preprocess(_event, _data, _buffers);
-  }
 
   if (processor.handlers) {
-    processor.handlers(_event, _data, buffers)?.map((value) => {
-      if (value) {
-        processor.func.map((it) => {
-          it(value, _event, _data);
-        });
+    const handlers = processor.handlers(_event, _data, _buffers);
+    if (handlers !== undefined) {
+      if (processor.preprocess) {
+        processor.preprocess(_event, _data, _buffers);
       }
-    });
+      handlers.map((value) => {
+        if (value) {
+          processor!.func.map((it) => {
+            it(value, _event, _data);
+          });
+        }
+      });
+    }
   }
 
   emitEvent(_event, processor, _data);
