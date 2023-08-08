@@ -546,13 +546,13 @@ export function emitEvent<EventType extends keyof T, T extends ProcessorType>(
   eventType: EventType,
   eventProcessor: EventProcessor<T>,
   data: any,
-  buffers: Uint8Array[]
+  buffers?: Uint8Array[]
 ): void {
   if (DeviceEventEmitter.listenerCount(eventType as string) === 0) {
     return;
   }
   if (eventProcessor.preprocess) {
-    eventProcessor.preprocess(eventType as string, data, buffers);
+    eventProcessor.preprocess(eventType as string, data, buffers ?? []);
     eventProcessor.preprocess = undefined;
   }
   DeviceEventEmitter.emit(eventType as string, eventProcessor, data);
