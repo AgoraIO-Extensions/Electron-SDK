@@ -1218,6 +1218,20 @@ export enum ProxyType {
 }
 
 /**
+ * @ignore
+ */
+export enum FeatureType {
+  /**
+   * @ignore
+   */
+  VideoVirtualBackground = 1,
+  /**
+   * @ignore
+   */
+  VideoBeautyEffect = 2,
+}
+
+/**
  * The options for leaving a channel.
  */
 export class LeaveChannelOptions {
@@ -2985,7 +2999,7 @@ export abstract class IRtcEngine {
    *  This method allows users to join only one channel at a time.
    *  Ensure that the app ID you use to generate the token is the same app ID that you pass in the initialize method; otherwise, you may fail to join the channel by token.
    *
-   * @param token The token generated on your server for authentication.
+   * @param token The token generated on your server for authentication. If you need to join different channels at the same time or switch between channels, Agora recommends using a wildcard token so that you don't need to apply for a new token every time joining a channel.
    * @param channelId The channel name. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters:
    *  All lowercase English letters: a to z.
    *  All uppercase English letters: A to Z.
@@ -6119,7 +6133,7 @@ export abstract class IRtcEngine {
    *  The local client: onLocalUserRegistered, onJoinChannelSuccess and onConnectionStateChanged callbacks.
    *  The remote client: The onUserJoined callback, if the user is in the COMMUNICATION profile, and the onUserInfoUpdated callback if the user is a host in the LIVE_BROADCASTING profile. Once a user joins the channel, the user subscribes to the audio and video streams of all the other users in the channel by default, giving rise to usage and billing calculation. To stop subscribing to a specified stream or all remote streams, call the corresponding mute methods. To ensure smooth communication, use the same parameter type to identify the user. For example, if a user joins the channel with a user ID, then ensure all the other users use the user ID too. The same applies to the user account. If a user joins the channel with the Agora Web SDK, ensure that the ID of the user is set to the same parameter type.
    *
-   * @param token The token generated on your server for authentication.
+   * @param token The token generated on your server for authentication. If you need to join different channels at the same time or switch between channels, Agora recommends using a wildcard token so that you don't need to apply for a new token every time joining a channel.
    * @param channelId The channel name. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters:
    *  All lowercase English letters: a to z.
    *  All uppercase English letters: A to Z.
@@ -6159,7 +6173,7 @@ export abstract class IRtcEngine {
    *  The local client: onLocalUserRegistered, onJoinChannelSuccess and onConnectionStateChanged callbacks.
    *  The remote client: The onUserJoined callback, if the user is in the COMMUNICATION profile, and the onUserInfoUpdated callback if the user is a host in the LIVE_BROADCASTING profile. Once a user joins the channel, the user subscribes to the audio and video streams of all the other users in the channel by default, giving rise to usage and billing calculation. To stop subscribing to a specified stream or all remote streams, call the corresponding mute methods. To ensure smooth communication, use the same parameter type to identify the user. For example, if a user joins the channel with a user ID, then ensure all the other users use the user ID too. The same applies to the user account. If a user joins the channel with the Agora Web SDK, ensure that the ID of the user is set to the same parameter type.
    *
-   * @param token The token generated on your server for authentication.
+   * @param token The token generated on your server for authentication. If you need to join different channels at the same time or switch between channels, Agora recommends using a wildcard token so that you don't need to apply for a new token every time joining a channel.
    * @param channelId The channel name. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters:
    *  All lowercase English letters: a to z.
    *  All uppercase English letters: A to Z.
@@ -6597,6 +6611,11 @@ export abstract class IRtcEngine {
    * The Unix timestamp (ms) of the current NTP time.
    */
   abstract getNtpWallTimeInMs(): number;
+
+  /**
+   * @ignore
+   */
+  abstract isFeatureAvailableOnDevice(type: FeatureType): boolean;
 
   /**
    * Gets the IAudioDeviceManager object to manage audio devices.
