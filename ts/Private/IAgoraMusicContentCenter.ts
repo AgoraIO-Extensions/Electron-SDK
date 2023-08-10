@@ -55,6 +55,10 @@ export enum MusicContentCenterStatusCode {
    * @ignore
    */
   KMusicContentCenterStatusErrMusicDecryption = 6,
+  /**
+   * @ignore
+   */
+  KMusicContentCenterStatusErrHttpInternalError = 7,
 }
 
 /**
