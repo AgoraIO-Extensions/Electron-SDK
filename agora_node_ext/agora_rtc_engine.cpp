@@ -5490,18 +5490,18 @@ NAPI_API_DEFINE(NodeRtcEngine, sendCustomReportMessage) {
                         .As<v8::TypedArray>();                                 \
   Local<v8::ArrayBuffer> buff = nodeBuffer.As<v8::TypedArray>()->Buffer();
 #else
-#if V8_MAJOR_VERSION >= 8
-#define NODE_NEW_ARRAYBUFFER(isolate, it)                                      \
-  std::unique_ptr<v8::BackingStore> backing =                                  \
-      v8::ArrayBuffer::NewBackingStore(isolate, it.length);                    \
-  Local<v8::ArrayBuffer> buff =                                                \
-      v8::ArrayBuffer::New(isolate, std::move(backing));                       \
-  memcpy(buff->GetBackingStore()->Data(), it.buffer, it.length);
-#else
+// #if V8_MAJOR_VERSION >= 8
+// #define NODE_NEW_ARRAYBUFFER(isolate, it)                                      \
+//   std::unique_ptr<v8::BackingStore> backing =                                  \
+//       v8::ArrayBuffer::NewBackingStore(isolate, it.length);                    \
+//   Local<v8::ArrayBuffer> buff =                                                \
+//       v8::ArrayBuffer::New(isolate, std::move(backing));                       \
+//   memcpy(buff->GetBackingStore()->Data(), it.buffer, it.length);
+// #else
 #define NODE_NEW_ARRAYBUFFER(isolate, it)                                      \
   Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, it.length);      \
-  memcpy(buff->GetContents().Data(), it.buffer, it.length);
-#endif
+  memcpy(buff->Data(), it.buffer, it.length);
+// #endif
 #endif
 
 #define NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, name, info)                 \
