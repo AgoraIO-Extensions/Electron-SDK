@@ -2092,7 +2092,15 @@ export enum LocalVideoStreamError {
   /**
    * @ignore
    */
-  LocalVideoStreamErrorScreenCaptureWindowRecoverFromMinimized = 25,
+  LocalVideoStreamErrorScreenCaptureWindowHidden = 25,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorScreenCaptureWindowRecoverFromHidden = 26,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorScreenCaptureWindowRecoverFromMinimized = 27,
 }
 
 /**
@@ -3252,6 +3260,10 @@ export enum NetworkType {
    * 5: The network type is mobile 4G.
    */
   NetworkTypeMobile4g = 5,
+  /**
+   * @ignore
+   */
+  NetworkTypeMobile5g = 6,
 }
 
 /**
