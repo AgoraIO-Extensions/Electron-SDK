@@ -95,6 +95,8 @@ call npm config delete ARTIFACTORY_API_KEY
 echo npm config list
 call npm config list
 
+call nvm use 14.17.3
+
 del /a /f /s *.zip
 del /a /f /s Electron-SDK
 del /a /f /s example\dist

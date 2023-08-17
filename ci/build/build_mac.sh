@@ -88,6 +88,8 @@ echo example_electron_version: $example_electron_version
 echo example_sdk_mode: $example_sdk_mode
 echo package_version: $package_version
 
+nvm use 14.17.3
+
 pushd /tmp/jenkins/Electron-SDK
 
 rm -rf *.zip || true
