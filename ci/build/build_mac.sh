@@ -88,6 +88,10 @@ echo example_electron_version: $example_electron_version
 echo example_sdk_mode: $example_sdk_mode
 echo package_version: $package_version
 
+export NVM_DIR="$HOME/.nvm"
+source "${NVM_DIR}/nvm.sh" --install
+nvm use 14.17.3
+
 pushd /tmp/jenkins/Electron-SDK
 
 rm -rf *.zip || true
