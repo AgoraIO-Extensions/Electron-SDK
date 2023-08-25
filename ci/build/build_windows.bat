@@ -95,6 +95,7 @@ call npm config delete ARTIFACTORY_API_KEY
 echo npm config list
 call npm config list
 
+call nvm install 14.17.3
 call nvm use 14.17.3
 
 del /a /f /s *.zip

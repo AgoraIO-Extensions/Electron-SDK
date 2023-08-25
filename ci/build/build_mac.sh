@@ -90,6 +90,8 @@ echo package_version: $package_version
 
 export NVM_DIR="$HOME/.nvm"
 source "${NVM_DIR}/nvm.sh" --install
+nvm ls-remote 14.17.3
+nvm install 14.17.3
 nvm use 14.17.3
 
 pushd /tmp/jenkins/Electron-SDK
