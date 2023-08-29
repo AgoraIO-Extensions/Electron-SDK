@@ -1,3 +1,5 @@
+const path = require('path');
+
 const { exec } = require('shelljs');
 
 const logger = require('./logger');
@@ -5,7 +7,7 @@ const { getOS } = require('./util');
 
 const zipBuild = async () => {
   const isMac = getOS() === 'mac';
-  const fileListStr = ' build js types package.json';
+  const fileListStr = ` build${path.sep}Release js types package.json`;
   const shellStr =
     (isMac ? 'zip -ry electron.zip' : '7z a electron.zip') + fileListStr;
   const { code, stderr } = await exec(shellStr);
