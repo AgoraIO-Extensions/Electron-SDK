@@ -44,9 +44,9 @@ const fixModuleRules = (config) => {
         {
           loader: 'style-loader',
         },
-        {
-          loader: '@teamsupercell/typings-for-css-modules-loader',
-        },
+        // {
+        //   loader: '@teamsupercell/typings-for-css-modules-loader',
+        // },
         {
           loader: 'css-loader',
           options: {

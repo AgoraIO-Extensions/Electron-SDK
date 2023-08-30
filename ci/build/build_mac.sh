@@ -68,6 +68,7 @@
 #
 # ========== Guidelines End=============
 # --------------------------------------------------------------------------------------------------------------------------
+set -e
 
 echo Package_Publish: $Package_Publish
 echo is_tag_fetch: $is_tag_fetch
@@ -86,6 +87,13 @@ echo Upload_CDN: $Upload_CDN
 echo example_electron_version: $example_electron_version
 echo example_sdk_mode: $example_sdk_mode
 echo package_version: $package_version
+
+export https_proxy=http://10.80.1.174:1080 http_proxy=http://10.80.1.174:1080 all_proxy=http://10.80.1.174:1080
+source ~/.nvm/nvm.sh --install
+nvm ls-remote 14.17.3
+nvm install 14.17.3
+nvm use 14.17.3
+export -n https_proxy http_proxy all_proxy
 
 pushd /tmp/jenkins/Electron-SDK
 
