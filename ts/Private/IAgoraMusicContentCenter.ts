@@ -313,6 +313,10 @@ export class MusicContentCenterConfiguration {
    * @ignore
    */
   maxCacheSize?: number;
+  /**
+   * @ignore
+   */
+  mccDomain?: string;
 }
 
 /**
