@@ -102,8 +102,8 @@ export default function ScreenShare() {
    */
   const getScreenCaptureSources = useCallback(() => {
     const sources = engine.current.getScreenCaptureSources(
-      { width: 1920, height: 1080 },
-      { width: 64, height: 64 },
+      { width: 0, height: 0 },
+      { width: 0, height: 0 },
       true
     );
     setSources(sources);
