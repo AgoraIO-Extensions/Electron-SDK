@@ -4758,7 +4758,7 @@ export abstract class IRtcEngine {
    *
    * The SDK enables the low-quality video stream auto mode on the sender side by default (it does not actively sending low-quality video streams). The host identity receiver can initiate a low-quality video stream application at the receiving end by calling setRemoteVideoStreamType. After receiving the application, the sending end automatically switches to the low-quality video stream mode.
    *  If you want to modify this behavior, you can call this method and modify the mode to DisableSimulcastStream (never send low-quality video streams) or EnableSimulcastStream (always send low-quality video streams).
-   *  If you want to restore the default behavior after making changes, you can call this method again with mode set to AutoSimulcastStream. The difference and connection between this method and is as follows:
+   *  If you want to restore the default behavior after making changes, you can call this method again with mode set to AutoSimulcastStream. The difference and connection between this method and enableDualStreamMode is as follows:
    *  When calling this method and setting mode to DisableSimulcastStream, it has the same effect as calling and setting enabled to false.
    *  When calling this method and setting mode to EnableSimulcastStream, it has the same effect as calling and setting enabled to true.
    *  Both methods can be called before and after joining a channel. If both methods are used, the settings in the method called later takes precedence.
@@ -5656,8 +5656,7 @@ export abstract class IRtcEngine {
   /**
    * Starts pushing media streams to a CDN without transcoding.
    *
-   * Ensure that you enable the Media Push service before using this function. See Enable Media Push.
-   *  Call this method after joining a channel.
+   * Call this method after joining a channel.
    *  Only hosts in the LIVE_BROADCASTING profile can call this method.
    *  If you want to retry pushing streams after a failed push, make sure to call stopRtmpStream first, then call this method to retry pushing streams; otherwise, the SDK returns the same error code as the last failed push. Agora recommends that you use the server-side Media Push function. You can call this method to push an audio or video stream to the specified CDN address. This method can push media streams to only one CDN address at a time, so if you need to push streams to multiple addresses, call this method multiple times. After you call this method, the SDK triggers the onRtmpStreamingStateChanged callback on the local client to report the state of the streaming.
    *
@@ -5675,8 +5674,7 @@ export abstract class IRtcEngine {
   /**
    * Starts Media Push and sets the transcoding configuration.
    *
-   * Agora recommends that you use the server-side Media Push function. You can call this method to push a live audio-and-video stream to the specified CDN address and set the transcoding configuration. This method can push media streams to only one CDN address at a time, so if you need to push streams to multiple addresses, call this method multiple times. After you call this method, the SDK triggers the onRtmpStreamingStateChanged callback on the local client to report the state of the streaming.
-   *  Ensure that you enable the Media Push service before using this function. See Enable Media Push.
+   * Agora recommends that you use the server-side Media Push function. You can call this method to push a live audio-and-video stream to the specified CDN address and set the transcoding configuration. This method can push media streams to only one CDN address at a time, so if you need to push streams to multiple addresses, call this method multiple times. Under one Agora project, the maximum number of concurrent tasks to push media streams is 200 by default. If you need a higher quota, contact. After you call this method, the SDK triggers the onRtmpStreamingStateChanged callback on the local client to report the state of the streaming.
    *  Call this method after joining a channel.
    *  Only hosts in the LIVE_BROADCASTING profile can call this method.
    *  If you want to retry pushing streams after a failed push, make sure to call stopRtmpStream first, then call this method to retry pushing streams; otherwise, the SDK returns the same error code as the last failed push.

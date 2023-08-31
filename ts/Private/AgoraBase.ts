@@ -438,6 +438,10 @@ export enum ErrorCodeType {
    * 1501: Permission to access the camera is not granted. Check whether permission to access the camera permission is granted.
    */
   ErrVdmCameraNotAuthorized = 1501,
+  /**
+   * @ignore
+   */
+  ErrAdmApplicationLoopback = 2007,
 }
 
 /**
@@ -3115,7 +3119,7 @@ export enum ConnectionChangedReasonType {
    */
   ConnectionChangedClientIpAddressChanged = 13,
   /**
-   * 14: Timeout for the keep-alive of the connection between the SDK and the Agora edge server. The connection state changes to .
+   * 14: Timeout for the keep-alive of the connection between the SDK and the Agora edge server. The SDK tries to reconnect to the server automatically.
    */
   ConnectionChangedKeepAliveTimeout = 14,
   /**
