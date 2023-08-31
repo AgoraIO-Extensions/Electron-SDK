@@ -146,6 +146,10 @@ export enum WarnCodeType {
   /**
    * @ignore
    */
+  WarnAdmRegPhoneListennerFailed = 1060,
+  /**
+   * @ignore
+   */
   WarnAdmWinCoreNoRecordingDevice = 1322,
   /**
    * @ignore
@@ -1588,6 +1592,10 @@ export class RtcStats {
    * The packet loss rate (%) from the Agora server to the client before using the anti-packet-loss method.
    */
   rxPacketLossRate?: number;
+  /**
+   * @ignore
+   */
+  playoutDeviceGlitch?: number;
 }
 
 /**
@@ -2010,6 +2018,14 @@ export enum LocalVideoStreamError {
    * @ignore
    */
   LocalVideoStreamErrorScreenCaptureNoPermission = 22,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorScreenCaptureWindowHidden = 25,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorScreenCaptureWindowRecoverFromHidden = 26,
 }
 
 /**
@@ -2410,6 +2426,10 @@ export class LocalAudioStats {
    * @ignore
    */
   earMonitorDelay?: number;
+  /**
+   * @ignore
+   */
+  aecEstimatedDelay?: number;
 }
 
 /**
@@ -3032,7 +3052,7 @@ export enum ConnectionChangedReasonType {
    */
   ConnectionChangedClientIpAddressChanged = 13,
   /**
-   * 14: Timeout for the keep-alive of the connection between the SDK and the Agora edge server. The connection state changes to .
+   * 14: Timeout for the keep-alive of the connection between the SDK and the Agora edge server. The SDK tries to reconnect to the server automatically.
    */
   ConnectionChangedKeepAliveTimeout = 14,
   /**
@@ -3177,6 +3197,10 @@ export enum NetworkType {
    * 5: The network type is mobile 4G.
    */
   NetworkTypeMobile4g = 5,
+  /**
+   * @ignore
+   */
+  NetworkTypeMobile5g = 6,
 }
 
 /**
@@ -3480,11 +3504,11 @@ export enum AudioTrackType {
    */
   AudioTrackInvalid = -1,
   /**
-   * 0: Mixable audio tracks. You can publish multiple mixable audio tracks in one channel, and SDK will automatically mix these tracks into one. The latency of mixable audio tracks is higher than that of direct audio tracks.
+   * 0: Mixable audio tracks. This type of audio track supports mixing with other audio streams (such as audio streams captured by microphone) and playing locally or publishing to channels after mixing. The latency of mixable audio tracks is higher than that of direct audio tracks.
    */
   AudioTrackMixable = 0,
   /**
-   * 1: Direct audio tracks. When creating multiple audio tracks of this type, each direct audio track can only be published in one channel and cannot be mixed with others. The latency of direct audio tracks is lower than that of mixable audio tracks.
+   * 1: Direct audio tracks. This type of audio track will replace the audio streams captured by the microphone and does not support mixing with other audio streams. The latency of direct audio tracks is lower than that of mixable audio tracks. If AudioTrackDirect is specified for this parameter, you must set publishMicrophoneTrack to false in ChannelMediaOptions when calling joinChannel to join the channel; otherwise, joining the channel fails and returns the error code -2.
    */
   AudioTrackDirect = 1,
 }
@@ -3631,6 +3655,10 @@ export enum AudioEffectPreset {
    * Virtual surround sound, that is, the SDK generates a simulated surround sound field on the basis of stereo channels, thereby creating a surround sound effect. If the virtual surround sound is enabled, users need to use stereo audio playback devices to hear the anticipated audio effect.
    */
   RoomAcousticsVirtualSurroundSound = 0x02010900,
+  /**
+   * @ignore
+   */
+  RoomAcousticsChorus = 0x02010d00,
   /**
    * A middle-aged man's voice. Agora recommends using this preset to process a male-sounding voice; otherwise, you may not hear the anticipated voice effect.
    */
