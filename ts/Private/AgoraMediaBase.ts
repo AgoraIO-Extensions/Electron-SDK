@@ -267,6 +267,10 @@ export enum ContentInspectType {
    * @ignore
    */
   ContentInspectSupervision = 2,
+  /**
+   * @ignore
+   */
+  ContentInspectImageModeration = 3,
 }
 
 /**
@@ -291,6 +295,10 @@ export class ContentInspectConfig {
    * Additional information on the video content (maximum length: 1024 Bytes). The SDK sends the screenshots and additional information on the video content to the Agora server. Once the video screenshot and upload process is completed, the Agora server sends the additional information and the callback notification to your server.
    */
   extraInfo?: string;
+  /**
+   * @ignore
+   */
+  serverConfig?: string;
   /**
    * Functional module. See ContentInspectModule. A maximum of 32 ContentInspectModule instances can be configured, and the value range of MAX_CONTENT_INSPECT_MODULE_COUNT is an integer in [1,32]. A function module can only be configured with one instance at most. Currently only the video screenshot and upload function is supported.
    */
@@ -433,6 +441,10 @@ export enum VideoPixelFormat {
    * 16: The format is I422.
    */
   VideoPixelI422 = 16,
+  /**
+   * @ignore
+   */
+  VideoTextureId3d11texture2d = 17,
 }
 
 /**
@@ -575,6 +587,14 @@ export class ExternalVideoFrame {
    * @ignore
    */
   alphaBuffer?: Uint8Array;
+  /**
+   * @ignore
+   */
+  d3d11_texture_2d?: any;
+  /**
+   * @ignore
+   */
+  texture_slice_index?: number;
 }
 
 /**
@@ -643,6 +663,10 @@ export class VideoFrame {
    * This parameter only applies to video data in Texture format. Texture ID.
    */
   textureId?: number;
+  /**
+   * @ignore
+   */
+  d3d11Texture2d?: any;
   /**
    * This parameter only applies to video data in Texture format. Incoming 4 × 4 transformational matrix. The typical value is a unit matrix.
    */
