@@ -89,7 +89,7 @@
     "@types/react-dom": "^18.0.3",
     "@types/react-router-dom": "^5.1.6",
     "@types/ref-napi": "^3.0.7",
-    "electron": "18.2.3",
+    "electron": "22.3.21",
     "electron-builder": "^23.1.0",
     "electron-webpack": "^2.8.2",
     "fork-ts-checker-webpack-plugin": "^4.1.2",
