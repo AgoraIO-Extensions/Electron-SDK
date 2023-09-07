@@ -641,8 +641,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * Starts pushing media streams to a CDN without transcoding.
    *
-   * Ensure that you enable the Media Push service before using this function. See Enable Media Push.
-   *  Call this method after joining a channel.
+   * Call this method after joining a channel.
    *  Only hosts in the LIVE_BROADCASTING profile can call this method.
    *  If you want to retry pushing streams after a failed push, make sure to call stopRtmpStream first, then call this method to retry pushing streams; otherwise, the SDK returns the same error code as the last failed push. Agora recommends that you use the server-side Media Push function. You can call this method to push an audio or video stream to the specified CDN address. This method can push media streams to only one CDN address at a time, so if you need to push streams to multiple addresses, call this method multiple times. After you call this method, the SDK triggers the onRtmpStreamingStateChanged callback on the local client to report the state of the streaming.
    *
