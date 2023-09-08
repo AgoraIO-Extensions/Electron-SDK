@@ -1252,7 +1252,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     channelId: string,
     userAccount: string
   ): string {
-    return 'RtcEngine_preloadChannel2';
+    return 'RtcEngine_preloadChannelWithUserAccount';
   }
 
   updatePreloadChannelToken(token: string): number {
@@ -4690,6 +4690,35 @@ export class IRtcEngineImpl implements IRtcEngine {
     positionYinView: number
   ): string {
     return 'RtcEngine_setCameraExposurePosition';
+  }
+
+  isCameraExposureSupported(): boolean {
+    const apiType = this.getApiTypeFromIsCameraExposureSupported();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromIsCameraExposureSupported(): string {
+    return 'RtcEngine_isCameraExposureSupported';
+  }
+
+  setCameraExposureFactor(factor: number): number {
+    const apiType = this.getApiTypeFromSetCameraExposureFactor(factor);
+    const jsonParams = {
+      factor: factor,
+      toJSON: () => {
+        return {
+          factor: factor,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSetCameraExposureFactor(factor: number): string {
+    return 'RtcEngine_setCameraExposureFactor';
   }
 
   isCameraAutoExposureFaceModeSupported(): boolean {

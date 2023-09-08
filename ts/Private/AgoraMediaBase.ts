@@ -127,6 +127,10 @@ export enum AudioRoute {
    * 9: The audio route is Apple AirPlay. (For macOS only)
    */
   RouteAirplay = 9,
+  /**
+   * @ignore
+   */
+  RouteBluetoothSpeaker = 10,
 }
 
 /**
