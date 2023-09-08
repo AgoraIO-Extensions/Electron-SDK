@@ -997,7 +997,7 @@ export class AdvancedAudioOptions {
  */
 export class ImageTrackOptions {
   /**
-   * The URL of the image that you want to use to replace the video feeds. The image must be in PNG format. This method supports adding an image from the local absolute or relative file path.
+   * The image URL. Supported formats of images include JPEG, JPG, PNG and GIF. This method supports adding an image from the local absolute or relative file path.
    */
   imageUrl?: string;
   /**
@@ -1336,7 +1336,7 @@ export interface IRtcEngineEventHandler {
    *
    * @param channel The channel name.
    * @param uid The user ID.
-   * @param proxyType The proxy type connected. See CloudProxyType.
+   * @param proxyType The proxy type connected. See ProxyType.
    * @param localProxyIp Reserved for future use.
    * @param elapsed The time elapsed (ms) from the user calling joinChannel until this callback is triggered.
    */
@@ -3139,7 +3139,7 @@ export abstract class IRtcEngine {
   /**
    * Sets the channel profile.
    *
-   * After initializing the SDK, the default channel profile is the live streaming profile. You can call this method to set the usage scenario of the channel. For example, it prioritizes smoothness and low latency for a video call, and prioritizes video quality for the interactive live video streaming.
+   * After initializing the SDK, the default channel profile is the live streaming profile. You can call this method to set the channel profile. The Agora SDK differentiates channel profiles and applies optimization algorithms accordingly. For example, it prioritizes smoothness and low latency for a video call and prioritizes video quality for interactive live video streaming.
    *  To ensure the quality of real-time communication, Agora recommends that all users in a channel use the same channel profile.
    *  This method must be called and set before joinChannel, and cannot be set again after joining the channel.
    *  The default video encoding bitrate are different in different channel profiles. See setVideoEncoderConfiguration.
@@ -3160,7 +3160,7 @@ export abstract class IRtcEngine {
    * In the interactive live streaming profile, the SDK sets the user role as audience by default. You can call this method to set the user role as host. You can call this method either before or after joining a channel. If you call this method to set the user's role as the host before joining the channel and set the local video property through the setupLocalVideo method, the local video preview is automatically enabled when the user joins the channel. If you call this method to switch the user role after joining a channel, the SDK automatically does the following:
    *  Calls muteLocalAudioStream and muteLocalVideoStream to change the publishing state.
    *  Triggers onClientRoleChanged on the local client.
-   *  Triggers onUserJoined or onUserOffline on the remote client. This method applies to the interactive live streaming profile (the profile parameter of setChannelProfile is ChannelProfileLiveBroadcasting) only.
+   *  Triggers onUserJoined or onUserOffline on the remote client. This method applies to the interactive live streaming profile (the profile parameter of setChannelProfile is set as ChannelProfileLiveBroadcasting) only.
    *
    * @param role The user role in the interactive live streaming. See ClientRoleType.
    * @param options The detailed options of a user, including the user level. See ClientRoleOptions.
@@ -5364,6 +5364,16 @@ export abstract class IRtcEngine {
     positionXinView: number,
     positionYinView: number
   ): number;
+
+  /**
+   * @ignore
+   */
+  abstract isCameraExposureSupported(): boolean;
+
+  /**
+   * @ignore
+   */
+  abstract setCameraExposureFactor(factor: number): number;
 
   /**
    * @ignore
