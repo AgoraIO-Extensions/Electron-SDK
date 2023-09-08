@@ -6,6 +6,7 @@
  */
 #include "agora_electron_bridge.h"
 #include "iris_base.h"
+#include "iris_rtc_engine.h"
 #include "node_iris_event_handler.h"
 #include <memory>
 #include <regex>
@@ -488,7 +489,7 @@ void AgoraElectronBridge::Init() {
   if (!_iris_api_engine) {
     LOG_F(INFO, __FUNCTION__);
     // create
-    auto engine = createIrisRtcEngine(nullptr);
+    auto engine = iris::rtc::createIrisRtcEngine(nullptr);
     auto bufferManager = std::make_shared<iris::IrisVideoFrameBufferManager>();
     ::enableUseJsonArray(true);
 
