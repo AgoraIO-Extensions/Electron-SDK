@@ -5483,13 +5483,13 @@ NAPI_API_DEFINE(NodeRtcEngine, sendCustomReportMessage) {
     }                                                                    \
   }
 
-#if _MSC_VER && NODE_MODULE_VERSION >= 89
-#define NODE_NEW_ARRAYBUFFER(isolate, it)                                      \
-  auto nodeBuffer = node::Buffer::New(isolate, (char *)it.buffer, it.length)   \
-                        .ToLocalChecked()                                      \
-                        .As<v8::TypedArray>();                                 \
-  Local<v8::ArrayBuffer> buff = nodeBuffer.As<v8::TypedArray>()->Buffer();
-#else
+// #if _MSC_VER && NODE_MODULE_VERSION >= 89
+// #define NODE_NEW_ARRAYBUFFER(isolate, it)                                      \
+//   auto nodeBuffer = node::Buffer::New(isolate, (char *)it.buffer, it.length)   \
+//                         .ToLocalChecked()                                      \
+//                         .As<v8::TypedArray>();                                 \
+//   Local<v8::ArrayBuffer> buff = nodeBuffer.As<v8::TypedArray>()->Buffer();
+// #else
 // #if V8_MAJOR_VERSION >= 8
 // #define NODE_NEW_ARRAYBUFFER(isolate, it)                                      \
 //   std::unique_ptr<v8::BackingStore> backing =                                  \
@@ -5502,23 +5502,23 @@ NAPI_API_DEFINE(NodeRtcEngine, sendCustomReportMessage) {
   Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, it.length);      \
   memcpy(buff->Data(), it.buffer, it.length);
 // #endif
-#endif
+// #endif
 
-#define NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, name, info)                 \
-  {                                                                            \
-    Local<Value> propName =                                                    \
-        String::NewFromUtf8(isolate, name, NewStringType::kInternalized)       \
-            .ToLocalChecked();                                                 \
-    NODE_NEW_ARRAYBUFFER(isolate, info)                                        \
-    Local<v8::Uint8Array> dataarray =                                          \
-        v8::Uint8Array::New(buff, 0, info.length);                             \
-    v8::Maybe<bool> ret =                                                      \
-        obj->Set(isolate->GetCurrentContext(), propName, dataarray);           \
-    if (!ret.IsNothing()) {                                                    \
-      if (!ret.ToChecked()) {                                                  \
-        break;                                                                 \
-      }                                                                        \
-    }                                                                          \
+#define NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, name, info)                \
+  {                                                                           \
+    Local<Value> propName =                                                   \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized)      \
+            .ToLocalChecked();                                                \
+    NODE_NEW_ARRAYBUFFER(isolate, info)                                       \
+    Local<v8::Uint8Array> dataarray =                                         \
+        v8::Uint8Array::New(buff, 0, info.length);                            \
+    v8::Maybe<bool> ret =                                                     \
+        obj->Set(isolate->GetCurrentContext(), propName, dataarray);          \
+    if (!ret.IsNothing()) {                                                   \
+      if (!ret.ToChecked()) {                                                 \
+        break;                                                                \
+      }                                                                       \
+    }                                                                         \
   }
 
 NAPI_API_DEFINE(NodeRtcEngine, getScreenWindowsInfo) {

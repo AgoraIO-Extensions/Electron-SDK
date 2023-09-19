@@ -402,13 +402,13 @@ void NodeVideoFrameTransporter::setFPS(uint32_t fps) {
     }                                                                    \
   }
 
-#if _MSC_VER && NODE_MODULE_VERSION >= 89
-#define NODE_NEW_ARRAYBUFFER(isolate, it)                                      \
-  auto nodeBuffer = node::Buffer::New(isolate, (char *)it->buffer, it->length) \
-                        .ToLocalChecked()                                      \
-                        .As<v8::TypedArray>();                                 \
-  Local<v8::ArrayBuffer> buff = nodeBuffer.As<v8::TypedArray>()->Buffer();
-#else
+// #if _MSC_VER && NODE_MODULE_VERSION >= 89
+// #define NODE_NEW_ARRAYBUFFER(isolate, it)                                      \
+//   auto nodeBuffer = node::Buffer::New(isolate, (char *)it->buffer, it->length) \
+//                         .ToLocalChecked()                                      \
+//                         .As<v8::TypedArray>();                                 \
+//   Local<v8::ArrayBuffer> buff = nodeBuffer.As<v8::TypedArray>()->Buffer();
+// #else
 // #if V8_MAJOR_VERSION >= 8
 // #define NODE_NEW_ARRAYBUFFER(isolate, it)                                      \
 //   std::unique_ptr<v8::BackingStore> backing =                                  \
@@ -421,38 +421,38 @@ void NodeVideoFrameTransporter::setFPS(uint32_t fps) {
   Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, it->length);     \
   memcpy(buff->Data(), it->buffer, it->length);
 // #endif
-#endif
+// #endif
 
-#define NODE_SET_OBJ_PROP_HEADER(obj, it)                                      \
-  {                                                                            \
-    Local<Value> propName =                                                    \
-        String::NewFromUtf8(isolate, "header", NewStringType::kInternalized)   \
-            .ToLocalChecked();                                                 \
-    NODE_NEW_ARRAYBUFFER(isolate, it)                                          \
-    v8::Maybe<bool> ret =                                                      \
-        obj->Set(isolate->GetCurrentContext(), propName, buff);                \
-    if (!ret.IsNothing()) {                                                    \
-      if (!ret.ToChecked()) {                                                  \
-        break;                                                                 \
-      }                                                                        \
-    }                                                                          \
+#define NODE_SET_OBJ_PROP_HEADER(obj, it)                                    \
+  {                                                                          \
+    Local<Value> propName =                                                  \
+        String::NewFromUtf8(isolate, "header", NewStringType::kInternalized) \
+            .ToLocalChecked();                                               \
+    NODE_NEW_ARRAYBUFFER(isolate, it)                                        \
+    v8::Maybe<bool> ret =                                                    \
+        obj->Set(isolate->GetCurrentContext(), propName, buff);              \
+    if (!ret.IsNothing()) {                                                  \
+      if (!ret.ToChecked()) {                                                \
+        break;                                                               \
+      }                                                                      \
+    }                                                                        \
   }
 
-#define NODE_SET_OBJ_PROP_DATA(obj, name, it)                                  \
-  {                                                                            \
-    Local<Value> propName =                                                    \
-        String::NewFromUtf8(isolate, name, NewStringType::kInternalized)       \
-            .ToLocalChecked();                                                 \
-    NODE_NEW_ARRAYBUFFER(isolate, it)                                          \
-    Local<v8::Uint8Array> dataarray =                                          \
-        v8::Uint8Array::New(buff, 0, it->length);                              \
-    v8::Maybe<bool> ret =                                                      \
-        obj->Set(isolate->GetCurrentContext(), propName, dataarray);           \
-    if (!ret.IsNothing()) {                                                    \
-      if (!ret.ToChecked()) {                                                  \
-        break;                                                                 \
-      }                                                                        \
-    }                                                                          \
+#define NODE_SET_OBJ_PROP_DATA(obj, name, it)                            \
+  {                                                                      \
+    Local<Value> propName =                                              \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized) \
+            .ToLocalChecked();                                           \
+    NODE_NEW_ARRAYBUFFER(isolate, it)                                        \
+    Local<v8::Uint8Array> dataarray =                                    \
+        v8::Uint8Array::New(buff, 0, it->length);                        \
+    v8::Maybe<bool> ret =                                                \
+        obj->Set(isolate->GetCurrentContext(), propName, dataarray);     \
+    if (!ret.IsNothing()) {                                              \
+      if (!ret.ToChecked()) {                                            \
+        break;                                                           \
+      }                                                                  \
+    }                                                                    \
   }
 
 bool AddObj(Isolate* isolate,
