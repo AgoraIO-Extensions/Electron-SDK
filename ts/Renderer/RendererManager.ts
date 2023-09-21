@@ -376,7 +376,7 @@ export class RendererManager extends IRendererManager {
           break;
       }
       if (finalResult.ret !== 0) {
-        logWarn('GetVideoFrame ret is', finalResult.ret, rendererItem);
+        logDebug('GetVideoFrame ret is', finalResult.ret, rendererItem);
         return;
       }
       if (!finalResult.isNewFrame) {
