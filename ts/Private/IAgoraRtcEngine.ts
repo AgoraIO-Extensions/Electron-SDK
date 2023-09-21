@@ -2913,7 +2913,7 @@ export abstract class IRtcEngine {
    * @param token The token generated on your server for authentication. When the token for preloading channels expires, you can update the token based on the number of channels you preload.
    *  When preloading one channel, calling this method to pass in the new token.
    *  When preloading more than one channels:
-   *  If you use a wildcard token for all preloaded channels, call updatePreloadChannelToken to update the token.
+   *  If you use a wildcard token for all preloaded channels, call updatePreloadChannelToken to update the token. When generating a wildcard token, ensure the user ID is not set as 0.
    *  If you use different tokens to preload different channels, call this method to pass in your user ID, channel name and the new token.
    * @param channelId The channel name that you want to preload. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters (89 characters in total):
    *  All lowercase English letters: a to z.
@@ -2947,7 +2947,7 @@ export abstract class IRtcEngine {
    * @param token The token generated on your server for authentication. When the token for preloading channels expires, you can update the token based on the number of channels you preload.
    *  When preloading one channel, calling this method to pass in the new token.
    *  When preloading more than one channels:
-   *  If you use a wildcard token for all preloaded channels, call updatePreloadChannelToken to update the token.
+   *  If you use a wildcard token for all preloaded channels, call updatePreloadChannelToken to update the token. When generating a wildcard token, ensure the user ID is not set as 0.
    *  If you use different tokens to preload different channels, call this method to pass in your user ID, channel name and the new token.
    * @param channelId The channel name that you want to preload. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters (89 characters in total):
    *  All lowercase English letters: a to z.

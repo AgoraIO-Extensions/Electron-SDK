@@ -590,10 +590,6 @@ export class ExternalVideoFrame {
   /**
    * @ignore
    */
-  d3d11_texture_2d?: any;
-  /**
-   * @ignore
-   */
   texture_slice_index?: number;
 }
 
@@ -663,10 +659,6 @@ export class VideoFrame {
    * This parameter only applies to video data in Texture format. Texture ID.
    */
   textureId?: number;
-  /**
-   * @ignore
-   */
-  d3d11Texture2d?: any;
   /**
    * This parameter only applies to video data in Texture format. Incoming 4 × 4 transformational matrix. The typical value is a unit matrix.
    */
