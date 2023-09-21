@@ -83,6 +83,13 @@ module.exports = function (config) {
     'agora-electron-sdk',
     'ffi-napi',
     'ref-napi',
+    'cross-env',
+    'download',
+    'fs-extra',
+    'gulp',
+    'minimist',
+    'shelljs',
+    'winston',
   ];
   console.log('config', config.module.rules);
   return config;
