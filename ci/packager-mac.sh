@@ -41,9 +41,7 @@ packExample() {
   export USE_HARD_LINKS=false
   yarn dist:mac
 
-  pushd dist/mac
-  zip -ry $(pwd)/../../../${outterZipName} Agora-Electron-API-Example.app
-  popd
+  cp -f dist/Agora-Electron-API-Example-*.zip ../${outterZipName}
   popd
 }
 
