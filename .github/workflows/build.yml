@@ -22,7 +22,7 @@ on:
     types: [ published ]
 
 jobs:
-  build:
+  build-jenkins:
     runs-on: ubuntu-latest
     steps:
       - name: Build
@@ -34,6 +34,7 @@ jobs:
           -d "{\"branch\": \"${{github.ref_name}}\", \"type\": \"${type}\"}"
 
   build-windows:
+    if: ${{ inputs.type == 'demo' }}
     strategy:
       matrix:
         arch: [ ia32, x64 ]
@@ -53,9 +54,11 @@ jobs:
         run: |
           yarn totalBuild
           yarn zipBuild
+          yarn link
 
       - name: Build Example
         run: |
+          yarn link agora-electron-sdk
           yarn dist:win-${{ matrix.arch }}
         working-directory: example
 
@@ -67,6 +70,7 @@ jobs:
           
 
   build-mac:
+    if: ${{ inputs.type == 'demo' }}
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
@@ -78,10 +82,13 @@ jobs:
         run: |
           yarn totalBuild
           yarn zipBuild
+          yarn link
 
       - name: Build Example
         run: |
+          yarn link agora-electron-sdk
           yarn dist:mac
+        working-directory: example
       
       - uses: actions/upload-artifact@v3
         with:
