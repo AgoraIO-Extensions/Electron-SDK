@@ -90,6 +90,8 @@ jobs:
           yarn install
           yarn link agora-electron-sdk
           yarn dist:mac
+        env: 
+          USE_HARD_LINKS: false
         working-directory: example
       
       - uses: actions/upload-artifact@v3
