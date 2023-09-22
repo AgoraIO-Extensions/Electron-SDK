@@ -65,7 +65,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: AgoraRtcNgExample
+          name: AgoraRtcNgExample-win-${{ matrix.arch }}
           path: |
             example/dist/Agora-Electron-API-Example-*-win.zip
           
@@ -96,9 +96,9 @@ jobs:
       
       - uses: actions/upload-artifact@v3
         with:
-          name: AgoraRtcNgExample
+          name: AgoraRtcNgExample-mac
           path: |
-            example/dist/Agora-Electron-API-Example-*-win.zip
+            example/dist/Agora-Electron-API-Example-*-mac.zip
   
   notification:
     runs-on: ubuntu-latest
