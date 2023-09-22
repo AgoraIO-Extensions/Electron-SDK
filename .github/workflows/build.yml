@@ -67,7 +67,7 @@ jobs:
         with:
           name: AgoraRtcNgExample
           path: |
-            example/dist/Agora-Electron-API-Example-1.0.0-${{ matrix.arch }}-win.zip
+            example/dist/Agora-Electron-API-Example-*-win.zip
           
 
   build-mac:
@@ -98,7 +98,7 @@ jobs:
         with:
           name: AgoraRtcNgExample
           path: |
-            example/dist/Agora-Electron-API-Example-1.0.0-mac.zip
+            example/dist/Agora-Electron-API-Example-*-win.zip
   
   notification:
     runs-on: ubuntu-latest
