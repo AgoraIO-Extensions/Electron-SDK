@@ -22,7 +22,7 @@ on:
     types: [ published ]
 
 jobs:
-  build:
+  build-jenkins:
     runs-on: ubuntu-latest
     steps:
       - name: Build
@@ -32,3 +32,77 @@ jobs:
           curl -X POST -sS -D- -o/dev/null ${{secrets.JENKINS_BUILD_URL}} \
           -H 'Content-Type: application/json' \
           -d "{\"branch\": \"${{github.ref_name}}\", \"type\": \"${type}\"}"
+
+  build-windows:
+    if: ${{ inputs.type == 'demo' }}
+    strategy:
+      matrix:
+        arch: [ ia32, x64 ]
+    runs-on: windows-latest
+    env:
+      npm_config_arch: ${{ matrix.arch }}
+      npm_config_agora_electron_arch: ${{ matrix.arch }}
+      npm_config_agora_electron_sdk_arch: ${{ matrix.arch }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Build SDK
+        run: |
+          yarn totalBuild
+          yarn zipBuild
+          yarn link
+
+      - name: Build Example
+        run: |
+          yarn install
+          yarn link agora-electron-sdk
+          yarn dist:win --${{ matrix.arch }}
+        working-directory: example
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: AgoraRtcNgExample-win-${{ matrix.arch }}
+          path: |
+            example/dist/Agora-Electron-API-Example-*-win.zip
+          
+
+  build-mac:
+    if: ${{ inputs.type == 'demo' }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Build SDK
+        run: |
+          yarn totalBuild
+          yarn zipBuild
+          yarn link
+
+      - name: Build Example
+        run: |
+          yarn install
+          yarn link agora-electron-sdk
+          yarn dist:mac
+        env: 
+          USE_HARD_LINKS: false
+        working-directory: example
+      
+      - uses: actions/upload-artifact@v3
+        with:
+          name: AgoraRtcNgExample-mac
+          path: |
+            example/dist/Agora-Electron-API-Example-*-mac.zip
+  
+  notification:
+    runs-on: ubuntu-latest
+    needs: [ build-windows, build-mac ]
+    steps:
+      - run: |
+          curl -X POST "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${{ secrets.WECHAT_KEY }}" -d '{"msgtype":"text","text":{"content":"Electron Example:\n${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"}}'
