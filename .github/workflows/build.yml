@@ -98,7 +98,7 @@ jobs:
         with:
           name: AgoraRtcNgExample
           path: |
-            example/dist/mac/Agora-Electron-API-Example.app
+            example/dist/Agora-Electron-API-Example-1.0.0-mac.zip
   
   notification:
     runs-on: ubuntu-latest
