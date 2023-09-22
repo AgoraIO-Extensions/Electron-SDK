@@ -9,6 +9,8 @@
     "rebuild": "electron-rebuild -f -o ref-napi",
     "dist": "yarn compile && electron-builder",
     "dist:mac": "yarn dist --dir -c.compression=store -c.mac.identity=null",
+    "dist:win-ia32": "yarn compile && electron-builder --publish never --win --ia32",
+    "dist:win-x64": "yarn compile && electron-builder --publish never --win --x64",
     "dist:win32": "yarn compile && electron-builder --publish never --win --ia32",
     "dist:win64": "yarn compile && electron-builder --publish never --win --x64",
     "switchEnv:win32": "cd .. && @powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./ci/packager-win.ps1 1 switchEnv",
