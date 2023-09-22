@@ -30,7 +30,7 @@
       "hardenedRuntime": true,
       "identity": null,
       "target": [
-        "dir"
+        "zip"
       ],
       "type": "distribution"
     },
