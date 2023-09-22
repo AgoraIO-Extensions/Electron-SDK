@@ -58,8 +58,8 @@ jobs:
 
       - name: Build Example
         run: |
-          yarn link agora-electron-sdk
           yarn install
+          yarn link agora-electron-sdk
           yarn dist:win-${{ matrix.arch }}
         working-directory: example
 
@@ -87,8 +87,8 @@ jobs:
 
       - name: Build Example
         run: |
-          yarn link agora-electron-sdk
           yarn install
+          yarn link agora-electron-sdk
           yarn dist:mac
         working-directory: example
       
