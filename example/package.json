@@ -15,9 +15,12 @@
   },
   "build": {
     "appId": "agora.io.ElectronApiExample",
-    "asar": false,
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/agora-electron-sdk"
+    ],
     "buildDependenciesFromSource": true,
-    "compression": "store",
+    "compression": "normal",
     "productName": "Agora-Electron-API-Example",
     "publish": [],
     "files": [
