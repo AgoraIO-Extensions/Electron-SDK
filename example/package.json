@@ -7,32 +7,32 @@
     "start": "electron-webpack dev",
     "compile": "electron-webpack",
     "rebuild": "electron-rebuild -f -o ref-napi",
-    "dist": "yarn compile && electron-builder",
-    "dist:mac": "yarn dist --dir -c.compression=store -c.mac.identity=null",
-    "dist:win-ia32": "yarn compile && electron-builder --publish never --win --ia32",
-    "dist:win-x64": "yarn compile && electron-builder --publish never --win --x64",
-    "dist:win32": "yarn compile && electron-builder --publish never --win --ia32",
-    "dist:win64": "yarn compile && electron-builder --publish never --win --x64",
-    "switchEnv:win32": "cd .. && @powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./ci/packager-win.ps1 1 switchEnv",
-    "switchEnv:win64": "cd .. && @powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./ci/packager-win.ps1 2 switchEnv"
+    "dist": "npm run compile && electron-builder",
+    "dist:mac": "npm run dist -- --mac",
+    "dist:win": "npm run dist -- --win",
+    "dist:win32": "npm run dist:win -- --ia32",
+    "dist:win64": "npm run dist:win -- --x64"
   },
   "build": {
+    "appId": "agora.io.ElectronApiExample",
     "asar": false,
     "buildDependenciesFromSource": true,
+    "compression": "store",
     "productName": "Agora-Electron-API-Example",
-    "appId": "agora.io.ElectronApiExample",
+    "publish": [],
     "files": [
       "!*.log"
     ],
     "mac": {
+      "entitlements": "assets/entitlements.mac.plist",
+      "entitlementsInherit": "assets/entitlements.mac.plist",
+      "gatekeeperAssess": false,
+      "hardenedRuntime": true,
+      "identity": null,
       "target": [
         "dir"
       ],
-      "type": "distribution",
-      "hardenedRuntime": true,
-      "entitlements": "assets/entitlements.mac.plist",
-      "entitlementsInherit": "assets/entitlements.mac.plist",
-      "gatekeeperAssess": false
+      "type": "distribution"
     },
     "dmg": {
       "contents": [
@@ -54,10 +54,10 @@
       ]
     },
     "linux": {
+      "category": "Development",
       "target": [
         "AppImage"
-      ],
-      "category": "Development"
+      ]
     },
     "directories": {
       "buildResources": "assets"

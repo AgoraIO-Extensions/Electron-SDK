@@ -60,7 +60,7 @@ jobs:
         run: |
           yarn install
           yarn link agora-electron-sdk
-          yarn dist:win-${{ matrix.arch }}
+          yarn dist:win --${{ matrix.arch }}
         working-directory: example
 
       - uses: actions/upload-artifact@v3
