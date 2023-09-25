@@ -61,6 +61,7 @@ jobs:
           yarn install
           yarn link agora-electron-sdk
           yarn dist:win --${{ matrix.arch }}
+          yarn unlink agora-electron-sdk
         working-directory: example
 
       - uses: actions/upload-artifact@v3
@@ -90,6 +91,7 @@ jobs:
           yarn install
           yarn link agora-electron-sdk
           yarn dist:mac
+          yarn unlink agora-electron-sdk
         env: 
           USE_HARD_LINKS: false
         working-directory: example
