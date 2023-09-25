@@ -125,6 +125,7 @@
     "fs-extra": "^11.1.1",
     "gulp": "^4.0.2",
     "json-bigint": "^1.0.0",
+    "jsonfile": "^6.1.0",
     "lodash.isequal": "^4.5.0",
     "minimist": "^1.2.5",
     "shelljs": "^0.8.4",
