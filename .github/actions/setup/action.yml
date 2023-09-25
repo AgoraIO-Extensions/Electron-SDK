@@ -22,6 +22,7 @@ runs:
     - name: Install dependencies
       run: |
         yarn config set agora-electron-sdk-pre-built 0
+        yarn unlink agora-electron-sdk
         yarn install --frozen-lockfile
         yarn patch-package
       shell: bash
