@@ -43,13 +43,14 @@ export default function ScreenShare() {
     uid,
     joinChannelSuccess,
     remoteUsers,
+    setRemoteUsers,
     startPreview,
     engine,
   } =
     /**
      * Step 1: initRtcEngine
      */
-    useInitRtcEngine(enableVideo);
+    useInitRtcEngine(enableVideo, false);
   const [token2] = useState<string>('');
   const [uid2, setUid2] = useState<number>(0);
   const [sources, setSources, resetSources] = useResetState<
@@ -262,14 +263,28 @@ export default function ScreenShare() {
 
   const onUserJoined = useCallback(
     (connection: RtcConnection, remoteUid: number, elapsed: number) => {
+      log.info(
+        'onUserJoined',
+        'connection',
+        connection,
+        'remoteUid',
+        remoteUid,
+        'elapsed',
+        elapsed
+      );
       if (connection.localUid === uid2 || remoteUid === uid2) {
         // ⚠️ mute the streams from screen sharing
         engine.current.muteRemoteAudioStream(uid2, true);
         engine.current.muteRemoteVideoStream(uid2, true);
         return;
+      } else {
+        setRemoteUsers((prev) => {
+          if (prev === undefined) return [];
+          return [...prev, remoteUid];
+        });
       }
     },
-    [engine, uid2]
+    [engine, setRemoteUsers, uid2]
   );
 
   const onUserOffline = useCallback(
@@ -278,9 +293,25 @@ export default function ScreenShare() {
       remoteUid: number,
       reason: UserOfflineReasonType
     ) => {
-      if (connection.localUid === uid2 || remoteUid === uid2) return;
+      log.info(
+        'onUserOffline',
+        'connection',
+        connection,
+        'remoteUid',
+        remoteUid,
+        'reason',
+        reason
+      );
+      if (connection.localUid === uid2 || remoteUid === uid2) {
+        return;
+      } else {
+        setRemoteUsers((prev) => {
+          if (prev === undefined) return [];
+          return prev!.filter((value) => value !== remoteUid);
+        });
+      }
     },
-    [uid2]
+    [setRemoteUsers, uid2]
   );
 
   const onLocalVideoStateChanged = useCallback(
