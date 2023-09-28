@@ -496,8 +496,10 @@ export default class LocalVideoTranscoder
           onValueChange={(value, index) => {
             if (videoDeviceId?.indexOf(value) === -1) {
               this.setState(
-                {
-                  videoDeviceId: [...videoDeviceId, value],
+                (preState) => {
+                  return {
+                    videoDeviceId: [...(preState.videoDeviceId ?? []), value],
+                  };
                 },
                 () => {
                   this.startCameraCapture(value);
@@ -505,8 +507,12 @@ export default class LocalVideoTranscoder
               );
             } else {
               this.stopCameraCapture(value);
-              this.setState({
-                videoDeviceId: videoDeviceId?.filter((v) => v !== value),
+              this.setState((preState) => {
+                return {
+                  videoDeviceId: preState.videoDeviceId?.filter(
+                    (v) => v !== value
+                  ),
+                };
               });
             }
           }}
@@ -527,8 +533,13 @@ export default class LocalVideoTranscoder
               -1
             ) {
               this.setState(
-                {
-                  targetSources: [...targetSources, sources!.at(index)!],
+                (preState) => {
+                  return {
+                    targetSources: [
+                      ...(preState.targetSources ?? []),
+                      preState.sources!.at(index)!,
+                    ],
+                  };
                 },
                 () => {
                   this.startScreenCapture(sources!.at(index)!);
@@ -536,10 +547,12 @@ export default class LocalVideoTranscoder
               );
             } else {
               this.stopScreenCapture(sources!.at(index)!);
-              this.setState({
-                targetSources: targetSources?.filter(
-                  ({ sourceId }) => sourceId !== value
-                ),
+              this.setState((preState) => {
+                return {
+                  targetSources: preState.targetSources?.filter(
+                    ({ sourceId }) => sourceId !== value
+                  ),
+                };
               });
             }
           }}

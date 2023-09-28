@@ -218,8 +218,10 @@ export default class LocalSpatialAudioEngine
               style={AgoraStyle.fullSize}
               onChangeText={(text) => {
                 if (isNaN(+text)) return;
-                position[index] = +text;
-                this.setState({ position });
+                this.setState((preState) => {
+                  preState.position[index] = +text;
+                  return { position: preState.position };
+                });
               }}
               numberKeyboard={true}
               placeholder={`position (defaults: ${

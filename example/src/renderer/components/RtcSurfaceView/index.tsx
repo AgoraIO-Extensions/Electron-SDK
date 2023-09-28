@@ -116,13 +116,15 @@ export class RtcSurfaceView extends Component<Props, State> {
 
   render() {
     const { canvas } = this.props;
-    const { isMirror, uniqueId } = this.state;
+    const { uniqueId } = this.state;
 
     return (
       <div
         className={styles['window-item']}
         onClick={() => {
-          this.setState({ isMirror: !isMirror }, this.updateRender);
+          this.setState((preState) => {
+            return { isMirror: !preState.isMirror };
+          }, this.updateRender);
         }}
       >
         <div

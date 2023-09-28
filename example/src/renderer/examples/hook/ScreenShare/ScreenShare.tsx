@@ -440,7 +440,7 @@ export default function ScreenShare() {
           editable={!publishScreenCapture}
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            setUid2(text === '' ? uid2 : +text);
+            setUid2((prev) => (text === '' ? prev : +text));
           }}
           numberKeyboard={true}
           placeholder={`uid2 (must > 0)`}
@@ -450,7 +450,7 @@ export default function ScreenShare() {
           <AgoraTextInput
             onChangeText={(text) => {
               if (isNaN(+text)) return;
-              setWidth(text === '' ? width : +text);
+              setWidth((prev) => (text === '' ? prev : +text));
             }}
             numberKeyboard={true}
             placeholder={`width (defaults: ${width})`}
@@ -458,7 +458,7 @@ export default function ScreenShare() {
           <AgoraTextInput
             onChangeText={(text) => {
               if (isNaN(+text)) return;
-              setHeight(text === '' ? height : +text);
+              setHeight((prev) => (text === '' ? prev : +text));
             }}
             numberKeyboard={true}
             placeholder={`height (defaults: ${height})`}
@@ -467,7 +467,7 @@ export default function ScreenShare() {
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            setFrameRate(text === '' ? frameRate : +text);
+            setFrameRate((prev) => (text === '' ? prev : +text));
           }}
           numberKeyboard={true}
           placeholder={`frameRate (defaults: ${frameRate})`}
@@ -475,7 +475,7 @@ export default function ScreenShare() {
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            setBitrate(text === '' ? bitrate : +text);
+            setBitrate((prev) => (text === '' ? prev : +text));
           }}
           numberKeyboard={true}
           placeholder={`bitrate (defaults: ${bitrate})`}
@@ -526,10 +526,10 @@ export default function ScreenShare() {
               value={excludeWindowList}
               onValueChange={(value, index) => {
                 if (excludeWindowList.indexOf(value) === -1) {
-                  setExcludeWindowList(() => [...excludeWindowList, value]);
+                  setExcludeWindowList((prev) => [...prev, value]);
                 } else {
-                  setExcludeWindowList(() =>
-                    excludeWindowList.filter((v) => v !== value)
+                  setExcludeWindowList((prev) =>
+                    prev.filter((v) => v !== value)
                   );
                 }
               }}
