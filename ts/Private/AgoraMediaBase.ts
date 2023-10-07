@@ -260,7 +260,7 @@ export enum ContentInspectType {
    */
   ContentInspectInvalid = 0,
   /**
-   * 1: Video content moderation. SDK takes screenshots, inspects video content of the video stream in the channel, and uploads the screenshots and moderation results.
+   * @ignore
    */
   ContentInspectModeration = 1,
   /**
@@ -268,7 +268,7 @@ export enum ContentInspectType {
    */
   ContentInspectSupervision = 2,
   /**
-   * @ignore
+   * 3: Video screenshot and upload via extensions from Agora Extensions Marketplace. SDK uses video moderation extensions from Agora Extensions Marketplace to take screenshots of the video stream in the channel and uploads them.
    */
   ContentInspectImageModeration = 3,
 }
@@ -414,7 +414,7 @@ export enum VideoPixelFormat {
    */
   VideoPixelRgba = 4,
   /**
-   * 8: The format is NV12.
+   * @ignore
    */
   VideoPixelNv12 = 8,
   /**
@@ -588,7 +588,7 @@ export class ExternalVideoFrame {
    */
   alphaBuffer?: Uint8Array;
   /**
-   * @ignore
+   * This parameter only applies to video data in Windows Texture format. It represents an index of an ID3D11Texture2D texture object used by the video frame in the ID3D11Texture2D array.
    */
   texture_slice_index?: number;
 }
