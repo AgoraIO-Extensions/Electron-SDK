@@ -2902,6 +2902,11 @@ export abstract class IRtcEngine {
   abstract queryCodecCapability(): { codecInfo: CodecCapInfo[]; size: number };
 
   /**
+   * @ignore
+   */
+  abstract queryDeviceScore(): number;
+
+  /**
    * Preloads a channel with token, channelId, and uid.
    *
    * When audience members need to switch between different channels frequently, calling the method can help shortening the time of joining a channel, thus reducing the time it takes for audience members to hear and see the host. As it may take a while for the SDK to preload a channel, Agora recommends that you call this method as soon as possible after obtaining the channel name and user ID to join a channel.
