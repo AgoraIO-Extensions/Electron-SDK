@@ -126,10 +126,10 @@ $ npm install #or yarn
 $ npm install --agora_electron_sdk_pre_built=false
 
 # build  32 bit architecture on Windows
-$ npm install --verbose --agora_electron_sdk_pre_built=false  --agora_electron_sdk_arch=ia32
+$ npm install --agora_electron_sdk_pre_built=false  --agora_electron_sdk_arch=ia32
 
 # build  64 bit architecture on Windows
-$ npm install --verbose --agora_electron_sdk_pre_built=false  --agora_electron_sdk_arch=x64
+$ npm install --agora_electron_sdk_pre_built=false  --agora_electron_sdk_arch=x64
 ```
 
 ## 🤝 Contributing [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/AgoraIO-Extensions/Electron-SDK/pulls)

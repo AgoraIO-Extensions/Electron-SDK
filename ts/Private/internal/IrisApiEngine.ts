@@ -433,6 +433,8 @@ export function callIrisApi(funcName: string, params: any): any {
           buffers.push(Buffer.from(''));
           // frame.alphaBuffer
           buffers.push(params.frame.alphaBuffer);
+          // frame.d3d11_texture_2d
+          buffers.push(Buffer.from(''));
           break;
         case 'MediaEngine_pushEncodedVideoImage':
           // imageBuffer

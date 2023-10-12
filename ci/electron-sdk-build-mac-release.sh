@@ -8,12 +8,12 @@ npm config set ELECTRON_MIRROR http://npm.taobao.org/mirrors/electron/
 rm -rf node_modules
 rm -rf sdk
 rm -rf tmp
-# npm install --verbose
+# npm install
 #
 # Example 2
 npm config set agora_electron_sdk_pre_built false
-npm install --verbose
-npm run totalBuild --verbose
+npm install
+npm run totalBuild
 npm run zipBuild
 npm config delete agora_electron_sdk_pre_built
 #

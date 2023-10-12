@@ -1,5 +1,12 @@
 
 
+## [4.2.3-dev.3](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.2...v4.2.3-dev.3) (2023-09-22)
+
+
+### Bug Fixes
+
+* `GetVideoFrame ret is` log too much ([43e6519](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/43e6519c630acf3e4233a891bf5b4f7d938813b3))
+
 ## [4.2.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.1...v4.2.2) (2023-08-01)
 
 

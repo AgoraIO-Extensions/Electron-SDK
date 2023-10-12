@@ -434,7 +434,9 @@ export default class ScreenShare
           })}
           value={targetSource?.sourceId}
           onValueChange={(value, index) => {
-            this.setState({ targetSource: sources?.at(index) });
+            this.setState((preState) => {
+              return { targetSource: preState.sources?.at(index) };
+            });
           }}
         />
         {targetSource ? (
@@ -542,14 +544,18 @@ export default class ScreenShare
               value={excludeWindowList}
               onValueChange={(value, index) => {
                 if (excludeWindowList.indexOf(value) === -1) {
-                  this.setState({
-                    excludeWindowList: [...excludeWindowList, value],
+                  this.setState((preState) => {
+                    return {
+                      excludeWindowList: [...preState.excludeWindowList, value],
+                    };
                   });
                 } else {
-                  this.setState({
-                    excludeWindowList: excludeWindowList.filter(
-                      (v) => v !== value
-                    ),
+                  this.setState((preState) => {
+                    return {
+                      excludeWindowList: preState.excludeWindowList.filter(
+                        (v) => v !== value
+                      ),
+                    };
                   });
                 }
               }}

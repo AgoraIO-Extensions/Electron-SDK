@@ -438,6 +438,10 @@ export enum ErrorCodeType {
    * 1501: Permission to access the camera is not granted. Check whether permission to access the camera permission is granted.
    */
   ErrVdmCameraNotAuthorized = 1501,
+  /**
+   * @ignore
+   */
+  ErrAdmApplicationLoopback = 2007,
 }
 
 /**
@@ -2043,11 +2047,11 @@ export enum LocalVideoStreamError {
    */
   LocalVideoStreamErrorDeviceNotFound = 8,
   /**
-   * 9: (For macOS only) The video capture device currently in use is disconnected (such as being unplugged).
+   * 9: (macOS only) The video capture device currently in use is disconnected (such as being unplugged).
    */
   LocalVideoStreamErrorDeviceDisconnected = 9,
   /**
-   * 10: (For macOS and Windows only) The SDK cannot find the video device in the video device list. Check whether the ID of the video device is valid.
+   * 10: (macOS and Windows only) The SDK cannot find the video device in the video device list. Check whether the ID of the video device is valid.
    */
   LocalVideoStreamErrorDeviceInvalidId = 10,
   /**
@@ -2055,18 +2059,18 @@ export enum LocalVideoStreamError {
    */
   LocalVideoStreamErrorDeviceSystemPressure = 101,
   /**
-   * 11: (For macOS only) The shared window is minimized when you call startScreenCaptureByWindowId to share a window. The SDK cannot share a minimized window. You can cancel the minimization of this window at the application layer, for example by maximizing this window.
+   * 11: (macOS only) The shared window is minimized when you call startScreenCaptureByWindowId to share a window. The SDK cannot share a minimized window. You can cancel the minimization of this window at the application layer, for example by maximizing this window.
    */
   LocalVideoStreamErrorScreenCaptureWindowMinimized = 11,
   /**
-   * 12: (For macOS and Windows only) The error code indicates that a window shared by the window ID has been closed or a full-screen window shared by the window ID has exited full-screen mode. After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a black screen, Agora recommends that you immediately stop screen sharing. Common scenarios for reporting this error code:
+   * 12: (macOS and Windows only) The error code indicates that a window shared by the window ID has been closed or a full-screen window shared by the window ID has exited full-screen mode. After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a black screen, Agora recommends that you immediately stop screen sharing. Common scenarios reporting this error code:
    *  When the local user closes the shared window, the SDK reports this error code.
    *  The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After the user exits full-screen mode, the SDK reports this error code.
    *  The local user watches a web video or reads a web document in full-screen mode first, and then shares the window of the web video or document. After the user exits full-screen mode, the SDK reports this error code.
    */
   LocalVideoStreamErrorScreenCaptureWindowClosed = 12,
   /**
-   * 13: (For Windows only) The window being shared is overlapped by another window, so the overlapped area is blacked out by the SDK during window sharing.
+   * 13: (Windows only) The window being shared is overlapped by another window, so the overlapped area is blacked out by the SDK during window sharing.
    */
   LocalVideoStreamErrorScreenCaptureWindowOccluded = 13,
   /**
@@ -2081,6 +2085,26 @@ export enum LocalVideoStreamError {
    * @ignore
    */
   LocalVideoStreamErrorScreenCaptureNoPermission = 22,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorScreenCapturePaused = 23,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorScreenCaptureResumed = 24,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorScreenCaptureWindowHidden = 25,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorScreenCaptureWindowRecoverFromHidden = 26,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorScreenCaptureWindowRecoverFromMinimized = 27,
 }
 
 /**
@@ -2752,7 +2776,7 @@ export class LiveTranscoding {
    */
   height?: number;
   /**
-   * Bitrate of the output video stream for Media Push in Kbps. The default value is 400 Kbps.
+   * Bitrate of the output video stream for Media Push in Kbps. The default value is 400 Kbps. Set this member according to the table. If you set a bitrate beyond the proper range, the SDK automatically adapts it to a value within the range.
    */
   videoBitrate?: number;
   /**
@@ -2920,10 +2944,6 @@ export class LocalTranscoderConfiguration {
  * The error code of the local video mixing failure.
  */
 export enum VideoTranscoderError {
-  /**
-   * @ignore
-   */
-  VtErrOk = 0,
   /**
    * 1: The selected video source has not started video capture. You need to create a video track for it and start video capture.
    */
@@ -3095,7 +3115,7 @@ export enum ConnectionChangedReasonType {
    */
   ConnectionChangedClientIpAddressChanged = 13,
   /**
-   * 14: Timeout for the keep-alive of the connection between the SDK and the Agora edge server. The connection state changes to .
+   * 14: Timeout for the keep-alive of the connection between the SDK and the Agora edge server. The SDK tries to reconnect to the server automatically.
    */
   ConnectionChangedKeepAliveTimeout = 14,
   /**
@@ -3126,6 +3146,10 @@ export enum ConnectionChangedReasonType {
    * @ignore
    */
   ConnectionChangedLicenseValidationFailure = 21,
+  /**
+   * @ignore
+   */
+  ConnectionChangedCertificationVeryfyFailure = 22,
 }
 
 /**
@@ -3236,6 +3260,10 @@ export enum NetworkType {
    * 5: The network type is mobile 4G.
    */
   NetworkTypeMobile4g = 5,
+  /**
+   * 6: The network type is mobile 5G.
+   */
+  NetworkTypeMobile5g = 6,
 }
 
 /**
@@ -3838,7 +3866,7 @@ export class ScreenCaptureParameters {
    */
   bitrate?: number;
   /**
-   * Whether to capture the mouse in screen sharing: true : (Default) Capture the mouse. false : Do not capture the mouse.
+   * Whether to capture the mouse in screen sharing: true : (Default) Capture the mouse. false : Do not capture the mouse. Due to macOS system restrictions, setting this parameter to false is ineffective during screen sharing (it has no impact when sharing a window).
    */
   captureMouseCursor?: boolean;
   /**
@@ -3931,7 +3959,7 @@ export enum AudioEncodedFrameObserverPosition {
  */
 export class AudioRecordingConfiguration {
   /**
-   * The absolute path (including the filename extensions) of the recording file. For example: C:\music\audio.mp4. Ensure that the directory for the log files exists and is writable.
+   * The absolute path (including the filename extensions) of the recording file. For example: C:\music\audio.aac. Ensure that the directory for the log files exists and is writable.
    */
   filePath?: string;
   /**
