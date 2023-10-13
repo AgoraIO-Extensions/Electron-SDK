@@ -1783,10 +1783,10 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-agora-electron-sdk@4.2.3-dev.3:
-  version "4.2.3-dev.3"
-  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.2.3-dev.3.tgz#ae284028e33d512277f0aeb2c72624facd9cd566"
-  integrity sha512-RXKasYhwmy4ZsA7IfivXHQWmYYEwBn9HS0uBB8H+Mq3tinbQIiXMxgiC3Aei9Zl9CJx2rhioZ6uu9HS07TEOgA==
+agora-electron-sdk@4.2.3:
+  version "4.2.3"
+  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.2.3.tgz#b8af90a4d4c82bd12445bdb5a74e01b3dac46798"
+  integrity sha512-DT6ciNwlrTeCq6RFpdAwIqCnHQhLIBvlXKhlDJeCm450uQiOfEOd1qfMI+5bdho65S4rzzdViY2kimP/jgYiRw==
   dependencies:
     buffer "^6.0.3"
     cross-env "^7.0.3"
@@ -1795,6 +1795,7 @@ agora-electron-sdk@4.2.3-dev.3:
     fs-extra "^11.1.1"
     gulp "^4.0.2"
     json-bigint "^1.0.0"
+    jsonfile "^6.1.0"
     lodash.isequal "^4.5.0"
     minimist "^1.2.5"
     shelljs "^0.8.4"
@@ -6412,7 +6413,7 @@ jsonfile@^4.0.0:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
-jsonfile@^6.0.1:
+jsonfile@^6.0.1, jsonfile@^6.1.0:
   version "6.1.0"
   resolved "https://registry.npmjs.org/jsonfile/-/jsonfile-6.1.0.tgz#bc55b2634793c679ec6403094eb13698a6ec0aae"
   integrity sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==
