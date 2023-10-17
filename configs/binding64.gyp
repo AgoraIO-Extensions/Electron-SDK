@@ -68,11 +68,13 @@
             {
                 'library_dirs': [
                 './sdk/lib',
+                './resources/bugsplat',
                 ],
                 'link_settings': {
                     'libraries': [
                         '-lagora_rtc_sdk.lib',
-                        '-lws2_32.lib'
+                        '-lws2_32.lib',
+                        '-lVideoSourceDump64.lib'
                     ]
                 },
                 'link_settings!': [
@@ -89,7 +91,8 @@
                     './video_source/main_win.cpp'
                 ],
                 'include_dirs': [
-                './sdk/include'
+                './sdk/include',
+                './resources/bugsplat',
                 ],
                 'defines!': [
                 '_USING_V110_SDK71_',
@@ -124,7 +127,25 @@
                             }
                         }
                     }
-                }
+                },
+                "copies": [
+                    {
+                        "files": [ "./resources/bugsplat/VideoSourceDump64.dll" ],
+                        "destination": "./build/Release"
+                    },
+                    {
+                        "files": [ "./resources/bugsplat/BugSplat64.dll" ],
+                        "destination": "./build/Release"
+                    },
+                    {
+                        "files": [ "./resources/bugsplat/BugSplatRc64.dll" ],
+                        "destination": "./build/Release"
+                    },
+                    {
+                        "files": [ "./resources/bugsplat/BsSndRpt64.exe" ],
+                        "destination": "./build/Release"
+                    }
+                ]
             }
             ],
             [
@@ -458,6 +479,6 @@
             }
             ]
         ]
-    },
+    }
     ]
 }

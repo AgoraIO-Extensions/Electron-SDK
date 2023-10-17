@@ -22,3 +22,4 @@ yarn.lock
 .history/
 
 *.pid
+binding.gyp
