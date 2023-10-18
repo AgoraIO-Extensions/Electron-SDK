@@ -463,6 +463,12 @@ class NodeRtcEngine : public node::ObjectWrap {
    */
   NAPI_API(isFeatureSupported);
 
+  /**
+   * internal
+   */
+  NAPI_API(internalDumpTest);
+  NAPI_API(videoSourceInternalDumpTest);
+
  public:
   Isolate* getIsolate() { return m_isolate; }
   IRtcEngine* getRtcEngine() { return m_engine; }

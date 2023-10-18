@@ -6905,6 +6905,14 @@ class AgoraRtcEngine extends EventEmitter {
   isFeatureSupported(type: FeatureType): boolean {
     return this.rtcEngine.isFeatureSupported(type);
   }
+
+  internalDumpTest(): void {
+    this.rtcEngine.internalDumpTest();
+  }
+
+  videoSourceInternalDumpTest(): void {
+    this.rtcEngine.videoSourceInternalDumpTest();
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {

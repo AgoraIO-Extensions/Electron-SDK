@@ -126,6 +126,7 @@ class AgoraVideoSourceSink : public AgoraVideoSource, public AgoraIpcListener {
   virtual node_error setCloudProxy(agora::rtc::CLOUD_PROXY_TYPE type) override;
   virtual node_error muteLocalVideoStream(bool mute) override;
   virtual node_error setScreenCaptureScenario(agora::rtc::SCREEN_SCENARIO_TYPE type) override;
+  virtual node_error internalDumpTest() override;
 private:
   void msgThread();
   void deliverFrame(const char* payload, int len);
@@ -558,6 +559,17 @@ node_error AgoraVideoSourceSink::setScreenCaptureScenario(agora::rtc::SCREEN_SCE
   LOG_ENTER;
   if (m_initialized) {
     return m_ipcMsg->sendMessage(AGORA_IPC_SET_SCREEN_CAPTURE_SCENARIO, (char*)&type, sizeof(type)) ? node_ok : node_generic_error;
+  }
+  return node_status_error;
+  LOG_LEAVE;
+}
+
+node_error AgoraVideoSourceSink::internalDumpTest() {
+  LOG_ENTER;
+  if (m_initialized) {
+    return m_ipcMsg->sendMessage(AGORA_IPC_INTERNAL_DUMP_TEST, NULL, 0)
+               ? node_ok
+               : node_generic_error;
   }
   return node_status_error;
   LOG_LEAVE;
