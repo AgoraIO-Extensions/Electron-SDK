@@ -252,6 +252,7 @@ class AgoraVideoSource {
 
   virtual node_error muteLocalVideoStream(bool mute) = 0;
   virtual node_error setScreenCaptureScenario(agora::rtc::SCREEN_SCENARIO_TYPE type) = 0;
+  virtual node_error internalDumpTest() = 0;
 };
 
 /**

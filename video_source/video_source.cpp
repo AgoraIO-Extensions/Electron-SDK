@@ -580,6 +580,10 @@ void AgoraVideoSource::onMessage(unsigned int msg, char *payload,
         (agora::rtc::SCREEN_SCENARIO_TYPE)*payload;
     int result = m_rtcEngine->setScreenCaptureScenario(type);
     LOG_INFO("setScreenCaptureScenario, type: %d, result: %d", type, result);
+  } else if(msg == AGORA_IPC_INTERNAL_DUMP_TEST) {
+    LOG_INFO("AGORA_IPC_INTERNAL_DUMP_TEST process will crash!!!");
+    int *p = nullptr;
+    *p = 1;
   }
 
   LOG_LEAVE;

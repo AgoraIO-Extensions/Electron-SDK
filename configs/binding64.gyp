@@ -316,13 +316,15 @@
                 }],
                 'library_dirs': [
                     './sdk/lib',
+                    './resources/bugsplat',
                 ],
                 'link_settings': {
                     'libraries': [
                         '-lagora_rtc_sdk.lib',
                         '-lws2_32.lib',
                         '-lRpcrt4.lib',
-						'-lgdiplus.lib'
+						'-lgdiplus.lib',
+                        '-lVideoSourceDump64.lib'
                     ]
                 },
                 'defines!': [
@@ -343,7 +345,8 @@
                 ],
                 'include_dirs': [
                 './sdk/include',
-                './extra/internal'
+                './extra/internal',
+                './resources/bugsplat',
                 ],
                 'configurations': {
                     'Release': {

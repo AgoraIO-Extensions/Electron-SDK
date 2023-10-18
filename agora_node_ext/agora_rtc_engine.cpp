@@ -800,7 +800,13 @@ void NodeRtcEngine::Init(Local<Object>& module) {
    * 3.6.1.12
    */
   PROPERTY_METHOD_DEFINE(isFeatureSupported);
-  
+
+  /**
+   * internal
+   */
+  PROPERTY_METHOD_DEFINE(internalDumpTest);
+  PROPERTY_METHOD_DEFINE(videoSourceInternalDumpTest);
+
   EN_PROPERTY_DEFINE()
   module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
               tpl->GetFunction(context).ToLocalChecked());
@@ -1783,6 +1789,27 @@ NAPI_API_DEFINE(NodeRtcEngine, isFeatureSupported) {
     result = pEngine->m_engine->isFeatureSupported((agora::rtc::FeatureType)type);
   } while (false);
   napi_set_bool_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, internalDumpTest) {
+  LOG_ENTER;
+  int *p = nullptr;
+  *p = 10;
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, videoSourceInternalDumpTest) {
+  LOG_ENTER;
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    if (pEngine->m_videoSourceSink.get()) {
+      pEngine->m_videoSourceSink->internalDumpTest();
+    }
+  } while (false);
   LOG_LEAVE;
 }
 

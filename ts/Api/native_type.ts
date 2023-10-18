@@ -4775,6 +4775,10 @@ export interface NodeRtcEngine {
   isFeatureSupported(
     type: FeatureType
   ): boolean;
+
+  internalDumpTest(): void;
+
+  videoSourceInternalDumpTest(): void;
 }
 /**
  * @ignore
