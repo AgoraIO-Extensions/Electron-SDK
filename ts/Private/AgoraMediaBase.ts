@@ -260,11 +260,11 @@ export enum ContentInspectType {
    */
   ContentInspectInvalid = 0,
   /**
-   * 1: Video content moderation. SDK takes screenshots, inspects video content of the video stream in the channel, and uploads the screenshots and moderation results.
+   * @ignore
    */
   ContentInspectModeration = 1,
   /**
-   * @ignore
+   * 2: Video screenshot and upload via Agora self-developed extension. SDK takes screenshots of the video stream in the channel and uploads them.
    */
   ContentInspectSupervision = 2,
 }
@@ -406,7 +406,7 @@ export enum VideoPixelFormat {
    */
   VideoPixelRgba = 4,
   /**
-   * 8: The format is NV12.
+   * @ignore
    */
   VideoPixelNv12 = 8,
   /**
@@ -580,11 +580,7 @@ export class ExternalVideoFrame {
    */
   alphaBuffer?: Uint8Array;
   /**
-   * @ignore
-   */
-  d3d11_texture_2d?: any;
-  /**
-   * @ignore
+   * This parameter only applies to video data in Windows Texture format. It represents an index of an ID3D11Texture2D texture object used by the video frame in the ID3D11Texture2D array.
    */
   texture_slice_index?: number;
 }
@@ -655,10 +651,6 @@ export class VideoFrame {
    * This parameter only applies to video data in Texture format. Texture ID.
    */
   textureId?: number;
-  /**
-   * @ignore
-   */
-  d3d11Texture2d?: any;
   /**
    * This parameter only applies to video data in Texture format. Incoming 4 × 4 transformational matrix. The typical value is a unit matrix.
    */
