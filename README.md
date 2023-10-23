@@ -89,7 +89,7 @@ set `externals` property of your webpack config to `{"agora-electron-sdk": "comm
 
 - [Document](https://docs.agora.io/en/video-call-4.x/API%20Reference/electron_ng/API/rtc_api_overview_ng.html) - Official document
 
-- [Demo](./example/) - A quick start demo based on Vue/React and this repo
+- [Demo](./example/) - A quick start demo based on React and this repo
 
 - [Changelog](./CHANGELOG.md) - Attention to newest information
 
