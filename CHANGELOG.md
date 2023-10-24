@@ -1,5 +1,12 @@
 
 
+## [4.2.4](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.3...v4.2.4) (2023-10-24)
+
+
+### Features
+
+* upgrade iris to 4.2.3-build.4 ([#1091](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1091)) ([e4a42ac](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/e4a42acf097c1b87c277a7c0da331bba3968e5d0))
+
 ## [4.2.3](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.2...v4.2.3) (2023-10-13)
 
 
