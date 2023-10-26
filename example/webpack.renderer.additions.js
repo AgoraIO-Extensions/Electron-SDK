@@ -81,8 +81,8 @@ module.exports = function (config) {
     // ...config.externals,
     'webpack',
     'agora-electron-sdk',
-    'ffi-napi',
-    'ref-napi',
+    '@lwahonen/ffi-napi',
+    '@lwahonen/ref-napi',
   ];
   console.log('config', config.module.rules);
   return config;

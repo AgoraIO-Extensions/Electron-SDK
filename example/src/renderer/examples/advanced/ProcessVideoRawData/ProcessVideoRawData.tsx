@@ -2,6 +2,10 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+import ffi, {
+  LibraryObject,
+  LibraryObjectDefinitionToLibraryDefinition,
+} from '@lwahonen/ffi-napi';
 import {
   ChannelProfileType,
   ClientRoleType,
@@ -9,10 +13,6 @@ import {
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
 import download from 'download';
-import ffi, {
-  LibraryObject,
-  LibraryObjectDefinitionToLibraryDefinition,
-} from 'ffi-napi';
 import React, { ReactElement } from 'react';
 
 import {
