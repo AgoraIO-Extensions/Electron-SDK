@@ -1,5 +1,12 @@
 
 
+## [4.2.3-build.2-dev.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.4...v4.2.3-build.2-dev.1) (2023-11-03)
+
+
+### Features
+
+* support native 4.2.3.2 ([ecada1e](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/ecada1ee75875dbc90661ae1352b2f998865747d))
+
 ## [4.2.4](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.3...v4.2.4) (2023-10-24)
 
 
