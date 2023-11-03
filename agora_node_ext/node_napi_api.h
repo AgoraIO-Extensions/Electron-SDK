@@ -40,7 +40,11 @@ using v8::NewStringType;
 using v8::Object;
 using v8::String;
 using v8::Value;
+#if NODE_MAJOR_VERSION >= 10
+#define NAPI_MODULE(name, fn) NAN_MODULE_WORKER_ENABLED(name, fn)
+#else
 #define NAPI_MODULE(name, fn) NODE_MODULE(name, fn)
+#endif
 
 /**
  * Node status

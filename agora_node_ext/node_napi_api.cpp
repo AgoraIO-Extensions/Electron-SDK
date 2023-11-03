@@ -386,6 +386,7 @@ void NodeVideoFrameTransporter::setFPS(uint32_t fps) {
       }                                                                  \
     }                                                                    \
   }
+
 #define NODE_SET_OBJ_PROP_STRING(obj, name, val)                         \
   {                                                                      \
     Local<Value> propName =                                              \
@@ -400,13 +401,34 @@ void NodeVideoFrameTransporter::setFPS(uint32_t fps) {
       }                                                                  \
     }                                                                    \
   }
+
+// #if _MSC_VER && NODE_MODULE_VERSION >= 89
+// #define NODE_NEW_ARRAYBUFFER(isolate, it)                                      \
+//   auto nodeBuffer = node::Buffer::New(isolate, (char *)it->buffer, it->length) \
+//                         .ToLocalChecked()                                      \
+//                         .As<v8::TypedArray>();                                 \
+//   Local<v8::ArrayBuffer> buff = nodeBuffer.As<v8::TypedArray>()->Buffer();
+// #else
+// #if V8_MAJOR_VERSION >= 8
+// #define NODE_NEW_ARRAYBUFFER(isolate, it)                                      \
+//   std::unique_ptr<v8::BackingStore> backing =                                  \
+//       v8::ArrayBuffer::NewBackingStore(isolate, it->length);                   \
+//   Local<v8::ArrayBuffer> buff =                                                \
+//       v8::ArrayBuffer::New(isolate, std::move(backing));                       \
+//   memcpy(buff->GetBackingStore()->Data(), it->buffer, it->length);
+// #else
+#define NODE_NEW_ARRAYBUFFER(isolate, it)                                      \
+  Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, it->length);     \
+  memcpy(buff->Data(), it->buffer, it->length);
+// #endif
+// #endif
+
 #define NODE_SET_OBJ_PROP_HEADER(obj, it)                                    \
   {                                                                          \
     Local<Value> propName =                                                  \
         String::NewFromUtf8(isolate, "header", NewStringType::kInternalized) \
             .ToLocalChecked();                                               \
-    Local<v8::ArrayBuffer> buff =                                            \
-        v8::ArrayBuffer::New(isolate, (it)->buffer, (it)->length);           \
+    NODE_NEW_ARRAYBUFFER(isolate, it)                                        \
     v8::Maybe<bool> ret =                                                    \
         obj->Set(isolate->GetCurrentContext(), propName, buff);              \
     if (!ret.IsNothing()) {                                                  \
@@ -421,8 +443,7 @@ void NodeVideoFrameTransporter::setFPS(uint32_t fps) {
     Local<Value> propName =                                              \
         String::NewFromUtf8(isolate, name, NewStringType::kInternalized) \
             .ToLocalChecked();                                           \
-    Local<v8::ArrayBuffer> buff =                                        \
-        v8::ArrayBuffer::New(isolate, (it)->buffer, (it)->length);       \
+    NODE_NEW_ARRAYBUFFER(isolate, it)                                        \
     Local<v8::Uint8Array> dataarray =                                    \
         v8::Uint8Array::New(buff, 0, it->length);                        \
     v8::Maybe<bool> ret =                                                \
@@ -819,9 +840,18 @@ napi_status napi_get_object_property_arraybuffer_(Isolate* isolate,
     return napi_invalid_arg;
   }
 
+#if _MSC_VER && NODE_MODULE_VERSION >= 89
+  memcpy(buffer, node::Buffer::Data(value), node::Buffer::Length(value));
+#else
   auto localBuf = Local<v8::ArrayBuffer>::Cast(value);
   auto buf = *localBuf;
+#if V8_MAJOR_VERSION >= 8
+  memcpy(buffer, buf->GetBackingStore()->Data(),
+         buf->GetBackingStore()->ByteLength());
+#else
   memcpy(buffer, buf->GetContents().Data(), buf->GetContents().ByteLength());
+#endif
+#endif
   return napi_ok;
 }
 
@@ -853,11 +883,25 @@ napi_status napi_get_value_arraybuffer_(const Local<Value> &value,
   if (!value->IsArrayBuffer()) {
     return napi_invalid_arg;
   }
+
+#if _MSC_VER && NODE_MODULE_VERSION >= 89
+  length = node::Buffer::Length(value);
+  buffer.resize(length);
+  std::memcpy(&buffer[0], node::Buffer::Data(value),
+              node::Buffer::Length(value));
+#else
   auto localBuf = Local<v8::ArrayBuffer>::Cast(value);
   auto buf = *localBuf;
+#if V8_MAJOR_VERSION >= 8
+  length = buf->GetBackingStore()->ByteLength();
+  buffer.resize(length);
+  std::memcpy(&buffer[0], buf->GetBackingStore()->Data(), length);
+#else
   length = buf->GetContents().ByteLength();
   buffer.resize(length);
   std::memcpy(&buffer[0], buf->GetContents().Data(), length);
+#endif
+#endif
   return napi_ok;
 }
 

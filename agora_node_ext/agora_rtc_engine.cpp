@@ -445,8 +445,8 @@ DEFINE_CLASS(NodeRtcChannel);
  * To declared class and member functions that could be used in JS layer
  * directly.
  */
-void NodeRtcEngine::Init(Local<Object>& module) {
-  Isolate* isolate = module->GetIsolate();
+NAN_MODULE_INIT(NodeRtcEngine::Init) {
+  Isolate* isolate = target->GetIsolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   BEGIN_PROPERTY_DEFINE(NodeRtcEngine, createInstance, 5)
   PROPERTY_METHOD_DEFINE(onEvent)
@@ -800,7 +800,7 @@ void NodeRtcEngine::Init(Local<Object>& module) {
   PROPERTY_METHOD_DEFINE(sendStreamMessageWithArrayBuffer);
   PROPERTY_METHOD_DEFINE(videoSourceSetScreenCaptureScenario);
   EN_PROPERTY_DEFINE()
-  module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
+  target->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
               tpl->GetFunction(context).ToLocalChecked());
 }
 
@@ -5483,13 +5483,33 @@ NAPI_API_DEFINE(NodeRtcEngine, sendCustomReportMessage) {
     }                                                                    \
   }
 
+// #if _MSC_VER && NODE_MODULE_VERSION >= 89
+// #define NODE_NEW_ARRAYBUFFER(isolate, it)                                      \
+//   auto nodeBuffer = node::Buffer::New(isolate, (char *)it.buffer, it.length)   \
+//                         .ToLocalChecked()                                      \
+//                         .As<v8::TypedArray>();                                 \
+//   Local<v8::ArrayBuffer> buff = nodeBuffer.As<v8::TypedArray>()->Buffer();
+// #else
+// #if V8_MAJOR_VERSION >= 8
+// #define NODE_NEW_ARRAYBUFFER(isolate, it)                                      \
+//   std::unique_ptr<v8::BackingStore> backing =                                  \
+//       v8::ArrayBuffer::NewBackingStore(isolate, it.length);                    \
+//   Local<v8::ArrayBuffer> buff =                                                \
+//       v8::ArrayBuffer::New(isolate, std::move(backing));                       \
+//   memcpy(buff->GetBackingStore()->Data(), it.buffer, it.length);
+// #else
+#define NODE_NEW_ARRAYBUFFER(isolate, it)                                      \
+  Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, it.length);      \
+  memcpy(buff->Data(), it.buffer, it.length);
+// #endif
+// #endif
+
 #define NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, name, info)                \
   {                                                                           \
     Local<Value> propName =                                                   \
         String::NewFromUtf8(isolate, name, NewStringType::kInternalized)      \
             .ToLocalChecked();                                                \
-    Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, info.length); \
-    memcpy(buff->GetContents().Data(), info.buffer, info.length);             \
+    NODE_NEW_ARRAYBUFFER(isolate, info)                                       \
     Local<v8::Uint8Array> dataarray =                                         \
         v8::Uint8Array::New(buff, 0, info.length);                            \
     v8::Maybe<bool> ret =                                                     \
