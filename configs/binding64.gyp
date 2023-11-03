@@ -178,10 +178,10 @@
                 ],
                 'defines!': [
                 '_HAS_EXCEPTIONS=0',
-                '-std=gnu++14'
+                '-std=gnu++17'
                 ],
                 'OTHER_CFLAGS' : [
-                    '-std=c++11',
+                    '-std=c++17',
                     '-stdlib=libc++',
                     '-fexceptions'
                 ],
@@ -420,10 +420,10 @@
                 ],
                 'defines!': [
                     '_NOEXCEPT',
-                    '-std=c++11'
+                    '-std=c++17'
                 ],
                 'OTHER_CFLAGS' : [
-                    '-std=c++11',
+                    '-std=c++17',
                     '-stdlib=libc++',
                     '-fexceptions'
                 ],
@@ -433,7 +433,19 @@
                     'FRAMEWORK_SEARCH_PATHS': [
                     './sdk/lib/mac'
                     ],
-                    "DEBUG_INFORMATION_FORMAT": "dwarf-with-dsym"
+                    "DEBUG_INFORMATION_FORMAT": "dwarf-with-dsym",
+                    'conditions':[
+                        ['target_arch=="arm64"',
+                         {
+                            # 'CLANG_CXX_LANGUAGE_STANDARD': 'c++0x',
+                            # 'CLANG_CXX_LIBRARY': 'libc++',
+                            "OTHER_CPLUSPLUSFLAGS": [
+                                "-std=c++17",
+                                "-stdlib=libc++"
+                                ],
+                         }
+                        ]
+                    ]
                 },
             }
             ]
