@@ -390,9 +390,11 @@ export class RendererManager extends IRendererManager {
         });
       }
     };
-    this.videoFrameUpdateInterval = setInterval(() => {
+    const render = () => {
       this.forEachStream(renderFunc);
-    }, 1000 / this.renderFps);
+      this.videoFrameUpdateInterval = setTimeout(render, 1000 / this.renderFps);
+    };
+    render();
   }
 
   /**
@@ -401,7 +403,7 @@ export class RendererManager extends IRendererManager {
   public stopRender(): void {
     this.isRendering = false;
     if (this.videoFrameUpdateInterval) {
-      clearInterval(this.videoFrameUpdateInterval);
+      clearTimeout(this.videoFrameUpdateInterval);
       this.videoFrameUpdateInterval = undefined;
     }
   }
