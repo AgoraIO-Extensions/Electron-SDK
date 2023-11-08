@@ -1,5 +1,9 @@
 name: Build API Example / Addon
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   workflow_call:
     inputs:
@@ -20,9 +24,12 @@ on:
           - sdk
   release:
     types: [ published ]
+  pull_request:
+    types: [labeled, synchronize]
 
 jobs:
   build-jenkins:
+    if: ${{ inputs.type == 'sdk' }}
     runs-on: ubuntu-latest
     steps:
       - name: Build
@@ -34,7 +41,7 @@ jobs:
           -d "{\"branch\": \"${{github.ref_name}}\", \"type\": \"${type}\"}"
 
   build-windows:
-    if: ${{ inputs.type == 'demo' }}
+    if: ${{ inputs.type == 'demo' || contains(github.event.pull_request.labels.*.name, 'ci:dep-update') }}
     strategy:
       matrix:
         arch: [ ia32, x64 ]
@@ -72,7 +79,7 @@ jobs:
           
 
   build-mac:
-    if: ${{ inputs.type == 'demo' }}
+    if: ${{ inputs.type == 'demo' || contains(github.event.pull_request.labels.*.name, 'ci:dep-update') }}
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
