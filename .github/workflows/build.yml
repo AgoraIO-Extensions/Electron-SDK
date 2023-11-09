@@ -29,7 +29,6 @@ on:
 
 jobs:
   build-jenkins:
-    if: ${{ inputs.type == 'sdk' }}
     runs-on: ubuntu-latest
     steps:
       - name: Build
