@@ -29,15 +29,14 @@ on:
 
 jobs:
   build-jenkins:
+    if: ${{ inputs.type == 'sdk' || (github.event_name == 'release' && github.event.action == 'published') }}
     runs-on: ubuntu-latest
     steps:
       - name: Build
         run: |
-          type=${{inputs.type}}
-          type=${type:-"sdk"}
           curl -X POST -sS -D- -o/dev/null ${{secrets.JENKINS_BUILD_URL}} \
           -H 'Content-Type: application/json' \
-          -d "{\"branch\": \"${{github.ref_name}}\", \"type\": \"${type}\"}"
+          -d "{\"branch\": \"${{github.ref_name}}\", \"type\": \"sdk\"}"
 
   build-windows:
     if: ${{ inputs.type == 'demo' || contains(github.event.pull_request.labels.*.name, 'ci:dep-update') }}
