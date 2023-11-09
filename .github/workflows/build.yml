@@ -76,7 +76,7 @@ jobs:
           name: AgoraRtcNgExample-win-${{ matrix.arch }}
           path: |
             example/dist/Agora-Electron-API-Example-*-win.zip
-          
+          if-no-files-found: error
 
   build-mac:
     if: ${{ inputs.type == 'demo' || contains(github.event.pull_request.labels.*.name, 'ci:dep-update') }}
@@ -108,6 +108,7 @@ jobs:
           name: AgoraRtcNgExample-mac
           path: |
             example/dist/Agora-Electron-API-Example-*-mac.zip
+          if-no-files-found: error
   
   notification:
     runs-on: ubuntu-latest
