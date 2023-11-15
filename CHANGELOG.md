@@ -1,5 +1,18 @@
 
 
+## [4.2.3-build.2-dev.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.4...v4.2.3-build.2-dev.2) (2023-11-15)
+
+
+### Bug Fixes
+
+* use `setTimeout` intead of `setInterval` ([#1097](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1097)) ([9df0579](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/9df057989846e5e7e5fb4a00c6a1208f5728b9d8))
+
+
+### Features
+
+* support native 4.2.3.2 ([b95f678](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/b95f67813f18e1f55926ee43361215b2f020e0e2))
+* suppot native 4.2.6 ([#1104](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1104)) ([e8be60b](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/e8be60bc762db3aac50d025a674664fb9e21c0bd)), closes [#1102](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1102)
+
 ## [4.2.3-build.2-dev.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.4...v4.2.3-build.2-dev.1) (2023-11-03)
 
 
