@@ -168,6 +168,7 @@ export default function TakeSnapshot() {
           value={targetUid}
           onValueChange={(value) => {
             setTargetUid(value);
+            setTakeSnapshot(false);
           }}
         />
         {takeSnapshot ? (
