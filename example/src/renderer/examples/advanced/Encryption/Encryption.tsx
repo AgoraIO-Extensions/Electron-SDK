@@ -178,10 +178,11 @@ export default class Encryption
         <AgoraTextInput
           onChangeText={(text) => {
             this.setState({
-              encryptionKdfSalt: text.split(' ').map((value) => +value),
+              encryptionKdfSalt: text
+                ? text.split(' ').map((value) => +value)
+                : [],
             });
           }}
-          numberKeyboard={true}
           placeholder={'encryptionKdfSalt (split by blank)'}
           value={encryptionKdfSalt.join(' ')}
         />
