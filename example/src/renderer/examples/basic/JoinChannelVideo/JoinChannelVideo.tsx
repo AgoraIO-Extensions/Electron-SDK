@@ -12,7 +12,7 @@ import {
   VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
