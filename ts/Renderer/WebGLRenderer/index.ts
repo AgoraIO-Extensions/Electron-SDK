@@ -453,7 +453,8 @@ export class GlRenderer extends IRenderer {
     }
   }
 
-  private handleContextLost = () => {
+  private handleContextLost = (event: Event) => {
+    console.warn('webglcontextlost', event);
     try {
       this.canvas &&
         this.canvas.removeEventListener(

@@ -48,7 +48,7 @@ export class RendererManager extends IRendererManager {
   /**
    * @ignore
    */
-  renderMode: RENDER_MODE;
+  renderMode?: RENDER_MODE;
   /**
    * @ignore
    */
@@ -62,9 +62,7 @@ export class RendererManager extends IRendererManager {
     super();
     this.renderFps = 15;
     this.renderers = new Map();
-    this.renderMode = this.checkWebglEnv()
-      ? RENDER_MODE.WEBGL
-      : RENDER_MODE.SOFTWARE;
+    this.setRenderMode();
     this.msgBridge = AgoraEnv.AgoraElectronBridge;
     this.defaultRenderConfig = {
       rendererOptions: {
@@ -83,11 +81,20 @@ export class RendererManager extends IRendererManager {
    * @returns
    * 0: Success.< 0: Failure.
    */
-  public setRenderMode(mode: RENDER_MODE) {
-    this.renderMode = mode;
-    logInfo(
-      'setRenderMode:  new render mode will take effect only if new view bind to render'
-    );
+  public setRenderMode(mode?: RENDER_MODE) {
+    if (mode === undefined) {
+      this.renderMode = this.checkWebglEnv()
+        ? RENDER_MODE.WEBGL
+        : RENDER_MODE.SOFTWARE;
+      return;
+    }
+
+    if (mode !== this.renderMode) {
+      this.renderMode = mode;
+      logInfo(
+        'setRenderMode:  new render mode will take effect only if new view bind to render'
+      );
+    }
   }
 
   /**
@@ -433,17 +440,6 @@ export class RendererManager extends IRendererManager {
   /**
    * @ignore
    */
-  private getRender({
-    videoSourceType,
-    channelId,
-    uid,
-  }: VideoFrameCacheConfig) {
-    return this.renderers.get(videoSourceType)?.get(channelId)?.get(uid);
-  }
-
-  /**
-   * @ignore
-   */
   private getRenderers({
     videoSourceType,
     channelId,
@@ -475,18 +471,14 @@ export class RendererManager extends IRendererManager {
       return filterRenders[0];
     }
     const renderer = this.createRenderer(() => {
-      const renderConfig = this.getRender(config);
-      if (!renderConfig) {
-        return;
-      }
-      renderConfig.renders = renders.filter((r) => r !== renderer);
-      const contentMode = renderer.contentMode;
+      const { contentMode, mirror } = renderer;
       renderer.unbind();
-      this.setRenderMode(RENDER_MODE.SOFTWARE);
+      renders.splice(renders.indexOf(renderer), 1);
+      this.setRenderMode();
       const newRender = this.createRenderer();
-      newRender.contentMode = contentMode;
       newRender.bind(view);
-      renderConfig.renders.push(newRender);
+      newRender.setRenderOption({ contentMode, mirror });
+      renders.push(newRender);
     });
     renderer.bind(view);
     renders.push(renderer);
