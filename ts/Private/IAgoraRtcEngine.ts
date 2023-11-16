@@ -854,6 +854,10 @@ export class CameraCapturerConfiguration {
    */
   deviceId?: string;
   /**
+   * @ignore
+   */
+  cameraId?: string;
+  /**
    * The format of the video frame. See VideoFormat.
    */
   format?: VideoFormat;
@@ -2139,6 +2143,22 @@ export interface IRtcEngineEventHandler {
   onAudioRoutingChanged?(routing: number): void;
 
   /**
+   * Occurs when the local audio route changes.
+   *
+   * This callback applies to macOS only.
+   *
+   * @param routing The current audio routing.
+   *  -1: The default audio route.
+   *  0: The audio route is a headset with a microphone.
+   *  1: The audio route is an earpiece.
+   *  2: The audio route is a headset without a microphone.
+   *  3: The audio route is the speaker that comes with the device.
+   *  4: The audio route is an external speaker. (For iOS and macOS only)
+   *  (5): The audio route is a Bluetooth headset.
+   */
+  onAudioRoutingChanged?(deviceType: number, routing: number): void;
+
+  /**
    * Occurs when the state of the media stream relay changes.
    *
    * The SDK returns the state of the current media relay with any error message.
@@ -2900,6 +2920,11 @@ export abstract class IRtcEngine {
    *  If the call timeouts, please modify the call logic and do not invoke the method in the main thread.
    */
   abstract queryCodecCapability(): { codecInfo: CodecCapInfo[]; size: number };
+
+  /**
+   * @ignore
+   */
+  abstract queryDeviceScore(): number;
 
   /**
    * Preloads a channel with token, channelId, and uid.
@@ -7083,20 +7108,6 @@ export class SDKBuildInfo {
  * The VideoDeviceInfo class that contains the ID and device name of the video devices.
  */
 export class VideoDeviceInfo {
-  /**
-   * The device ID.
-   */
-  deviceId?: string;
-  /**
-   * The device name.
-   */
-  deviceName?: string;
-}
-
-/**
- * The AudioDeviceInfo class that contains the ID and device name of the audio devices.
- */
-export class AudioDeviceInfo {
   /**
    * The device ID.
    */

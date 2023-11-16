@@ -686,6 +686,15 @@ export function processIRtcEngineEventHandler(
       }
       break;
 
+    case 'onAudioRoutingChanged':
+      if (handler.onAudioRoutingChanged !== undefined) {
+        handler.onAudioRoutingChanged(
+          jsonParams.deviceType,
+          jsonParams.routing
+        );
+      }
+      break;
+
     case 'onChannelMediaRelayStateChanged':
       if (handler.onChannelMediaRelayStateChanged !== undefined) {
         handler.onChannelMediaRelayStateChanged(
@@ -1176,6 +1185,17 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromQueryCodecCapability(): string {
     return 'RtcEngine_queryCodecCapability';
+  }
+
+  queryDeviceScore(): number {
+    const apiType = this.getApiTypeFromQueryDeviceScore();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromQueryDeviceScore(): string {
+    return 'RtcEngine_queryDeviceScore';
   }
 
   preloadChannel(token: string, channelId: string, uid: number): number {
