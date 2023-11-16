@@ -2055,6 +2055,14 @@ export enum LocalVideoStreamError {
    */
   LocalVideoStreamErrorDeviceInvalidId = 10,
   /**
+   * @ignore
+   */
+  LocalVideoStreamErrorDeviceInterrupt = 14,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorDeviceFatalError = 15,
+  /**
    * 101: The current video capture device is unavailable due to excessive system pressure.
    */
   LocalVideoStreamErrorDeviceSystemPressure = 101,

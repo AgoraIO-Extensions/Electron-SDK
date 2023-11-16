@@ -127,6 +127,14 @@ export enum AudioRoute {
    * 9: The audio route is Apple AirPlay. (For macOS only)
    */
   RouteAirplay = 9,
+  /**
+   * @ignore
+   */
+  RouteVirtual = 10,
+  /**
+   * @ignore
+   */
+  RouteContinuity = 11,
 }
 
 /**
@@ -169,6 +177,32 @@ export enum RawAudioFrameOpModeType {
    * 2: Read and write mode, Users read the data returned by the SDK, modify it, and then play it. For example, when users have their own audio-effect processing module and perform some voice preprocessing, such as a voice change.
    */
   RawAudioFrameOpModeReadWrite = 2,
+}
+
+/**
+ * The AudioDeviceInfo class that contains the ID and device name of the audio devices.
+ */
+export class AudioDeviceInfo {
+  /**
+   * The device name.
+   */
+  deviceName?: string;
+  /**
+   * The device ID.
+   */
+  deviceId?: string;
+  /**
+   * @ignore
+   */
+  isCurrentSelected?: boolean;
+  /**
+   * @ignore
+   */
+  isPlayoutDevice?: boolean;
+  /**
+   * @ignore
+   */
+  routing?: AudioRoute;
 }
 
 /**
@@ -777,6 +811,10 @@ export class AudioFrame {
    * @ignore
    */
   presentationMs?: number;
+  /**
+   * @ignore
+   */
+  audioTrackNumber?: number;
 }
 
 /**
