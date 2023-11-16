@@ -1,5 +1,18 @@
 
 
+## [4.2.6-build.1-dev.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.4...v4.2.6-build.1-dev.1) (2023-11-16)
+
+
+### Bug Fixes
+
+* jira CSD-60920 render issue after ([#1110](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1110)) ([5730d86](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/5730d86d136539d79f50b1e92ba9ec5049196488))
+* use `setTimeout` intead of `setInterval` ([#1097](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1097)) ([9df0579](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/9df057989846e5e7e5fb4a00c6a1208f5728b9d8))
+
+
+### Features
+
+* suppot native 4.2.6 ([#1104](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1104)) ([e8be60b](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/e8be60bc762db3aac50d025a674664fb9e21c0bd)), closes [#1102](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1102)
+
 ## [4.2.4](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.3...v4.2.4) (2023-10-24)
 
 
