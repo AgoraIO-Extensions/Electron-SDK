@@ -8,6 +8,12 @@ runs:
       uses: actions/setup-node@v3
       with:
         node-version-file: .nvmrc
+        cache: yarn
+
+    - name: Setup Yarn
+      run:
+        npm i -g yarn@1.22.19
+      shell: bash
 
     - name: Set up Python
       uses: actions/setup-python@v4
