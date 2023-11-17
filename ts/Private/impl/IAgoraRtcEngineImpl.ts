@@ -682,12 +682,6 @@ export function processIRtcEngineEventHandler(
 
     case 'onAudioRoutingChanged':
       if (handler.onAudioRoutingChanged !== undefined) {
-        handler.onAudioRoutingChanged(jsonParams.routing);
-      }
-      break;
-
-    case 'onAudioRoutingChanged':
-      if (handler.onAudioRoutingChanged !== undefined) {
         handler.onAudioRoutingChanged(
           jsonParams.deviceType,
           jsonParams.routing
