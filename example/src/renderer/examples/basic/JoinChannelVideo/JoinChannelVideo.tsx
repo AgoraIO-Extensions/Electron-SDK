@@ -12,13 +12,15 @@ import {
   VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
+import { AgoraDropdown } from '../../../components/ui';
 import Config from '../../../config/agora.config';
+import { arrayToItems } from '../../../utils';
 import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {}
@@ -173,5 +175,26 @@ export default class JoinChannelVideo
 
   protected renderVideo(user: VideoCanvas): ReactElement | undefined {
     return super.renderVideo(user);
+  }
+
+  protected renderConfiguration(): ReactElement | undefined {
+    const { joinChannelSuccess, remoteUsers } = this.state;
+    return (
+      <>
+        {joinChannelSuccess ? (
+          <AgoraDropdown
+            title={'Append renderer to remote users'}
+            items={arrayToItems(remoteUsers)}
+            onValueChange={(value) => {
+              this.setState((prev) => {
+                return {
+                  remoteUsers: [...prev.remoteUsers, value],
+                };
+              });
+            }}
+          />
+        ) : undefined}
+      </>
+    );
   }
 }

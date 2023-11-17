@@ -440,15 +440,23 @@ export class RendererManager extends IRendererManager {
   /**
    * @ignore
    */
+  private getRender({
+    videoSourceType,
+    channelId,
+    uid,
+  }: VideoFrameCacheConfig) {
+    return this.renderers.get(videoSourceType)?.get(channelId)?.get(uid);
+  }
+
+  /**
+   * @ignore
+   */
   private getRenderers({
     videoSourceType,
     channelId,
     uid,
   }: VideoFrameCacheConfig): IRenderer[] {
-    return (
-      this.renderers.get(videoSourceType)?.get(channelId)?.get(uid)?.renders ||
-      []
-    );
+    return this.getRender({ videoSourceType, channelId, uid })?.renders || [];
   }
 
   /**

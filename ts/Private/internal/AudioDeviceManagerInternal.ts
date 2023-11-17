@@ -1,4 +1,4 @@
-﻿import { AudioDeviceInfo } from '../IAgoraRtcEngine';
+﻿import { AudioDeviceInfo } from '../AgoraMediaBase';
 import { IAudioDeviceManagerImpl } from '../impl/IAudioDeviceManagerImpl';
 
 import { callIrisApi } from './IrisApiEngine';
