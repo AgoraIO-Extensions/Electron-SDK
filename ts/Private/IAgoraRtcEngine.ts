@@ -2140,22 +2140,6 @@ export interface IRtcEngineEventHandler {
    *  4: The audio route is an external speaker. (For iOS and macOS only)
    *  (5): The audio route is a Bluetooth headset.
    */
-  onAudioRoutingChanged?(routing: number): void;
-
-  /**
-   * Occurs when the local audio route changes.
-   *
-   * This callback applies to macOS only.
-   *
-   * @param routing The current audio routing.
-   *  -1: The default audio route.
-   *  0: The audio route is a headset with a microphone.
-   *  1: The audio route is an earpiece.
-   *  2: The audio route is a headset without a microphone.
-   *  3: The audio route is the speaker that comes with the device.
-   *  4: The audio route is an external speaker. (For iOS and macOS only)
-   *  (5): The audio route is a Bluetooth headset.
-   */
   onAudioRoutingChanged?(deviceType: number, routing: number): void;
 
   /**
