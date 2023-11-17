@@ -342,8 +342,10 @@ export default class DeviceManager
           })}
           value={playbackDeviceId}
           onValueChange={(value, index) => {
-            this.setState({
-              playbackDeviceId: playbackDevices?.at(index)?.deviceId,
+            this.setState((preState) => {
+              return {
+                playbackDeviceId: preState.playbackDevices?.at(index)?.deviceId,
+              };
             });
           }}
         />
@@ -358,8 +360,11 @@ export default class DeviceManager
           })}
           value={recordingDeviceId}
           onValueChange={(value, index) => {
-            this.setState({
-              recordingDeviceId: recordingDevices?.at(index)?.deviceId,
+            this.setState((preState) => {
+              return {
+                recordingDeviceId:
+                  preState.recordingDevices?.at(index)?.deviceId,
+              };
             });
           }}
         />
@@ -374,8 +379,10 @@ export default class DeviceManager
           })}
           value={videoDeviceId}
           onValueChange={(value, index) => {
-            this.setState({
-              videoDeviceId: videoDevices?.at(index)?.deviceId,
+            this.setState((preState) => {
+              return {
+                videoDeviceId: preState.videoDevices?.at(index)?.deviceId,
+              };
             });
           }}
         />

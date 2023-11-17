@@ -124,6 +124,7 @@ export default class RhythmPlayer
       beatsPerMeasure,
       beatsPerMinute,
     });
+    this.engine?.updateChannelMediaOptions({ publishRhythmPlayerTrack: true });
   };
 
   /**

@@ -43,13 +43,14 @@ export default function ScreenShare() {
     uid,
     joinChannelSuccess,
     remoteUsers,
+    setRemoteUsers,
     startPreview,
     engine,
   } =
     /**
      * Step 1: initRtcEngine
      */
-    useInitRtcEngine(enableVideo);
+    useInitRtcEngine(enableVideo, false);
   const [token2] = useState<string>('');
   const [uid2, setUid2] = useState<number>(0);
   const [sources, setSources, resetSources] = useResetState<
@@ -262,14 +263,28 @@ export default function ScreenShare() {
 
   const onUserJoined = useCallback(
     (connection: RtcConnection, remoteUid: number, elapsed: number) => {
+      log.info(
+        'onUserJoined',
+        'connection',
+        connection,
+        'remoteUid',
+        remoteUid,
+        'elapsed',
+        elapsed
+      );
       if (connection.localUid === uid2 || remoteUid === uid2) {
         // ⚠️ mute the streams from screen sharing
         engine.current.muteRemoteAudioStream(uid2, true);
         engine.current.muteRemoteVideoStream(uid2, true);
         return;
+      } else {
+        setRemoteUsers((prev) => {
+          if (prev === undefined) return [];
+          return [...prev, remoteUid];
+        });
       }
     },
-    [engine, uid2]
+    [engine, setRemoteUsers, uid2]
   );
 
   const onUserOffline = useCallback(
@@ -278,9 +293,25 @@ export default function ScreenShare() {
       remoteUid: number,
       reason: UserOfflineReasonType
     ) => {
-      if (connection.localUid === uid2 || remoteUid === uid2) return;
+      log.info(
+        'onUserOffline',
+        'connection',
+        connection,
+        'remoteUid',
+        remoteUid,
+        'reason',
+        reason
+      );
+      if (connection.localUid === uid2 || remoteUid === uid2) {
+        return;
+      } else {
+        setRemoteUsers((prev) => {
+          if (prev === undefined) return [];
+          return prev!.filter((value) => value !== remoteUid);
+        });
+      }
     },
-    [uid2]
+    [setRemoteUsers, uid2]
   );
 
   const onLocalVideoStateChanged = useCallback(
@@ -409,7 +440,7 @@ export default function ScreenShare() {
           editable={!publishScreenCapture}
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            setUid2(text === '' ? uid2 : +text);
+            setUid2((prev) => (text === '' ? prev : +text));
           }}
           numberKeyboard={true}
           placeholder={`uid2 (must > 0)`}
@@ -419,7 +450,7 @@ export default function ScreenShare() {
           <AgoraTextInput
             onChangeText={(text) => {
               if (isNaN(+text)) return;
-              setWidth(text === '' ? width : +text);
+              setWidth((prev) => (text === '' ? prev : +text));
             }}
             numberKeyboard={true}
             placeholder={`width (defaults: ${width})`}
@@ -427,7 +458,7 @@ export default function ScreenShare() {
           <AgoraTextInput
             onChangeText={(text) => {
               if (isNaN(+text)) return;
-              setHeight(text === '' ? height : +text);
+              setHeight((prev) => (text === '' ? prev : +text));
             }}
             numberKeyboard={true}
             placeholder={`height (defaults: ${height})`}
@@ -436,7 +467,7 @@ export default function ScreenShare() {
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            setFrameRate(text === '' ? frameRate : +text);
+            setFrameRate((prev) => (text === '' ? prev : +text));
           }}
           numberKeyboard={true}
           placeholder={`frameRate (defaults: ${frameRate})`}
@@ -444,7 +475,7 @@ export default function ScreenShare() {
         <AgoraTextInput
           onChangeText={(text) => {
             if (isNaN(+text)) return;
-            setBitrate(text === '' ? bitrate : +text);
+            setBitrate((prev) => (text === '' ? prev : +text));
           }}
           numberKeyboard={true}
           placeholder={`bitrate (defaults: ${bitrate})`}
@@ -495,10 +526,10 @@ export default function ScreenShare() {
               value={excludeWindowList}
               onValueChange={(value, index) => {
                 if (excludeWindowList.indexOf(value) === -1) {
-                  setExcludeWindowList(() => [...excludeWindowList, value]);
+                  setExcludeWindowList((prev) => [...prev, value]);
                 } else {
-                  setExcludeWindowList(() =>
-                    excludeWindowList.filter((v) => v !== value)
+                  setExcludeWindowList((prev) =>
+                    prev.filter((v) => v !== value)
                   );
                 }
               }}
