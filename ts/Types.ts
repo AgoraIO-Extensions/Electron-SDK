@@ -212,7 +212,7 @@ export interface ShareVideoFrame {
   /**
    * @ignore
    */
-  videoSourceType: VideoSourceType;
+  videoSourceType?: VideoSourceType;
 }
 
 /**
