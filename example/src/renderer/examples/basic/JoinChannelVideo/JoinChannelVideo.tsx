@@ -12,18 +12,20 @@ import {
   VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 
 import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import { AgoraDropdown } from '../../../components/ui';
+import { AgoraButton, AgoraDropdown, AgoraView } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { arrayToItems } from '../../../utils';
 import { askMediaAccess } from '../../../utils/permissions';
 
-interface State extends BaseVideoComponentState {}
+interface State extends BaseVideoComponentState {
+  selectedUser?: number;
+}
 
 export default class JoinChannelVideo
   extends BaseComponent<{}, State>
@@ -178,21 +180,53 @@ export default class JoinChannelVideo
   }
 
   protected renderConfiguration(): ReactElement | undefined {
-    const { joinChannelSuccess, remoteUsers } = this.state;
+    const { joinChannelSuccess, remoteUsers, selectedUser } = this.state;
     return (
       <>
         {joinChannelSuccess ? (
-          <AgoraDropdown
-            title={'Append renderer to remote users'}
-            items={arrayToItems(remoteUsers)}
-            onValueChange={(value) => {
-              this.setState((prev) => {
-                return {
-                  remoteUsers: [...prev.remoteUsers, value],
-                };
-              });
-            }}
-          />
+          <>
+            <AgoraDropdown
+              title={'Append renderer to remote users'}
+              items={arrayToItems(Array.from(new Set(remoteUsers)))}
+              value={selectedUser}
+              onValueChange={(value) => {
+                this.setState({ selectedUser: value });
+              }}
+            />
+            <AgoraView>
+              <AgoraButton
+                title="Add"
+                onPress={() => {
+                  if (selectedUser !== undefined) {
+                    this.setState((prev) => {
+                      return {
+                        remoteUsers: [...prev.remoteUsers, selectedUser],
+                      };
+                    });
+                  }
+                }}
+              />
+              <AgoraButton
+                title="Remove"
+                onPress={() => {
+                  if (selectedUser !== undefined) {
+                    this.setState((prev) => {
+                      const predicate = (it: number) => it === selectedUser;
+                      const firstIndex = prev.remoteUsers.findIndex(predicate);
+                      const lastIndex =
+                        prev.remoteUsers.findLastIndex(predicate);
+                      if (firstIndex !== lastIndex) {
+                        prev.remoteUsers.splice(lastIndex, 1);
+                      }
+                      return {
+                        remoteUsers: prev.remoteUsers,
+                      };
+                    });
+                  }
+                }}
+              />
+            </AgoraView>
+          </>
         ) : undefined}
       </>
     );

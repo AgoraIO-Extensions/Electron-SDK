@@ -1,18 +1,11 @@
-import { EventEmitter } from 'events';
-
 import { RenderModeType } from '../Private/AgoraMediaBase';
 import { RendererOptions, ShareVideoFrame } from '../Types';
 
-export type RenderFailCallback =
-  | ((obj: { error: string }) => void)
-  | undefined
-  | null;
-
 export abstract class IRenderer {
   parentElement?: HTMLElement;
+  container?: HTMLElement;
   canvas?: HTMLCanvasElement;
-  event?: EventEmitter;
-  contentMode = RenderModeType.RenderModeFit;
+  contentMode = RenderModeType.RenderModeHidden;
   mirror?: boolean;
 
   public snapshot(fileType = 'image/png') {
@@ -23,20 +16,40 @@ export abstract class IRenderer {
   }
 
   public bind(element: HTMLElement) {
-    if (!element) {
-      throw new Error('You have pass a element');
-    }
     this.parentElement = element;
+    this.container = document.createElement('div');
+    Object.assign(this.container.style, {
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      overflow: 'hidden',
+    });
+    this.parentElement.appendChild(this.container);
+    this.canvas = document.createElement('canvas');
+    this.container.appendChild(this.canvas);
   }
 
-  abstract unbind(): void;
+  public unbind() {
+    if (this.container && this.canvas?.parentNode === this.container) {
+      this.container.removeChild(this.canvas);
+    }
+    if (
+      this.parentElement &&
+      this.container?.parentNode === this.parentElement
+    ) {
+      this.parentElement.removeChild(this.container);
+    }
+
+    this.canvas = undefined;
+    this.container = undefined;
+    this.parentElement = undefined;
+  }
 
   public equalsElement(element: Element): boolean {
-    if (!element) {
-      throw new Error('You have pass a element');
-    }
     if (!this.parentElement) {
-      throw new Error('parentElement is null');
+      console.error('parentElement is null');
     }
     return element === this.parentElement;
   }
