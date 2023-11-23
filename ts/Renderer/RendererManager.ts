@@ -23,9 +23,9 @@ import {
   logWarn,
 } from '../Utils';
 
-import { IRenderer, RenderFailCallback } from './IRenderer';
+import { IRenderer } from './IRenderer';
 import { IRendererManager } from './IRendererManager';
-import WebGLRenderer from './WebGLRenderer';
+import { WebGLFallback, WebGLRenderer } from './WebGLRenderer';
 import { YUVCanvasRenderer } from './YUVCanvasRenderer';
 
 /**
@@ -158,19 +158,31 @@ export class RendererManager extends IRendererManager {
    * @ignore
    */
   public checkWebglEnv(): boolean {
-    let gl;
-    let canvas: HTMLCanvasElement = document.createElement('canvas');
-
+    let flag = false;
+    const canvas: HTMLCanvasElement = document.createElement('canvas');
     try {
-      gl =
-        canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      const getContext = (
+        contextNames = ['webgl2', 'webgl', 'experimental-webgl']
+      ): WebGLRenderingContext | WebGLRenderingContext | null => {
+        for (let i = 0; i < contextNames.length; i++) {
+          const contextName = contextNames[i]!;
+          const context = canvas?.getContext(contextName);
+          if (context) {
+            return context as WebGLRenderingContext | WebGLRenderingContext;
+          }
+        }
+        return null;
+      };
+      let gl = getContext();
+      flag = !!gl;
+      gl?.getExtension('WEBGL_lose_context')?.loseContext();
+      gl = null;
       logInfo('Your browser support webGL');
     } catch (e) {
       logWarn('Your browser may not support webGL');
-      return false;
+      flag = false;
     }
-
-    return !!gl;
+    return flag;
   }
 
   /**
@@ -429,11 +441,14 @@ export class RendererManager extends IRendererManager {
   /**
    * @ignore
    */
-  private createRenderer(failCallback?: RenderFailCallback): IRenderer {
-    if (this.renderMode === RENDER_MODE.SOFTWARE) {
+  private createRenderer(
+    renderMode?: RENDER_MODE,
+    fallback?: WebGLFallback
+  ): IRenderer {
+    if (renderMode === RENDER_MODE.SOFTWARE) {
       return new YUVCanvasRenderer();
     } else {
-      return new WebGLRenderer(failCallback);
+      return new WebGLRenderer(fallback);
     }
   }
 
@@ -467,9 +482,9 @@ export class RendererManager extends IRendererManager {
     view: HTMLElement
   ): IRenderer | undefined {
     this.ensureRendererConfig(config);
-    const renders = this.getRenderers(config);
+    const renderers = this.getRenderers(config);
     const filterRenders =
-      renders?.filter((render) => render.equalsElement(view)) || [];
+      renderers?.filter((render) => render.equalsElement(view)) || [];
     const hasBeenAdd = filterRenders.length > 0;
     if (hasBeenAdd) {
       logWarn(
@@ -478,20 +493,30 @@ export class RendererManager extends IRendererManager {
       );
       return filterRenders[0];
     }
-    const renderer = this.createRenderer(() => {
-      const { contentMode, mirror } = renderer;
-      renderer.unbind();
-      renders.splice(renders.indexOf(renderer), 1);
-      this.setRenderMode();
-      const newRender = this.createRenderer();
-      newRender.bind(view);
-      newRender.setRenderOption({ contentMode, mirror });
-      renders.push(newRender);
-    });
+    const renderer = this.createRenderer(
+      this.renderMode,
+      this.handleWebGLFallback(config)
+    );
     renderer.bind(view);
-    renders.push(renderer);
+    renderers.push(renderer);
     return renderer;
   }
+
+  /**
+   * @ignore
+   */
+  private handleWebGLFallback =
+    (config: FormatRendererVideoConfig) => (renderer: WebGLRenderer) => {
+      const { contentMode, mirror } = renderer;
+      const view = renderer.parentElement!;
+      const renderers = this.getRenderers(config);
+      const index = renderers.indexOf(renderer);
+      renderer.unbind();
+      const newRenderer = this.createRenderer(RENDER_MODE.SOFTWARE);
+      newRenderer.bind(view);
+      newRenderer.setRenderOption({ contentMode, mirror });
+      renderers.splice(index, 1, newRenderer);
+    };
 
   /**
    * @ignore

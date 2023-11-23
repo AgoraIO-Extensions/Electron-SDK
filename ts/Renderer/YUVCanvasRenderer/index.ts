@@ -10,7 +10,6 @@ const YUVCanvas = require('yuv-canvas');
 export class YUVCanvasRenderer extends IRenderer {
   private _cacheCanvasOptions?: CanvasOptions;
   private _yuvCanvasSink?: any;
-  private _container?: HTMLElement;
   private _videoFrame: ShareVideoFrame;
 
   constructor() {
@@ -23,82 +22,103 @@ export class YUVCanvasRenderer extends IRenderer {
       yBuffer: new Uint8Array(0),
       uBuffer: new Uint8Array(0),
       vBuffer: new Uint8Array(0),
-      videoSourceType: -1,
     };
   }
 
-  public bind(element: HTMLElement) {
+  public override bind(element: HTMLElement) {
     super.bind(element);
-    let container = document.createElement('div');
-    Object.assign(container.style, {
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      overflow: 'hidden',
-    });
-    this._container = container;
-    this.parentElement!.appendChild(this._container);
-    this.canvas = document.createElement('canvas');
-    this._container.appendChild(this.canvas);
-
     this._yuvCanvasSink = YUVCanvas.attach(this.canvas, {
       webGL: false,
     });
   }
 
-  public unbind() {
-    if (this._container) {
-      this._container.replaceChildren();
-      this._container = undefined;
-    }
-    if (this.parentElement) {
-      this.parentElement.replaceChildren();
-      this.parentElement = undefined;
-    }
-    if (this.canvas) {
-      this.canvas = undefined;
-    }
+  public override unbind() {
     if (this._yuvCanvasSink && this._yuvCanvasSink?.loseContext) {
       this._yuvCanvasSink?.loseContext();
     }
+    super.unbind();
   }
 
-  private zoom(
-    vertical: boolean,
-    contentMode: RenderModeType = RenderModeType.RenderModeFit,
-    width: number,
-    height: number,
-    clientWidth: number,
-    clientHeight: number
-  ): number {
-    let localRatio = clientWidth / clientHeight;
-    let tempRatio = width / height;
-    if (isNaN(localRatio) || isNaN(tempRatio)) {
-      return 1;
+  public override drawFrame(frame: ShareVideoFrame) {
+    if (!this.container || !this._yuvCanvasSink) {
+      return;
     }
 
-    if (contentMode === RenderModeType.RenderModeHidden) {
-      if (vertical) {
-        return clientHeight / clientWidth < width / height
-          ? clientWidth / height
-          : clientHeight / width;
-      } else {
-        return clientWidth / clientHeight > width / height
-          ? clientWidth / width
-          : clientHeight / height;
+    let frameWidth = frame.width;
+    let frameHeight = frame.height;
+
+    if (
+      this._videoFrame.yStride === 0 ||
+      this._videoFrame.height === 0 ||
+      this._videoFrame.yStride != frame.yStride ||
+      this._videoFrame.height != frame.height
+    ) {
+      this._videoFrame.yBuffer = new Uint8Array(frame.yStride * frameHeight);
+      this._videoFrame.uBuffer = new Uint8Array(
+        (frame.yStride * frameHeight) / 4
+      );
+      this._videoFrame.vBuffer = new Uint8Array(
+        (frame.yStride * frameHeight) / 4
+      );
+    }
+
+    this._videoFrame.yBuffer.set(frame.yBuffer);
+    this._videoFrame.uBuffer.set(frame.uBuffer);
+    this._videoFrame.vBuffer.set(frame.vBuffer);
+
+    this._videoFrame.width = frame.width;
+    this._videoFrame.height = frame.height;
+    this._videoFrame.yStride = frame.yStride;
+    this._videoFrame.rotation = frame.rotation;
+
+    let options: CanvasOptions = {
+      frameWidth,
+      frameHeight,
+      rotation: frame.rotation ? frame.rotation : 0,
+      contentMode: this.contentMode,
+      clientWidth: this.container.clientWidth,
+      clientHeight: this.container.clientHeight,
+    };
+
+    this.updateCanvas(options);
+
+    let format = YUVBuffer.format({
+      width: frameWidth,
+      height: frameHeight,
+      chromaWidth: frameWidth / 2,
+      chromaHeight: frameHeight / 2,
+      cropLeft: frame.yStride - frameWidth,
+    });
+
+    let yuvBufferFrame = YUVBuffer.frame(
+      format,
+      {
+        bytes: this._videoFrame.yBuffer,
+        stride: frame.yStride,
+      },
+      {
+        bytes: this._videoFrame.uBuffer,
+        stride: frame.yStride / 2,
+      },
+      {
+        bytes: this._videoFrame.vBuffer,
+        stride: frame.yStride / 2,
       }
-    } else {
-      if (vertical) {
-        return clientHeight / clientWidth < width / height
-          ? clientHeight / width
-          : clientWidth / height;
-      } else {
-        return clientWidth / clientHeight > width / height
-          ? clientHeight / height
-          : clientWidth / width;
-      }
+    );
+    this._yuvCanvasSink.drawFrame(yuvBufferFrame);
+  }
+
+  public override refreshCanvas() {
+    if (this._cacheCanvasOptions) {
+      this.zoom(
+        this._cacheCanvasOptions.rotation === 90 ||
+          this._cacheCanvasOptions.rotation === 270,
+        this._cacheCanvasOptions.contentMode,
+        this._cacheCanvasOptions.frameWidth,
+        this._cacheCanvasOptions.frameHeight,
+        this._cacheCanvasOptions.clientWidth,
+        this._cacheCanvasOptions.clientHeight
+      );
     }
   }
 
@@ -107,7 +127,7 @@ export class YUVCanvasRenderer extends IRenderer {
       frameWidth: 0,
       frameHeight: 0,
       rotation: 0,
-      contentMode: 0,
+      contentMode: RenderModeType.RenderModeHidden,
       clientWidth: 0,
       clientHeight: 0,
     }
@@ -158,86 +178,40 @@ export class YUVCanvasRenderer extends IRenderer {
     }
   }
 
-  public drawFrame(frame: ShareVideoFrame) {
-    if (!this._container || !this._yuvCanvasSink) {
-      return;
+  private zoom(
+    vertical: boolean,
+    contentMode: RenderModeType = RenderModeType.RenderModeFit,
+    width: number,
+    height: number,
+    clientWidth: number,
+    clientHeight: number
+  ): number {
+    let localRatio = clientWidth / clientHeight;
+    let tempRatio = width / height;
+    if (isNaN(localRatio) || isNaN(tempRatio)) {
+      return 1;
     }
 
-    let frameWidth = frame.width;
-    let frameHeight = frame.height;
-
-    if (
-      this._videoFrame.yStride === 0 ||
-      this._videoFrame.height === 0 ||
-      this._videoFrame.yStride != frame.yStride ||
-      this._videoFrame.height != frame.height
-    ) {
-      this._videoFrame.yBuffer = new Uint8Array(frame.yStride * frameHeight);
-      this._videoFrame.uBuffer = new Uint8Array(
-        (frame.yStride * frameHeight) / 4
-      );
-      this._videoFrame.vBuffer = new Uint8Array(
-        (frame.yStride * frameHeight) / 4
-      );
-    }
-
-    this._videoFrame.yBuffer.set(frame.yBuffer);
-    this._videoFrame.uBuffer.set(frame.uBuffer);
-    this._videoFrame.vBuffer.set(frame.vBuffer);
-
-    this._videoFrame.width = frame.width;
-    this._videoFrame.height = frame.height;
-    this._videoFrame.yStride = frame.yStride;
-    this._videoFrame.rotation = frame.rotation;
-
-    let options: CanvasOptions = {
-      frameWidth,
-      frameHeight,
-      rotation: frame.rotation ? frame.rotation : 0,
-      contentMode: this.contentMode,
-      clientWidth: this._container.clientWidth,
-      clientHeight: this._container.clientHeight,
-    };
-
-    this.updateCanvas(options);
-
-    let format = YUVBuffer.format({
-      width: frameWidth,
-      height: frameHeight,
-      chromaWidth: frameWidth / 2,
-      chromaHeight: frameHeight / 2,
-      cropLeft: frame.yStride - frameWidth,
-    });
-
-    let yuvBufferFrame = YUVBuffer.frame(
-      format,
-      {
-        bytes: this._videoFrame.yBuffer,
-        stride: frame.yStride,
-      },
-      {
-        bytes: this._videoFrame.uBuffer,
-        stride: frame.yStride / 2,
-      },
-      {
-        bytes: this._videoFrame.vBuffer,
-        stride: frame.yStride / 2,
+    if (contentMode === RenderModeType.RenderModeHidden) {
+      if (vertical) {
+        return clientHeight / clientWidth < width / height
+          ? clientWidth / height
+          : clientHeight / width;
+      } else {
+        return clientWidth / clientHeight > width / height
+          ? clientWidth / width
+          : clientHeight / height;
       }
-    );
-    this._yuvCanvasSink.drawFrame(yuvBufferFrame);
-  }
-
-  public refreshCanvas() {
-    if (this._cacheCanvasOptions) {
-      this.zoom(
-        this._cacheCanvasOptions.rotation === 90 ||
-          this._cacheCanvasOptions.rotation === 270,
-        this._cacheCanvasOptions.contentMode,
-        this._cacheCanvasOptions.frameWidth,
-        this._cacheCanvasOptions.frameHeight,
-        this._cacheCanvasOptions.clientWidth,
-        this._cacheCanvasOptions.clientHeight
-      );
+    } else {
+      if (vertical) {
+        return clientHeight / clientWidth < width / height
+          ? clientHeight / width
+          : clientWidth / height;
+      } else {
+        return clientWidth / clientHeight > width / height
+          ? clientHeight / height
+          : clientWidth / width;
+      }
     }
   }
 }
