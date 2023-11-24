@@ -89,7 +89,7 @@ set `externals` property of your webpack config to `{"agora-electron-sdk": "comm
 
 - [Document](https://docs.agora.io/en/video-call-4.x/API%20Reference/electron_ng/API/rtc_api_overview_ng.html) - Official document
 
-- [Demo](./example/) - A quick start demo based on Vue/React and this repo
+- [Demo](./example/) - A quick start demo based on React and this repo
 
 - [Changelog](./CHANGELOG.md) - Attention to newest information
 
@@ -126,10 +126,10 @@ $ npm install #or yarn
 $ npm install --agora_electron_sdk_pre_built=false
 
 # build  32 bit architecture on Windows
-$ npm install --verbose --agora_electron_sdk_pre_built=false  --agora_electron_sdk_arch=ia32
+$ npm install --agora_electron_sdk_pre_built=false  --agora_electron_sdk_arch=ia32
 
 # build  64 bit architecture on Windows
-$ npm install --verbose --agora_electron_sdk_pre_built=false  --agora_electron_sdk_arch=x64
+$ npm install --agora_electron_sdk_pre_built=false  --agora_electron_sdk_arch=x64
 ```
 
 ## 🤝 Contributing [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/AgoraIO-Extensions/Electron-SDK/pulls)

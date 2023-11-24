@@ -264,15 +264,15 @@ export enum ContentInspectType {
    */
   ContentInspectInvalid = 0,
   /**
-   * 1: Video content moderation. SDK takes screenshots, inspects video content of the video stream in the channel, and uploads the screenshots and moderation results.
+   * @ignore
    */
   ContentInspectModeration = 1,
   /**
-   * @ignore
+   * 2: Video screenshot and upload via Agora self-developed extension. SDK takes screenshots of the video stream in the channel and uploads them.
    */
   ContentInspectSupervision = 2,
   /**
-   * @ignore
+   * 3: Video screenshot and upload via extensions from Agora Extensions Marketplace. SDK uses video moderation extensions from Agora Extensions Marketplace to take screenshots of the video stream in the channel and uploads them.
    */
   ContentInspectImageModeration = 3,
 }
@@ -414,7 +414,7 @@ export enum VideoPixelFormat {
    */
   VideoPixelRgba = 4,
   /**
-   * 8: The format is NV12.
+   * @ignore
    */
   VideoPixelNv12 = 8,
   /**
@@ -583,6 +583,10 @@ export class ExternalVideoFrame {
    * @ignore
    */
   alphaBuffer?: Uint8Array;
+  /**
+   * @ignore
+   */
+  fillAlphaBuffer?: boolean;
 }
 
 /**
@@ -1012,13 +1016,13 @@ export interface IVideoFrameObserver {
    * Occurs each time the SDK receives a video frame captured by local devices.
    *
    * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data captured by local devices. You can then pre-process the data according to your scenarios. Once the pre-processing is complete, you can directly modify videoFrame in this callback, and set the return value to true to send the modified video data to the SDK.
-   *  The video data that this callback gets has not been pre-processed, and is not watermarked, cropped, rotated or beautified.
+   *  The video data that this callback gets has not been pre-processed such as watermarking, cropping, and rotating.
    *  If the video data type you get is RGBA, the SDK does not support processing the data of the alpha channel.
    *
    * @param sourceType Video source types, including cameras, screens, or media player. See VideoSourceType.
    * @param videoFrame The video frame. See VideoFrame. The default value of the video frame data format obtained through this callback is as follows:
-   *  macOS: YUV 420
-   *  Windows: YUV 420
+   *  macOS: I420 or CVPixelBufferRef
+   *  Windows: YUV420
    *
    * @returns
    * When the video processing mode is ProcessModeReadOnly : true : Reserved for future use. false : Reserved for future use.
@@ -1033,8 +1037,8 @@ export interface IVideoFrameObserver {
    *  The video data that this callback gets has been preprocessed, with its content cropped and rotated, and the image enhanced.
    *
    * @param videoFrame The video frame. See VideoFrame. The default value of the video frame data format obtained through this callback is as follows:
-   *  macOS: YUV 420
-   *  Windows: YUV 420
+   *  macOS: I420 or CVPixelBufferRef
+   *  Windows: YUV420
    * @param sourceType The type of the video source. See VideoSourceType.
    *
    * @returns
@@ -1057,8 +1061,8 @@ export interface IVideoFrameObserver {
    * @param channelId The channel ID.
    * @param remoteUid The user ID of the remote user who sends the current video frame.
    * @param videoFrame The video frame. See VideoFrame. The default value of the video frame data format obtained through this callback is as follows:
-   *  macOS: YUV 420
-   *  Windows: YUV 420
+   *  macOS: I420 or CVPixelBufferRef
+   *  Windows: YUV420
    *
    * @returns
    * When the video processing mode is ProcessModeReadOnly : true : Reserved for future use. false : Reserved for future use.

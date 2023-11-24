@@ -930,6 +930,19 @@ export function processIRtcEngineEventHandler(
         );
       }
       break;
+
+    case 'onTranscodedStreamLayoutInfo':
+      if (handler.onTranscodedStreamLayoutInfo !== undefined) {
+        handler.onTranscodedStreamLayoutInfo(
+          jsonParams.connection,
+          jsonParams.uid,
+          jsonParams.width,
+          jsonParams.height,
+          jsonParams.layoutCount,
+          jsonParams.layoutlist
+        );
+      }
+      break;
   }
 }
 
