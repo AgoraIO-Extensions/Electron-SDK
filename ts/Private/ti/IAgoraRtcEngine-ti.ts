@@ -99,6 +99,7 @@ export const IRtcEngineEventHandler = t.iface([], {
   "onUserAccountUpdated": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("remoteUid", "number"), t.param("userAccount", "string"))),
   "onVideoRenderingTracingResult": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("uid", "number"), t.param("currentEvent", "MediaTraceEvent"), t.param("tracingInfo", "VideoRenderingTracingInfo"))),
   "onLocalVideoTranscoderError": t.opt(t.func("void", t.param("stream", "TranscodingVideoStream"), t.param("error", "VideoTranscoderError"))),
+  "onTranscodedStreamLayoutInfo": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("uid", "number"), t.param("width", "number"), t.param("height", "number"), t.param("layoutCount", "number"), t.param("layoutlist", t.array("VideoLayout")))),
 });
 
 export const IMetadataObserver = t.iface([], {

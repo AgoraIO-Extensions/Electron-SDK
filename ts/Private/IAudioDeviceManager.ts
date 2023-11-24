@@ -146,12 +146,21 @@ export abstract class IAudioDeviceManager {
   abstract getLoopbackDevice(): string;
 
   /**
-   * @ignore
+   * Mutes the audio playback device.
+   *
+   * @param mute Whether to mute the audio playback device: true : Mute the audio playback device. false : Unmute the audio playback device.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract setPlaybackDeviceMute(mute: boolean): number;
 
   /**
-   * @ignore
+   * Retrieves whether the audio playback device is muted.
+   *
+   * @returns
+   * true : The audio playback device is muted. false : The audio playback device is unmuted.
    */
   abstract getPlaybackDeviceMute(): boolean;
 

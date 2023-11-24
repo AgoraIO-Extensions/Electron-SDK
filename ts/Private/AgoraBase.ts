@@ -1339,7 +1339,7 @@ export class VideoEncoderConfiguration {
  */
 export class DataStreamConfig {
   /**
-   * Whether to synchronize the data packet with the published audio packet. true : Synchronize the data packet with the audio packet. false : Do not synchronize the data packet with the audio packet. When you set the data packet to synchronize with the audio, then if the data packet delay is within the audio delay, the SDK triggers the onStreamMessage callback when the synchronized audio packet is played out. Do not set this parameter as true if you need the receiver to receive the data packet immediately. Agora recommends that you set this parameter to true only when you need to implement specific functions, for example, lyric synchronization.
+   * Whether to synchronize the data packet with the published audio packet. true : Synchronize the data packet with the audio packet. This setting is suitable for special scenarios such as lyrics synchronization. false : Do not synchronize the data packet with the audio packet. This setting is suitable for scenarios where data packets need to arrive at the receiving end immediately. When you set the data packet to synchronize with the audio, then if the data packet delay is within the audio delay, the SDK triggers the onStreamMessage callback when the synchronized audio packet is played out.
    */
   syncWithAudio?: boolean;
   /**
@@ -1487,11 +1487,11 @@ export class RtcStats {
    */
   rxVideoBytes?: number;
   /**
-   * Video transmission bitrate (Kbps), represented by an instantaneous value.
+   * The actual bitrate (Kbps) while sending the local video stream.
    */
   txKBitRate?: number;
   /**
-   * The receiving bitrate (Kbps), represented by an instantaneous value.
+   * The receiving bitrate (Kbps).
    */
   rxKBitRate?: number;
   /**
@@ -1980,30 +1980,38 @@ export enum LocalVideoStreamError {
    */
   LocalVideoStreamErrorDeviceNotFound = 8,
   /**
-   * 9: (For macOS only) The video capture device currently in use is disconnected (such as being unplugged).
+   * 9: (macOS only) The video capture device currently in use is disconnected (such as being unplugged).
    */
   LocalVideoStreamErrorDeviceDisconnected = 9,
   /**
-   * 10: (For macOS and Windows only) The SDK cannot find the video device in the video device list. Check whether the ID of the video device is valid.
+   * 10: (macOS and Windows only) The SDK cannot find the video device in the video device list. Check whether the ID of the video device is valid.
    */
   LocalVideoStreamErrorDeviceInvalidId = 10,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorDeviceInterrupt = 14,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorDeviceFatalError = 15,
   /**
    * 101: The current video capture device is unavailable due to excessive system pressure.
    */
   LocalVideoStreamErrorDeviceSystemPressure = 101,
   /**
-   * 11: (For macOS only) The shared window is minimized when you call startScreenCaptureByWindowId to share a window. The SDK cannot share a minimized window. You can cancel the minimization of this window at the application layer, for example by maximizing this window.
+   * 11: (macOS only) The shared window is minimized when you call startScreenCaptureByWindowId to share a window. The SDK cannot share a minimized window. You can cancel the minimization of this window at the application layer, for example by maximizing this window.
    */
   LocalVideoStreamErrorScreenCaptureWindowMinimized = 11,
   /**
-   * 12: (For macOS and Windows only) The error code indicates that a window shared by the window ID has been closed or a full-screen window shared by the window ID has exited full-screen mode. After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a black screen, Agora recommends that you immediately stop screen sharing. Common scenarios for reporting this error code:
+   * 12: (macOS and Windows only) The error code indicates that a window shared by the window ID has been closed or a full-screen window shared by the window ID has exited full-screen mode. After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a black screen, Agora recommends that you immediately stop screen sharing. Common scenarios reporting this error code:
    *  When the local user closes the shared window, the SDK reports this error code.
    *  The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After the user exits full-screen mode, the SDK reports this error code.
    *  The local user watches a web video or reads a web document in full-screen mode first, and then shares the window of the web video or document. After the user exits full-screen mode, the SDK reports this error code.
    */
   LocalVideoStreamErrorScreenCaptureWindowClosed = 12,
   /**
-   * 13: (For Windows only) The window being shared is overlapped by another window, so the overlapped area is blacked out by the SDK during window sharing.
+   * 13: (Windows only) The window being shared is overlapped by another window, so the overlapped area is blacked out by the SDK during window sharing.
    */
   LocalVideoStreamErrorScreenCaptureWindowOccluded = 13,
   /**
@@ -2709,7 +2717,7 @@ export class LiveTranscoding {
    */
   height?: number;
   /**
-   * Bitrate of the output video stream for Media Push in Kbps. The default value is 400 Kbps.
+   * Bitrate of the output video stream for Media Push in Kbps. The default value is 400 Kbps. Set this member according to the table. If you set a bitrate beyond the proper range, the SDK automatically adapts it to a value within the range.
    */
   videoBitrate?: number;
   /**
@@ -3198,7 +3206,7 @@ export enum NetworkType {
    */
   NetworkTypeMobile4g = 5,
   /**
-   * @ignore
+   * 6: The network type is mobile 5G.
    */
   NetworkTypeMobile5g = 6,
 }
@@ -3234,6 +3242,10 @@ export class VideoCanvas {
    */
   uid?: number;
   /**
+   * @ignore
+   */
+  subviewUid?: number;
+  /**
    * The rendering mode of the video. See RenderModeType.
    */
   renderMode?: RenderModeType;
@@ -3259,6 +3271,13 @@ export class VideoCanvas {
    * (Optional) Display area of the video frame, see Rectangle. width and height represent the video pixel width and height of the area. The default value is null (width or height is 0), which means that the actual resolution of the video frame is displayed.
    */
   cropArea?: Rectangle;
+  /**
+   * (Optional) Whether the receiver enables alpha mask rendering: true : The receiver enables alpha mask rendering. false : (default) The receiver disables alpha mask rendering. Alpha mask rendering can create images with transparent effects and extract portraits from videos. When used in combination with other methods, you can implement effects such as picture-in-picture and watermarking.
+   *  This property applies to macOS only.
+   *  The receiver can render alpha channel information only when the sender enables alpha transmission.
+   *  To enable alpha transmission,.
+   */
+  enableAlphaMask?: boolean;
 }
 
 /**
@@ -3764,7 +3783,7 @@ export class ScreenCaptureParameters {
    */
   bitrate?: number;
   /**
-   * Whether to capture the mouse in screen sharing: true : (Default) Capture the mouse. false : Do not capture the mouse.
+   * Whether to capture the mouse in screen sharing: true : (Default) Capture the mouse. false : Do not capture the mouse. Due to macOS system restrictions, setting this parameter to false is ineffective during screen sharing (it has no impact when sharing a window).
    */
   captureMouseCursor?: boolean;
   /**
@@ -3861,7 +3880,7 @@ export enum AudioEncodedFrameObserverPosition {
  */
 export class AudioRecordingConfiguration {
   /**
-   * The absolute path (including the filename extensions) of the recording file. For example: C:\music\audio.mp4. Ensure that the directory for the log files exists and is writable.
+   * The absolute path (including the filename extensions) of the recording file. For example: C:\music\audio.aac. Ensure that the directory for the log files exists and is writable.
    */
   filePath?: string;
   /**
@@ -4742,4 +4761,42 @@ export class SpatialAudioParams {
    *  When this parameter is enabled, Agora recommends that you set a regular period (such as 30 ms), and then call the updatePlayerPositionInfo, updateSelfPosition, and updateRemotePosition methods to continuously update the relative distance between the sound source and the receiver. The following factors can cause the Doppler effect to be unpredictable or the sound to be jittery: the period of updating the distance is too long, the updating period is irregular, or the distance information is lost due to network packet loss or delay.
    */
   enable_doppler?: boolean;
+}
+
+/**
+ * @ignore
+ */
+export class VideoLayout {
+  /**
+   * @ignore
+   */
+  channelId?: string;
+  /**
+   * @ignore
+   */
+  uid?: number;
+  /**
+   * @ignore
+   */
+  strUid?: string;
+  /**
+   * @ignore
+   */
+  x?: number;
+  /**
+   * @ignore
+   */
+  y?: number;
+  /**
+   * @ignore
+   */
+  width?: number;
+  /**
+   * @ignore
+   */
+  height?: number;
+  /**
+   * @ignore
+   */
+  videoState?: number;
 }

@@ -22,7 +22,7 @@ export abstract class IMediaPlayer {
    * Gets the ID of the media player.
    *
    * @returns
-   * ≥ 0: Success. The ID of the media player.
+   * Success. The ID of the media player.
    *  < 0: Failure.
    */
   abstract getMediaPlayerId(): number;
@@ -140,7 +140,7 @@ export abstract class IMediaPlayer {
   /**
    * Gets the number of the media streams in the media resource.
    *
-   * Call this method after calling open.
+   * Call this method after you call open and receive the onPlayerSourceStateChanged callback reporting the state PlayerStateOpenCompleted.
    *
    * @returns
    * The number of the media streams in the media resource if the method call succeeds.
@@ -153,7 +153,7 @@ export abstract class IMediaPlayer {
    *
    * Call this method after calling getStreamCount.
    *
-   * @param index The index of the media stream.
+   * @param index The index of the media stream. This parameter must be less than the return value of getStreamCount.
    *
    * @returns
    * If the call succeeds, returns the detailed information of the media stream. See PlayerStreamInfo.
@@ -217,18 +217,7 @@ export abstract class IMediaPlayer {
   abstract setPlayerOptionInInt(key: string, value: number): number;
 
   /**
-   * Sets the private options for the media player.
-   *
-   * The media player supports setting private options by key and value. Under normal circumstances, you do not need to know the private option settings, and just use the default option settings.
-   *  Ensure that you call this method before open.
-   *  If you need to push streams with SEI into the CDN, call setPlayerOptionInString ("sei_data_with_uuid", 1); otherwise, the loss of SEI might occurs.
-   *
-   * @param key The key of the option.
-   * @param value The value of the key.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
+   * @ignore
    */
   abstract setPlayerOptionInString(key: string, value: string): number;
 
