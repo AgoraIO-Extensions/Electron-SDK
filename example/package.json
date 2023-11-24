@@ -7,30 +7,35 @@
     "start": "electron-webpack dev",
     "compile": "electron-webpack",
     "rebuild": "electron-rebuild -f -o ref-napi",
-    "dist": "yarn compile && electron-builder",
-    "dist:mac": "yarn dist --dir -c.compression=store -c.mac.identity=null",
-    "dist:win32": "yarn compile && electron-builder --publish never --win --ia32",
-    "dist:win64": "yarn compile && electron-builder --publish never --win --x64",
-    "switchEnv:win32": "cd .. && @powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./ci/packager-win.ps1 1 switchEnv",
-    "switchEnv:win64": "cd .. && @powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./ci/packager-win.ps1 2 switchEnv"
+    "dist": "npm run compile && electron-builder",
+    "dist:mac": "npm run dist -- --mac",
+    "dist:win": "npm run dist -- --win",
+    "dist:win32": "npm run dist:win -- --ia32",
+    "dist:win64": "npm run dist:win -- --x64"
   },
   "build": {
-    "asar": false,
-    "buildDependenciesFromSource": true,
-    "productName": "Agora-Electron-API-Example",
     "appId": "agora.io.ElectronApiExample",
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/agora-electron-sdk"
+    ],
+    "buildDependenciesFromSource": true,
+    "compression": "normal",
+    "productName": "Agora-Electron-API-Example",
+    "publish": [],
     "files": [
       "!*.log"
     ],
     "mac": {
-      "target": [
-        "dir"
-      ],
-      "type": "distribution",
-      "hardenedRuntime": true,
       "entitlements": "assets/entitlements.mac.plist",
       "entitlementsInherit": "assets/entitlements.mac.plist",
-      "gatekeeperAssess": false
+      "gatekeeperAssess": false,
+      "hardenedRuntime": true,
+      "identity": null,
+      "target": [
+        "zip"
+      ],
+      "type": "distribution"
     },
     "dmg": {
       "contents": [
@@ -52,10 +57,10 @@
       ]
     },
     "linux": {
+      "category": "Development",
       "target": [
         "AppImage"
-      ],
-      "category": "Development"
+      ]
     },
     "directories": {
       "buildResources": "assets"
