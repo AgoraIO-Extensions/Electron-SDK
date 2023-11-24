@@ -9,6 +9,16 @@ runs:
       with:
         node-version-file: .nvmrc
 
+    - name: Setup Yarn
+      run:
+        npm i -g yarn@1.22.19
+      shell: bash
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11.5
+
     - name: Cache dependencies
       id: yarn-cache
       uses: actions/cache@v3
