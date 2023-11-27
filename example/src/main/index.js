@@ -69,29 +69,15 @@ function createMainWindow() {
           );
         }
       );
-      if (window.webContents.listenerCount('IPC_AGORA_RTC_INITIALIZE') > 0) {
-        window.webContents.send('IPC_AGORA_RTC_INITIALIZE', result);
-      }
+      return result;
     });
     ipcMain.handle('IPC_AGORA_RTC_RELEASE', () => {
       const engine = createAgoraRtcEngine();
-      const result = engine.release();
-      if (window.webContents.listenerCount('IPC_AGORA_RTC_RELEASE') > 0) {
-        window.webContents.send('IPC_AGORA_RTC_RELEASE', result);
-      }
+      return engine.release();
     });
     ipcMain.handle('IPC_AGORA_RTC_ENUMERATE_VIDEO_DEVICES', () => {
       const engine = createAgoraRtcEngine();
-      if (
-        window.webContents.listenerCount(
-          'IPC_AGORA_RTC_ENUMERATE_VIDEO_DEVICES'
-        ) > 0
-      ) {
-        window.webContents.send(
-          'IPC_AGORA_RTC_ENUMERATE_VIDEO_DEVICES',
-          engine.getVideoDeviceManager().enumerateVideoDevices()
-        );
-      }
+      return engine.getVideoDeviceManager().enumerateVideoDevices();
     });
     ipcMain.handle(
       'IPC_AGORA_RTC_START_SCREEN_CAPTURE',
@@ -113,41 +99,19 @@ function createMainWindow() {
             captureParams
           );
         }
-        if (
-          window.webContents.listenerCount(
-            'IPC_AGORA_RTC_START_SCREEN_CAPTURE'
-          ) > 0
-        ) {
-          window.webContents.send('IPC_AGORA_RTC_START_SCREEN_CAPTURE', result);
-        }
+        return result;
       }
     );
     ipcMain.handle(
       'IPC_AGORA_RTC_UPDATE_SCREEN_CAPTURE_PARAMETERS',
       (_, { captureParams }) => {
         const engine = createAgoraRtcEngine();
-        const result = engine.updateScreenCaptureParameters(captureParams);
-        if (
-          window.webContents.listenerCount(
-            'IPC_AGORA_RTC_UPDATE_SCREEN_CAPTURE_PARAMETERS'
-          ) > 0
-        ) {
-          window.webContents.send(
-            'IPC_AGORA_RTC_UPDATE_SCREEN_CAPTURE_PARAMETERS',
-            result
-          );
-        }
+        return engine.updateScreenCaptureParameters(captureParams);
       }
     );
     ipcMain.handle('IPC_AGORA_RTC_STOP_SCREEN_CAPTURE', () => {
       const engine = createAgoraRtcEngine();
-      const result = engine.stopScreenCapture();
-      if (
-        window.webContents.listenerCount('IPC_AGORA_RTC_STOP_SCREEN_CAPTURE') >
-        0
-      ) {
-        window.webContents.send('IPC_AGORA_RTC_STOP_SCREEN_CAPTURE', result);
-      }
+      return engine.stopScreenCapture();
     });
   });
 

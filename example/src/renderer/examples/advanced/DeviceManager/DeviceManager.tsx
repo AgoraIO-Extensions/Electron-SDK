@@ -12,7 +12,9 @@ import {
   VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
+import { ipcRenderer } from 'electron';
 import React, { ReactElement } from 'react';
+import semver from 'semver';
 
 import {
   BaseComponent,
@@ -131,16 +133,36 @@ export default class DeviceManager
   /**
    * Step 3-1: enumerateDevices
    */
-  enumerateDevices = () => {
+  enumerateDevices = async () => {
     const playbackDevices = this.engine
       ?.getAudioDeviceManager()
       .enumeratePlaybackDevices();
     const recordingDevices = this.engine
       ?.getAudioDeviceManager()
       .enumerateRecordingDevices();
-    const videoDevices = this.engine
-      ?.getVideoDeviceManager()
-      .enumerateVideoDevices();
+    let videoDevices;
+    if (
+      semver.gt(process.versions.electron, '25.0.0') &&
+      process.platform === 'darwin'
+    ) {
+      ipcRenderer.on(
+        'IPC_AGORA_RTC_VIDEO_DEVICE_STATE_CHANGED',
+        (_, deviceId: string, deviceType: number, deviceState: number) => {
+          this.onVideoDeviceStateChanged(deviceId, deviceType, deviceState);
+        }
+      );
+
+      await ipcRenderer.invoke('IPC_AGORA_RTC_INITIALIZE', {
+        appId: Config.appId,
+      });
+      videoDevices = await ipcRenderer.invoke(
+        'IPC_AGORA_RTC_ENUMERATE_VIDEO_DEVICES'
+      );
+    } else {
+      videoDevices = this.engine
+        ?.getVideoDeviceManager()
+        .enumerateVideoDevices();
+    }
 
     this.setState({
       playbackDevices,
@@ -233,6 +255,7 @@ export default class DeviceManager
    * Step 5: releaseRtcEngine
    */
   protected releaseRtcEngine() {
+    ipcRenderer.invoke('IPC_AGORA_RTC_RELEASE');
     this.engine?.unregisterEventHandler(this);
     this.engine?.release();
   }
