@@ -229,23 +229,24 @@ export default class ScreenShare
         source: targetSource,
         captureParams,
       });
+    }
+
+    // Keep screen capture in the renderer process
+    if (
+      targetSource.type ===
+      ScreenCaptureSourceType.ScreencapturesourcetypeScreen
+    ) {
+      this.engine?.startScreenCaptureByDisplayId(
+        targetSource.sourceId,
+        {},
+        captureParams
+      );
     } else {
-      if (
-        targetSource.type ===
-        ScreenCaptureSourceType.ScreencapturesourcetypeScreen
-      ) {
-        this.engine?.startScreenCaptureByDisplayId(
-          targetSource.sourceId,
-          {},
-          captureParams
-        );
-      } else {
-        this.engine?.startScreenCaptureByWindowId(
-          targetSource.sourceId,
-          {},
-          captureParams
-        );
-      }
+      this.engine?.startScreenCaptureByWindowId(
+        targetSource.sourceId,
+        {},
+        captureParams
+      );
     }
 
     this.setState({ startScreenCapture: true });
@@ -291,9 +292,10 @@ export default class ScreenShare
           captureParams,
         }
       );
-    } else {
-      this.engine?.updateScreenCaptureParameters(captureParams);
     }
+
+    // Keep screen capture in the renderer process
+    this.engine?.updateScreenCaptureParameters(captureParams);
   };
 
   /**
@@ -335,9 +337,10 @@ export default class ScreenShare
     ) {
       await ipcRenderer.invoke('IPC_AGORA_RTC_STOP_SCREEN_CAPTURE');
       await ipcRenderer.invoke('IPC_AGORA_RTC_RELEASE');
-    } else {
-      this.engine?.stopScreenCapture();
     }
+
+    // Keep screen capture in the renderer process
+    this.engine?.stopScreenCapture();
 
     this.setState({ startScreenCapture: false });
   };
