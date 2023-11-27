@@ -8,14 +8,17 @@ import {
   RenderModeType,
   RtcConnection,
   RtcStats,
+  ScreenCaptureParameters,
   ScreenCaptureSourceInfo,
   ScreenCaptureSourceType,
   UserOfflineReasonType,
   VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
+import { ipcRenderer } from 'electron';
 import React, { ReactElement } from 'react';
 import { SketchPicker } from 'react-color';
+import semver from 'semver';
 
 import {
   BaseComponent,
@@ -167,7 +170,7 @@ export default class ScreenShare
   /**
    * Step 3-2: startScreenCapture
    */
-  startScreenCapture = () => {
+  startScreenCapture = async () => {
     const {
       targetSource,
       width,
@@ -187,47 +190,71 @@ export default class ScreenShare
       return;
     }
 
+    let captureParams: ScreenCaptureParameters = {};
     if (
       targetSource.type ===
       ScreenCaptureSourceType.ScreencapturesourcetypeScreen
     ) {
-      this.engine?.startScreenCaptureByDisplayId(
-        targetSource.sourceId,
-        {},
-        {
-          dimensions: { width, height },
-          frameRate,
-          bitrate,
-          captureMouseCursor,
-          excludeWindowList,
-          excludeWindowCount: excludeWindowList.length,
-          highLightWidth,
-          highLightColor,
-          enableHighLight,
-        }
-      );
+      captureParams = {
+        dimensions: { width, height },
+        frameRate,
+        bitrate,
+        captureMouseCursor,
+        excludeWindowList,
+        excludeWindowCount: excludeWindowList.length,
+        highLightWidth,
+        highLightColor,
+        enableHighLight,
+      };
     } else {
-      this.engine?.startScreenCaptureByWindowId(
-        targetSource.sourceId,
-        {},
-        {
-          dimensions: { width, height },
-          frameRate,
-          bitrate,
-          windowFocus,
-          highLightWidth,
-          highLightColor,
-          enableHighLight,
-        }
-      );
+      captureParams = {
+        dimensions: { width, height },
+        frameRate,
+        bitrate,
+        windowFocus,
+        highLightWidth,
+        highLightColor,
+        enableHighLight,
+      };
     }
+
+    if (
+      semver.gt(process.versions.electron, '25.0.0') &&
+      process.platform === 'darwin'
+    ) {
+      await ipcRenderer.invoke('IPC_AGORA_RTC_INITIALIZE', {
+        appId: Config.appId,
+      });
+      await ipcRenderer.invoke('IPC_AGORA_RTC_START_SCREEN_CAPTURE', {
+        source: targetSource,
+        captureParams,
+      });
+    } else {
+      if (
+        targetSource.type ===
+        ScreenCaptureSourceType.ScreencapturesourcetypeScreen
+      ) {
+        this.engine?.startScreenCaptureByDisplayId(
+          targetSource.sourceId,
+          {},
+          captureParams
+        );
+      } else {
+        this.engine?.startScreenCaptureByWindowId(
+          targetSource.sourceId,
+          {},
+          captureParams
+        );
+      }
+    }
+
     this.setState({ startScreenCapture: true });
   };
 
   /**
    * Step 3-2 (Optional): updateScreenCaptureParameters
    */
-  updateScreenCaptureParameters = () => {
+  updateScreenCaptureParameters = async () => {
     const {
       width,
       height,
@@ -240,7 +267,8 @@ export default class ScreenShare
       highLightColor,
       enableHighLight,
     } = this.state;
-    this.engine?.updateScreenCaptureParameters({
+
+    const captureParams: ScreenCaptureParameters = {
       dimensions: { width, height },
       frameRate,
       bitrate,
@@ -251,7 +279,21 @@ export default class ScreenShare
       highLightWidth,
       highLightColor,
       enableHighLight,
-    });
+    };
+
+    if (
+      semver.gt(process.versions.electron, '25.0.0') &&
+      process.platform === 'darwin'
+    ) {
+      await ipcRenderer.invoke(
+        'IPC_AGORA_RTC_UPDATE_SCREEN_CAPTURE_PARAMETERS',
+        {
+          captureParams,
+        }
+      );
+    } else {
+      this.engine?.updateScreenCaptureParameters(captureParams);
+    }
   };
 
   /**
@@ -286,8 +328,17 @@ export default class ScreenShare
   /**
    * Step 3-5: stopScreenCapture
    */
-  stopScreenCapture = () => {
-    this.engine?.stopScreenCapture();
+  stopScreenCapture = async () => {
+    if (
+      semver.gt(process.versions.electron, '25.0.0') &&
+      process.platform === 'darwin'
+    ) {
+      await ipcRenderer.invoke('IPC_AGORA_RTC_STOP_SCREEN_CAPTURE');
+      await ipcRenderer.invoke('IPC_AGORA_RTC_RELEASE');
+    } else {
+      this.engine?.stopScreenCapture();
+    }
+
     this.setState({ startScreenCapture: false });
   };
 

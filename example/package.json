@@ -70,16 +70,17 @@
     ]
   },
   "dependencies": {
+    "@lwahonen/ffi-napi": "^4.0.12",
+    "@lwahonen/ref-napi": "^4.0.8",
     "agora-electron-sdk": "4.2.6",
     "antd": "^4.20.3",
     "download": "^8.0.0",
-    "@lwahonen/ffi-napi": "^4.0.12",
     "react": "^18.1.0",
     "react-color": "^2.19.3",
     "react-dom": "^18.1.0",
     "react-router-dom": "^5.2.0",
     "recharts": "^2.1.13",
-    "@lwahonen/ref-napi": "^4.0.8",
+    "semver": "^7.5.4",
     "source-map-support": "^0.5.16"
   },
   "devDependencies": {
