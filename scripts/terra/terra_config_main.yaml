@@ -1,0 +1,34 @@
+parsers:
+  - name: LegacyCXXParser
+    package: '@agoraio-extensions/terra-legacy-cxx-parser'
+    args:
+      includeHeaderDirs:
+        - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6/include'
+      parseFiles:
+        include:
+          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6/include/*.h'
+        exclude:
+          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6/include/AgoraRefPtr.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6/include/time_utils.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6/include/AgoraOptional.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6/include/AgoraRefPtr.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6/include/IAgoraH265Transcoder.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6/include/IAgoraMediaComponentFactory.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6/include/IAgoraParameter.h'
+      customHeaders:
+        - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6/custom_headers/*.h'
+      language: ts
+      definesMacros:
+        - __ELECTRON__
+      legacyRenders:
+        - TsInterfaceRender
+        - TsImplRender
+
+renderers:
+  - name: IrisDocRenderer
+    package: '@agoraio-extensions/terra_shared_configs'
+    args:
+      language: ts
+      fmtConfig: fmt_ts.yaml
+      exportFilePath: ../../ts/AgoraSdk.ts
+      templateUrl: https://github.com/AgoraIO/agora_doc_source/releases/download/master-build/electron_ng_json_template_en.json
