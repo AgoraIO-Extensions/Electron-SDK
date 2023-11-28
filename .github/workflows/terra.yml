@@ -25,9 +25,9 @@ jobs:
           target-branch-name-surffix: terra-update
           generate-code: true
           generate-comment: true
-          generate-code: |
+          generate-code-command: |
             sh generate-code.sh
-          generate-comment: |
+          generate-comment-command: |
             sh generate-comment.sh
           pull-request-title: |
             [AUTO] Generate codes by terra
