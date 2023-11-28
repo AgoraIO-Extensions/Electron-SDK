@@ -9,12 +9,26 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Generate comments
-        uses: ./.github/actions/doc
+      - name: Generate code and comment by terra
+        id: dep
+        uses: AgoraIO-Extensions/actions/.github/actions/generate@generate
         with:
           github-token: ${{ secrets.GH_TOKEN }}
+          target-repo: ${{ github.workspace }}
           target-branch: ${{ github.ref_name }}
+          target-branch-name-surffix: terra-update
+          generate-code: false
+          generate-comment: true
+          pull-request-title: |
+            [AUTO] Generate comments by iris-doc
+          pull-request-body: |
+            Doc source:
+
+            https://github.com/AgoraIO/agora_doc_source/releases/download/master-build/electron_ng_json_template_en.json

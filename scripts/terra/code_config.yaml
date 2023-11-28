@@ -24,11 +24,3 @@ parsers:
         - TsInterfaceRender
         - TsImplRender
 
-renderers:
-  - name: IrisDocRenderer
-    package: '@agoraio-extensions/terra_shared_configs'
-    args:
-      language: ts
-      fmtConfig: fmt_ts.yaml
-      exportFilePath: ../../ts/AgoraSdk.ts
-      templateUrl: https://github.com/AgoraIO/agora_doc_source/releases/download/master-build/electron_ng_json_template_en.json

@@ -16,29 +16,15 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: scripts/terra/.nvmrc
-
-      - name: Reconfigure git to use HTTP authentication
-        run: >
-          git config --global url."https://${{ secrets.GH_TOKEN }}@github.com/".insteadOf ssh://git@github.com/
-
-      - name: Generate
-        run: |
-          yarn
-          export LLVM_DOWNLOAD_URL=https://github.com/llvm/llvm-project/releases/download/llvmorg-15.0.6/clang+llvm-15.0.6-x86_64-linux-gnu-ubuntu-18.04.tar.xz
-          sh build.sh
-        working-directory: scripts/terra
-
-      - name: Create pull request
-        uses: AgoraIO-Extensions/actions/.github/actions/pr@main
+      - name: Generate code and comment by terra
+        id: dep
+        uses: AgoraIO-Extensions/actions/.github/actions/generate@generate
         with:
           github-token: ${{ secrets.GH_TOKEN }}
           target-repo: ${{ github.workspace }}
           target-branch: ${{ github.ref_name }}
           target-branch-name-surffix: terra-update
+          generate-code: true
+          generate-comment: true
           pull-request-title: |
             [AUTO] Generate codes by terra
-          add-paths: ts
