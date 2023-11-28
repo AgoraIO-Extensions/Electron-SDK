@@ -16,8 +16,8 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Generate code and comment by terra
-        uses: AgoraIO-Extensions/actions/.github/actions/generate@generate
+      - name: Generate comment by terra
+        uses: AgoraIO-Extensions/actions/.github/actions/generate@main
         with:
           github-token: ${{ secrets.GH_TOKEN }}
           generate-code: false
