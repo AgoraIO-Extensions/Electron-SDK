@@ -19,6 +19,7 @@ jobs:
       - name: Generate code and comment by terra
         uses: AgoraIO-Extensions/actions/.github/actions/generate@generate
         with:
+          github-token: ${{ secrets.GH_TOKEN }}
           generate-code: false
           generate-comment: true
           generate-comment-command: |
