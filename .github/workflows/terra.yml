@@ -19,15 +19,20 @@ jobs:
       - name: Generate code and comment by terra
         uses: AgoraIO-Extensions/actions/.github/actions/generate@generate
         with:
-          github-token: ${{ secrets.GH_TOKEN }}
-          target-repo: ${{ github.workspace }}
-          target-branch: ${{ github.ref_name }}
-          target-branch-name-surffix: terra-update
           generate-code: true
           generate-comment: true
           generate-code-command: |
             sh generate-code.sh
           generate-comment-command: |
             sh generate-comment.sh
+
+      - name: Create pull request
+        uses: AgoraIO-Extensions/actions/.github/actions/pr@main
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          target-repo: ${{ github.workspace }}
+          target-branch: ${{ github.ref_name }}
+          target-branch-name-surffix: terra-update
           pull-request-title: |
             [AUTO] Generate codes by terra
+          add-paths: ts

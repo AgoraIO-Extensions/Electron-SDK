@@ -19,17 +19,22 @@ jobs:
       - name: Generate code and comment by terra
         uses: AgoraIO-Extensions/actions/.github/actions/generate@generate
         with:
-          github-token: ${{ secrets.GH_TOKEN }}
-          target-repo: ${{ github.workspace }}
-          target-branch: ${{ github.ref_name }}
-          target-branch-name-surffix: doc-update
           generate-code: false
           generate-comment: true
           generate-comment-command: |
             sh generate-comment.sh
+
+      - name: Create pull request
+        uses: AgoraIO-Extensions/actions/.github/actions/pr@main
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          target-repo: ${{ github.workspace }}
+          target-branch: ${{ github.ref_name }}
+          target-branch-name-surffix: doc-update
           pull-request-title: |
             [AUTO] Generate comments by iris-doc
           pull-request-body: |
             Doc source:
 
             https://github.com/AgoraIO/agora_doc_source/releases/download/master-build/electron_ng_json_template_en.json
+          add-paths: ts
