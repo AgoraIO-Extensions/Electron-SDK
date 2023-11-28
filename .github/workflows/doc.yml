@@ -25,6 +25,8 @@ jobs:
           target-branch-name-surffix: doc-update
           generate-code: false
           generate-comment: true
+          generate-comment: |
+            sh generate-comment.sh
           pull-request-title: |
             [AUTO] Generate comments by iris-doc
           pull-request-body: |
