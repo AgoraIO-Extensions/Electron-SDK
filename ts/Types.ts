@@ -213,6 +213,10 @@ export interface ShareVideoFrame {
    * @ignore
    */
   videoSourceType?: VideoSourceType;
+  /**
+   * @ignore
+   */
+  alphaBuffer?: Buffer | Uint8Array;
 }
 
 /**
@@ -274,6 +278,7 @@ export interface AgoraElectronBridge {
     height: number;
     rotation: number;
     timestamp: number;
+    hasAlphaBuffer: boolean;
   };
 
   sendMsg: (

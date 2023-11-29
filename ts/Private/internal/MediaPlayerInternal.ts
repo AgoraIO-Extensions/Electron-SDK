@@ -322,10 +322,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
         videoSourceType: VideoSourceType.VideoSourceMediaPlayer,
         uid: this._mediaPlayerId,
         rendererOptions: {
-          contentMode:
-            renderMode === RenderModeType.RenderModeFit
-              ? RenderModeType.RenderModeFit
-              : RenderModeType.RenderModeHidden,
+          contentMode: renderMode,
           mirror: true,
         },
       }) ?? -ErrorCodeType.ErrNotInitialized

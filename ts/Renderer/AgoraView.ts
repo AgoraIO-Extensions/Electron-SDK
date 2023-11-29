@@ -111,9 +111,9 @@ export default class AgoraView extends HTMLElement {
   get renderContentMode(): RenderModeType {
     const number = Number(
       this.getAttribute(RENDERER_CONTENT_MODE_STRING) ||
-        RenderModeType.RenderModeFit
+        RenderModeType.RenderModeHidden
     );
-    return isNaN(number) ? RenderModeType.RenderModeFit : number;
+    return isNaN(number) ? RenderModeType.RenderModeHidden : number;
   }
 
   set renderContentMode(val) {

@@ -22,6 +22,7 @@ export class YUVCanvasRenderer extends IRenderer {
       yBuffer: new Uint8Array(0),
       uBuffer: new Uint8Array(0),
       vBuffer: new Uint8Array(0),
+      alphaBuffer: new Uint8Array(0),
     };
   }
 
@@ -122,16 +123,7 @@ export class YUVCanvasRenderer extends IRenderer {
     }
   }
 
-  private updateCanvas(
-    options: CanvasOptions = {
-      frameWidth: 0,
-      frameHeight: 0,
-      rotation: 0,
-      contentMode: RenderModeType.RenderModeHidden,
-      clientWidth: 0,
-      clientHeight: 0,
-    }
-  ) {
+  private updateCanvas(options: CanvasOptions) {
     if (this._cacheCanvasOptions) {
       if (isEqual(this._cacheCanvasOptions, options)) {
         return;
@@ -180,7 +172,7 @@ export class YUVCanvasRenderer extends IRenderer {
 
   private zoom(
     vertical: boolean,
-    contentMode: RenderModeType = RenderModeType.RenderModeFit,
+    contentMode: RenderModeType,
     width: number,
     height: number,
     clientWidth: number,

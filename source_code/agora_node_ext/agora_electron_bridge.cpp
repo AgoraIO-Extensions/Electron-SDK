@@ -378,20 +378,23 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   IrisRtcVideoFrameConfig config = EmptyIrisRtcVideoFrameConfig;
 
   napi_value obj = args[0];
-  int videoSourceType;
+  int videoSourceType = 0;
   std::string channel_id;
   napi_value y_buffer_obj;
-  void *y_buffer;
-  size_t y_length;
+  void *y_buffer = nullptr;
+  size_t y_length = 0;
   napi_value u_buffer_obj;
-  void *u_buffer;
-  size_t u_length;
+  void *u_buffer = nullptr;
+  size_t u_length = 0;
   napi_value v_buffer_obj;
-  void *v_buffer;
-  size_t v_length;
-  int height;
-  int width;
-  int yStride;
+  void *v_buffer = nullptr;
+  size_t v_length = 0;
+  int height = 0;
+  int width = 0;
+  int yStride = 0;
+  napi_value alpha_buffer_obj;
+  void *alpha_buffer = nullptr;
+  size_t alpha_length = 0;
 
   napi_obj_get_property(env, obj, "uid", config.uid);
   napi_obj_get_property(env, obj, "videoSourceType", config.video_source_type);
@@ -410,6 +413,13 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_obj_get_property(env, obj, "height", height);
   napi_obj_get_property(env, obj, "width", width);
   napi_obj_get_property(env, obj, "yStride", yStride);
+  napi_obj_get_property(env, obj, "alphaBuffer", alpha_buffer_obj);
+  napi_value undefinedValue;
+  napi_get_undefined(env, &undefinedValue);
+  bool isUndefined;
+  if (napi_strict_equals(env, alpha_buffer_obj, undefinedValue, &isUndefined) == napi_ok && !isUndefined) {
+    napi_get_buffer_info(env, alpha_buffer_obj, &alpha_buffer, &alpha_length);
+  }
 
   IrisCVideoFrame videoFrame;
   videoFrame.yBuffer = (uint8_t *) y_buffer;
@@ -420,7 +430,8 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   videoFrame.yStride = yStride;
   videoFrame.metadata_buffer = nullptr;
   videoFrame.metadata_size = 0;
-  videoFrame.alphaBuffer = nullptr;
+  videoFrame.alphaBuffer = (uint8_t *) alpha_buffer;
+  videoFrame.hasAlphaBuffer = false;
 
   bool isFresh = false;
   napi_value retObj;
@@ -444,6 +455,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_obj_set_property(env, retObj, "yStride", videoFrame.yStride);
   napi_obj_set_property(env, retObj, "rotation", rotation);
   napi_obj_set_property(env, retObj, "timestamp", videoFrame.renderTimeMs);
+  napi_obj_set_property(env, retObj, "hasAlphaBuffer", videoFrame.hasAlphaBuffer);
   return retObj;
 }
 

@@ -66,7 +66,7 @@ export class RendererManager extends IRendererManager {
     this.msgBridge = AgoraEnv.AgoraElectronBridge;
     this.defaultRenderConfig = {
       rendererOptions: {
-        contentMode: RenderModeType.RenderModeFit,
+        contentMode: RenderModeType.RenderModeHidden,
         mirror: false,
       },
     };
@@ -110,7 +110,7 @@ export class RendererManager extends IRendererManager {
    */
   public setRenderOption(
     view: HTMLElement,
-    contentMode = RenderModeType.RenderModeFit,
+    contentMode: RenderModeType,
     mirror: boolean = false
   ): void {
     if (!view) {
@@ -373,14 +373,15 @@ export class RendererManager extends IRendererManager {
           break;
         case 1: {
           // GET_VIDEO_FRAME_CACHE_RETURN_TYPE::RESIZED
-          const { width, height, yStride } = finalResult;
+          const { width, height, yStride, hasAlphaBuffer } = finalResult;
           const newShareVideoFrame = this.resizeShareVideoFrame(
             videoSourceType,
             channelId,
             uid,
             width,
             height,
-            yStride
+            yStride,
+            hasAlphaBuffer
           );
           rendererItem.shareVideoFrame = newShareVideoFrame;
           finalResult = this.msgBridge.GetVideoFrame(newShareVideoFrame);
@@ -403,6 +404,15 @@ export class RendererManager extends IRendererManager {
         return;
       }
       const renderVideoFrame = rendererItem.shareVideoFrame;
+      if (finalResult.hasAlphaBuffer) {
+        if (renderVideoFrame.alphaBuffer === undefined) {
+          renderVideoFrame.alphaBuffer = Buffer.alloc(
+            renderVideoFrame.yStride * renderVideoFrame.height
+          );
+        }
+      } else {
+        renderVideoFrame.alphaBuffer = undefined;
+      }
       if (renderVideoFrame.width > 0 && renderVideoFrame.height > 0) {
         renders.forEach((renderItem) => {
           renderItem.drawFrame(rendererItem.shareVideoFrame);
@@ -621,7 +631,8 @@ export class RendererManager extends IRendererManager {
     uid: number,
     width = 0,
     height = 0,
-    yStride = 0
+    yStride = 0,
+    hasAlphaBuffer = false
   ): ShareVideoFrame {
     return {
       videoSourceType,
@@ -633,6 +644,7 @@ export class RendererManager extends IRendererManager {
       width,
       height,
       yStride,
+      alphaBuffer: hasAlphaBuffer ? Buffer.alloc(yStride * height) : undefined,
     };
   }
 

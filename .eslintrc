@@ -90,6 +90,7 @@
     "WebGLTexture": false,
     "WebGLBuffer": false,
     "WebGLProgram": false,
+    "WebGLUniformLocation": false,
     "HTMLCanvasElement": false,
     "ResizeObserver": false,
     "name": false,

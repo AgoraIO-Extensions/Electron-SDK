@@ -56,8 +56,11 @@ export abstract class IRenderer {
 
   abstract drawFrame(imageData: ShareVideoFrame): void;
 
-  public setRenderOption({ contentMode, mirror }: RendererOptions) {
-    this.contentMode = contentMode ?? RenderModeType.RenderModeFit;
+  public setRenderOption({
+    contentMode = RenderModeType.RenderModeHidden,
+    mirror,
+  }: RendererOptions) {
+    this.contentMode = contentMode;
     this.mirror = mirror;
     Object.assign(this.parentElement!.style, {
       transform: mirror ? 'rotateY(180deg)' : '',
