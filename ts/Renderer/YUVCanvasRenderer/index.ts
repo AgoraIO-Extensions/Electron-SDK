@@ -8,69 +8,30 @@ const YUVBuffer = require('yuv-buffer');
 const YUVCanvas = require('yuv-canvas');
 
 export class YUVCanvasRenderer extends IRenderer {
-  private _cacheCanvasOptions?: CanvasOptions;
-  private _yuvCanvasSink?: any;
-  private _videoFrame: ShareVideoFrame;
-
-  constructor() {
-    super();
-    this._videoFrame = {
-      rotation: 0,
-      width: 0,
-      height: 0,
-      yStride: 0,
-      yBuffer: new Uint8Array(0),
-      uBuffer: new Uint8Array(0),
-      vBuffer: new Uint8Array(0),
-      alphaBuffer: new Uint8Array(0),
-    };
-  }
+  private canvasOptions?: CanvasOptions;
+  private yuvCanvasSink?: any;
 
   public override bind(element: HTMLElement) {
     super.bind(element);
-    this._yuvCanvasSink = YUVCanvas.attach(this.canvas, {
+    this.yuvCanvasSink = YUVCanvas.attach(this.canvas, {
       webGL: false,
     });
   }
 
   public override unbind() {
-    if (this._yuvCanvasSink && this._yuvCanvasSink?.loseContext) {
-      this._yuvCanvasSink?.loseContext();
+    if (this.yuvCanvasSink && this.yuvCanvasSink?.loseContext) {
+      this.yuvCanvasSink?.loseContext();
     }
     super.unbind();
   }
 
   public override drawFrame(frame: ShareVideoFrame) {
-    if (!this.container || !this._yuvCanvasSink) {
+    if (!this.container || !this.yuvCanvasSink) {
       return;
     }
 
     let frameWidth = frame.width;
     let frameHeight = frame.height;
-
-    if (
-      this._videoFrame.yStride === 0 ||
-      this._videoFrame.height === 0 ||
-      this._videoFrame.yStride != frame.yStride ||
-      this._videoFrame.height != frame.height
-    ) {
-      this._videoFrame.yBuffer = new Uint8Array(frame.yStride * frameHeight);
-      this._videoFrame.uBuffer = new Uint8Array(
-        (frame.yStride * frameHeight) / 4
-      );
-      this._videoFrame.vBuffer = new Uint8Array(
-        (frame.yStride * frameHeight) / 4
-      );
-    }
-
-    this._videoFrame.yBuffer.set(frame.yBuffer);
-    this._videoFrame.uBuffer.set(frame.uBuffer);
-    this._videoFrame.vBuffer.set(frame.vBuffer);
-
-    this._videoFrame.width = frame.width;
-    this._videoFrame.height = frame.height;
-    this._videoFrame.yStride = frame.yStride;
-    this._videoFrame.rotation = frame.rotation;
 
     let options: CanvasOptions = {
       frameWidth,
@@ -94,43 +55,44 @@ export class YUVCanvasRenderer extends IRenderer {
     let yuvBufferFrame = YUVBuffer.frame(
       format,
       {
-        bytes: this._videoFrame.yBuffer,
+        bytes: frame.yBuffer,
         stride: frame.yStride,
       },
       {
-        bytes: this._videoFrame.uBuffer,
+        bytes: frame.uBuffer,
         stride: frame.yStride / 2,
       },
       {
-        bytes: this._videoFrame.vBuffer,
+        bytes: frame.vBuffer,
         stride: frame.yStride / 2,
       }
     );
-    this._yuvCanvasSink.drawFrame(yuvBufferFrame);
+    yuvBufferFrame.a = frame.alphaBuffer;
+    this.yuvCanvasSink.drawFrame(yuvBufferFrame);
   }
 
   public override refreshCanvas() {
-    if (this._cacheCanvasOptions) {
+    if (this.canvasOptions) {
       this.zoom(
-        this._cacheCanvasOptions.rotation === 90 ||
-          this._cacheCanvasOptions.rotation === 270,
-        this._cacheCanvasOptions.contentMode,
-        this._cacheCanvasOptions.frameWidth,
-        this._cacheCanvasOptions.frameHeight,
-        this._cacheCanvasOptions.clientWidth,
-        this._cacheCanvasOptions.clientHeight
+        this.canvasOptions.rotation === 90 ||
+          this.canvasOptions.rotation === 270,
+        this.canvasOptions.contentMode,
+        this.canvasOptions.frameWidth,
+        this.canvasOptions.frameHeight,
+        this.canvasOptions.clientWidth,
+        this.canvasOptions.clientHeight
       );
     }
   }
 
   private updateCanvas(options: CanvasOptions) {
-    if (this._cacheCanvasOptions) {
-      if (isEqual(this._cacheCanvasOptions, options)) {
+    if (this.canvasOptions) {
+      if (isEqual(this.canvasOptions, options)) {
         return;
       }
     }
 
-    this._cacheCanvasOptions = Object.assign({}, options);
+    this.canvasOptions = Object.assign({}, options);
 
     if (this.canvas) {
       if (options.rotation === 0 || options.rotation === 180) {

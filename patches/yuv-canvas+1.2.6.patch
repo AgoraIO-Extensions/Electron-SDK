@@ -1,0 +1,15 @@
+diff --git a/node_modules/yuv-canvas/src/SoftwareFrameSink.js b/node_modules/yuv-canvas/src/SoftwareFrameSink.js
+index 9627638..98d7737
+--- a/node_modules/yuv-canvas/src/SoftwareFrameSink.js
++++ b/node_modules/yuv-canvas/src/SoftwareFrameSink.js
+@@ -77,6 +77,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ 			// YUV -> RGB over the entire encoded frame
+ 			YCbCr.convertYCbCr(buffer, imageData.data);
+ 
++			for (var i = 0; i < imageData.data.length; i += 4) {
++				imageData.data[i + 3] = buffer.a ? buffer.a[i / 4] : 255;
++			}
++
+ 			var resample = (format.cropWidth != format.displayWidth || format.cropHeight != format.displayHeight);
+ 			var drawContext;
+ 			if (resample) {
