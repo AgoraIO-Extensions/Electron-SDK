@@ -1,6 +1,6 @@
 import {
   ClientRoleType,
-  LocalVideoStreamError,
+  LocalVideoStreamReason,
   LocalVideoStreamState,
   RenderModeType,
   RtcConnection,
@@ -318,7 +318,7 @@ export default function ScreenShare() {
     (
       source: VideoSourceType,
       state: LocalVideoStreamState,
-      error: LocalVideoStreamError
+      error: LocalVideoStreamReason
     ) => {
       log.info(
         'onLocalVideoStateChanged',
