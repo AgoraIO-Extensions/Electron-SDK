@@ -1,35 +1,150 @@
-import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
-import { Channel, RendererVideoConfig } from '../Types';
+import { VideoMirrorModeType } from '../Private/AgoraBase';
+import { RenderModeType } from '../Private/AgoraMediaBase';
+import { RendererContext, RendererType } from '../Types';
+
+import { IRenderer } from './IRenderer';
+import { RendererCache, generateRendererCacheKey } from './RendererCache';
 
 /**
  * @ignore
  */
 export abstract class IRendererManager {
-  abstract get defaultRenderConfig(): RendererVideoConfig;
+  /**
+   * @ignore
+   */
+  private _renderingFps: number;
+  /**
+   * @ignore
+   */
+  private _renderingTimer?: number;
+  /**
+   * @ignore
+   */
+  private _rendererCaches: RendererCache[];
+  /**
+   * @ignore
+   */
+  private _context: RendererContext;
 
-  abstract enableRender(enabled?: boolean): void;
+  constructor() {
+    this._renderingFps = 15;
+    this._rendererCaches = [];
+    this._context = {
+      renderMode: RenderModeType.RenderModeHidden,
+      mirrorMode: VideoMirrorModeType.VideoMirrorModeDisabled,
+    };
+  }
 
-  abstract clear(): void;
+  public set renderingFps(fps: number) {
+    if (this._renderingFps !== fps) {
+      this._renderingFps = fps;
+      if (this._renderingTimer) {
+        this.stopRendering();
+        this.startRendering();
+      }
+    }
+  }
 
-  abstract setupVideo(rendererVideoConfig: RendererVideoConfig): number;
+  public get renderingFps(): number {
+    return this._renderingFps;
+  }
 
-  abstract setupLocalVideo(rendererConfig: RendererVideoConfig): number;
+  public set defaultChannelId(channelId: string) {
+    this._context.channelId = channelId;
+  }
 
-  abstract setupRemoteVideo(rendererConfig: RendererVideoConfig): number;
+  public get defaultChannelId(): string {
+    return this._context.channelId ?? '';
+  }
 
-  abstract setRenderOptionByConfig(rendererConfig: RendererVideoConfig): number;
+  public release(): void {
+    this.stopRendering();
+    this.clearRendererCache();
+  }
 
-  abstract destroyRendererByView(view: Element): void;
+  public addRendererToCache(context: RendererContext): RendererCache {
+    let rendererCache = this.getRendererCache(context);
+    if (rendererCache) {
+      rendererCache.addRenderer(this.createRenderer(context));
+    } else {
+      rendererCache = new RendererCache(context);
+      rendererCache.enable();
+      this._rendererCaches.push(rendererCache);
+    }
+    this.startRendering();
+    return rendererCache;
+  }
 
-  abstract destroyRenderersByConfig(
-    videoSourceType: VideoSourceType,
-    channelId?: Channel,
-    uid?: number
-  ): void;
+  public removeRendererFromCache(context: RendererContext): void {
+    const rendererCache = this.getRendererCache(context);
+    if (!rendererCache) return;
+    if (context.view) {
+      const renderer = rendererCache.findRenderer(context.view);
+      if (!renderer) return;
+      rendererCache.removeRenderer(renderer);
+    } else {
+      rendererCache.disable();
+      this._rendererCaches = this._rendererCaches.filter(
+        (it) => it !== rendererCache
+      );
+    }
+  }
 
-  abstract setRenderOption(
-    view: HTMLElement,
-    contentMode?: RenderModeType,
-    mirror?: boolean
-  ): void;
+  public clearRendererCache(): void {
+    for (const rendererCache of this._rendererCaches) {
+      rendererCache.disable();
+    }
+    this._rendererCaches = [];
+  }
+
+  public getRendererCache(context: RendererContext): RendererCache | undefined {
+    return this._rendererCaches.find(
+      (cache) => cache.key === generateRendererCacheKey(context)
+    );
+  }
+
+  public getRenderers(context: RendererContext): IRenderer[] {
+    return this.getRendererCache(context)?.renderers || [];
+  }
+
+  protected abstract createRenderer(
+    context: RendererContext,
+    rendererType?: RendererType
+  ): IRenderer;
+
+  public startRendering(): void {
+    if (this._renderingTimer) return;
+
+    const renderingLooper = () => {
+      // If there is no renderer, stop rendering
+      if (this._rendererCaches.length === 0) {
+        this.stopRendering();
+        return;
+      }
+
+      for (const rendererCache of this._rendererCaches) {
+        this.doRendering(rendererCache);
+      }
+      this._renderingTimer = window.setTimeout(
+        renderingLooper,
+        1000 / this.renderingFps
+      );
+    };
+    renderingLooper();
+  }
+
+  public abstract doRendering(rendererCache: RendererCache): void;
+
+  public stopRendering(): void {
+    if (this._renderingTimer) {
+      window.clearTimeout(this._renderingTimer);
+      this._renderingTimer = undefined;
+    }
+  }
+
+  public setRendererContext(context: RendererContext): void {
+    for (const rendererCache of this._rendererCaches) {
+      rendererCache.setRendererContext(context);
+    }
+  }
 }

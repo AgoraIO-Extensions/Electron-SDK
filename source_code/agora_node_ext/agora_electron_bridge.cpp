@@ -295,7 +295,7 @@ napi_value AgoraElectronBridge::EnableVideoFrameCache(napi_env env,
   unsigned int height = 0;
 
   napi_obj_get_property(env, obj, "uid", config.uid);
-  napi_obj_get_property(env, obj, "videoSourceType", config.video_source_type);
+  napi_obj_get_property(env, obj, "sourceType", config.video_source_type);
   napi_obj_get_property(env, obj, "channelId", channelId);
   strcpy(config.channelId, channelId.c_str());
   napi_obj_get_property(env, obj, "width", width);
@@ -340,7 +340,7 @@ AgoraElectronBridge::DisableVideoFrameCache(napi_env env,
   std::string channelId = "";
 
   napi_obj_get_property(env, obj, "uid", config.uid);
-  napi_obj_get_property(env, obj, "videoSourceType", config.video_source_type);
+  napi_obj_get_property(env, obj, "sourceType", config.video_source_type);
   napi_obj_get_property(env, obj, "channelId", channelId);
   strcpy(config.channelId, channelId.c_str());
 
@@ -377,9 +377,15 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
       napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
   IrisRtcVideoFrameConfig config = EmptyIrisRtcVideoFrameConfig;
 
-  napi_value obj = args[0];
-  int videoSourceType;
+  napi_value obj0 = args[0];
   std::string channel_id;
+
+  napi_obj_get_property(env, obj0, "uid", config.uid);
+  napi_obj_get_property(env, obj0, "sourceType", config.video_source_type);
+  napi_obj_get_property(env, obj0, "channelId", channel_id);
+  strcpy(config.channelId, channel_id.c_str());
+
+  napi_value obj1 = args[1];
   napi_value y_buffer_obj;
   void *y_buffer;
   size_t y_length;
@@ -389,40 +395,35 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_value v_buffer_obj;
   void *v_buffer;
   size_t v_length;
-  int height;
   int width;
+  int height;
   int yStride;
 
-  napi_obj_get_property(env, obj, "uid", config.uid);
-  napi_obj_get_property(env, obj, "videoSourceType", config.video_source_type);
-  napi_obj_get_property(env, obj, "channelId", channel_id);
-  strcpy(config.channelId, channel_id.c_str());
-
-  napi_obj_get_property(env, obj, "yBuffer", y_buffer_obj);
+  napi_obj_get_property(env, obj1, "yBuffer", y_buffer_obj);
   napi_get_buffer_info(env, y_buffer_obj, &y_buffer, &y_length);
 
-  napi_obj_get_property(env, obj, "uBuffer", u_buffer_obj);
+  napi_obj_get_property(env, obj1, "uBuffer", u_buffer_obj);
   napi_get_buffer_info(env, u_buffer_obj, &u_buffer, &u_length);
 
-  napi_obj_get_property(env, obj, "vBuffer", v_buffer_obj);
+  napi_obj_get_property(env, obj1, "vBuffer", v_buffer_obj);
   napi_get_buffer_info(env, v_buffer_obj, &v_buffer, &v_length);
 
-  napi_obj_get_property(env, obj, "height", height);
-  napi_obj_get_property(env, obj, "width", width);
-  napi_obj_get_property(env, obj, "yStride", yStride);
+  napi_obj_get_property(env, obj1, "width", width);
+  napi_obj_get_property(env, obj1, "height", height);
+  napi_obj_get_property(env, obj1, "yStride", yStride);
 
   IrisCVideoFrame videoFrame;
   videoFrame.yBuffer = (uint8_t *) y_buffer;
   videoFrame.uBuffer = (uint8_t *) u_buffer;
   videoFrame.vBuffer = (uint8_t *) v_buffer;
-  videoFrame.height = height;
   videoFrame.width = width;
+  videoFrame.height = height;
   videoFrame.yStride = yStride;
   videoFrame.metadata_buffer = nullptr;
   videoFrame.metadata_size = 0;
   videoFrame.alphaBuffer = nullptr;
 
-  bool isFresh = false;
+  bool isNewFrame = false;
   napi_value retObj;
   int32_t ret = ERR_NOT_INITIALIZED;
   status = napi_create_object(env, &retObj);
@@ -434,16 +435,23 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   }
 
   ret = agoraElectronBridge->_iris_rendering->GetVideoFrameCache(
-      config, &videoFrame, isFresh);
+      config, &videoFrame, isNewFrame);
 
-  unsigned int rotation = 0;
   napi_obj_set_property(env, retObj, "ret", ret);
-  napi_obj_set_property(env, retObj, "isNewFrame", isFresh);
-  napi_obj_set_property(env, retObj, "width", videoFrame.width);
-  napi_obj_set_property(env, retObj, "height", videoFrame.height);
-  napi_obj_set_property(env, retObj, "yStride", videoFrame.yStride);
-  napi_obj_set_property(env, retObj, "rotation", rotation);
-  napi_obj_set_property(env, retObj, "timestamp", videoFrame.renderTimeMs);
+  napi_obj_set_property(env, retObj, "isNewFrame", isNewFrame);
+
+  napi_obj_set_property(env, obj1, "type", videoFrame.type);
+  napi_obj_set_property(env, obj1, "width", videoFrame.width);
+  napi_obj_set_property(env, obj1, "height", videoFrame.height);
+  napi_obj_set_property(env, obj1, "yStride", videoFrame.yStride);
+  napi_obj_set_property(env, obj1, "uStride", videoFrame.uStride);
+  napi_obj_set_property(env, obj1, "vStride", videoFrame.vStride);
+  napi_obj_set_property(env, obj1, "rotation", videoFrame.rotation);
+  napi_obj_set_property(env, obj1, "renderTimeMs", videoFrame.renderTimeMs);
+  napi_obj_set_property(env, obj1, "avsync_type", videoFrame.avsync_type);
+  napi_obj_set_property(env, obj1, "metadata_size", videoFrame.metadata_size);
+  // napi_obj_set_property(env, obj1, "textureId", videoFrame.textureId);
+
   return retObj;
 }
 

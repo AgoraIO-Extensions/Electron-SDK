@@ -63,18 +63,23 @@ export class RtcSurfaceView extends Component<Props, State> {
   }
 
   componentWillUnmount() {
-    const dom = this.getHTMLElement();
+    const { canvas, connection } = this.props;
 
-    createAgoraRtcEngine().destroyRendererByView(dom);
+    this.getSetupVideoFunc().call(
+      this,
+      {
+        ...canvas,
+        view: null,
+      },
+      connection!
+    );
   }
 
-  updateRender = () => {
+  getSetupVideoFunc = () => {
     const { canvas, connection } = this.props;
-    const { isMirror } = this.state;
-    const dom = this.getHTMLElement();
     const engine = createAgoraRtcEngine();
 
-    let funcName:
+    let func:
       | typeof IRtcEngineEx.prototype.setupRemoteVideoEx
       | typeof IRtcEngineEx.prototype.setupRemoteVideo
       | typeof IRtcEngineEx.prototype.setupLocalVideo
@@ -82,26 +87,29 @@ export class RtcSurfaceView extends Component<Props, State> {
 
     if (canvas.sourceType === undefined) {
       if (canvas.uid) {
-        funcName = engine.setupRemoteVideo;
+        func = engine.setupRemoteVideo;
       } else {
-        funcName = engine.setupLocalVideo;
+        func = engine.setupLocalVideo;
       }
     } else if (canvas.sourceType === VideoSourceType.VideoSourceRemote) {
-      funcName = engine.setupRemoteVideo;
+      func = engine.setupRemoteVideo;
     } else {
-      funcName = engine.setupLocalVideo;
+      func = engine.setupLocalVideo;
     }
 
-    if (funcName === engine.setupRemoteVideo && connection) {
-      funcName = engine.setupRemoteVideoEx;
+    if (func === engine.setupRemoteVideo && connection) {
+      func = engine.setupRemoteVideoEx;
     }
 
-    try {
-      engine.destroyRendererByView(dom);
-    } catch (e) {
-      console.warn(e);
-    }
-    funcName.call(
+    return func;
+  };
+
+  updateRender = () => {
+    const { canvas, connection } = this.props;
+    const { isMirror } = this.state;
+    const dom = this.getHTMLElement();
+
+    this.getSetupVideoFunc().call(
       this,
       {
         ...canvas,

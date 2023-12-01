@@ -1,6 +1,6 @@
 import { createCheckers } from 'ts-interface-checker';
 
-import { AgoraEnv, logWarn } from '../../Utils';
+import { AgoraEnv } from '../../Utils';
 
 import { ErrorCodeType } from '../AgoraBase';
 import {
@@ -303,31 +303,21 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   }
 
   override setView(view: HTMLElement): number {
-    logWarn('Also can use other api setupLocalVideo');
-    return (
-      AgoraEnv.AgoraRendererManager?.setupVideo({
-        videoSourceType: VideoSourceType.VideoSourceMediaPlayer,
-        uid: this._mediaPlayerId,
-        view,
-      }) ?? -ErrorCodeType.ErrNotInitialized
-    );
+    const renderer = AgoraEnv.AgoraRendererManager?.addRendererToCache({
+      sourceType: VideoSourceType.VideoSourceMediaPlayer,
+      uid: this._mediaPlayerId,
+      view,
+    });
+    if (!renderer) return -ErrorCodeType.ErrNotInitialized;
+    return ErrorCodeType.ErrOk;
   }
 
   override setRenderMode(renderMode: RenderModeType): number {
-    logWarn(
-      'Also can use other api setRenderOption or setRenderOptionByConfig'
-    );
     return (
-      AgoraEnv.AgoraRendererManager?.setRenderOptionByConfig({
-        videoSourceType: VideoSourceType.VideoSourceMediaPlayer,
+      AgoraEnv.AgoraRendererManager?.setRendererContext({
+        sourceType: VideoSourceType.VideoSourceMediaPlayer,
         uid: this._mediaPlayerId,
-        rendererOptions: {
-          contentMode:
-            renderMode === RenderModeType.RenderModeFit
-              ? RenderModeType.RenderModeFit
-              : RenderModeType.RenderModeHidden,
-          mirror: true,
-        },
+        renderMode,
       }) ?? -ErrorCodeType.ErrNotInitialized
     );
   }

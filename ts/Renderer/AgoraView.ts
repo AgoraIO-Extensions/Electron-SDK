@@ -1,3 +1,4 @@
+import { VideoMirrorModeType } from '../Private/AgoraBase';
 import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
 import { AgoraEnv } from '../Utils';
 
@@ -70,12 +71,12 @@ export default class AgoraView extends HTMLElement {
     return observedAttributes;
   }
 
-  get videoSourceType(): VideoSourceType {
+  get sourceType(): VideoSourceType {
     const number = Number(this.getAttribute(VIDEO_SOURCE_TYPE_STRING));
     return isNaN(number) ? 0 : number;
   }
 
-  set videoSourceType(val) {
+  set sourceType(val) {
     if (val) {
       this.setAttribute(VIDEO_SOURCE_TYPE_STRING, String(val));
     } else {
@@ -108,7 +109,7 @@ export default class AgoraView extends HTMLElement {
     }
   }
 
-  get renderContentMode(): RenderModeType {
+  get renderMode(): RenderModeType {
     const number = Number(
       this.getAttribute(RENDERER_CONTENT_MODE_STRING) ||
         RenderModeType.RenderModeFit
@@ -116,7 +117,7 @@ export default class AgoraView extends HTMLElement {
     return isNaN(number) ? RenderModeType.RenderModeFit : number;
   }
 
-  set renderContentMode(val) {
+  set renderMode(val) {
     if (val) {
       this.setAttribute(RENDERER_CONTENT_MODE_STRING, String(val));
     } else {
@@ -141,21 +142,27 @@ export default class AgoraView extends HTMLElement {
   }
 
   initializeRender = () => {
-    AgoraEnv.AgoraRendererManager?.destroyRendererByView(this);
-    AgoraEnv.AgoraRendererManager?.setupVideo({
-      videoSourceType: this.videoSourceType,
+    const { channelId, uid, sourceType, renderMode, renderMirror } = this;
+    AgoraEnv.AgoraRendererManager?.addRendererToCache({
+      sourceType,
       view: this,
-      uid: this.uid,
-      channelId: this.channelId,
-      rendererOptions: {
-        mirror: this.renderMirror,
-        contentMode: this.renderContentMode,
-      },
+      uid,
+      channelId,
+      renderMode,
+      mirrorMode: renderMirror
+        ? VideoMirrorModeType.VideoMirrorModeEnabled
+        : VideoMirrorModeType.VideoMirrorModeDisabled,
     });
   };
 
   destroyRender = () => {
-    AgoraEnv.AgoraRendererManager?.destroyRendererByView(this);
+    const { channelId, uid, sourceType } = this;
+    AgoraEnv.AgoraRendererManager?.removeRendererFromCache({
+      channelId,
+      uid,
+      sourceType,
+      view: this,
+    });
   };
 
   connectedCallback() {
@@ -173,11 +180,13 @@ export default class AgoraView extends HTMLElement {
     ].includes(attrName);
 
     if (isSetRenderOption) {
-      AgoraEnv.AgoraRendererManager?.setRenderOption(
-        this,
-        this.renderContentMode,
-        this.renderMirror
-      );
+      AgoraEnv.AgoraRendererManager?.setRendererContext({
+        view: this,
+        renderMode: this.renderMode,
+        mirrorMode: this.renderMirror
+          ? VideoMirrorModeType.VideoMirrorModeEnabled
+          : VideoMirrorModeType.VideoMirrorModeDisabled,
+      });
       return;
     }
     const isNeedReInitialize = observedAttributes.includes(attrName);

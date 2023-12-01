@@ -1,9 +1,4 @@
-import { VideoSourceType } from './Private/AgoraMediaBase';
-import {
-  AgoraEnvType,
-  FormatRendererVideoConfig,
-  RendererVideoConfig,
-} from './Types';
+import { AgoraEnvType } from './Types';
 
 /**
  * @ignore
@@ -13,15 +8,6 @@ export const TAG = '[Agora]: ';
  * @ignore
  */
 export const DEBUG_TAG = '[Agora Debug]: ';
-
-/**
- * @ignore
- */
-export const deprecate = (originApi?: string, replaceApi?: string) =>
-  logError(
-    `${TAG} This method ${originApi} will be deprecated soon. `,
-    replaceApi ? `Please use ${replaceApi} instead` : ''
-  );
 
 /**
  * @ignore
@@ -96,71 +82,6 @@ export const objsKeysToLowerCase = (array: Array<any>) => {
 /**
  * @ignore
  */
-export const formatConfigByVideoSourceType = (
-  videoSourceType?: VideoSourceType,
-  originChannelId = '',
-  originUid = 0
-): {
-  uid: number;
-  channelId: string;
-  videoSourceType: VideoSourceType;
-} => {
-  if (videoSourceType === undefined || videoSourceType === null) {
-    throw new Error(`must set videoSourceType:${videoSourceType}`);
-  }
-  let uid = originUid;
-  let channelId = originChannelId;
-
-  switch (videoSourceType) {
-    case VideoSourceType.VideoSourceCamera:
-    case VideoSourceType.VideoSourceCameraPrimary:
-    case VideoSourceType.VideoSourceScreen:
-    case VideoSourceType.VideoSourceScreenSecondary:
-    case VideoSourceType.VideoSourceTranscoded:
-      channelId = '';
-      uid = 0;
-      break;
-    case VideoSourceType.VideoSourceRemote:
-      if (!uid || !channelId) {
-        throw new Error(`must set uid:${uid} and channelId:${channelId}`);
-      }
-      break;
-    case VideoSourceType.VideoSourceMediaPlayer:
-      channelId = '';
-      if (!uid) {
-        throw new Error(`must set mediaPlayerId:${uid}`);
-      }
-      break;
-    default:
-      break;
-  }
-  return { uid, channelId, videoSourceType };
-};
-
-/**
- * @ignore
- */
-export const getDefaultRendererVideoConfig = (
-  config: RendererVideoConfig
-): FormatRendererVideoConfig => {
-  const rendererOptions = Object.assign(
-    {},
-    AgoraEnv.AgoraRendererManager?.defaultRenderConfig?.rendererOptions,
-    config.rendererOptions
-  );
-
-  const { uid, channelId, videoSourceType } = formatConfigByVideoSourceType(
-    config.videoSourceType,
-    config.channelId,
-    config.uid
-  );
-
-  return { ...config, uid, channelId, videoSourceType, rendererOptions };
-};
-
-/**
- * @ignore
- */
 export function classMix(...mixins: any[]): any {
   class MixClass {
     constructor() {
@@ -187,7 +108,38 @@ function copyProperties<T>(target: T, source: any) {
   }
 }
 
-const agora = require('../build/Release/agora_node_ext');
+/**
+ * @ignore
+ */
+export function isSupportWebGL(): boolean {
+  let flag = false;
+  const canvas: HTMLCanvasElement = document.createElement('canvas');
+  try {
+    const getContext = (
+      contextNames = ['webgl2', 'webgl', 'experimental-webgl']
+    ): WebGLRenderingContext | WebGLRenderingContext | null => {
+      for (let i = 0; i < contextNames.length; i++) {
+        const contextName = contextNames[i]!;
+        const context = canvas?.getContext(contextName);
+        if (context) {
+          return context as WebGLRenderingContext | WebGLRenderingContext;
+        }
+      }
+      return null;
+    };
+    let gl = getContext();
+    flag = !!gl;
+    gl?.getExtension('WEBGL_lose_context')?.loseContext();
+    gl = null;
+    logInfo('Your browser support webGL');
+  } catch (e) {
+    logWarn('Your browser may not support webGL');
+    flag = false;
+  }
+  return flag;
+}
+
+const AgoraNode = require('../build/Release/agora_node_ext');
 
 /**
  * @ignore
@@ -196,5 +148,5 @@ export const AgoraEnv: AgoraEnvType = {
   enableLogging: true,
   enableDebugLogging: false,
   webEnvReady: true,
-  AgoraElectronBridge: new agora.AgoraElectronBridge(),
+  AgoraElectronBridge: new AgoraNode.AgoraElectronBridge(),
 };
