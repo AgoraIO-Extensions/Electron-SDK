@@ -57,13 +57,28 @@ export abstract class IRendererManager {
     return this._context.channelId ?? '';
   }
 
+  public get defaultRenderMode(): RenderModeType {
+    return this._context.renderMode!;
+  }
+
+  public get defaultMirrorMode(): VideoMirrorModeType {
+    return this._context.mirrorMode!;
+  }
+
   public release(): void {
     this.stopRendering();
     this.clearRendererCache();
   }
 
   private precheckRendererContext(context: RendererContext): RendererContext {
-    let { sourceType, uid, channelId, mediaPlayerId } = context;
+    let {
+      sourceType,
+      uid,
+      channelId,
+      mediaPlayerId,
+      renderMode = this.defaultRenderMode,
+      mirrorMode = this.defaultMirrorMode,
+    } = context;
     switch (sourceType) {
       case VideoSourceType.VideoSourceRemote:
         if (uid === undefined) {
@@ -83,7 +98,7 @@ export abstract class IRendererManager {
         uid = 0;
         break;
     }
-    return { ...context, sourceType, uid, channelId };
+    return { ...context, sourceType, uid, channelId, renderMode, mirrorMode };
   }
 
   public addOrRemoveRenderer(

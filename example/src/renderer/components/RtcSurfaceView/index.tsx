@@ -1,7 +1,6 @@
 import {
   IMediaPlayer,
   IRtcEngineEx,
-  RenderModeType,
   RtcConnection,
   VideoCanvas,
   VideoMirrorModeType,
@@ -119,7 +118,6 @@ export class RtcSurfaceView extends Component<Props, State> {
       {
         ...canvas,
         setupMode: VideoViewSetupMode.VideoViewSetupReplace,
-        renderMode: RenderModeType.RenderModeHidden,
         mirrorMode: isMirror
           ? VideoMirrorModeType.VideoMirrorModeEnabled
           : VideoMirrorModeType.VideoMirrorModeDisabled,
