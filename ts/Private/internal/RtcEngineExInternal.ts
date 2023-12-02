@@ -600,6 +600,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       view,
       renderMode,
       mirrorMode,
+      setupMode,
     });
     if (!renderer) return -ErrorCodeType.ErrNotInitialized;
     return ErrorCodeType.ErrOk;

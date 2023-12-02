@@ -64,13 +64,12 @@ export abstract class IRendererManager {
 
   public addRendererToCache(context: RendererContext): RendererCache {
     let rendererCache = this.getRendererCache(context);
-    if (rendererCache) {
-      rendererCache.addRenderer(this.createRenderer(context));
-    } else {
+    if (!rendererCache) {
       rendererCache = new RendererCache(context);
       rendererCache.enable();
       this._rendererCaches.push(rendererCache);
     }
+    rendererCache.addRenderer(this.createRenderer(context));
     this.startRendering();
     return rendererCache;
   }
