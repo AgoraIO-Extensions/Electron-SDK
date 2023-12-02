@@ -61,7 +61,7 @@ export default class VideoEncoderConfiguration
       bitrate: 0,
       minBitrate: -1,
       orientationMode: OrientationMode.OrientationModeAdaptive,
-      renderMode: RenderModeType.RenderModeFit,
+      renderMode: RenderModeType.RenderModeHidden,
       degradationPreference: DegradationPreference.MaintainQuality,
       mirrorMode: VideoMirrorModeType.VideoMirrorModeDisabled,
     };

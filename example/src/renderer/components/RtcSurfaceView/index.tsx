@@ -1,4 +1,5 @@
 import {
+  AgoraEnv,
   IMediaPlayer,
   IRtcEngineEx,
   RtcConnection,
@@ -50,7 +51,16 @@ export class RtcSurfaceView extends Component<Props, State> {
   };
 
   componentDidMount() {
-    this.updateRender();
+    const { canvas, connection } = this.props;
+    this.getSetupVideoFunc().call(
+      this,
+      {
+        ...canvas,
+        setupMode: VideoViewSetupMode.VideoViewSetupAdd,
+        view: this.getHTMLElement(),
+      },
+      connection!
+    );
   }
 
   shouldComponentUpdate(
@@ -66,7 +76,7 @@ export class RtcSurfaceView extends Component<Props, State> {
   }
 
   componentDidUpdate() {
-    this.updateRender();
+    this.updateRenderer();
   }
 
   componentWillUnmount() {
@@ -108,23 +118,17 @@ export class RtcSurfaceView extends Component<Props, State> {
     return func;
   };
 
-  updateRender = () => {
+  updateRenderer = () => {
     const { canvas, connection } = this.props;
     const { isMirror } = this.state;
-    const dom = this.getHTMLElement();
-
-    this.getSetupVideoFunc().call(
-      this,
-      {
-        ...canvas,
-        setupMode: VideoViewSetupMode.VideoViewSetupReplace,
-        mirrorMode: isMirror
-          ? VideoMirrorModeType.VideoMirrorModeEnabled
-          : VideoMirrorModeType.VideoMirrorModeDisabled,
-        view: dom,
-      },
-      connection!
-    );
+    AgoraEnv.AgoraRendererManager?.setRendererContext({
+      ...canvas,
+      ...connection,
+      mirrorMode: isMirror
+        ? VideoMirrorModeType.VideoMirrorModeEnabled
+        : VideoMirrorModeType.VideoMirrorModeDisabled,
+      view: this.getHTMLElement(),
+    });
   };
 
   render() {
@@ -137,7 +141,7 @@ export class RtcSurfaceView extends Component<Props, State> {
         onClick={() => {
           this.setState((preState) => {
             return { isMirror: !preState.isMirror };
-          }, this.updateRender);
+          }, this.updateRenderer);
         }}
       >
         <div
