@@ -162,6 +162,8 @@ export abstract class IRendererManager {
       rendererCache.removeRenderer(renderer);
     } else {
       rendererCache.removeRenderer();
+    }
+    if (rendererCache.renderers.length === 0) {
       this._rendererCaches.splice(
         this._rendererCaches.indexOf(rendererCache),
         1

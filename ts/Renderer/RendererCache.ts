@@ -144,10 +144,13 @@ export class RendererCache {
     renderMode,
     mirrorMode,
   }: RendererContext): boolean {
-    const renderer = this.findRenderer(view);
-    if (renderer) {
-      renderer.context = { renderMode, mirrorMode };
-      return true;
+    if (view) {
+      const renderer = this.findRenderer(view);
+      if (renderer) {
+        renderer.context = { renderMode, mirrorMode };
+        return true;
+      }
+      return false;
     } else {
       this._renderers.forEach((it) => {
         it.context = { renderMode, mirrorMode };

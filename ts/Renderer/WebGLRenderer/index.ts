@@ -1,4 +1,5 @@
 import { VideoFrame } from '../../Private/AgoraMediaBase';
+import { logWarn } from '../../Utils';
 import { IRenderer } from '../IRenderer';
 
 export type WebGLFallback = (renderer: WebGLRenderer, error: Error) => void;
@@ -427,7 +428,7 @@ export class WebGLRenderer extends IRenderer {
 
   private handleContextLost = (event: Event) => {
     event.preventDefault();
-    console.warn('webglcontextlost', event);
+    logWarn('webglcontextlost', event);
 
     this.releaseTextures();
 
@@ -440,7 +441,7 @@ export class WebGLRenderer extends IRenderer {
 
   private handleContextRestored = (event: Event) => {
     event.preventDefault();
-    console.warn('webglcontextrestored', event);
+    logWarn('webglcontextrestored', event);
 
     // Setup GLSL program
     this.program = createProgramFromSources(this.gl, [

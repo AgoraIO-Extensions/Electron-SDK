@@ -1,6 +1,6 @@
 import { createCheckers } from 'ts-interface-checker';
 
-import { AgoraEnv } from '../../Utils';
+import { AgoraEnv, logError } from '../../Utils';
 import { ErrorCodeType } from '../AgoraBase';
 import {
   IAudioPcmFrameSink,
@@ -104,7 +104,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
         MediaPlayerInternal._audio_spectrum_observers.get(this._mediaPlayerId)
           ?.length === 0
       ) {
-        console.error(
+        logError(
           'Please call `registerMediaPlayerAudioSpectrumObserver` before you want to receive event by `addListener`'
         );
         return false;

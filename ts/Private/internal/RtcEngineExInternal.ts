@@ -1,6 +1,6 @@
 ﻿import { createCheckers } from 'ts-interface-checker';
 
-import { AgoraEnv } from '../../Utils';
+import { AgoraEnv, logError } from '../../Utils';
 import {
   AudioEncodedFrameObserverConfig,
   AudioRecordingConfiguration,
@@ -143,7 +143,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       if (
         RtcEngineExInternal._direct_cdn_streaming_event_handler.length === 0
       ) {
-        console.error(
+        logError(
           'Please call `startDirectCdnStreaming` before you want to receive event by `addListener`'
         );
         return false;
@@ -155,7 +155,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       })
     ) {
       if (RtcEngineExInternal._metadata_observer.length === 0) {
-        console.error(
+        logError(
           'Please call `registerMediaMetadataObserver` before you want to receive event by `addListener`'
         );
         return false;
@@ -167,7 +167,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       })
     ) {
       if (RtcEngineExInternal._audio_encoded_frame_observers.length === 0) {
-        console.error(
+        logError(
           'Please call `registerAudioEncodedFrameObserver` before you want to receive event by `addListener`'
         );
         return false;
