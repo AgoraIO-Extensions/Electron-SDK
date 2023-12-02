@@ -29,6 +29,7 @@ export class YUVCanvasRenderer extends IRenderer {
     this.updateRenderMode();
 
     if (!this.frameSink) return;
+
     this.frameSink.drawFrame(
       YUVBuffer.frame(
         YUVBuffer.format({

@@ -156,14 +156,17 @@ export class WebGLRenderer extends IRenderer {
     width,
     height,
     yStride,
+    uStride,
+    vStride,
     yBuffer,
     uBuffer,
     vBuffer,
     rotation,
   }: VideoFrame) {
-    if (!this.gl || !this.program) {
-      return;
-    }
+    this.rotateCanvas({ width, height, rotation });
+    this.updateRenderMode();
+
+    if (!this.gl || !this.program) return;
 
     const left = 0,
       top = 0,
@@ -201,10 +204,49 @@ export class WebGLRenderer extends IRenderer {
       0
     );
 
-    this.uploadYuv(xWidth, xHeight, yBuffer!, uBuffer!, vBuffer!);
+    this.gl.pixelStorei(this.gl.UNPACK_ALIGNMENT, 1);
 
-    this.rotateCanvas({ width, height, rotation });
-    this.updateRenderMode();
+    this.gl.activeTexture(this.gl.TEXTURE0);
+    this.gl.bindTexture(this.gl.TEXTURE_2D, this.yTexture);
+    this.gl.texImage2D(
+      this.gl.TEXTURE_2D,
+      0,
+      this.gl.LUMINANCE,
+      width!,
+      height!,
+      0,
+      this.gl.LUMINANCE,
+      this.gl.UNSIGNED_BYTE,
+      yBuffer!
+    );
+
+    this.gl.activeTexture(this.gl.TEXTURE1);
+    this.gl.bindTexture(this.gl.TEXTURE_2D, this.uTexture);
+    this.gl.texImage2D(
+      this.gl.TEXTURE_2D,
+      0,
+      this.gl.LUMINANCE,
+      uStride!,
+      height! / 2,
+      0,
+      this.gl.LUMINANCE,
+      this.gl.UNSIGNED_BYTE,
+      uBuffer!
+    );
+
+    this.gl.activeTexture(this.gl.TEXTURE2);
+    this.gl.bindTexture(this.gl.TEXTURE_2D, this.vTexture);
+    this.gl.texImage2D(
+      this.gl.TEXTURE_2D,
+      0,
+      this.gl.LUMINANCE,
+      vStride!,
+      height! / 2,
+      0,
+      this.gl.LUMINANCE,
+      this.gl.UNSIGNED_BYTE,
+      vBuffer!
+    );
 
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
   }
@@ -288,62 +330,6 @@ export class WebGLRenderer extends IRenderer {
       'u_resolution'
     );
     this.gl.uniform2f(resolutionLocation, width!, height!);
-  }
-
-  private uploadYuv(
-    width: number,
-    height: number,
-    yplane: Uint8Array,
-    uplane: Uint8Array,
-    vplane: Uint8Array
-  ) {
-    if (!this.gl || !this.yTexture || !this.uTexture || !this.vTexture) {
-      return;
-    }
-
-    this.gl.pixelStorei(this.gl.UNPACK_ALIGNMENT, 1);
-    this.gl.activeTexture(this.gl.TEXTURE0);
-    this.gl.bindTexture(this.gl.TEXTURE_2D, this.yTexture);
-
-    this.gl.texImage2D(
-      this.gl.TEXTURE_2D,
-      0,
-      this.gl.LUMINANCE,
-      width,
-      height,
-      0,
-      this.gl.LUMINANCE,
-      this.gl.UNSIGNED_BYTE,
-      yplane
-    );
-
-    this.gl.activeTexture(this.gl.TEXTURE1);
-    this.gl.bindTexture(this.gl.TEXTURE_2D, this.uTexture);
-    this.gl.texImage2D(
-      this.gl.TEXTURE_2D,
-      0,
-      this.gl.LUMINANCE,
-      width / 2,
-      height / 2,
-      0,
-      this.gl.LUMINANCE,
-      this.gl.UNSIGNED_BYTE,
-      uplane
-    );
-
-    this.gl.activeTexture(this.gl.TEXTURE2);
-    this.gl.bindTexture(this.gl.TEXTURE_2D, this.vTexture);
-    this.gl.texImage2D(
-      this.gl.TEXTURE_2D,
-      0,
-      this.gl.LUMINANCE,
-      width / 2,
-      height / 2,
-      0,
-      this.gl.LUMINANCE,
-      this.gl.UNSIGNED_BYTE,
-      vplane
-    );
   }
 
   private initTextures() {
