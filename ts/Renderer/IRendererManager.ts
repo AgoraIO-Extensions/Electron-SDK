@@ -1,6 +1,7 @@
 import { VideoMirrorModeType, VideoViewSetupMode } from '../Private/AgoraBase';
 import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
 import { RendererContext, RendererType } from '../Types';
+import { logDebug } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 import { RendererCache, generateRendererCacheKey } from './RendererCache';
@@ -16,6 +17,14 @@ export abstract class IRendererManager {
   /**
    * @ignore
    */
+  private _currentFrameCount: number;
+  /**
+   * @ignore
+   */
+  private _previousFirstFrameTime: number;
+  /**
+   * @ignore
+   */
   private _renderingTimer?: number;
   /**
    * @ignore
@@ -28,6 +37,8 @@ export abstract class IRendererManager {
 
   constructor() {
     this._renderingFps = 15;
+    this._currentFrameCount = 0;
+    this._previousFirstFrameTime = 0;
     this._rendererCaches = [];
     this._context = {
       renderMode: RenderModeType.RenderModeHidden,
@@ -192,19 +203,58 @@ export abstract class IRendererManager {
     if (this._renderingTimer) return;
 
     const renderingLooper = () => {
-      // If there is no renderer, stop rendering
+      if (this._previousFirstFrameTime === 0) {
+        // Get the current time as the time of the first frame of per second
+        this._previousFirstFrameTime = performance.now();
+        // Reset the frame count
+        this._currentFrameCount = 0;
+      }
+
+      // Increase the frame count
+      ++this._currentFrameCount;
+
+      // Get the current time
+      const currentFrameTime = performance.now();
+      // Calculate the time difference between the current frame and the previous frame
+      const deltaTime = currentFrameTime - this._previousFirstFrameTime;
+      // Calculate the expected time of the current frame
+      const expectedTime =
+        (this._currentFrameCount * 1000) / this._renderingFps;
+      logDebug(
+        new Date().toLocaleTimeString(),
+        'currentFrameCount',
+        this._currentFrameCount,
+        'expectedTime',
+        expectedTime,
+        'deltaTime',
+        deltaTime
+      );
+
       if (this._rendererCaches.length === 0) {
+        // If there is no renderer, stop rendering
         this.stopRendering();
         return;
       }
 
+      // Render all renderers
       for (const rendererCache of this._rendererCaches) {
         this.doRendering(rendererCache);
       }
-      this._renderingTimer = window.setTimeout(
-        renderingLooper,
-        1000 / this.renderingFps
-      );
+
+      if (this._currentFrameCount >= this.renderingFps) {
+        this._previousFirstFrameTime = 0;
+      }
+
+      if (deltaTime < expectedTime) {
+        // If the time difference between the current frame and the previous frame is less than the expected time, then wait for the difference
+        this._renderingTimer = window.setTimeout(
+          renderingLooper,
+          expectedTime - deltaTime
+        );
+      } else {
+        // If the time difference between the current frame and the previous frame is greater than the expected time, then render immediately
+        renderingLooper();
+      }
     };
     renderingLooper();
   }

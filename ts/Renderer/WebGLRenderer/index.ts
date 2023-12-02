@@ -213,6 +213,8 @@ export class WebGLRenderer extends IRenderer {
 
     if (!this.gl) return;
 
+    this.gl.viewport(0, 0, width!, height!);
+
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.surfaceBuffer);
     this.gl.enableVertexAttribArray(this.positionLocation!);
     this.gl.vertexAttribPointer(
