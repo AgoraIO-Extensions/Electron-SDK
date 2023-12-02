@@ -2,16 +2,13 @@ import { VideoMirrorModeType } from '../Private/AgoraBase';
 import { RenderModeType, VideoFrame } from '../Private/AgoraMediaBase';
 import { RendererContext } from '../Types';
 
-export type _RendererContext = Pick<
-  RendererContext,
-  'renderMode' | 'mirrorMode'
->;
+type Context = Pick<RendererContext, 'renderMode' | 'mirrorMode'>;
 
 export abstract class IRenderer {
   parentElement?: HTMLElement;
   container?: HTMLElement;
   canvas?: HTMLCanvasElement;
-  context: _RendererContext = {};
+  _context: Context = {};
 
   public bind(element: HTMLElement) {
     this.parentElement = element;
@@ -47,7 +44,7 @@ export abstract class IRenderer {
 
   public abstract drawFrame(videoFrame: VideoFrame): void;
 
-  public set rendererContext({ renderMode, mirrorMode }: RendererContext) {
+  public set context({ renderMode, mirrorMode }: Context) {
     if (this.context.renderMode !== renderMode) {
       this.context.renderMode = renderMode;
       this.updateRenderMode();
@@ -57,6 +54,10 @@ export abstract class IRenderer {
       this.context.mirrorMode = mirrorMode;
       this.updateMirrorMode();
     }
+  }
+
+  public get context(): Context {
+    return this._context;
   }
 
   protected updateRenderMode() {
@@ -98,9 +99,19 @@ export abstract class IRenderer {
     });
   }
 
-  protected abstract rotateCanvas({
-    width,
-    height,
-    rotation,
-  }: VideoFrame): void;
+  protected rotateCanvas({ width, height, rotation }: VideoFrame): void {
+    if (!this.canvas) return;
+
+    if (rotation === 0 || rotation === 180) {
+      this.canvas.width = width!;
+      this.canvas.height = height!;
+    } else if (rotation === 90 || rotation === 270) {
+      this.canvas.height = width!;
+      this.canvas.width = height!;
+    } else {
+      throw new Error(
+        `Invalid rotation: ${rotation}, only 0, 90, 180, 270 are supported`
+      );
+    }
+  }
 }

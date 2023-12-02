@@ -55,19 +55,9 @@ export class YUVCanvasRenderer extends IRenderer {
   }
 
   protected override rotateCanvas({ width, height, rotation }: VideoFrame) {
-    if (!this.canvas) return;
+    super.rotateCanvas({ width, height, rotation });
 
-    if (rotation === 0 || rotation === 180) {
-      this.canvas.width = width!;
-      this.canvas.height = height!;
-    } else if (rotation === 90 || rotation === 270) {
-      this.canvas.height = height!;
-      this.canvas.width = width!;
-    } else {
-      throw new Error(
-        `Invalid rotation: ${rotation}, only 0, 90, 180, 270 are supported`
-      );
-    }
+    if (!this.canvas) return;
     this.canvas.style.transform += ` rotateZ(${rotation}deg)`;
   }
 }

@@ -1,4 +1,4 @@
-import { VideoMirrorModeType } from '../Private/AgoraBase';
+import { VideoMirrorModeType, VideoViewSetupMode } from '../Private/AgoraBase';
 import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
 import { AgoraEnv } from '../Utils';
 
@@ -143,7 +143,7 @@ export default class AgoraView extends HTMLElement {
 
   initializeRender = () => {
     const { channelId, uid, sourceType, renderMode, renderMirror } = this;
-    AgoraEnv.AgoraRendererManager?.addRendererToCache({
+    AgoraEnv.AgoraRendererManager?.addOrRemoveRenderer({
       sourceType,
       view: this,
       uid,
@@ -152,6 +152,7 @@ export default class AgoraView extends HTMLElement {
       mirrorMode: renderMirror
         ? VideoMirrorModeType.VideoMirrorModeEnabled
         : VideoMirrorModeType.VideoMirrorModeDisabled,
+      setupMode: VideoViewSetupMode.VideoViewSetupReplace,
     });
   };
 

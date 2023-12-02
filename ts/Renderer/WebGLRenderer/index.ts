@@ -155,16 +155,11 @@ export class WebGLRenderer extends IRenderer {
     width,
     height,
     yStride,
-    uStride,
-    vStride,
     yBuffer,
     uBuffer,
     vBuffer,
     rotation,
   }: VideoFrame) {
-    this.rotateCanvas({ width, height, rotation });
-    this.updateRenderMode();
-
     if (!this.gl || !this.program) {
       return;
     }
@@ -206,23 +201,15 @@ export class WebGLRenderer extends IRenderer {
     );
 
     this.uploadYuv(xWidth, xHeight, yBuffer!, uBuffer!, vBuffer!);
+
+    this.rotateCanvas({ width, height, rotation });
+    this.updateRenderMode();
+
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
   }
 
   protected override rotateCanvas({ width, height, rotation }: VideoFrame) {
-    if (!this.canvas) return;
-
-    if (rotation === 0 || rotation === 180) {
-      this.canvas.width = width!;
-      this.canvas.height = height!;
-    } else if (rotation === 90 || rotation === 270) {
-      this.canvas.height = height!;
-      this.canvas.width = width!;
-    } else {
-      throw new Error(
-        `Invalid rotation: ${rotation}, only 0, 90, 180, 270 are supported`
-      );
-    }
+    super.rotateCanvas({ width, height, rotation });
 
     if (!this.gl) return;
 

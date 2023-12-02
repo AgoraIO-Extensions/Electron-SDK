@@ -1,5 +1,5 @@
-import { VideoMirrorModeType } from '../Private/AgoraBase';
-import { RenderModeType } from '../Private/AgoraMediaBase';
+import { VideoMirrorModeType, VideoViewSetupMode } from '../Private/AgoraBase';
+import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
 import { RendererContext, RendererType } from '../Types';
 
 import { IRenderer } from './IRenderer';
@@ -62,38 +62,92 @@ export abstract class IRendererManager {
     this.clearRendererCache();
   }
 
-  public addRendererToCache(context: RendererContext): RendererCache {
-    let rendererCache = this.getRendererCache(context);
+  private precheckRendererContext(context: RendererContext): RendererContext {
+    let { sourceType, uid, channelId, mediaPlayerId } = context;
+    switch (sourceType) {
+      case VideoSourceType.VideoSourceRemote:
+        if (uid === undefined) {
+          throw new Error('uid is required');
+        }
+        channelId = channelId ?? this.defaultChannelId;
+        break;
+      case VideoSourceType.VideoSourceMediaPlayer:
+        if (mediaPlayerId === undefined) {
+          throw new Error('mediaPlayerId is required');
+        }
+        channelId = '';
+        uid = mediaPlayerId;
+        break;
+      default:
+        channelId = '';
+        uid = 0;
+        break;
+    }
+    return { ...context, sourceType, uid, channelId };
+  }
+
+  public addOrRemoveRenderer(
+    context: RendererContext
+  ): RendererCache | undefined {
+    // To be compatible with the old API
+    let { setupMode = VideoViewSetupMode.VideoViewSetupAdd } = context;
+    if (!context.view) setupMode = VideoViewSetupMode.VideoViewSetupRemove;
+    switch (setupMode) {
+      case VideoViewSetupMode.VideoViewSetupAdd:
+        return this.addRendererToCache(context);
+      case VideoViewSetupMode.VideoViewSetupRemove:
+        this.removeRendererFromCache(context);
+        return undefined;
+      case VideoViewSetupMode.VideoViewSetupReplace:
+        this.removeRendererFromCache(context);
+        return this.addRendererToCache(context);
+    }
+  }
+
+  private addRendererToCache(
+    context: RendererContext
+  ): RendererCache | undefined {
+    const checkedContext = this.precheckRendererContext(context);
+
+    if (!checkedContext.view) return undefined;
+
+    if (this.findRenderer(checkedContext.view)) {
+      throw new Error('You have already added this view to the renderer');
+    }
+
+    let rendererCache = this.getRendererCache(checkedContext);
     if (!rendererCache) {
-      rendererCache = new RendererCache(context);
-      rendererCache.enable();
+      rendererCache = new RendererCache(checkedContext);
       this._rendererCaches.push(rendererCache);
     }
-    rendererCache.addRenderer(this.createRenderer(context));
+    rendererCache.addRenderer(this.createRenderer(checkedContext));
     this.startRendering();
     return rendererCache;
   }
 
   public removeRendererFromCache(context: RendererContext): void {
-    const rendererCache = this.getRendererCache(context);
+    const checkedContext = this.precheckRendererContext(context);
+
+    const rendererCache = this.getRendererCache(checkedContext);
     if (!rendererCache) return;
-    if (context.view) {
-      const renderer = rendererCache.findRenderer(context.view);
+    if (checkedContext.view) {
+      const renderer = rendererCache.findRenderer(checkedContext.view);
       if (!renderer) return;
       rendererCache.removeRenderer(renderer);
     } else {
-      rendererCache.disable();
-      this._rendererCaches = this._rendererCaches.filter(
-        (it) => it !== rendererCache
+      rendererCache.removeRenderer();
+      this._rendererCaches.splice(
+        this._rendererCaches.indexOf(rendererCache),
+        1
       );
     }
   }
 
   public clearRendererCache(): void {
     for (const rendererCache of this._rendererCaches) {
-      rendererCache.disable();
+      rendererCache.removeRenderer();
     }
-    this._rendererCaches = [];
+    this._rendererCaches.splice(0);
   }
 
   public getRendererCache(context: RendererContext): RendererCache | undefined {
@@ -104,6 +158,14 @@ export abstract class IRendererManager {
 
   public getRenderers(context: RendererContext): IRenderer[] {
     return this.getRendererCache(context)?.renderers || [];
+  }
+
+  public findRenderer(view: Element): IRenderer | undefined {
+    for (const rendererCache of this._rendererCaches) {
+      const renderer = rendererCache.findRenderer(view);
+      if (renderer) return renderer;
+    }
+    return undefined;
   }
 
   protected abstract createRenderer(
@@ -141,9 +203,15 @@ export abstract class IRendererManager {
     }
   }
 
-  public setRendererContext(context: RendererContext): void {
+  public setRendererContext(context: RendererContext): boolean {
+    const checkedContext = this.precheckRendererContext(context);
+
     for (const rendererCache of this._rendererCaches) {
-      rendererCache.setRendererContext(context);
+      const result = rendererCache.setRendererContext(checkedContext);
+      if (result) {
+        return true;
+      }
     }
+    return false;
   }
 }

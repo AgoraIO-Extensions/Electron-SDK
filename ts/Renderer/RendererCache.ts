@@ -16,6 +16,7 @@ export class RendererCache {
   private _renderers: IRenderer[];
   private _videoFrame: VideoFrame;
   private _context: RendererCacheContext;
+  private _enabled: boolean;
 
   constructor({ channelId, uid, sourceType }: RendererContext) {
     this._renderers = [];
@@ -25,6 +26,7 @@ export class RendererCache {
       vBuffer: Buffer.alloc(0),
     };
     this._context = { channelId, uid, sourceType };
+    this._enabled = false;
   }
 
   public get key(): string {
@@ -61,12 +63,24 @@ export class RendererCache {
     return AgoraEnv.AgoraElectronBridge;
   }
 
-  public enable() {
+  private enable() {
+    if (this._enabled) return;
     this.bridge.EnableVideoFrameCache(this._context);
+    this._enabled = true;
   }
 
-  public disable() {
+  private disable() {
+    if (!this._enabled) return;
     this.bridge.DisableVideoFrameCache(this._context);
+    this._enabled = false;
+  }
+
+  private shouldEnable() {
+    if (this.renderers.length > 0) {
+      this.enable();
+    } else {
+      this.disable();
+    }
   }
 
   public draw() {
@@ -107,27 +121,38 @@ export class RendererCache {
 
   public addRenderer(renderer: IRenderer): void {
     this._renderers.push(renderer);
+    this.shouldEnable();
   }
 
-  public removeRenderer(renderer: IRenderer): void {
-    const index = this._renderers.indexOf(renderer);
-    if (index >= 0) {
-      this._renderers.splice(index, 1);
+  /**
+   * Remove the specified renderer if it is specified, otherwise remove all renderers
+   */
+  public removeRenderer(renderer?: IRenderer): void {
+    let start = 0;
+    let deleteCount = this._renderers.length;
+    if (renderer) {
+      start = this._renderers.indexOf(renderer);
+      if (start < 0) return;
+      deleteCount = 1;
     }
+    this._renderers.splice(start, deleteCount).forEach((it) => it.unbind());
+    this.shouldEnable();
   }
 
   public setRendererContext({
     view,
     renderMode,
     mirrorMode,
-  }: RendererContext): void {
+  }: RendererContext): boolean {
     const renderer = this.findRenderer(view);
     if (renderer) {
-      renderer.rendererContext = { renderMode, mirrorMode };
+      renderer.context = { renderMode, mirrorMode };
+      return true;
     } else {
       this._renderers.forEach((it) => {
-        it.rendererContext = { renderMode, mirrorMode };
+        it.context = { renderMode, mirrorMode };
       });
+      return this._renderers.length > 0;
     }
   }
 }

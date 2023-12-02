@@ -82,7 +82,7 @@ export class RendererManager extends IRendererManager {
     }
 
     renderer.bind(context.view);
-    renderer.rendererContext = {
+    renderer.context = {
       renderMode: context.renderMode,
       mirrorMode: context.mirrorMode,
     };

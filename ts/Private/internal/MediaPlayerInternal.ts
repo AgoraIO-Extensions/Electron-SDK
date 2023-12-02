@@ -1,7 +1,6 @@
 import { createCheckers } from 'ts-interface-checker';
 
 import { AgoraEnv } from '../../Utils';
-
 import { ErrorCodeType } from '../AgoraBase';
 import {
   IAudioPcmFrameSink,
@@ -303,22 +302,24 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   }
 
   override setView(view: HTMLElement): number {
-    const renderer = AgoraEnv.AgoraRendererManager?.addRendererToCache({
+    if (!AgoraEnv.AgoraRendererManager) return -ErrorCodeType.ErrNotInitialized;
+    const renderer = AgoraEnv.AgoraRendererManager.addOrRemoveRenderer({
       sourceType: VideoSourceType.VideoSourceMediaPlayer,
-      uid: this._mediaPlayerId,
+      mediaPlayerId: this._mediaPlayerId,
       view,
     });
-    if (!renderer) return -ErrorCodeType.ErrNotInitialized;
+    if (!renderer) return -ErrorCodeType.ErrFailed;
     return ErrorCodeType.ErrOk;
   }
 
   override setRenderMode(renderMode: RenderModeType): number {
-    return (
-      AgoraEnv.AgoraRendererManager?.setRendererContext({
-        sourceType: VideoSourceType.VideoSourceMediaPlayer,
-        uid: this._mediaPlayerId,
-        renderMode,
-      }) ?? -ErrorCodeType.ErrNotInitialized
-    );
+    if (!AgoraEnv.AgoraRendererManager) return -ErrorCodeType.ErrNotInitialized;
+    const renderer = AgoraEnv.AgoraRendererManager.setRendererContext({
+      sourceType: VideoSourceType.VideoSourceMediaPlayer,
+      mediaPlayerId: this._mediaPlayerId,
+      renderMode,
+    });
+    if (!renderer) return -ErrorCodeType.ErrFailed;
+    return ErrorCodeType.ErrOk;
   }
 }

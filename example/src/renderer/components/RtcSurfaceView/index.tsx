@@ -1,10 +1,12 @@
 import {
   IMediaPlayer,
   IRtcEngineEx,
+  RenderModeType,
   RtcConnection,
   VideoCanvas,
   VideoMirrorModeType,
   VideoSourceType,
+  VideoViewSetupMode,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
 import React, { Component } from 'react';
@@ -22,6 +24,12 @@ interface State {
   isMirror: boolean;
   uniqueId: number;
 }
+
+type SetupVideoFunc =
+  | typeof IRtcEngineEx.prototype.setupRemoteVideoEx
+  | typeof IRtcEngineEx.prototype.setupRemoteVideo
+  | typeof IRtcEngineEx.prototype.setupLocalVideo
+  | typeof IMediaPlayer.prototype.setView;
 
 export class RtcSurfaceView extends Component<Props, State> {
   constructor(props: Props) {
@@ -69,21 +77,18 @@ export class RtcSurfaceView extends Component<Props, State> {
       this,
       {
         ...canvas,
-        view: null,
+        setupMode: VideoViewSetupMode.VideoViewSetupRemove,
+        view: this.getHTMLElement(),
       },
       connection!
     );
   }
 
-  getSetupVideoFunc = () => {
+  getSetupVideoFunc = (): SetupVideoFunc => {
     const { canvas, connection } = this.props;
     const engine = createAgoraRtcEngine();
 
-    let func:
-      | typeof IRtcEngineEx.prototype.setupRemoteVideoEx
-      | typeof IRtcEngineEx.prototype.setupRemoteVideo
-      | typeof IRtcEngineEx.prototype.setupLocalVideo
-      | typeof IMediaPlayer.prototype.setView;
+    let func: SetupVideoFunc;
 
     if (canvas.sourceType === undefined) {
       if (canvas.uid) {
@@ -113,6 +118,8 @@ export class RtcSurfaceView extends Component<Props, State> {
       this,
       {
         ...canvas,
+        setupMode: VideoViewSetupMode.VideoViewSetupReplace,
+        renderMode: RenderModeType.RenderModeHidden,
         mirrorMode: isMirror
           ? VideoMirrorModeType.VideoMirrorModeEnabled
           : VideoMirrorModeType.VideoMirrorModeDisabled,

@@ -15,7 +15,6 @@ import {
   SimulcastStreamMode,
   VideoCanvas,
   VideoMirrorModeType,
-  VideoViewSetupMode,
   WatermarkOptions,
 } from '../AgoraBase';
 import {
@@ -189,7 +188,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   addListener<EventType extends keyof IRtcEngineEvent>(
     eventType: EventType,
     listener: IRtcEngineEvent[EventType]
-  ): void {
+  ) {
     this._addListenerPreCheck(eventType);
     const callback = (eventProcessor: EventProcessor<any>, data: any) => {
       if (eventProcessor.type(data) !== EVENT_TYPE.IRtcEngine) {
@@ -578,51 +577,16 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   }
 
   override setupLocalVideo(canvas: VideoCanvas): number {
-    let {
-      sourceType = VideoSourceType.VideoSourceCamera,
-      uid,
-      mediaPlayerId,
-      view,
-      renderMode,
-      mirrorMode,
-      setupMode = VideoViewSetupMode.VideoViewSetupAdd,
-    } = canvas;
-    if (
-      sourceType === VideoSourceType.VideoSourceMediaPlayer &&
-      mediaPlayerId !== undefined
-    ) {
-      uid = mediaPlayerId;
-    }
-    const renderer = AgoraEnv.AgoraRendererManager?.addRendererToCache({
-      sourceType,
-      channelId: '',
-      uid,
-      view,
-      renderMode,
-      mirrorMode,
-      setupMode,
-    });
-    if (!renderer) return -ErrorCodeType.ErrNotInitialized;
+    if (!AgoraEnv.AgoraRendererManager) return -ErrorCodeType.ErrNotInitialized;
+    const renderer = AgoraEnv.AgoraRendererManager.addOrRemoveRenderer(canvas);
+    if (!renderer) return -ErrorCodeType.ErrFailed;
     return ErrorCodeType.ErrOk;
   }
 
   override setupRemoteVideo(canvas: VideoCanvas): number {
-    const {
-      sourceType = VideoSourceType.VideoSourceRemote,
-      uid,
-      view,
-      renderMode,
-      mirrorMode,
-    } = canvas;
-    const renderer = AgoraEnv.AgoraRendererManager?.addRendererToCache({
-      sourceType,
-      channelId: AgoraEnv.AgoraRendererManager?.defaultChannelId,
-      uid,
-      view,
-      renderMode,
-      mirrorMode,
-    });
-    if (!renderer) return -ErrorCodeType.ErrNotInitialized;
+    if (!AgoraEnv.AgoraRendererManager) return -ErrorCodeType.ErrNotInitialized;
+    const renderer = AgoraEnv.AgoraRendererManager.addOrRemoveRenderer(canvas);
+    if (!renderer) return -ErrorCodeType.ErrFailed;
     return ErrorCodeType.ErrOk;
   }
 
@@ -630,23 +594,12 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     canvas: VideoCanvas,
     connection: RtcConnection
   ): number {
-    const {
-      sourceType = VideoSourceType.VideoSourceRemote,
-      uid,
-      view,
-      renderMode,
-      mirrorMode,
-    } = canvas;
-    const { channelId } = connection;
-    const renderer = AgoraEnv.AgoraRendererManager?.addRendererToCache({
-      sourceType,
-      channelId,
-      uid,
-      view,
-      renderMode,
-      mirrorMode,
+    if (!AgoraEnv.AgoraRendererManager) return -ErrorCodeType.ErrNotInitialized;
+    const renderer = AgoraEnv.AgoraRendererManager.addOrRemoveRenderer({
+      ...canvas,
+      ...connection,
     });
-    if (!renderer) return -ErrorCodeType.ErrNotInitialized;
+    if (!renderer) return -ErrorCodeType.ErrFailed;
     return ErrorCodeType.ErrOk;
   }
 
@@ -654,15 +607,14 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     renderMode: RenderModeType,
     mirrorMode: VideoMirrorModeType = VideoMirrorModeType.VideoMirrorModeAuto
   ): number {
-    return (
-      AgoraEnv.AgoraRendererManager?.setRendererContext({
-        sourceType: VideoSourceType.VideoSourceCamera,
-        channelId: '',
-        uid: 0,
-        renderMode,
-        mirrorMode,
-      }) ?? -ErrorCodeType.ErrNotInitialized
-    );
+    if (!AgoraEnv.AgoraRendererManager) return -ErrorCodeType.ErrNotInitialized;
+    const result = AgoraEnv.AgoraRendererManager.setRendererContext({
+      sourceType: VideoSourceType.VideoSourceCamera,
+      renderMode,
+      mirrorMode,
+    });
+    if (!result) return -ErrorCodeType.ErrFailed;
+    return ErrorCodeType.ErrOk;
   }
 
   override setRemoteRenderMode(
@@ -670,15 +622,15 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     renderMode: RenderModeType,
     mirrorMode: VideoMirrorModeType
   ): number {
-    return (
-      AgoraEnv.AgoraRendererManager?.setRendererContext({
-        sourceType: VideoSourceType.VideoSourceRemote,
-        channelId: AgoraEnv.AgoraRendererManager?.defaultChannelId,
-        uid,
-        renderMode,
-        mirrorMode,
-      }) ?? -ErrorCodeType.ErrNotInitialized
-    );
+    if (!AgoraEnv.AgoraRendererManager) return -ErrorCodeType.ErrNotInitialized;
+    const result = AgoraEnv.AgoraRendererManager.setRendererContext({
+      sourceType: VideoSourceType.VideoSourceRemote,
+      uid,
+      renderMode,
+      mirrorMode,
+    });
+    if (!result) return -ErrorCodeType.ErrFailed;
+    return ErrorCodeType.ErrOk;
   }
 
   override setRemoteRenderModeEx(
@@ -687,30 +639,29 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     mirrorMode: VideoMirrorModeType,
     connection: RtcConnection
   ): number {
-    const { channelId } = connection;
-    return (
-      AgoraEnv.AgoraRendererManager?.setRendererContext({
-        sourceType: VideoSourceType.VideoSourceRemote,
-        channelId,
-        uid,
-        renderMode,
-        mirrorMode,
-      }) ?? -ErrorCodeType.ErrNotInitialized
-    );
+    if (!AgoraEnv.AgoraRendererManager) return -ErrorCodeType.ErrNotInitialized;
+    const result = AgoraEnv.AgoraRendererManager.setRendererContext({
+      sourceType: VideoSourceType.VideoSourceRemote,
+      ...connection,
+      uid,
+      renderMode,
+      mirrorMode,
+    });
+    if (!result) return -ErrorCodeType.ErrFailed;
+    return ErrorCodeType.ErrOk;
   }
 
   override setLocalVideoMirrorMode(mirrorMode: VideoMirrorModeType): number {
-    return (
-      AgoraEnv.AgoraRendererManager?.setRendererContext({
-        sourceType: VideoSourceType.VideoSourceCamera,
-        channelId: '',
-        uid: 0,
-        mirrorMode,
-      }) ?? -ErrorCodeType.ErrNotInitialized
-    );
+    if (!AgoraEnv.AgoraRendererManager) return -ErrorCodeType.ErrNotInitialized;
+    const result = AgoraEnv.AgoraRendererManager.setRendererContext({
+      sourceType: VideoSourceType.VideoSourceCamera,
+      mirrorMode,
+    });
+    if (!result) return -ErrorCodeType.ErrFailed;
+    return ErrorCodeType.ErrOk;
   }
 
-  override destroyRendererByView(view: any) {
+  override destroyRendererByView(view: Element) {
     AgoraEnv.AgoraRendererManager?.removeRendererFromCache({ view });
   }
 
