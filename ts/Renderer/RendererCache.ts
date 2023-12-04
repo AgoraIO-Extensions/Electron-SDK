@@ -108,6 +108,16 @@ export class RendererCache {
         return;
     }
 
+    if ((this.videoFrame as any).hasAlphaBuffer) {
+      if (this.videoFrame.alphaBuffer === undefined) {
+        this.videoFrame.alphaBuffer = Buffer.alloc(
+          this.videoFrame.yStride! * this.videoFrame.height!
+        );
+      }
+    } else {
+      this.videoFrame.alphaBuffer = undefined;
+    }
+
     if (isNewFrame) {
       this.renderers.forEach((renderer) => {
         renderer.drawFrame(this.videoFrame);

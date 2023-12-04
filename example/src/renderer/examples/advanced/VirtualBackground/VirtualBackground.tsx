@@ -79,6 +79,10 @@ export default class VirtualBackground
       true
     );
 
+    this.engine.setParameters(
+      JSON.stringify({ 'rtc.video.send_alpha_data': true })
+    );
+
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();
