@@ -1,0 +1,62 @@
+diff --git a/node_modules/yuv-canvas/src/SoftwareFrameSink.js b/node_modules/yuv-canvas/src/SoftwareFrameSink.js
+index 9627638..cff283c
+--- a/node_modules/yuv-canvas/src/SoftwareFrameSink.js
++++ b/node_modules/yuv-canvas/src/SoftwareFrameSink.js
+@@ -41,11 +41,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ 			imageData = ctx.createImageData(width, height);
+ 
+ 			// Prefill the alpha to opaque
+-			var data = imageData.data,
+-				pixelCount = width * height * 4;
+-			for (var i = 0; i < pixelCount; i += 4) {
+-				data[i + 3] = 255;
+-			}
++			// var data = imageData.data,
++			// 	pixelCount = width * height * 4;
++			// for (var i = 0; i < pixelCount; i += 4) {
++			// 	data[i + 3] = 255;
++			// }
+ 		}
+ 
+ 		function initResampleCanvas(cropWidth, cropHeight) {
+diff --git a/node_modules/yuv-canvas/src/YCbCr.js b/node_modules/yuv-canvas/src/YCbCr.js
+index 1e15c37..e51abe1
+--- a/node_modules/yuv-canvas/src/YCbCr.js
++++ b/node_modules/yuv-canvas/src/YCbCr.js
+@@ -78,24 +78,28 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ 					output[outPtr0    ] = (multY + multCrR) >> 8;
+ 					output[outPtr0 + 1] = (multY - multCbCrG) >> 8;
+ 					output[outPtr0 + 2] = (multY + multCbB) >> 8;
++					output[outPtr0 + 3] = buffer.a ? buffer.a[outPtr0 / 4] : 255;
+ 					outPtr0 += 4;
+ 
+ 					multY = 298 * bytesY[Y0Ptr++] | 0;
+ 					output[outPtr0    ] = (multY + multCrR) >> 8;
+ 					output[outPtr0 + 1] = (multY - multCbCrG) >> 8;
+ 					output[outPtr0 + 2] = (multY + multCbB) >> 8;
++					output[outPtr0 + 3] = buffer.a ? buffer.a[outPtr0 / 4] : 255;
+ 					outPtr0 += 4;
+ 
+ 					multY = 298 * bytesY[Y1Ptr++] | 0;
+ 					output[outPtr1    ] = (multY + multCrR) >> 8;
+ 					output[outPtr1 + 1] = (multY - multCbCrG) >> 8;
+ 					output[outPtr1 + 2] = (multY + multCbB) >> 8;
++					output[outPtr1 + 3] = buffer.a ? buffer.a[outPtr1 / 4] : 255;
+ 					outPtr1 += 4;
+ 
+ 					multY = 298 * bytesY[Y1Ptr++] | 0;
+ 					output[outPtr1    ] = (multY + multCrR) >> 8;
+ 					output[outPtr1 + 1] = (multY - multCbCrG) >> 8;
+ 					output[outPtr1 + 2] = (multY + multCbB) >> 8;
++					output[outPtr1 + 3] = buffer.a ? buffer.a[outPtr1 / 4] : 255;
+ 					outPtr1 += 4;
+ 				}
+ 				outPtr0 += outStride;
+@@ -127,6 +131,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ 					output[outPtr    ] = (multY + multCrR) >> 8;
+ 					output[outPtr + 1] = (multY - multCbCrG) >> 8;
+ 					output[outPtr + 2] = (multY + multCbB) >> 8;
++					output[outPtr + 3] = buffer.a ? buffer.a[outPtr / 4] : 255;
+ 					outPtr += 4;
+ 				}
+ 			}
