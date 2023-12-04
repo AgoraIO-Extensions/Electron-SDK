@@ -1,7 +1,6 @@
 import { createCheckers } from 'ts-interface-checker';
 
-import { AgoraEnv, logWarn } from '../../Utils';
-
+import { AgoraEnv, logError } from '../../Utils';
 import { ErrorCodeType } from '../AgoraBase';
 import {
   IAudioPcmFrameSink,
@@ -105,7 +104,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
         MediaPlayerInternal._audio_spectrum_observers.get(this._mediaPlayerId)
           ?.length === 0
       ) {
-        console.error(
+        logError(
           'Please call `registerMediaPlayerAudioSpectrumObserver` before you want to receive event by `addListener`'
         );
         return false;
@@ -303,32 +302,24 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   }
 
   override setView(view: HTMLElement): number {
-    logWarn('Also can use other api setupLocalVideo');
-    return (
-      AgoraEnv.AgoraRendererManager?.setupVideo({
-        videoSourceType: VideoSourceType.VideoSourceMediaPlayer,
-        uid: this._mediaPlayerId,
-        view,
-      }) ?? -ErrorCodeType.ErrNotInitialized
-    );
+    if (!AgoraEnv.AgoraRendererManager) return -ErrorCodeType.ErrNotInitialized;
+    const renderer = AgoraEnv.AgoraRendererManager.addOrRemoveRenderer({
+      sourceType: VideoSourceType.VideoSourceMediaPlayer,
+      mediaPlayerId: this._mediaPlayerId,
+      view,
+    });
+    if (!renderer) return -ErrorCodeType.ErrFailed;
+    return ErrorCodeType.ErrOk;
   }
 
   override setRenderMode(renderMode: RenderModeType): number {
-    logWarn(
-      'Also can use other api setRenderOption or setRenderOptionByConfig'
-    );
-    return (
-      AgoraEnv.AgoraRendererManager?.setRenderOptionByConfig({
-        videoSourceType: VideoSourceType.VideoSourceMediaPlayer,
-        uid: this._mediaPlayerId,
-        rendererOptions: {
-          contentMode:
-            renderMode === RenderModeType.RenderModeFit
-              ? RenderModeType.RenderModeFit
-              : RenderModeType.RenderModeHidden,
-          mirror: true,
-        },
-      }) ?? -ErrorCodeType.ErrNotInitialized
-    );
+    if (!AgoraEnv.AgoraRendererManager) return -ErrorCodeType.ErrNotInitialized;
+    const renderer = AgoraEnv.AgoraRendererManager.setRendererContext({
+      sourceType: VideoSourceType.VideoSourceMediaPlayer,
+      mediaPlayerId: this._mediaPlayerId,
+      renderMode,
+    });
+    if (!renderer) return -ErrorCodeType.ErrFailed;
+    return ErrorCodeType.ErrOk;
   }
 }

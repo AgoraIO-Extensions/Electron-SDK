@@ -455,15 +455,13 @@ export default class LocalVideoTranscoder
       <>
         {startLocalVideoTranscoder
           ? this.renderUser({
-              renderMode: RenderModeType.RenderModeFit,
-              uid: 0,
               sourceType: VideoSourceType.VideoSourceTranscoded,
+              renderMode: RenderModeType.RenderModeFit,
             })
           : undefined}
         {startPreview || joinChannelSuccess
           ? videoDeviceId?.map((value) =>
               this.renderUser({
-                uid: 0,
                 sourceType: this._getVideoSourceTypeCamera(value),
               })
             )
@@ -574,8 +572,9 @@ export default class LocalVideoTranscoder
         {open ? (
           <RtcSurfaceView
             canvas={{
-              mediaPlayerId: this.player?.getMediaPlayerId(),
               sourceType: VideoSourceType.VideoSourceMediaPlayer,
+              mediaPlayerId: this.player?.getMediaPlayerId(),
+              renderMode: RenderModeType.RenderModeFit,
             }}
           />
         ) : undefined}

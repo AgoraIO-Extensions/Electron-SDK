@@ -40,7 +40,6 @@ function BaseRenderUsers({
     <>
       {!!startPreview || joinChannelSuccess
         ? renderUser({
-            uid: 0,
             sourceType: VideoSourceType.VideoSourceCamera,
           })
         : undefined}
