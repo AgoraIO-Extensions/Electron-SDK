@@ -137,6 +137,6 @@
   },
   "agora_electron": {
     "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.1.1.22-build.1_DCG_Windows_Video_20231123_0644.zip",
-    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.1.1.22-build.1_DCG_Mac_Video_20231123_0644.zip"
+    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.1.1.124-build.1_DCG_Mac_Video_20231204_0201.zip"
   }
 }
