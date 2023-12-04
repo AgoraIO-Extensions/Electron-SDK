@@ -190,7 +190,6 @@ export abstract class BaseComponent<
       <>
         {!!startPreview || joinChannelSuccess
           ? this.renderUser({
-              uid: 0,
               sourceType: VideoSourceType.VideoSourceCamera,
             })
           : undefined}

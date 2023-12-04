@@ -13,6 +13,7 @@ import {
   IVideoFrameObserver,
   MediaPlayerReason,
   MediaPlayerState,
+  RenderModeType,
   RtcConnection,
   UserOfflineReasonType,
   VideoFrame,
@@ -335,6 +336,7 @@ export default class SendMultiVideoStream
             canvas={{
               mediaPlayerId: this.player?.getMediaPlayerId(),
               sourceType: VideoSourceType.VideoSourceMediaPlayer,
+              renderMode: RenderModeType.RenderModeFit,
             }}
           />
         ) : undefined}

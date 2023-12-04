@@ -399,7 +399,6 @@ export default class ScreenShare
         {startScreenCapture ? (
           <RtcSurfaceView
             canvas={{
-              uid: 0,
               sourceType: VideoSourceType.VideoSourceScreen,
               renderMode: RenderModeType.RenderModeFit,
             }}
