@@ -1,5 +1,13 @@
 
 
+## [4.2.6-build.1-dev.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6...v4.2.6-build.1-dev.2) (2023-12-06)
+
+
+### Features
+
+* optimize for renderer ([#1132](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1132)) ([d0098c1](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/d0098c1c9f6d44dbfa6b790cf127b070d2201ac8))
+* support alpha buffer ([a377169](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/a377169f3efd64d8afa8faf68836c674064b4896))
+
 ## [4.2.6](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.4...v4.2.6) (2023-11-22)
 
 
