@@ -22,6 +22,7 @@ import {
   RenderModeType,
   VideoSourceType,
 } from '../AgoraMediaBase';
+import { IH265Transcoder } from '../IAgoraH265Transcoder';
 import { IMediaEngine } from '../IAgoraMediaEngine';
 import { IMediaPlayer } from '../IAgoraMediaPlayer';
 import { IMediaRecorder } from '../IAgoraMediaRecorder';
@@ -51,6 +52,7 @@ import AgoraBaseTI from '../ti/AgoraBase-ti';
 import AgoraMediaBaseTI from '../ti/AgoraMediaBase-ti';
 import IAgoraRtcEngineTI from '../ti/IAgoraRtcEngine-ti';
 
+import { H265TranscoderInternal } from './AgoraH265TranscoderInternal';
 import { AudioDeviceManagerInternal } from './AudioDeviceManagerInternal';
 import {
   DeviceEventEmitter,
@@ -86,6 +88,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     new MusicContentCenterInternal();
   private _local_spatial_audio_engine: ILocalSpatialAudioEngine =
     new LocalSpatialAudioEngineInternal();
+  private _h265_transcoder: IH265Transcoder = new H265TranscoderInternal();
 
   override initialize(context: RtcEngineContext): number {
     if (AgoraEnv.webEnvReady) {
@@ -121,6 +124,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     MediaPlayerInternal._video_frame_observers.clear();
     MediaPlayerInternal._audio_spectrum_observers.clear();
     MediaRecorderInternal._observers.clear();
+    this._h265_transcoder.release();
     this.removeAllListeners();
     super.release(sync);
   }
@@ -481,6 +485,10 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
 
   override getLocalSpatialAudioEngine(): ILocalSpatialAudioEngine {
     return this._local_spatial_audio_engine;
+  }
+
+  override getH265Transcoder(): IH265Transcoder {
+    return this._h265_transcoder;
   }
 
   override registerAudioEncodedFrameObserver(

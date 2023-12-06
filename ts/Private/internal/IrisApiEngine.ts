@@ -14,6 +14,7 @@ import {
   IVideoFrameObserver,
   VideoFrame,
 } from '../AgoraMediaBase';
+import { IH265TranscoderObserver } from '../IAgoraH265Transcoder';
 import {
   IMediaPlayer,
   IMediaPlayerVideoFrameObserver,
@@ -39,6 +40,7 @@ import {
   processIVideoEncodedFrameObserver,
   processIVideoFrameObserver,
 } from '../impl/AgoraMediaBaseImpl';
+import { processIH265TranscoderObserver } from '../impl/IAgoraH265TranscoderImpl';
 import { processIMediaPlayerVideoFrameObserver } from '../impl/IAgoraMediaPlayerImpl';
 import { processIMediaPlayerSourceObserver } from '../impl/IAgoraMediaPlayerSourceImpl';
 import { processIMusicContentCenterEventHandler } from '../impl/IAgoraMusicContentCenterImpl';
@@ -48,6 +50,7 @@ import {
   processIRtcEngineEventHandler,
 } from '../impl/IAgoraRtcEngineImpl';
 
+import { H265TranscoderInternal } from './AgoraH265TranscoderInternal';
 import { VideoFrameMetaInfoInternal } from './AgoraMediaBaseInternal';
 import { MediaEngineInternal } from './MediaEngineInternal';
 import { MediaPlayerInternal } from './MediaPlayerInternal';
@@ -106,6 +109,7 @@ export enum EVENT_TYPE {
   IMediaRecorder,
   IRtcEngine,
   IMusicContentCenter,
+  IAgoraH265Transcoder,
 }
 
 type ProcessorType =
@@ -121,7 +125,8 @@ type ProcessorType =
   | IMetadataObserver
   | IDirectCdnStreamingEventHandler
   | IRtcEngineEventHandler
-  | IMusicContentCenterEventHandler;
+  | IMusicContentCenterEventHandler
+  | IH265TranscoderObserver;
 
 type EventProcessors = {
   IAudioFrameObserver: EventProcessor<IAudioFrameObserver>;
@@ -137,6 +142,7 @@ type EventProcessors = {
   IDirectCdnStreamingEventHandler: EventProcessor<IDirectCdnStreamingEventHandler>;
   IRtcEngineEventHandler: EventProcessor<IRtcEngineEventHandler>;
   IMusicContentCenterEventHandler: EventProcessor<IMusicContentCenterEventHandler>;
+  IH265TranscoderObserver: EventProcessor<IH265TranscoderObserver>;
 };
 
 /**
@@ -355,6 +361,12 @@ export const EVENT_PROCESSORS: EventProcessors = {
     },
     handlers: (event: string, data: any) =>
       MusicContentCenterInternal._event_handlers,
+  },
+  IH265TranscoderObserver: {
+    suffix: 'H265TranscoderObserver_',
+    type: () => EVENT_TYPE.IAgoraH265Transcoder,
+    func: [processIH265TranscoderObserver],
+    handlers: () => H265TranscoderInternal._h265_transcoder_observers,
   },
 };
 

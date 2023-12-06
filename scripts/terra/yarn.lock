@@ -57,14 +57,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@agoraio-extensions/terra_shared_configs@git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=52f77da0371b842792b5c9a178514846d113427f":
+"@agoraio-extensions/terra_shared_configs@git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=c3258363f54befd70f84cd9707e052e6b6cfa485":
   version: 1.0.2
-  resolution: "@agoraio-extensions/terra_shared_configs@git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=52f77da0371b842792b5c9a178514846d113427f"
+  resolution: "@agoraio-extensions/terra_shared_configs@git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=c3258363f54befd70f84cd9707e052e6b6cfa485"
   dependencies:
     "@agoraio-extensions/cxx-parser": "git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=cxx-parser"
     "@agoraio-extensions/terra-core": "git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=terra-core"
     mustache: "npm:^4.2.0"
-  checksum: 7721729faab102b9f18f899298a1fbd00add02f69b2cd7db06c9d79e446dc4b9b79946a53de9c5a9b7c676321234835212e1e58ceee01262373b5cfe12bffa74
+  checksum: f67b38d8d3cad549eb03056bc92f9dd012705263416489f923e971dd6a540b0738fb014a706c832d7149136346d1edb06a4dd7059ef94b24ceecd1f5c871c23d
   languageName: node
   linkType: hard
 
@@ -3450,7 +3450,7 @@ __metadata:
     "@agoraio-extensions/terra": "git@github.com:AgoraIO-Extensions/terra.git#commit=5dd8149d5ab9f3b472b7715916b6217f9745f066&workspace=terra"
     "@agoraio-extensions/terra-core": "git@github.com:AgoraIO-Extensions/terra.git#commit=5dd8149d5ab9f3b472b7715916b6217f9745f066&workspace=terra-core"
     "@agoraio-extensions/terra-legacy-cxx-parser": "git@github.com:AgoraIO-Extensions/terra-legacy-cxx-parser.git#commit=a4ca5b9fec0015066e353c3fd03107acd1e6036e"
-    "@agoraio-extensions/terra_shared_configs": "git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=52f77da0371b842792b5c9a178514846d113427f"
+    "@agoraio-extensions/terra_shared_configs": "git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=c3258363f54befd70f84cd9707e052e6b6cfa485"
     "@types/node": "npm:^20.6.0"
     ts-node: "npm:^10.9.1"
     typescript: "npm:^5.1.6"
