@@ -212,7 +212,8 @@ export class WebGLRenderer extends IRenderer {
       this.gl.TEXTURE_2D,
       0,
       this.gl.LUMINANCE,
-      width!,
+      // Should use xWidth instead of width here (yStide)
+      xWidth,
       height!,
       0,
       this.gl.LUMINANCE,
