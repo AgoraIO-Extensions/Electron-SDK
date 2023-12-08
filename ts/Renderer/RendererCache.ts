@@ -24,6 +24,12 @@ export class RendererCache {
       yBuffer: Buffer.alloc(0),
       uBuffer: Buffer.alloc(0),
       vBuffer: Buffer.alloc(0),
+      width: 0,
+      height: 0,
+      yStride: 0,
+      uStride: 0,
+      vStride: 0,
+      rotation: 0,
     };
     this._context = { channelId, uid, sourceType };
     this._enabled = false;
