@@ -2,7 +2,10 @@ import { VideoMirrorModeType } from '../Private/AgoraBase';
 import { RenderModeType, VideoFrame } from '../Private/AgoraMediaBase';
 import { RendererContext } from '../Types';
 
-type Context = Pick<RendererContext, 'renderMode' | 'mirrorMode'>;
+type Context = Pick<
+  RendererContext,
+  'renderMode' | 'mirrorMode' | 'backgroundColor'
+>;
 
 export abstract class IRenderer {
   parentElement?: HTMLElement;
@@ -44,7 +47,7 @@ export abstract class IRenderer {
 
   public abstract drawFrame(videoFrame: VideoFrame): void;
 
-  public set context({ renderMode, mirrorMode }: Context) {
+  public set context({ renderMode, mirrorMode, backgroundColor }: Context) {
     if (this.context.renderMode !== renderMode) {
       this.context.renderMode = renderMode;
       this.updateRenderMode();
@@ -54,10 +57,31 @@ export abstract class IRenderer {
       this.context.mirrorMode = mirrorMode;
       this.updateMirrorMode();
     }
+
+    if (this.context.backgroundColor !== backgroundColor) {
+      this.context.backgroundColor = backgroundColor;
+      this.updateBackgroundColor();
+    }
   }
 
   public get context(): Context {
     return this._context;
+  }
+
+  protected updateBackgroundColor() {
+    if (
+      !this.container ||
+      this.context?.renderMode !== RenderModeType.RenderModeFit
+    )
+      return;
+    const { backgroundColor } = this.context;
+    const r = (backgroundColor! >> 24) & 255;
+    const g = (backgroundColor! >> 16) & 255;
+    const b = (backgroundColor! >> 8) & 255;
+    const a = backgroundColor! & 255;
+    //todo rgba convert to hex still have problem, need fix this
+    var rgba = 'rgb(' + r + ' ' + g + ' ' + b + ' / ' + (a / 255) * 100 + '%)';
+    this.container.style.background = `#${backgroundColor!.toString(16)}`;
   }
 
   protected updateRenderMode() {

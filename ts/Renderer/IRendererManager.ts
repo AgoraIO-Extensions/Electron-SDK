@@ -43,6 +43,7 @@ export abstract class IRendererManager {
     this._context = {
       renderMode: RenderModeType.RenderModeHidden,
       mirrorMode: VideoMirrorModeType.VideoMirrorModeDisabled,
+      backgroundColor: 0x00000000,
     };
   }
 
@@ -76,6 +77,10 @@ export abstract class IRendererManager {
     return this._context.mirrorMode!;
   }
 
+  public get defaultBackgroundColor(): number {
+    return this._context.backgroundColor!;
+  }
+
   public release(): void {
     this.stopRendering();
     this.clearRendererCache();
@@ -87,6 +92,7 @@ export abstract class IRendererManager {
       uid,
       channelId,
       mediaPlayerId,
+      backgroundColor = this.defaultBackgroundColor,
       renderMode = this.defaultRenderMode,
       mirrorMode = this.defaultMirrorMode,
     } = context;
@@ -109,7 +115,15 @@ export abstract class IRendererManager {
         uid = 0;
         break;
     }
-    return { ...context, sourceType, uid, channelId, renderMode, mirrorMode };
+    return {
+      ...context,
+      sourceType,
+      uid,
+      channelId,
+      renderMode,
+      mirrorMode,
+      backgroundColor,
+    };
   }
 
   public addOrRemoveRenderer(

@@ -5,6 +5,7 @@ import {
   IRtcEngineEventHandler,
   LocalVideoStreamError,
   LocalVideoStreamState,
+  RenderModeType,
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
@@ -176,6 +177,8 @@ export default class JoinChannelVideo
   }
 
   protected renderVideo(user: VideoCanvas): ReactElement | undefined {
+    // user.backgroundColor = 0xdda0ddff;
+    user.renderMode = RenderModeType.RenderModeFit;
     return super.renderVideo(user);
   }
 

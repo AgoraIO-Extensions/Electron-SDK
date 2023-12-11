@@ -83,6 +83,7 @@ export class RendererManager extends IRendererManager {
 
     renderer.bind(context.view);
     renderer.context = {
+      backgroundColor: context.backgroundColor,
       renderMode: context.renderMode,
       mirrorMode: context.mirrorMode,
     };
@@ -96,12 +97,12 @@ export class RendererManager extends IRendererManager {
   private handleWebGLFallback(context: RendererContext): WebGLFallback {
     return (renderer: WebGLRenderer) => {
       const {
-        context: { renderMode, mirrorMode },
+        context: { renderMode, mirrorMode, backgroundColor },
       } = renderer;
       const renderers = this.getRenderers(context);
       renderer.unbind();
       const newRenderer = this.createRenderer(
-        { ...context, renderMode, mirrorMode },
+        { ...context, renderMode, mirrorMode, backgroundColor },
         RendererType.SOFTWARE
       );
       renderers.splice(renderers.indexOf(renderer), 1, newRenderer);
