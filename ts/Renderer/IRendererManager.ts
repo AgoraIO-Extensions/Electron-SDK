@@ -104,6 +104,11 @@ export abstract class IRendererManager {
         channelId = '';
         uid = mediaPlayerId;
         break;
+      case undefined:
+        if (uid) {
+          sourceType = VideoSourceType.VideoSourceRemote;
+        }
+        break;
       default:
         channelId = '';
         uid = 0;
