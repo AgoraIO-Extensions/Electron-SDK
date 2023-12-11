@@ -1,6 +1,6 @@
 import { VideoFrame } from '../Private/AgoraMediaBase';
 import { RendererCacheContext, RendererContext } from '../Types';
-import { AgoraEnv, logWarn } from '../Utils';
+import { AgoraEnv, logDebug } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 
@@ -110,7 +110,7 @@ export class RendererCache {
         isNewFrame = result.isNewFrame;
         break;
       case 2: // GET_VIDEO_FRAME_CACHE_RETURN_TYPE::NO_CACHE = 2
-        logWarn('No renderer cache, please enable cache first');
+        logDebug('No renderer cache, please enable cache first');
         return;
     }
 
