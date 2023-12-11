@@ -27,7 +27,7 @@ interface State extends BaseVideoComponentState {
   color: number;
   source: string;
   blur_degree: BackgroundBlurDegree;
-  enableVirtualBackground: boolean;
+  enableVirtualBackground?: boolean;
 }
 
 export default class VirtualBackground
@@ -48,7 +48,6 @@ export default class VirtualBackground
       color: 0xffffff,
       source: getResourcePath('agora-logo.png'),
       blur_degree: BackgroundBlurDegree.BlurDegreeMedium,
-      enableVirtualBackground: false,
     };
   }
 
