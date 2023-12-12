@@ -11,7 +11,7 @@ import {
   IRtcEngineEventHandler,
   IRtcEngineEx,
   IVideoFrameObserver,
-  MediaPlayerError,
+  MediaPlayerReason,
   MediaPlayerState,
   RenderModeType,
   RtcConnection,
@@ -227,7 +227,7 @@ export default class SendMultiVideoStream
     super.onUserOffline(connection, remoteUid, reason);
   }
 
-  onPlayerSourceStateChanged(state: MediaPlayerState, ec: MediaPlayerError) {
+  onPlayerSourceStateChanged(state: MediaPlayerState, ec: MediaPlayerReason) {
     this.info('onPlayerSourceStateChanged', 'state', state, 'ec', ec);
     switch (state) {
       case MediaPlayerState.PlayerStateIdle:

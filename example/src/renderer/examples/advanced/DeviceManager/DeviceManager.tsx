@@ -3,7 +3,7 @@ import {
   ChannelProfileType,
   ClientRoleType,
   IRtcEngineEventHandler,
-  LocalVideoStreamError,
+  LocalVideoStreamReason,
   LocalVideoStreamState,
   MediaDeviceType,
   RtcConnection,
@@ -304,7 +304,7 @@ export default class DeviceManager
   onLocalVideoStateChanged(
     source: VideoSourceType,
     state: LocalVideoStreamState,
-    error: LocalVideoStreamError
+    error: LocalVideoStreamReason
   ) {
     this.info(
       'onLocalVideoStateChanged',

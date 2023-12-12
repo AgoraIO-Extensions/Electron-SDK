@@ -127,6 +127,10 @@ export enum AudioRoute {
    * 9: The audio route is Apple AirPlay. (For macOS only)
    */
   RouteAirplay = 9,
+  /**
+   * @ignore
+   */
+  RouteBluetoothSpeaker = 10,
 }
 
 /**
@@ -486,6 +490,26 @@ export enum CameraVideoSourceType {
 /**
  * @ignore
  */
+export enum MetaInfoKey {
+  /**
+   * @ignore
+   */
+  KeyFaceCapture = 0,
+}
+
+/**
+ * @ignore
+ */
+export abstract class IVideoFrameMetaInfo {
+  /**
+   * @ignore
+   */
+  abstract getMetaInfoStr(key: MetaInfoKey): string;
+}
+
+/**
+ * @ignore
+ */
 export enum EglContextType {
   /**
    * @ignore
@@ -671,6 +695,10 @@ export class VideoFrame {
    * @ignore
    */
   pixelBuffer?: Uint8Array;
+  /**
+   * @ignore
+   */
+  metaInfo?: IVideoFrameMetaInfo;
 }
 
 /**
@@ -707,6 +735,10 @@ export enum VideoModulePosition {
    * 4: The pre-encoder position, which corresponds to the video data in the onPreEncodeVideoFrame callback.
    */
   PositionPreEncoder = 1 << 2,
+  /**
+   * @ignore
+   */
+  PositionPostCapturerOrigin = 1 << 3,
 }
 
 /**
@@ -777,6 +809,10 @@ export class AudioFrame {
    * @ignore
    */
   presentationMs?: number;
+  /**
+   * @ignore
+   */
+  audioTrackNumber?: number;
 }
 
 /**
@@ -1158,29 +1194,29 @@ export enum RecorderState {
 }
 
 /**
- * The reason for the state change.
+ * @ignore
  */
-export enum RecorderErrorCode {
+export enum RecorderReasonCode {
   /**
-   * 0: No error.
+   * @ignore
    */
-  RecorderErrorNone = 0,
+  RecorderReasonNone = 0,
   /**
-   * 1: The SDK fails to write the recorded data to a file.
+   * @ignore
    */
-  RecorderErrorWriteFailed = 1,
+  RecorderReasonWriteFailed = 1,
   /**
-   * 2: The SDK does not detect any audio and video streams, or audio and video streams are interrupted for more than five seconds during recording.
+   * @ignore
    */
-  RecorderErrorNoStream = 2,
+  RecorderReasonNoStream = 2,
   /**
-   * 3: The recording duration exceeds the upper limit.
+   * @ignore
    */
-  RecorderErrorOverMaxDuration = 3,
+  RecorderReasonOverMaxDuration = 3,
   /**
-   * 4: The recording configuration changes.
+   * @ignore
    */
-  RecorderErrorConfigChanged = 4,
+  RecorderReasonConfigChanged = 4,
 }
 
 /**
@@ -1238,7 +1274,7 @@ export interface IMediaRecorderObserver {
     channelId: string,
     uid: number,
     state: RecorderState,
-    error: RecorderErrorCode
+    reason: RecorderReasonCode
   ): void;
 
   /**

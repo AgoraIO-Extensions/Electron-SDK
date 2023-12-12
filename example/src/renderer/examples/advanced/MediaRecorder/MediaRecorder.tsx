@@ -8,8 +8,8 @@ import {
   IRtcEngineEventHandler,
   MediaRecorderContainerFormat,
   MediaRecorderStreamType,
-  RecorderErrorCode,
   RecorderInfo,
+  RecorderReasonCode,
   RecorderState,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
@@ -202,7 +202,7 @@ export default class MediaRecorder
     channelId: string,
     uid: number,
     state: RecorderState,
-    error: RecorderErrorCode
+    error: RecorderReasonCode
   ) {
     this.info(
       'onRecorderStateChanged',

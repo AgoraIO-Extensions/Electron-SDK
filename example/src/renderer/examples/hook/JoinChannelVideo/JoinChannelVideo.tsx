@@ -1,6 +1,6 @@
 import {
   ClientRoleType,
-  LocalVideoStreamError,
+  LocalVideoStreamReason,
   LocalVideoStreamState,
   VideoSourceType,
 } from 'agora-electron-sdk';
@@ -80,7 +80,7 @@ export default function JoinChannelVideo() {
     (
       source: VideoSourceType,
       state: LocalVideoStreamState,
-      error: LocalVideoStreamError
+      error: LocalVideoStreamReason
     ) => {
       log.info(
         'onLocalVideoStateChanged',

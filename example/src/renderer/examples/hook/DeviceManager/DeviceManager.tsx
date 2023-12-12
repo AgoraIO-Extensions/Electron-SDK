@@ -1,7 +1,7 @@
 import {
   AudioDeviceInfo,
   ClientRoleType,
-  LocalVideoStreamError,
+  LocalVideoStreamReason,
   LocalVideoStreamState,
   MediaDeviceType,
   VideoDeviceInfo,
@@ -231,7 +231,7 @@ export default function DeviceManager() {
     (
       source: VideoSourceType,
       state: LocalVideoStreamState,
-      error: LocalVideoStreamError
+      error: LocalVideoStreamReason
     ) => {
       log.info(
         'onLocalVideoStateChanged',

@@ -49,19 +49,10 @@ export enum RendererType {
   SOFTWARE = 2,
 }
 
-/**
- * @ignore
- */
 export type RENDER_MODE = RendererType;
 
-/**
- * @ignore
- */
 export type RendererContext = VideoCanvas & RtcConnection;
 
-/**
- * @ignore
- */
 export type RendererCacheContext = Pick<
   RendererContext,
   'channelId' | 'uid' | 'sourceType'

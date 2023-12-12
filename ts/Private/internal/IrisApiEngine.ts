@@ -14,6 +14,7 @@ import {
   IVideoFrameObserver,
   VideoFrame,
 } from '../AgoraMediaBase';
+import { IH265TranscoderObserver } from '../IAgoraH265Transcoder';
 import {
   IMediaPlayer,
   IMediaPlayerVideoFrameObserver,
@@ -39,6 +40,7 @@ import {
   processIVideoEncodedFrameObserver,
   processIVideoFrameObserver,
 } from '../impl/AgoraMediaBaseImpl';
+import { processIH265TranscoderObserver } from '../impl/IAgoraH265TranscoderImpl';
 import { processIMediaPlayerVideoFrameObserver } from '../impl/IAgoraMediaPlayerImpl';
 import { processIMediaPlayerSourceObserver } from '../impl/IAgoraMediaPlayerSourceImpl';
 import { processIMusicContentCenterEventHandler } from '../impl/IAgoraMusicContentCenterImpl';
@@ -48,6 +50,8 @@ import {
   processIRtcEngineEventHandler,
 } from '../impl/IAgoraRtcEngineImpl';
 
+import { H265TranscoderInternal } from './AgoraH265TranscoderInternal';
+import { VideoFrameMetaInfoInternal } from './AgoraMediaBaseInternal';
 import { MediaEngineInternal } from './MediaEngineInternal';
 import { MediaPlayerInternal } from './MediaPlayerInternal';
 import { MediaRecorderInternal } from './MediaRecorderInternal';
@@ -105,6 +109,7 @@ export enum EVENT_TYPE {
   IMediaRecorder,
   IRtcEngine,
   IMusicContentCenter,
+  IAgoraH265Transcoder,
 }
 
 type ProcessorType =
@@ -120,7 +125,8 @@ type ProcessorType =
   | IMetadataObserver
   | IDirectCdnStreamingEventHandler
   | IRtcEngineEventHandler
-  | IMusicContentCenterEventHandler;
+  | IMusicContentCenterEventHandler
+  | IH265TranscoderObserver;
 
 type EventProcessors = {
   IAudioFrameObserver: EventProcessor<IAudioFrameObserver>;
@@ -136,6 +142,7 @@ type EventProcessors = {
   IDirectCdnStreamingEventHandler: EventProcessor<IDirectCdnStreamingEventHandler>;
   IRtcEngineEventHandler: EventProcessor<IRtcEngineEventHandler>;
   IMusicContentCenterEventHandler: EventProcessor<IMusicContentCenterEventHandler>;
+  IH265TranscoderObserver: EventProcessor<IH265TranscoderObserver>;
 };
 
 /**
@@ -173,6 +180,8 @@ export const EVENT_PROCESSORS: EventProcessors = {
         data.videoFrame.vBuffer = buffers[2];
         data.videoFrame.metadata_buffer = buffers[3];
         data.videoFrame.alphaBuffer = buffers[4];
+        let metaInfo = data.videoFrame.metaInfo;
+        data.videoFrame.metaInfo = new VideoFrameMetaInfoInternal(metaInfo);
       }
     },
     handlers: (event: string, data: any) =>
@@ -268,6 +277,8 @@ export const EVENT_PROCESSORS: EventProcessors = {
         data.frame.vBuffer = buffers[2];
         data.frame.metadata_buffer = buffers[3];
         data.frame.alphaBuffer = buffers[4];
+        let metaInfo = data.frame.metaInfo;
+        data.frame.metaInfo = new VideoFrameMetaInfoInternal(metaInfo);
       }
     },
     handlers: (event: string, data: any) =>
@@ -350,6 +361,12 @@ export const EVENT_PROCESSORS: EventProcessors = {
     },
     handlers: (event: string, data: any) =>
       MusicContentCenterInternal._event_handlers,
+  },
+  IH265TranscoderObserver: {
+    suffix: 'H265TranscoderObserver_',
+    type: () => EVENT_TYPE.IAgoraH265Transcoder,
+    func: [processIH265TranscoderObserver],
+    handlers: () => H265TranscoderInternal._h265_transcoder_observers,
   },
 };
 
@@ -489,7 +506,9 @@ export function callIrisApi(funcName: string, params: any): any {
           break;
         case 'RtcEngine_destroyMediaRecorder':
           // @ts-ignore
-          params.nativeHandle = (this as MediaRecorderInternal).nativeHandle;
+          params.nativeHandle = (
+            params.mediaRecorder as MediaRecorderInternal
+          ).nativeHandle;
           params.toJSON = function () {
             return { nativeHandle: params.nativeHandle };
           };
@@ -504,7 +523,7 @@ export function callIrisApi(funcName: string, params: any): any {
       buffers.length
     );
     let ret = callApiResult;
-    if (ret !== undefined && ret !== null && ret !== '') {
+    if (ret !== undefined && ret !== null && ret !== '' && ret !== 'null') {
       const retObj = JSON.parse(ret);
       if (isDebuggable()) {
         if (typeof retObj.result === 'number' && retObj.result < 0) {
