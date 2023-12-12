@@ -60,7 +60,6 @@ export abstract class IRenderer {
 
     if (this.context.backgroundColor !== backgroundColor) {
       this.context.backgroundColor = backgroundColor;
-      this.updateBackgroundColor();
     }
   }
 
@@ -71,17 +70,17 @@ export abstract class IRenderer {
   protected updateBackgroundColor() {
     if (
       !this.container ||
+      !this.context?.backgroundColor ||
       this.context?.renderMode !== RenderModeType.RenderModeFit
     )
       return;
     const { backgroundColor } = this.context;
-    const r = (backgroundColor! >> 24) & 255;
-    const g = (backgroundColor! >> 16) & 255;
-    const b = (backgroundColor! >> 8) & 255;
-    const a = backgroundColor! & 255;
-    //todo rgba convert to hex still have problem, need fix this
-    var rgba = 'rgb(' + r + ' ' + g + ' ' + b + ' / ' + (a / 255) * 100 + '%)';
-    this.container.style.background = `#${backgroundColor!.toString(16)}`;
+    const r = (backgroundColor >> 24) & 255;
+    const g = (backgroundColor >> 16) & 255;
+    const b = (backgroundColor >> 8) & 255;
+    const a = (backgroundColor & 255) / 255;
+    const rgba = `rgba(${r}, ${g}, ${b}, ${a})`;
+    this.container.style.background = rgba;
   }
 
   protected updateRenderMode() {

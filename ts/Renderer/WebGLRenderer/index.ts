@@ -165,6 +165,7 @@ export class WebGLRenderer extends IRenderer {
   }: VideoFrame) {
     this.rotateCanvas({ width, height, rotation });
     this.updateRenderMode();
+    this.updateBackgroundColor();
 
     if (!this.gl || !this.program) return;
 
