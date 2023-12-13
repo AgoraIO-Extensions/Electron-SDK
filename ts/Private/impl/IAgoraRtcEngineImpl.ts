@@ -7,6 +7,7 @@ import {
   AudioScenarioType,
   AudioSessionOperationRestriction,
   BeautyOptions,
+  CameraStabilizationMode,
   ChannelMediaRelayConfiguration,
   ChannelProfileType,
   ClientRoleOptions,
@@ -4795,6 +4796,26 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_setCameraAutoExposureFaceModeEnabled';
   }
 
+  setCameraStabilizationMode(mode: CameraStabilizationMode): number {
+    const apiType = this.getApiTypeFromSetCameraStabilizationMode(mode);
+    const jsonParams = {
+      mode: mode,
+      toJSON: () => {
+        return {
+          mode: mode,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSetCameraStabilizationMode(
+    mode: CameraStabilizationMode
+  ): string {
+    return 'RtcEngine_setCameraStabilizationMode';
+  }
+
   setDefaultAudioRouteToSpeakerphone(defaultToSpeaker: boolean): number {
     const apiType =
       this.getApiTypeFromSetDefaultAudioRouteToSpeakerphone(defaultToSpeaker);
@@ -4861,6 +4882,35 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromSetRouteInCommunicationMode(route: number): string {
     return 'RtcEngine_setRouteInCommunicationMode';
+  }
+
+  isSupportPortraitCenterStage(): boolean {
+    const apiType = this.getApiTypeFromIsSupportPortraitCenterStage();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromIsSupportPortraitCenterStage(): string {
+    return 'RtcEngine_isSupportPortraitCenterStage';
+  }
+
+  enablePortraitCenterStage(enabled: boolean): number {
+    const apiType = this.getApiTypeFromEnablePortraitCenterStage(enabled);
+    const jsonParams = {
+      enabled: enabled,
+      toJSON: () => {
+        return {
+          enabled: enabled,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromEnablePortraitCenterStage(enabled: boolean): string {
+    return 'RtcEngine_enablePortraitCenterStage';
   }
 
   getScreenCaptureSources(

@@ -11,6 +11,7 @@ import {
   AudioSessionOperationRestriction,
   AudioVolumeInfo,
   BeautyOptions,
+  CameraStabilizationMode,
   CaptureBrightnessLevelType,
   ChannelMediaRelayConfiguration,
   ChannelMediaRelayError,
@@ -1300,7 +1301,7 @@ export interface IRtcEngineEventHandler {
   /**
    * Reports an error during SDK runtime.
    *
-   * This callback indicates that an error (concerning network or media) occurs during SDK runtime. In most cases, the SDK cannot fix the issue and resume running. The SDK requires the application to take action or informs the user about the issue.
+   * This callback indicates that an error (concerning network or media) occurs during SDK runtime. In most cases, the SDK cannot fix the issue and resume running. The SDK requires the app to take action or informs the user about the issue.
    *
    * @param err Error code. See ErrorCodeType.
    * @param msg The error message.
@@ -1358,7 +1359,7 @@ export interface IRtcEngineEventHandler {
   /**
    * Occurs when a user leaves a channel.
    *
-   * This callback notifies the app that the user leaves the channel by calling leaveChannel. From this callback, the app can get information such as the call duration and quality statistics.
+   * This callback notifies the app that the user leaves the channel by calling leaveChannel. From this callback, the app can get information such as the call duration and statistics.
    *
    * @param connection The connection information. See RtcConnection.
    * @param stats The statistics of the call. See RtcStats.
@@ -1382,7 +1383,7 @@ export interface IRtcEngineEventHandler {
    *
    * @param deviceId The device ID.
    * @param deviceType The device type. See MediaDeviceType.
-   * @param deviceState Media device states.
+   * @param deviceState The device state. See MediaDeviceStateType.
    */
   onAudioDeviceStateChanged?(
     deviceId: string,
@@ -1426,7 +1427,7 @@ export interface IRtcEngineEventHandler {
    *
    * @param deviceId The device ID.
    * @param deviceType Media device types. See MediaDeviceType.
-   * @param deviceState Media device states.
+   * @param deviceState Media device states. See MediaDeviceStateType.
    */
   onVideoDeviceStateChanged?(
     deviceId: string,
@@ -2084,7 +2085,7 @@ export interface IRtcEngineEventHandler {
   /**
    * Reports the volume change of the audio device or app.
    *
-   * Occurs when the volume on the playback device, audio capture device, or the volume in the application changes.
+   * Occurs when the volume on the playback device, audio capture device, or the volume of the app changes.
    *
    * @param deviceType The device type. See MediaDeviceType.
    * @param volume The volume value. The range is [0, 255].
@@ -2964,7 +2965,7 @@ export abstract class IRtcEngine {
    *  All numeric characters: 0 to 9.
    *  Space
    *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
-   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as NULL. Supported characters are (89 in total):
+   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null. Supported characters are (89 in total):
    *  The 26 lowercase English letters: a to z.
    *  The 26 uppercase English letters: A to Z.
    *  All numeric characters: 0 to 9.
@@ -3015,7 +3016,7 @@ export abstract class IRtcEngine {
    *  All numeric characters: 0 to 9.
    *  Space
    *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
-   * @param uid The user ID. This parameter is used to identify the user in the channel for real-time audio and video interaction. You need to set and manage user IDs yourself, and ensure that each user ID in the same channel is unique. This parameter is a 32-bit unsigned integer. The value range is 1 to 2 32 -1. If the user ID is not assigned (or set to 0), the SDK assigns a random user ID and returns it in the onJoinChannelSuccess callback. Your application must record and maintain the returned user ID, because the SDK does not do so.
+   * @param uid The user ID. This parameter is used to identify the user in the channel for real-time audio and video interaction. You need to set and manage user IDs yourself, and ensure that each user ID in the same channel is unique. This parameter is a 32-bit unsigned integer. The value range is 1 to 2 32 -1. If the user ID is not assigned (or set to 0), the SDK assigns a random user ID and returns it in the onJoinChannelSuccess callback. Your app must record and maintain the returned user ID, because the SDK does not do so.
    * @param options The channel media options. See ChannelMediaOptions.
    *
    * @returns
@@ -3067,8 +3068,7 @@ export abstract class IRtcEngine {
   /**
    * Renews the token.
    *
-   * The SDK triggers the onTokenPrivilegeWillExpire callback.
-   *  The onConnectionStateChanged callback reports ConnectionChangedTokenExpired (9).
+   * The SDK triggers the onTokenPrivilegeWillExpire callback. onConnectionStateChanged The ConnectionChangedTokenExpired callback reports (9).
    *
    * @param token The new token.
    *
@@ -3243,7 +3243,7 @@ export abstract class IRtcEngine {
   /**
    * Sets the video encoder configuration.
    *
-   * Sets the encoder configuration for the local video. You can call this method either before or after joining a channel. If the user does not need to reset the video encoding properties after joining the channel, Agora recommends calling this method before enableVideo to reduce the time to render the first video frame.
+   * Sets the encoder configuration for the local video. Each configuration profile corresponds to a set of video parameters, including the resolution, frame rate, and bitrate. The config specified in this method is the maximum value under ideal network conditions. If the video engine cannot render the video using the specified config due to unreliable network conditions, the parameters further down the list are considered until a successful configuration is found. You can call this method either before or after joining a channel. If the user does not need to reset the video encoding properties after joining the channel, Agora recommends calling this method before enableVideo to reduce the time to render the first video frame.
    *
    * @param config Video profile. See VideoEncoderConfiguration.
    *
@@ -3403,7 +3403,7 @@ export abstract class IRtcEngine {
   /**
    * Initializes the local video view.
    *
-   * This method initializes the video view of a local stream on the local device. It affects only the video view that the local user sees, not the published local video stream. Call this method to bind the local video stream to a video view (view) and to set the rendering and mirror modes of the video view. After initialization, call this method to set the local video and then join the channel. The local video still binds to the view after you leave the channel. To unbind the local video from the view, set the view parameter as NULL.
+   * This method initializes the video view of a local stream on the local device. It affects only the video view that the local user sees, not the published local video stream. Call this method to bind the local video stream to a video view (view) and to set the rendering and mirror modes of the video view. After initialization, call this method to set the local video and then join the channel. The local video still binds to the view after you leave the channel. To unbind the local video from the view, set the view parameter as null.
    *  You can call this method either before or after joining a channel.
    *
    * @param canvas The local video view and settings. See VideoCanvas.
@@ -3437,6 +3437,9 @@ export abstract class IRtcEngine {
    * @returns
    * 0: Success.
    *  < 0: Failure.
+   *  -1: A general error occurs (no specified reason).
+   *  -4: Video application scenarios are not supported. Possible reasons include that you use the Voice SDK instead of the Video SDK.
+   *  -7: The IRtcEngine object has not been initialized. You need to initialize the IRtcEngine object before calling this method.
    */
   abstract setVideoScenario(scenarioType: VideoApplicationScenarioType): number;
 
@@ -4868,7 +4871,7 @@ export abstract class IRtcEngine {
    * Sets the audio data format reported by onPlaybackAudioFrameBeforeMixing.
    *
    * @param sampleRate The sample rate (Hz) of the audio data, which can be set as 8000, 16000, 32000, 44100, or 48000.
-   * @param channel The number of channels of the external audio source, which can be set as 1 (Mono) or 2 (Stereo).
+   * @param channel The number of channels of the audio data, which can be set as 1 (Mono) or 2 (Stereo).
    *
    * @returns
    * 0: Success.
@@ -5353,6 +5356,11 @@ export abstract class IRtcEngine {
   /**
    * @ignore
    */
+  abstract setCameraStabilizationMode(mode: CameraStabilizationMode): number;
+
+  /**
+   * @ignore
+   */
   abstract setDefaultAudioRouteToSpeakerphone(
     defaultToSpeaker: boolean
   ): number;
@@ -5371,6 +5379,16 @@ export abstract class IRtcEngine {
    * @ignore
    */
   abstract setRouteInCommunicationMode(route: number): number;
+
+  /**
+   * @ignore
+   */
+  abstract isSupportPortraitCenterStage(): boolean;
+
+  /**
+   * @ignore
+   */
+  abstract enablePortraitCenterStage(enabled: boolean): number;
 
   /**
    * Gets a list of shareable screens and windows.
@@ -6102,7 +6120,7 @@ export abstract class IRtcEngine {
    *  To ensure smooth communication, use the same parameter type to identify the user. For example, if a user joins the channel with a user ID, then ensure all the other users use the user ID too. The same applies to the user account. If a user joins the channel with the Agora Web SDK, ensure that the ID of the user is set to the same parameter type.
    *
    * @param appId The App ID of your project on Agora Console.
-   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as NULL. Supported characters are as follow(89 in total):
+   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null. Supported characters are as follow(89 in total):
    *  The 26 lowercase English letters: a to z.
    *  The 26 uppercase English letters: A to Z.
    *  All numeric characters: 0 to 9.
@@ -6129,7 +6147,7 @@ export abstract class IRtcEngine {
    *  All numeric characters: 0 to 9.
    *  Space
    *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
-   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as NULL. Supported characters are (89 in total):
+   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null. Supported characters are (89 in total):
    *  The 26 lowercase English letters: a to z.
    *  The 26 uppercase English letters: A to Z.
    *  All numeric characters: 0 to 9.
@@ -6169,7 +6187,7 @@ export abstract class IRtcEngine {
    *  All numeric characters: 0 to 9.
    *  Space
    *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
-   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as NULL. Supported characters are (89 in total):
+   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null. Supported characters are (89 in total):
    *  The 26 lowercase English letters: a to z.
    *  The 26 uppercase English letters: A to Z.
    *  All numeric characters: 0 to 9.
@@ -6197,7 +6215,7 @@ export abstract class IRtcEngine {
    *
    * @returns
    * A pointer to the UserInfo instance, if the method call succeeds.
-   *  If the call fails, returns NULL.
+   *  If the call fails, returns null.
    */
   abstract getUserInfoByUserAccount(userAccount: string): UserInfo;
 
@@ -6210,7 +6228,7 @@ export abstract class IRtcEngine {
    *
    * @returns
    * A pointer to the UserInfo instance, if the method call succeeds.
-   *  If the call fails, returns NULL.
+   *  If the call fails, returns null.
    */
   abstract getUserInfoByUid(uid: number): UserInfo;
 
