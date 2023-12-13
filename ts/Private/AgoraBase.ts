@@ -323,6 +323,10 @@ export enum ErrorCodeType {
    */
   ErrInvalidUserId = 121,
   /**
+   * @ignore
+   */
+  ErrDatastreamDecryptionFailed = 122,
+  /**
    * 123: The user is banned from the server.
    */
   ErrClientIsBannedByServer = 123,
@@ -1513,11 +1517,11 @@ export class RtcStats {
    */
   rxVideoBytes?: number;
   /**
-   * Video transmission bitrate (Kbps), represented by an instantaneous value.
+   * The actual bitrate (Kbps) while sending the local video stream.
    */
   txKBitRate?: number;
   /**
-   * The receiving bitrate (Kbps), represented by an instantaneous value.
+   * The receiving bitrate (Kbps).
    */
   rxKBitRate?: number;
   /**
@@ -1910,6 +1914,36 @@ export enum CaptureBrightnessLevelType {
    * @ignore
    */
   CaptureBrightnessLevelDark = 2,
+}
+
+/**
+ * @ignore
+ */
+export enum CameraStabilizationMode {
+  /**
+   * @ignore
+   */
+  CameraStabilizationModeOff = -1,
+  /**
+   * @ignore
+   */
+  CameraStabilizationModeAuto = 0,
+  /**
+   * @ignore
+   */
+  CameraStabilizationModeLevel1 = 1,
+  /**
+   * @ignore
+   */
+  CameraStabilizationModeLevel2 = 2,
+  /**
+   * @ignore
+   */
+  CameraStabilizationModeLevel3 = 3,
+  /**
+   * @ignore
+   */
+  CameraStabilizationModeMaxLevel = 3,
 }
 
 /**
@@ -4244,7 +4278,7 @@ export enum ChannelMediaRelayEvent {
    */
   RelayEventPacketUpdateDestChannelNotChange = 9,
   /**
-   * 10: The target channel name is NULL.
+   * 10: The target channel name is null.
    */
   RelayEventPacketUpdateDestChannelIsNull = 10,
   /**
@@ -4314,14 +4348,14 @@ export class ChannelMediaInfo {
  */
 export class ChannelMediaRelayConfiguration {
   /**
-   * The information of the source channel. See ChannelMediaInfo. It contains the following members: channelName : The name of the source channel. The default value is NULL, which means the SDK applies the name of the current channel. token : The token for joining the source channel. This token is generated with the channelName and uid you set in srcInfo.
-   *  If you have not enabled the App Certificate, set this parameter as the default value NULL, which means the SDK applies the App ID.
+   * The information of the source channel. See ChannelMediaInfo. It contains the following members: channelName : The name of the source channel. The default value is null, which means the SDK applies the name of the current channel. token : The token for joining the source channel. This token is generated with the channelName and uid you set in srcInfo.
+   *  If you have not enabled the App Certificate, set this parameter as the default value null, which means the SDK applies the App ID.
    *  If you have enabled the App Certificate, you must use the token generated with the channelName and uid, and the uid must be set as 0. uid : The unique user ID to identify the relay stream in the source channel. Agora recommends leaving the default value of 0 unchanged.
    */
   srcInfo?: ChannelMediaInfo;
   /**
    * The information of the target channel ChannelMediaInfo. It contains the following members: channelName : The name of the target channel. token : The token for joining the target channel. It is generated with the channelName and uid you set in destInfos.
-   *  If you have not enabled the App Certificate, set this parameter as the default value NULL, which means the SDK applies the App ID.
+   *  If you have not enabled the App Certificate, set this parameter as the default value null, which means the SDK applies the App ID.
    *  If you have enabled the App Certificate, you must use the token generated with the channelName and uid. If the token of any target channel expires, the whole media relay stops; hence Agora recommends that you specify the same expiration time for the tokens of all the target channels. uid : The unique user ID to identify the relay stream in the target channel. The value ranges from 0 to (2 32 -1). To avoid user ID conflicts, this user ID must be different from any other user ID in the target channel. The default value is 0, which means the SDK generates a random user ID.
    */
   destInfos?: ChannelMediaInfo[];
@@ -4442,13 +4476,17 @@ export class EncryptionConfig {
    */
   encryptionMode?: EncryptionMode;
   /**
-   * Encryption key in string type with unlimited length. Agora recommends using a 32-byte key. If you do not set an encryption key or set it as NULL, you cannot use the built-in encryption, and the SDK returns -2.
+   * Encryption key in string type with unlimited length. Agora recommends using a 32-byte key. If you do not set an encryption key or set it as null, you cannot use the built-in encryption, and the SDK returns -2.
    */
   encryptionKey?: string;
   /**
    * Salt, 32 bytes in length. Agora recommends that you use OpenSSL to generate salt on the server side. See Media Stream Encryption for details. This parameter takes effect only in Aes128Gcm2 or Aes256Gcm2 encrypted mode. In this case, ensure that this parameter is not 0.
    */
   encryptionKdfSalt?: number[];
+  /**
+   * @ignore
+   */
+  datastreamEncryptionEnabled?: boolean;
 }
 
 /**
@@ -4467,6 +4505,14 @@ export enum EncryptionErrorType {
    * 2: Encryption errors.
    */
   EncryptionErrorEncryptionFailure = 2,
+  /**
+   * @ignore
+   */
+  EncryptionErrorDatastreamDecryptionFailure = 3,
+  /**
+   * @ignore
+   */
+  EncryptionErrorDatastreamEncryptionFailure = 4,
 }
 
 /**
