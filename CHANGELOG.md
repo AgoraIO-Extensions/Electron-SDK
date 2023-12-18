@@ -1,5 +1,12 @@
 
 
+## [4.2.6-build.121-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.121-rc.1...v4.2.6-build.121-rc.2) (2023-12-18)
+
+
+### Bug Fixes
+
+* fix close hardware acceleration will cause black screen issue ([994a834](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/994a834df1b953b7c99b33418ada390a9a2eaa6d))
+
 ## [4.2.6-build.121-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.1-rc.1...v4.2.6-build.121-rc.1) (2023-12-15)
 
 ## [4.2.6-build.1-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.1-dev.1...v4.2.6-build.1-rc.1) (2023-11-24)
