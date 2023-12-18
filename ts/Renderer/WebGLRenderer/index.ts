@@ -92,7 +92,7 @@ export class WebGLRenderer extends IRenderer {
           premultipliedAlpha: true,
           preserveDrawingBuffer: false,
           powerPreference: 'default',
-          failIfMajorPerformanceCaveat: true,
+          failIfMajorPerformanceCaveat: false,
         });
         if (context) {
           return context as WebGLRenderingContext | WebGLRenderingContext;
