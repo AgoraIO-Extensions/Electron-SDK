@@ -158,7 +158,7 @@ export abstract class IMediaPlayer {
    *
    * @returns
    * If the call succeeds, returns the detailed information of the media stream. See PlayerStreamInfo.
-   *  If the call fails, returns NULL.
+   *  If the call fails, returns null.
    */
   abstract getStreamInfo(index: number): PlayerStreamInfo;
 

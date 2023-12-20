@@ -394,6 +394,13 @@ function handleEvent(...[event, data, buffers]: any) {
   if (_event.endsWith('Ex')) {
     _event = _event.replace(/Ex$/g, '');
   }
+  // for new IrisType, but this is temporary
+  if (_event.startsWith('_') && _event.indexOf('__') !== -1) {
+    _event = _event.substring(
+      _event.indexOf('_') + 1,
+      _event.lastIndexOf('__')
+    );
+  }
 
   let _data: any;
   try {
