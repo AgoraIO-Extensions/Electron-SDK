@@ -1119,6 +1119,10 @@ export class ChannelMediaOptions {
    */
   publishTranscodedVideoTrack?: boolean;
   /**
+   * @ignore
+   */
+  publishMixedAudioTrack?: boolean;
+  /**
    * Whether to automatically subscribe to all remote audio streams when the user joins a channel: true : Subscribe to all remote audio streams. false : Do not automatically subscribe to any remote audio streams.
    */
   autoSubscribeAudio?: boolean;
@@ -3200,6 +3204,11 @@ export abstract class IRtcEngine {
    *  < 0: Failure.
    */
   abstract startPreview(sourceType?: VideoSourceType): number;
+
+  /**
+   * @ignore
+   */
+  abstract startPreviewWithoutSourceType(): number;
 
   /**
    * Stops the local video preview.

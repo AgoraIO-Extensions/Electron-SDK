@@ -2211,6 +2211,14 @@ export enum RemoteAudioStateReason {
    * 7: The remote user leaves the channel.
    */
   RemoteAudioReasonRemoteOffline = 7,
+  /**
+   * @ignore
+   */
+  RemoteAudioReasonRemoteNoPacketReceive = 8,
+  /**
+   * @ignore
+   */
+  RemoteAudioReasonRemoteLocalPlayFailed = 9,
 }
 
 /**
@@ -4677,6 +4685,10 @@ export enum EarMonitoringFilterType {
    * 1<<2: Enable noise suppression to the in-ear monitor.
    */
   EarMonitoringFilterNoiseSuppression = 1 << 2,
+  /**
+   * @ignore
+   */
+  EarMonitoringFilterReusePostProcessingFilter = 1 << 15,
 }
 
 /**
