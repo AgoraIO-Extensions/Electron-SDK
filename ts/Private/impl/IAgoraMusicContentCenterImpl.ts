@@ -120,7 +120,7 @@ export function processIMusicContentCenterEventHandler(
         handler.onMusicChartsResult(
           jsonParams.requestId,
           jsonParams.result,
-          jsonParams.status
+          jsonParams.reason
         );
       }
       break;
@@ -130,7 +130,7 @@ export function processIMusicContentCenterEventHandler(
         handler.onMusicCollectionResult(
           jsonParams.requestId,
           jsonParams.result,
-          jsonParams.status
+          jsonParams.reason
         );
       }
       break;
@@ -141,7 +141,7 @@ export function processIMusicContentCenterEventHandler(
           jsonParams.requestId,
           jsonParams.songCode,
           jsonParams.lyricUrl,
-          jsonParams.status
+          jsonParams.reason
         );
       }
       break;
@@ -152,7 +152,7 @@ export function processIMusicContentCenterEventHandler(
           jsonParams.requestId,
           jsonParams.songCode,
           jsonParams.simpleInfo,
-          jsonParams.status
+          jsonParams.reason
         );
       }
       break;
@@ -164,8 +164,8 @@ export function processIMusicContentCenterEventHandler(
           jsonParams.songCode,
           jsonParams.percent,
           jsonParams.lyricUrl,
-          jsonParams.preloadStatus,
-          jsonParams.mccStatus
+          jsonParams.state,
+          jsonParams.reason
         );
       }
       break;

@@ -14,8 +14,8 @@
   "dependencies": {
     "@agoraio-extensions/terra": "git@github.com:AgoraIO-Extensions/terra.git#commit=5dd8149d5ab9f3b472b7715916b6217f9745f066&workspace=terra",
     "@agoraio-extensions/terra-core": "git@github.com:AgoraIO-Extensions/terra.git#commit=5dd8149d5ab9f3b472b7715916b6217f9745f066&workspace=terra-core",
-    "@agoraio-extensions/terra-legacy-cxx-parser": "git@github.com:AgoraIO-Extensions/terra-legacy-cxx-parser.git#commit=a4ca5b9fec0015066e353c3fd03107acd1e6036e",
-    "@agoraio-extensions/terra_shared_configs": "git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=c3258363f54befd70f84cd9707e052e6b6cfa485",
+    "@agoraio-extensions/terra-legacy-cxx-parser": "git@github.com:AgoraIO-Extensions/terra-legacy-cxx-parser.git#commit=66036ca9e26651fb4219ab7e3cb46c3b695c87d9",
+    "@agoraio-extensions/terra_shared_configs": "git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=6e0881b4673d4fd052c3c1a1572c7d50c6bd7876",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   },

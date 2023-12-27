@@ -561,10 +561,6 @@ export enum InterfaceIdType {
   /**
    * @ignore
    */
-  AgoraIidCloudSpatialAudio = 10,
-  /**
-   * @ignore
-   */
   AgoraIidLocalSpatialAudio = 11,
   /**
    * @ignore
@@ -4852,6 +4848,10 @@ export class LocalAccessPointConfiguration {
    * @ignore
    */
   advancedConfig?: AdvancedConfigInfo;
+  /**
+   * @ignore
+   */
+  disableAut?: boolean;
 }
 
 /**
