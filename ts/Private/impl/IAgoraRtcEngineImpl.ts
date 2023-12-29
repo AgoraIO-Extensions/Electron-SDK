@@ -1508,6 +1508,17 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_startPreview';
   }
 
+  startPreviewWithoutSourceType(): number {
+    const apiType = this.getApiTypeFromStartPreviewWithoutSourceType();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromStartPreviewWithoutSourceType(): string {
+    return 'RtcEngine_startPreviewWithoutSourceType';
+  }
+
   stopPreview(
     sourceType: VideoSourceType = VideoSourceType.VideoSourceCameraPrimary
   ): number {

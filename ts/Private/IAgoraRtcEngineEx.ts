@@ -949,4 +949,9 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    *  < 0: Failure.
    */
   abstract startMediaRenderingTracingEx(connection: RtcConnection): number;
+
+  /**
+   * @ignore
+   */
+  abstract getCallIdEx(connection: RtcConnection): string;
 }

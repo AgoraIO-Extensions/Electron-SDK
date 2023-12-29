@@ -839,6 +839,10 @@ export class AudioFrame {
    * @ignore
    */
   audioTrackNumber?: number;
+  /**
+   * @ignore
+   */
+  rtpTimestamp?: number;
 }
 
 /**
