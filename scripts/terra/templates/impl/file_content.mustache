@@ -1,0 +1,55 @@
+{{#nodes}}
+{{#user_data.isCallback}}
+export function process{{name}}(handler: {{name}},
+  event: string,
+  jsonParams: any){
+  switch (event) {
+    {{#methods}}
+    case '{{name}}':
+      if (handler.{{name}} !== undefined) {
+        handler.{{name}}({{#parameters}}jsonParams.{{name}},{{/parameters}});
+      }
+      break;
+    {{/methods}}
+  }
+}
+
+{{/user_data.isCallback}}
+{{^user_data.isCallback}}
+// @ts-ignore
+export class {{name}}Impl implements {{name}}{
+
+{{#methods}}
+  {{name}}(
+    {{#parameters}}
+    {{name}}{{#user_data.isOptional}}?{{/user_data.isOptional}}: {{type.source}},
+    {{/parameters}}
+    ): {{return_type.source}} {
+    const apiType = this.{{user_data.bindingFunctionName}}();
+    const jsonParams = {
+      {{#parameters}}
+      {{name}}: {{name}},
+      {{/parameters}}
+      {{#user_data.hasParameters}}
+       toJSON: () => {
+        return {
+         {{#parameters}}
+         {{name}}: {{name}},
+         {{/parameters}}
+        };
+      },
+      {{/user_data.hasParameters}}
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.{{user_data.returnParamName}};
+  }
+
+  protected {{user_data.bindingFunctionName}}(): string {
+    return '{{user_data.bindingIrisKey}}';
+  }
+
+{{/methods}}
+}
+
+{{/user_data.isCallback}}
+{{/nodes}}

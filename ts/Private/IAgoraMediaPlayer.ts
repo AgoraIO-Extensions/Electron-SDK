@@ -215,16 +215,6 @@ export abstract class IMediaPlayer {
   /**
    * @ignore
    */
-  abstract setPlayerOptionInInt(key: string, value: number): number;
-
-  /**
-   * @ignore
-   */
-  abstract setPlayerOptionInString(key: string, value: string): number;
-
-  /**
-   * @ignore
-   */
   abstract takeScreenshot(filename: string): number;
 
   /**
@@ -566,6 +556,16 @@ export abstract class IMediaPlayer {
    * @ignore
    */
   abstract setSoundPositionParams(pan: number, gain: number): number;
+
+  /**
+   * @ignore
+   */
+  abstract setPlayerOptionInInt(key: string, value: number): number;
+
+  /**
+   * @ignore
+   */
+  abstract setPlayerOptionInString(key: string, value: string): number;
 }
 
 /**

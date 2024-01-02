@@ -3200,11 +3200,6 @@ export abstract class IRtcEngine {
   abstract startPreview(sourceType?: VideoSourceType): number;
 
   /**
-   * @ignore
-   */
-  abstract startPreviewWithoutSourceType(): number;
-
-  /**
    * Stops the local video preview.
    *
    * After calling startPreview to start the preview, if you want to close the local video preview, call this method. Call this method before joining a channel or after leaving a channel.
@@ -5544,22 +5539,6 @@ export abstract class IRtcEngine {
   abstract startScreenCapture(captureParams: ScreenCaptureParameters2): number;
 
   /**
-   * Starts screen capture.
-   *
-   * This method, as well as startScreenCaptureByDisplayId and startScreenCaptureByWindowId, all have the capability to start screen capture, with the following differences: startScreenCaptureByDisplayId and startScreenCaptureByWindowId only support capturing video from a single screen or window. By calling this method and specifying the sourceType parameter, you can capture multiple video streams used for local video mixing or multi-channel publishing.
-   *  If you call this method to start screen capture, Agora recommends that you call stopScreenCaptureBySourceType to stop the capture and avoid using stopScreenCapture.
-   *
-   * @param sourceType The type of the video source. See VideoSourceType.
-   *  Windows supports up to four screen capture video streams.
-   *  macOS supports only one screen capture video stream. You can only set this parameter to VideoSourceScreen (2).
-   * @param config The configuration of the captured screen. See ScreenCaptureConfiguration.
-   */
-  abstract startScreenCaptureBySourceType(
-    sourceType: VideoSourceType,
-    config: ScreenCaptureConfiguration
-  ): number;
-
-  /**
    * @ignore
    */
   abstract updateScreenCapture(captureParams: ScreenCaptureParameters2): number;
@@ -5592,20 +5571,6 @@ export abstract class IRtcEngine {
    *  < 0: Failure.
    */
   abstract stopScreenCapture(): number;
-
-  /**
-   * Stops screen capture.
-   *
-   * After calling startScreenCaptureBySourceType to start capturing video from one or more screens, you can call this method and set the sourceType parameter to stop capturing from the specified screens.
-   *  If you call startScreenCaptureByWindowId or startScreenCaptureByDisplayId to start screen capture, Agora recommends that you call stopScreenCapture to stop the capture and do not use this one.
-   *
-   * @param sourceType The type of the video source. See VideoSourceType.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
-   */
-  abstract stopScreenCaptureBySourceType(sourceType: VideoSourceType): number;
 
   /**
    * Retrieves the call ID.
@@ -6592,6 +6557,36 @@ export abstract class IRtcEngine {
   abstract isFeatureAvailableOnDevice(type: FeatureType): boolean;
 
   /**
+   * Starts screen capture.
+   *
+   * This method, as well as startScreenCaptureByDisplayId and startScreenCaptureByWindowId, all have the capability to start screen capture, with the following differences: startScreenCaptureByDisplayId and startScreenCaptureByWindowId only support capturing video from a single screen or window. By calling this method and specifying the sourceType parameter, you can capture multiple video streams used for local video mixing or multi-channel publishing.
+   *  If you call this method to start screen capture, Agora recommends that you call stopScreenCaptureBySourceType to stop the capture and avoid using stopScreenCapture.
+   *
+   * @param sourceType The type of the video source. See VideoSourceType.
+   *  Windows supports up to four screen capture video streams.
+   *  macOS supports only one screen capture video stream. You can only set this parameter to VideoSourceScreen (2).
+   * @param config The configuration of the captured screen. See ScreenCaptureConfiguration.
+   */
+  abstract startScreenCaptureBySourceType(
+    sourceType: VideoSourceType,
+    config: ScreenCaptureConfiguration
+  ): number;
+
+  /**
+   * Stops screen capture.
+   *
+   * After calling startScreenCaptureBySourceType to start capturing video from one or more screens, you can call this method and set the sourceType parameter to stop capturing from the specified screens.
+   *  If you call startScreenCaptureByWindowId or startScreenCaptureByDisplayId to start screen capture, Agora recommends that you call stopScreenCapture to stop the capture and do not use this one.
+   *
+   * @param sourceType The type of the video source. See VideoSourceType.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
+   */
+  abstract stopScreenCaptureBySourceType(sourceType: VideoSourceType): number;
+
+  /**
    * Releases the IRtcEngine instance.
    *
    * This method releases all resources used by the Agora SDK. Use this method for apps in which users occasionally make voice or video calls. When users do not make calls, you can free up resources for other operations. After a successful method call, you can no longer use any method or callback in the SDK anymore. If you want to use the real-time communication functions again, you must call createAgoraRtcEngine and initialize to create a new IRtcEngine instance.
@@ -6601,6 +6596,11 @@ export abstract class IRtcEngine {
    * @param sync Whether the method is called synchronously: true : Synchronous call. false : Asynchronous call. Currently this method only supports synchronous calls. Do not set this parameter to this value.
    */
   abstract release(sync?: boolean): void;
+
+  /**
+   * @ignore
+   */
+  abstract startPreviewWithoutSourceType(): number;
 
   /**
    * Gets the IAudioDeviceManager object to manage audio devices.
