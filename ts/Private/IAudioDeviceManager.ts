@@ -63,12 +63,21 @@ export abstract class IAudioDeviceManager {
   abstract getPlaybackDeviceInfo(): AudioDeviceInfo;
 
   /**
-   * @ignore
+   * Sets the volume of the audio playback device.
+   *
+   * @param volume The volume of the audio playback device. The value ranges between 0 (lowest volume) and 255 (highest volume).
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract setPlaybackDeviceVolume(volume: number): number;
 
   /**
-   * @ignore
+   * Retrieves the volume of the audio playback device.
+   *
+   * @returns
+   * The volume of the audio playback device. The value range is [0,255].
    */
   abstract getPlaybackDeviceVolume(): number;
 
@@ -115,7 +124,10 @@ export abstract class IAudioDeviceManager {
   abstract setRecordingDeviceVolume(volume: number): number;
 
   /**
-   * @ignore
+   * Retrieves the volume of the audio recording device.
+   *
+   * @returns
+   * The volume of the audio recording device. The value range is [0,255].
    */
   abstract getRecordingDeviceVolume(): number;
 
