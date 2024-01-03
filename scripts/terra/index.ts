@@ -11,8 +11,6 @@ import { renderWithConfiguration } from '@agoraio-extensions/terra_shared_config
 
 import { convertToCamelCase, isMatch } from './utils';
 
-const paramOptionalList = require('./config/param_optional_list.json');
-
 interface CXXFileUserData {
   fileName: string;
 }
@@ -60,18 +58,11 @@ export default function (
             output: '',
             input: '',
           };
-          let output_params = [];
+          let output_params: string[] = [];
           let input_params: string[] = [];
           method.asMemberFunction().parameters.map((param) => {
-            const clazzMethodParametersUserData = {
-              isOptional: paramOptionalList.includes(param.fullName),
-            };
-            // if (method.name === 'getLyric') {
-            //   debugger;
-            // }
             param.name = convertToCamelCase(param.name, false);
             param.type.name = convertToCamelCase(param.type.name);
-            param.user_data = clazzMethodParametersUserData;
             if (param.is_output) {
               output_params.push(`${param.name}: ${param.type.name}`);
             } else {
@@ -99,9 +90,6 @@ export default function (
             clazzMethodUserData.output = `${method.return_type.name}`;
           }
           method.user_data = clazzMethodUserData;
-          if (method.name === 'getCaches') {
-            // debugger;
-          }
         });
       }
 
@@ -148,7 +136,7 @@ export default function (
 
     return cxxfile;
   });
-  //移除不含有Clazz,Enumz,Struct的文件
+  //remove Clazz/Enumz/Struct doesn't exist file
   view = view.filter((cxxfile) => {
     return (
       cxxfile.nodes.filter((node) => {

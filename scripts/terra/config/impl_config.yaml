@@ -64,6 +64,6 @@ defines_macros:
   - __ELECTRON__
 
 renderers:
-  - path: ../index.ts
+  - path: ../impl.ts
 
 version: 4.3.0

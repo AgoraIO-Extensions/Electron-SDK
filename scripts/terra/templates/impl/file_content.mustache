@@ -10,6 +10,7 @@ export function process{{name}}(handler: {{name}},
         handler.{{name}}({{#parameters}}jsonParams.{{name}},{{/parameters}});
       }
       break;
+
     {{/methods}}
   }
 }
@@ -17,35 +18,32 @@ export function process{{name}}(handler: {{name}},
 {{/user_data.isCallback}}
 {{^user_data.isCallback}}
 // @ts-ignore
-export class {{name}}Impl implements {{name}}{
+export class {{name}}Impl {{#base_clazzs}}extends {{.}}Impl{{/base_clazzs}} implements {{name}}{
 
 {{#methods}}
   {{name}}(
-    {{#parameters}}
-    {{name}}{{#user_data.isOptional}}?{{/user_data.isOptional}}: {{type.source}},
-    {{/parameters}}
-    ): {{return_type.source}} {
-    const apiType = this.{{user_data.bindingFunctionName}}();
+    {{{user_data.input}}}
+    ): {{user_data.output}} {
+    const apiType = this.{{user_data.bindingFunctionName}}({{#user_data.input_map}}{{user_data.name}},{{/user_data.input_map}});
     const jsonParams = {
-      {{#parameters}}
-      {{name}}: {{name}},
-      {{/parameters}}
+      {{#user_data.input_map}}
+      {{name}}: {{user_data.name}},
+      {{/user_data.input_map}}
       {{#user_data.hasParameters}}
        toJSON: () => {
         return {
-         {{#parameters}}
-         {{name}}: {{name}},
-         {{/parameters}}
+         {{#user_data.input_map_fixed}}
+         {{name}}: {{user_data.name}},
+         {{/user_data.input_map_fixed}}
         };
       },
       {{/user_data.hasParameters}}
     };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.{{user_data.returnParamName}};
+    {{{user_data.returnParam}}}
   }
 
-  protected {{user_data.bindingFunctionName}}(): string {
-    return '{{user_data.bindingIrisKey}}';
+  protected {{user_data.bindingFunctionName}}({{{user_data.input}}}): string {
+    return '{{user_data.renderApiType}}';
   }
 
 {{/methods}}
@@ -53,3 +51,6 @@ export class {{name}}Impl implements {{name}}{
 
 {{/user_data.isCallback}}
 {{/nodes}}
+{{#user_data.renderFileEnd}}
+import { callIrisApi } from '../internal/IrisApiEngine';
+{{/user_data.renderFileEnd}}

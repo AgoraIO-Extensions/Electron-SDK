@@ -1499,17 +1499,6 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_startPreview';
   }
 
-  startPreviewWithoutSourceType(): number {
-    const apiType = this.getApiTypeFromStartPreviewWithoutSourceType();
-    const jsonParams = {};
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromStartPreviewWithoutSourceType(): string {
-    return 'RtcEngine_startPreviewWithoutSourceType';
-  }
-
   stopPreview(
     sourceType: VideoSourceType = VideoSourceType.VideoSourceCameraPrimary
   ): number {
@@ -5140,35 +5129,6 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_startScreenCapture';
   }
 
-  startScreenCaptureBySourceType(
-    sourceType: VideoSourceType,
-    config: ScreenCaptureConfiguration
-  ): number {
-    const apiType = this.getApiTypeFromStartScreenCaptureBySourceType(
-      sourceType,
-      config
-    );
-    const jsonParams = {
-      sourceType: sourceType,
-      config: config,
-      toJSON: () => {
-        return {
-          sourceType: sourceType,
-          config: config,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromStartScreenCaptureBySourceType(
-    sourceType: VideoSourceType,
-    config: ScreenCaptureConfiguration
-  ): string {
-    return 'RtcEngine_startScreenCaptureBySourceType';
-  }
-
   updateScreenCapture(captureParams: ScreenCaptureParameters2): number {
     const apiType = this.getApiTypeFromUpdateScreenCapture(captureParams);
     const jsonParams = {
@@ -5229,27 +5189,6 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromStopScreenCapture(): string {
     return 'RtcEngine_stopScreenCapture';
-  }
-
-  stopScreenCaptureBySourceType(sourceType: VideoSourceType): number {
-    const apiType =
-      this.getApiTypeFromStopScreenCaptureBySourceType(sourceType);
-    const jsonParams = {
-      sourceType: sourceType,
-      toJSON: () => {
-        return {
-          sourceType: sourceType,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromStopScreenCaptureBySourceType(
-    sourceType: VideoSourceType
-  ): string {
-    return 'RtcEngine_stopScreenCaptureBySourceType';
   }
 
   getCallId(): string {
@@ -6717,6 +6656,56 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_isFeatureAvailableOnDevice';
   }
 
+  startScreenCaptureBySourceType(
+    sourceType: VideoSourceType,
+    config: ScreenCaptureConfiguration
+  ): number {
+    const apiType = this.getApiTypeFromStartScreenCaptureBySourceType(
+      sourceType,
+      config
+    );
+    const jsonParams = {
+      sourceType: sourceType,
+      config: config,
+      toJSON: () => {
+        return {
+          sourceType: sourceType,
+          config: config,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromStartScreenCaptureBySourceType(
+    sourceType: VideoSourceType,
+    config: ScreenCaptureConfiguration
+  ): string {
+    return 'RtcEngine_startScreenCaptureBySourceType';
+  }
+
+  stopScreenCaptureBySourceType(sourceType: VideoSourceType): number {
+    const apiType =
+      this.getApiTypeFromStopScreenCaptureBySourceType(sourceType);
+    const jsonParams = {
+      sourceType: sourceType,
+      toJSON: () => {
+        return {
+          sourceType: sourceType,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromStopScreenCaptureBySourceType(
+    sourceType: VideoSourceType
+  ): string {
+    return 'RtcEngine_stopScreenCaptureBySourceType';
+  }
+
   release(sync: boolean = false): void {
     const apiType = this.getApiTypeFromRelease(sync);
     const jsonParams = {
@@ -6732,6 +6721,17 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromRelease(sync: boolean = false): string {
     return 'RtcEngine_release';
+  }
+
+  startPreviewWithoutSourceType(): number {
+    const apiType = this.getApiTypeFromStartPreviewWithoutSourceType();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromStartPreviewWithoutSourceType(): string {
+    return 'RtcEngine_startPreviewWithoutSourceType';
   }
 
   getAudioDeviceManager(): IAudioDeviceManager {
