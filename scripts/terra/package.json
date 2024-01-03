@@ -16,7 +16,7 @@
     "@agoraio-extensions/terra": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=terra",
     "@agoraio-extensions/terra-core": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=terra-core",
     "@agoraio-extensions/terra-legacy-cxx-parser": "git@github.com:AgoraIO-Extensions/terra-legacy-cxx-parser.git#commit=a4ca5b9fec0015066e353c3fd03107acd1e6036e",
-    "@agoraio-extensions/terra_shared_configs": "git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=2dcbda1fc36cb78bbe2065019a49f1c5eb90942a",
+    "@agoraio-extensions/terra_shared_configs": "git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=808ab5e37c9fb2a055df9395b0690309d6c465c4",
     "@types/js-yaml": "^4.0.8",
     "@types/node": "^18.17.9",
     "js-yaml": "^4.1.0",

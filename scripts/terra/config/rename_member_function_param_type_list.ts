@@ -1,8 +1,4 @@
-import { SimpleType, SimpleTypeKind } from '@agoraio-extensions/cxx-parser';
-import {
-  UpdateNodeConfig,
-  updateSimpleTypeName,
-} from '@agoraio-extensions/terra_shared_configs';
+import { SimpleTypeKind } from '@agoraio-extensions/cxx-parser';
 
 module.exports = {
   'agora::media::IAudioSpectrumObserver.onRemoteAudioSpectrum.spectrums@type': {
