@@ -2,7 +2,11 @@ const path = require('path');
 
 const download = require('download');
 
-const { destIrisSDKDir, cleanIrisDir } = require('./clean');
+const {
+  destIrisSDKDir,
+  cleanIrisDir,
+  cleanIrisUselessFile,
+} = require('./clean');
 const getConfig = require('./getConfig');
 const logger = require('./logger');
 const { getOS } = require('./util');
@@ -33,7 +37,9 @@ const syncLib = async (cb) => {
   const os = getOS();
   await downloadSDK({
     preHook: cleanIrisDir,
-    postHook: () => {},
+    postHook: () => {
+      os === 'mac' && cleanIrisUselessFile();
+    },
     sdkURL: os === 'mac' ? iris_sdk_mac : iris_sdk_win,
     destDir: destIrisSDKDir,
   });
