@@ -15,6 +15,18 @@ exports.cleanIrisDir = async () => {
   logger.info(`clean:${destIrisSDKDir}`);
 };
 
+exports.cleanIrisUselessFile = async () => {
+  let uselessFileList = [
+    `${destIrisSDKDir}/MAC/Release/AgoraRtcWrapperUnity.bundle`,
+  ];
+  for (let file of uselessFileList) {
+    if (fs.existsSync(file)) {
+      await fs.remove(file);
+      logger.info(`clean:${file}`);
+    }
+  }
+};
+
 exports.cleanBuildDir = async () => {
   await fs.remove(buildDir);
   logger.info(`clean:${buildDir}`);
