@@ -49,6 +49,10 @@ export function getMediaPlayerCacheManager(): IMediaPlayerCacheManager {
   return new IMediaPlayerCacheManagerImpl();
 }
 
+export function RequestScreenCapturePermission(): number {
+  return AgoraEnv.AgoraElectronBridge.RequestScreenCapturePermission().callApiReturnCode;
+}
+
 export default createAgoraRtcEngine;
 
 import { IMediaPlayerCacheManagerImpl } from './Private/impl/IAgoraMediaPlayerImpl';

@@ -54,9 +54,7 @@ set(TARGET_AGORA_NODE_EXT_FILE_DIR
         ${SOURCE_CODE_PATH}/agora_node_ext
         )
 
-file(GLOB TARGET_AGORA_NODE_EXT_FILE
-        ${TARGET_AGORA_NODE_EXT_FILE_DIR}/*
-        )
+file(GLOB TARGET_AGORA_NODE_EXT_FILE ${TARGET_AGORA_NODE_EXT_FILE_DIR}/*)
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
   set(AGORA_IRIS_PROJECT_ARCH "MAC")
@@ -85,6 +83,7 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
   set(AGORA_IRIS_FRAMEWORKS
           "-framework AgoraRtcWrapper"
           )
+        list(REMOVE_ITEM TARGET_AGORA_NODE_EXT_FILE ${TARGET_AGORA_NODE_EXT_FILE_DIR}/agora_electron_utils.cpp)
 elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
   if (${CMAKE_OSX_ARCHITECTURES} STREQUAL "i386")
     set(AGORA_RTC_PROJECT_ARCH "x86")
@@ -123,6 +122,7 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
   set(AGORA_IRIS_SDK_LIB
           ${AGORA_IRIS_SDK_PATH}/${AGORA_DCG_SDK_ARCH_FILE_NAME}/AgoraRtcWrapper.lib
           )
+        list(REMOVE_ITEM TARGET_AGORA_NODE_EXT_FILE ${TARGET_AGORA_NODE_EXT_FILE_DIR}/agora_electron_utils.mm)
 elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   # if(${CMAKE_OSX_ARCHITECTURES} STREQUAL "i386")
   #         set(AGORA_RTC_PROJECT_ARCH "x86")
@@ -152,6 +152,7 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   set(AGORA_IRIS_SDK_HEADER_FILE_DIR
           ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/include
           )
+        list(REMOVE_ITEM TARGET_AGORA_NODE_EXT_FILE ${TARGET_AGORA_NODE_EXT_FILE_DIR}/agora_electron_utils.mm)
 endif ()
 message(=====iris include ===== ${AGORA_IRIS_SDK_HEADER_FILE_DIR})
 message(=======iris windows lib= IRIs == ${AGORA_IRIS_SDK_LIB})

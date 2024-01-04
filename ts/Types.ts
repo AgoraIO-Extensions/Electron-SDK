@@ -260,6 +260,8 @@ export interface AgoraElectronBridge {
 
   ReleaseRenderer(): void;
 
+  RequestScreenCapturePermission(): Result;
+
   EnableVideoFrameCache(config: VideoFrameCacheConfig): void;
 
   DisableVideoFrameCache(config: VideoFrameCacheConfig): void;

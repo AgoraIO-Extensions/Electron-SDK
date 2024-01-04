@@ -5,6 +5,7 @@
  * @Last Modified time: 2022-08-05 11:12:05
  */
 #include "agora_electron_bridge.h"
+#include "agora_electron_utils.h"
 #include "iris_base.h"
 #include "node_iris_event_handler.h"
 #include <memory>
@@ -47,7 +48,9 @@ napi_value AgoraElectronBridge::Init(napi_env env, napi_value exports) {
       DECLARE_NAPI_METHOD("SetAddonLogFile", SetAddonLogFile),
       DECLARE_NAPI_METHOD("InitializeEnv", InitializeEnv),
       DECLARE_NAPI_METHOD("ReleaseEnv", ReleaseEnv),
-      DECLARE_NAPI_METHOD("ReleaseRenderer", ReleaseRenderer)};
+      DECLARE_NAPI_METHOD("ReleaseRenderer", ReleaseRenderer),
+      DECLARE_NAPI_METHOD("RequestScreenCapturePermission",
+                          RequestScreenCapturePermission)};
 
   napi_value cons;
 
@@ -498,6 +501,25 @@ napi_value AgoraElectronBridge::ReleaseRenderer(napi_env env,
   agoraElectronBridge->_iris_rendering.reset();
   LOG_F(INFO, __FUNCTION__);
   napi_value retValue = nullptr;
+  return retValue;
+}
+
+napi_value
+AgoraElectronBridge::RequestScreenCapturePermission(napi_env env,
+                                                     napi_callback_info info) {
+  napi_status status;
+  napi_value jsthis;
+  size_t argc = 2;
+  napi_value args[2];
+  status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
+
+  bool ret = requestScreenCapturePermission();
+
+  LOG_F(INFO, __FUNCTION__);
+
+  napi_value retValue;
+  status = napi_create_object(env, &retValue);
+  napi_obj_set_property(env, retValue, _ret_code_str, ret);
   return retValue;
 }
 
