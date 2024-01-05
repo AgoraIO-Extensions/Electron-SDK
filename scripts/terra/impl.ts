@@ -78,10 +78,6 @@ export function impl(parseResult: ParseResult) {
       });
 
       cxxfile.nodes = nodes.map((node: CXXTerraNode) => {
-        if (node.name === 'IStreamChannelImpl') {
-          // debugger;
-        }
-
         node.asClazz().methods.map((method) => {
           let output_params: string[] = [];
           let input_params: string[] = [];
@@ -98,9 +94,6 @@ export function impl(parseResult: ParseResult) {
           };
           method.return_type.name = convertToCamelCase(method.return_type.name);
           method.asMemberFunction().parameters.map((param) => {
-            if (method.name === 'setExternalVideoSource') {
-              // debugger;
-            }
             let variableUserData: VariableUserData = {
               name: convertToCamelCase(param.name, false),
             };
@@ -122,7 +115,6 @@ export function impl(parseResult: ParseResult) {
                   member += ` = ${default_value}`;
                 } else {
                   let flag = false;
-                  //param.default_value.indexOf('()') != -1
                   if (findStruct(param.type.name, preParseResult).length > 0) {
                     flag = true;
                     member += ` = new ${default_value}`;

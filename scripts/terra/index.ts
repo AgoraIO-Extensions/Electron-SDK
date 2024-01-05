@@ -93,12 +93,7 @@ export default function (
         });
       }
 
-      // if (node.name === 'IAudioDeviceManager') {
-      //   debugger;
-      // }
-
       if (node.__TYPE === CXXTYPE.Enumz) {
-        // debugger;
         node.name = convertToCamelCase(node.name);
         node.comment = `/* enum_${node.name} */`;
         node.asEnumz().enum_constants.map((enum_constant) => {
@@ -115,11 +110,9 @@ export default function (
         node.comment = `/* class_${node.name} */`;
         node.asStruct().member_variables.map((member_variable) => {
           member_variable.comment = `/* class_${node.name}_${member_variable.name} */`;
-          // if (member_variable.type.name.indexOf('_') !== -1) {
           member_variable.type.name = convertToCamelCase(
             member_variable.type.name
           );
-          // }
         });
       }
 
