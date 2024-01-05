@@ -32,7 +32,7 @@ module.exports = {
   '^intptr_t$': 'number',
   '^uintptr_t$': 'number',
   '^const char \\*$': 'string',
-  'customHandle': (node: SimpleType, configs: UpdateNodeConfig) => {
+  'customHook': (node: SimpleType, configs: UpdateNodeConfig) => {
     let type = node.name;
     if (!type) {
       type = node.source;

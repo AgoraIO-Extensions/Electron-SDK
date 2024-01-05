@@ -27,22 +27,13 @@ parsers:
 
   - name: RemoveNodeParser
     package: '@agoraio-extensions/terra_shared_configs'
-    args:
-      configJsonFilePath: ./remove_node_list.json
   - name: PointerToArrayParser
     package: '@agoraio-extensions/terra_shared_configs'
-    args:
-      ignoreDefaultRegex: false
-      handleSameName: true
-      configJsonFilePath: ./pointer_to_array.json
   - name: UpdateSimpleTypeParser
     package: '@agoraio-extensions/terra_shared_configs'
-    args:
-      config: ./rename_member_function_param_type_list.ts
   - name: ReturnTypeParser
     package: '@agoraio-extensions/terra_shared_configs'
     args:
-      config: ./assign_simple_type_list.ts
       convertReturnToVoid: false
   - name: FixEnumConstantParser
     package: '@agoraio-extensions/terra_shared_configs'
@@ -50,15 +41,14 @@ parsers:
       skipCalValue: true
   - name: MergeNodeParser
     package: '@agoraio-extensions/terra_shared_configs'
-    args:
-      config: ./merge_node_list.ts
   - name: OrderNodeParser
     package: '@agoraio-extensions/terra_shared_configs'
   - name: UpdateSimpleTypeParser
     package: '@agoraio-extensions/terra_shared_configs'
     args:
       parserDefaultValue: true
-      config: ./update_simple_type_list.ts
+      ignoreDefaultConfig: true
+      configFilePath: ./c_to_ts_config.ts
 
 defines_macros:
   - __ELECTRON__
