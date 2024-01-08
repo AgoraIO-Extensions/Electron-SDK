@@ -926,4 +926,18 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    *  < 0: Failure.
    */
   abstract startMediaRenderingTracingEx(connection: RtcConnection): number;
+
+  /**
+   * @ignore
+   */
+  abstract sendAudioMetadataEx(
+    connection: RtcConnection,
+    metadata: string,
+    length: number
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract getCallIdEx(connection: RtcConnection): string;
 }

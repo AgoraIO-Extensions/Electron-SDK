@@ -1868,19 +1868,19 @@ export enum LocalAudioStreamState {
 }
 
 /**
- * Local audio state error codes.
+ * @ignore
  */
 export enum LocalAudioStreamError {
   /**
-   * 0: The local audio is normal.
+   * @ignore
    */
   LocalAudioStreamErrorOk = 0,
   /**
-   * 1: No specified reason for the local audio failure. Remind your users to try to rejoin the channel.
+   * @ignore
    */
   LocalAudioStreamErrorFailure = 1,
   /**
-   * 2: No permission to use the local audio capturing device. Remind your users to grant permission. Deprecated: This enumerator is deprecated. Please use RecordAudio in the onPermissionError callback instead.
+   * @ignore
    */
   LocalAudioStreamErrorDeviceNoPermission = 2,
   /**
@@ -1888,19 +1888,19 @@ export enum LocalAudioStreamError {
    */
   LocalAudioStreamErrorDeviceBusy = 3,
   /**
-   * 4: The local audio capture fails.
+   * @ignore
    */
   LocalAudioStreamErrorRecordFailure = 4,
   /**
-   * 5: The local audio encoding fails.
+   * @ignore
    */
   LocalAudioStreamErrorEncodeFailure = 5,
   /**
-   * 6: (Windows only) The application cannot find the local audio capture device. Remind your users to check whether the microphone is connected to the device properly in the control plane of the device or if the microphone is working properly.
+   * @ignore
    */
   LocalAudioStreamErrorNoRecordingDevice = 6,
   /**
-   * 7: (Windows only) The application cannot find the local audio playback device. Remind your users to check whether the speaker is connected to the device properly in the control plane of the device or if the speaker is working properly.
+   * @ignore
    */
   LocalAudioStreamErrorNoPlayoutDevice = 7,
   /**
@@ -1908,11 +1908,11 @@ export enum LocalAudioStreamError {
    */
   LocalAudioStreamErrorInterrupted = 8,
   /**
-   * 9: (Windows only) The ID of the local audio-capture device is invalid. Check the audio capture device ID.
+   * @ignore
    */
   LocalAudioStreamErrorRecordInvalidId = 9,
   /**
-   * 10: (Windows only) The ID of the local audio-playback device is invalid. Check the audio playback device ID.
+   * @ignore
    */
   LocalAudioStreamErrorPlayoutInvalidId = 10,
 }
@@ -1940,27 +1940,27 @@ export enum LocalVideoStreamState {
 }
 
 /**
- * Local video state error codes.
+ * @ignore
  */
 export enum LocalVideoStreamError {
   /**
-   * 0: The local video is normal.
+   * @ignore
    */
   LocalVideoStreamErrorOk = 0,
   /**
-   * 1: No specified reason for the local video failure.
+   * @ignore
    */
   LocalVideoStreamErrorFailure = 1,
   /**
-   * 2: No permission to use the local video capturing device. Remind the user to grant permissions and rejoin the channel. Deprecated: This enumerator is deprecated. Please use CAMERA in the onPermissionError callback instead.
+   * @ignore
    */
   LocalVideoStreamErrorDeviceNoPermission = 2,
   /**
-   * 3: The local video capturing device is in use. Remind the user to check whether another application occupies the camera.
+   * @ignore
    */
   LocalVideoStreamErrorDeviceBusy = 3,
   /**
-   * 4: The local video capture fails. Remind your user to check whether the video capture device is working properly, whether the camera is occupied by another application, or try to rejoin the channel.
+   * @ignore
    */
   LocalVideoStreamErrorCaptureFailure = 4,
   /**
@@ -1976,15 +1976,15 @@ export enum LocalVideoStreamError {
    */
   LocalVideoStreamErrorCaptureMultipleForegroundApps = 7,
   /**
-   * 8: Fails to find a local video capture device. Remind the user to check whether the camera is connected to the device properly or the camera is working properly, and then to rejoin the channel.
+   * @ignore
    */
   LocalVideoStreamErrorDeviceNotFound = 8,
   /**
-   * 9: (macOS only) The video capture device currently in use is disconnected (such as being unplugged).
+   * @ignore
    */
   LocalVideoStreamErrorDeviceDisconnected = 9,
   /**
-   * 10: (macOS and Windows only) The SDK cannot find the video device in the video device list. Check whether the ID of the video device is valid.
+   * @ignore
    */
   LocalVideoStreamErrorDeviceInvalidId = 10,
   /**
@@ -1996,22 +1996,19 @@ export enum LocalVideoStreamError {
    */
   LocalVideoStreamErrorDeviceFatalError = 15,
   /**
-   * 101: The current video capture device is unavailable due to excessive system pressure.
+   * @ignore
    */
   LocalVideoStreamErrorDeviceSystemPressure = 101,
   /**
-   * 11: (macOS only) The shared window is minimized when you call startScreenCaptureByWindowId to share a window. The SDK cannot share a minimized window. You can cancel the minimization of this window at the application layer, for example by maximizing this window.
+   * @ignore
    */
   LocalVideoStreamErrorScreenCaptureWindowMinimized = 11,
   /**
-   * 12: (macOS and Windows only) The error code indicates that a window shared by the window ID has been closed or a full-screen window shared by the window ID has exited full-screen mode. After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a black screen, Agora recommends that you immediately stop screen sharing. Common scenarios reporting this error code:
-   *  When the local user closes the shared window, the SDK reports this error code.
-   *  The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After the user exits full-screen mode, the SDK reports this error code.
-   *  The local user watches a web video or reads a web document in full-screen mode first, and then shares the window of the web video or document. After the user exits full-screen mode, the SDK reports this error code.
+   * @ignore
    */
   LocalVideoStreamErrorScreenCaptureWindowClosed = 12,
   /**
-   * 13: (Windows only) The window being shared is overlapped by another window, so the overlapped area is blacked out by the SDK during window sharing.
+   * @ignore
    */
   LocalVideoStreamErrorScreenCaptureWindowOccluded = 13,
   /**
@@ -2473,63 +2470,63 @@ export enum RtmpStreamPublishState {
 }
 
 /**
- * Error codes of the RTMP or RTMPS streaming.
+ * @ignore
  */
 export enum RtmpStreamPublishErrorType {
   /**
-   * 0: The RTMP or RTMPS streaming has not started or has ended.
+   * @ignore
    */
   RtmpStreamPublishErrorOk = 0,
   /**
-   * 1: Invalid argument used. Check the parameter setting.
+   * @ignore
    */
   RtmpStreamPublishErrorInvalidArgument = 1,
   /**
-   * 2: The RTMP or RTMPS streaming is encrypted and cannot be published.
+   * @ignore
    */
   RtmpStreamPublishErrorEncryptedStreamNotAllowed = 2,
   /**
-   * 3: Timeout for the RTMP or RTMPS streaming.
+   * @ignore
    */
   RtmpStreamPublishErrorConnectionTimeout = 3,
   /**
-   * 4: An error occurs in Agora's streaming server.
+   * @ignore
    */
   RtmpStreamPublishErrorInternalServerError = 4,
   /**
-   * 5: An error occurs in the CDN server.
+   * @ignore
    */
   RtmpStreamPublishErrorRtmpServerError = 5,
   /**
-   * 6: The RTMP or RTMPS streaming publishes too frequently.
+   * @ignore
    */
   RtmpStreamPublishErrorTooOften = 6,
   /**
-   * 7: The host publishes more than 10 URLs. Delete the unnecessary URLs before adding new ones.
+   * @ignore
    */
   RtmpStreamPublishErrorReachLimit = 7,
   /**
-   * 8: The host manipulates other hosts' URLs. For example, the host updates or stops other hosts' streams. Check your app logic.
+   * @ignore
    */
   RtmpStreamPublishErrorNotAuthorized = 8,
   /**
-   * 9: Agora's server fails to find the RTMP or RTMPS streaming.
+   * @ignore
    */
   RtmpStreamPublishErrorStreamNotFound = 9,
   /**
-   * 10: The format of the RTMP or RTMPS streaming URL is not supported. Check whether the URL format is correct.
+   * @ignore
    */
   RtmpStreamPublishErrorFormatNotSupported = 10,
   /**
-   * 11: The user role is not host, so the user cannot use the CDN live streaming function. Check your application code logic.
+   * @ignore
    */
   RtmpStreamPublishErrorNotBroadcaster = 11,
   /**
-   * 13: The updateRtmpTranscoding method is called to update the transcoding configuration in a scenario where there is streaming without transcoding. Check your application code logic.
+   * @ignore
    */
   RtmpStreamPublishErrorTranscodingNoMixStream = 13,
   /**
-   * 14: Errors occurred in the host's network.
+   * @ignore
    */
   RtmpStreamPublishErrorNetDown = 14,
   /**
@@ -2537,11 +2534,11 @@ export enum RtmpStreamPublishErrorType {
    */
   RtmpStreamPublishErrorInvalidAppid = 15,
   /**
-   * 16: Your project does not have permission to use streaming services. Refer to Media Push to enable the Media Push permission.
+   * @ignore
    */
   RtmpStreamPublishErrorInvalidPrivilege = 16,
   /**
-   * 100: The streaming has been stopped normally. After you stop the Media Push, the SDK returns this value.
+   * @ignore
    */
   RtmpStreamUnpublishErrorOk = 100,
 }
@@ -4170,7 +4167,7 @@ export enum ChannelMediaRelayEvent {
    */
   RelayEventPacketUpdateDestChannelNotChange = 9,
   /**
-   * 10: The target channel name is NULL.
+   * 10: The target channel name is null.
    */
   RelayEventPacketUpdateDestChannelIsNull = 10,
   /**
@@ -4240,14 +4237,14 @@ export class ChannelMediaInfo {
  */
 export class ChannelMediaRelayConfiguration {
   /**
-   * The information of the source channel. See ChannelMediaInfo. It contains the following members: channelName : The name of the source channel. The default value is NULL, which means the SDK applies the name of the current channel. token : The token for joining the source channel. This token is generated with the channelName and uid you set in srcInfo.
-   *  If you have not enabled the App Certificate, set this parameter as the default value NULL, which means the SDK applies the App ID.
+   * The information of the source channel. See ChannelMediaInfo. It contains the following members: channelName : The name of the source channel. The default value is null, which means the SDK applies the name of the current channel. token : The token for joining the source channel. This token is generated with the channelName and uid you set in srcInfo.
+   *  If you have not enabled the App Certificate, set this parameter as the default value null, which means the SDK applies the App ID.
    *  If you have enabled the App Certificate, you must use the token generated with the channelName and uid, and the uid must be set as 0. uid : The unique user ID to identify the relay stream in the source channel. Agora recommends leaving the default value of 0 unchanged.
    */
   srcInfo?: ChannelMediaInfo;
   /**
    * The information of the target channel ChannelMediaInfo. It contains the following members: channelName : The name of the target channel. token : The token for joining the target channel. It is generated with the channelName and uid you set in destInfos.
-   *  If you have not enabled the App Certificate, set this parameter as the default value NULL, which means the SDK applies the App ID.
+   *  If you have not enabled the App Certificate, set this parameter as the default value null, which means the SDK applies the App ID.
    *  If you have enabled the App Certificate, you must use the token generated with the channelName and uid. If the token of any target channel expires, the whole media relay stops; hence Agora recommends that you specify the same expiration time for the tokens of all the target channels. uid : The unique user ID to identify the relay stream in the target channel. The value ranges from 0 to (2 32 -1). To avoid user ID conflicts, this user ID must be different from any other user ID in the target channel. The default value is 0, which means the SDK generates a random user ID.
    */
   destInfos?: ChannelMediaInfo[];
@@ -4368,7 +4365,7 @@ export class EncryptionConfig {
    */
   encryptionMode?: EncryptionMode;
   /**
-   * Encryption key in string type with unlimited length. Agora recommends using a 32-byte key. If you do not set an encryption key or set it as NULL, you cannot use the built-in encryption, and the SDK returns -2.
+   * Encryption key in string type with unlimited length. Agora recommends using a 32-byte key. If you do not set an encryption key or set it as null, you cannot use the built-in encryption, and the SDK returns -2.
    */
   encryptionKey?: string;
   /**

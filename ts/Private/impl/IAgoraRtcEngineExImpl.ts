@@ -1532,6 +1532,59 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
   ): string {
     return 'RtcEngineEx_startMediaRenderingTracingEx';
   }
+
+  sendAudioMetadataEx(
+    connection: RtcConnection,
+    metadata: string,
+    length: number
+  ): number {
+    const apiType = this.getApiTypeFromSendAudioMetadataEx(
+      connection,
+      metadata,
+      length
+    );
+    const jsonParams = {
+      connection: connection,
+      metadata: metadata,
+      length: length,
+      toJSON: () => {
+        return {
+          connection: connection,
+          metadata: metadata,
+          length: length,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSendAudioMetadataEx(
+    connection: RtcConnection,
+    metadata: string,
+    length: number
+  ): string {
+    return 'RtcEngineEx_sendAudioMetadataEx';
+  }
+
+  getCallIdEx(connection: RtcConnection): string {
+    const apiType = this.getApiTypeFromGetCallIdEx(connection);
+    const jsonParams = {
+      connection: connection,
+      toJSON: () => {
+        return {
+          connection: connection,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    const callId = jsonResults.callId;
+    return callId;
+  }
+
+  protected getApiTypeFromGetCallIdEx(connection: RtcConnection): string {
+    return 'RtcEngineEx_getCallIdEx';
+  }
 }
 
 import { callIrisApi } from '../internal/IrisApiEngine';

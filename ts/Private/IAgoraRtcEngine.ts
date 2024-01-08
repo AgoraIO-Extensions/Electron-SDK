@@ -27,6 +27,7 @@ import {
   DeviceInfo,
   DownlinkNetworkInfo,
   EarMonitoringFilterType,
+  EchoTestConfiguration,
   EncryptionConfig,
   EncryptionErrorType,
   ErrorCodeType,
@@ -1615,13 +1616,13 @@ export interface IRtcEngineEventHandler {
   /**
    * Occurs when the local video stream state changes.
    *
-   * When the state of the local video stream changes (including the state of the video capture and encoding), the SDK triggers this callback to report the current state. This callback indicates the state of the local video stream, including camera capturing and video encoding, and allows you to troubleshoot issues when exceptions occur. The SDK triggers the onLocalVideoStateChanged callback with the state code of LocalVideoStreamStateFailed and error code of LocalVideoStreamErrorCaptureFailure in the following situations:
+   * When the state of the local video stream changes (including the state of the video capture and encoding), the SDK triggers this callback to report the current state. This callback indicates the state of the local video stream, including camera capturing and video encoding, and allows you to troubleshoot issues when exceptions occur. The SDK triggers the onLocalVideoStateChanged callback with the state code of LocalVideoStreamStateFailed and error code of in the following situations:
    *  The app switches to the background, and the system gets the camera resource.
-   *  The camera starts normally, but does not output video frames for four consecutive seconds. When the camera outputs the captured video frames, if the video frames are the same for 15 consecutive frames, the SDK triggers the onLocalVideoStateChanged callback with the state code of LocalVideoStreamStateCapturing and error code of LocalVideoStreamErrorCaptureFailure. Note that the video frame duplication detection is only available for video frames with a resolution greater than 200 × 200, a frame rate greater than or equal to 10 fps, and a bitrate less than 20 Kbps. For some device models, the SDK does not trigger this callback when the state of the local video changes while the local video capturing device is in use, so you have to make your own timeout judgment.
+   *  The camera starts normally, but does not output video frames for four consecutive seconds. When the camera outputs the captured video frames, if the video frames are the same for 15 consecutive frames, the SDK triggers the onLocalVideoStateChanged callback with the state code of LocalVideoStreamStateCapturing and error code of. Note that the video frame duplication detection is only available for video frames with a resolution greater than 200 × 200, a frame rate greater than or equal to 10 fps, and a bitrate less than 20 Kbps. For some device models, the SDK does not trigger this callback when the state of the local video changes while the local video capturing device is in use, so you have to make your own timeout judgment.
    *
    * @param source The type of the video source. See VideoSourceType.
    * @param state The state of the local video, see LocalVideoStreamState.
-   * @param error The detailed error information, see LocalVideoStreamError.
+   * @param error The detailed error information, see.
    */
   onLocalVideoStateChanged?(
     source: VideoSourceType,
@@ -2040,7 +2041,7 @@ export interface IRtcEngineEventHandler {
    *
    * @param connection The connection information. See RtcConnection.
    * @param state The state of the local audio. See LocalAudioStreamState.
-   * @param error Local audio state error codes. See LocalAudioStreamError.
+   * @param error Local audio state error codes.
    */
   onLocalAudioStateChanged?(
     connection: RtcConnection,
@@ -2164,7 +2165,7 @@ export interface IRtcEngineEventHandler {
    *
    * @param url The URL address where the state of the Media Push changes.
    * @param state The current state of the Media Push. See RtmpStreamPublishState.
-   * @param errCode The detailed error information for the Media Push. See RtmpStreamPublishErrorType.
+   * @param errCode The detailed error information for the Media Push.
    */
   onRtmpStreamingStateChanged?(
     url: string,
@@ -2231,7 +2232,12 @@ export interface IRtcEngineEventHandler {
   onLocalPublishFallbackToAudioOnly?(isFallbackOrRecover: boolean): void;
 
   /**
-   * @ignore
+   * Occurs when the remote media stream falls back to the audio-only stream due to poor network conditions or switches back to the video stream after the network conditions improve.
+   *
+   * If you call setRemoteSubscribeFallbackOption and set option as StreamFallbackOptionAudioOnly, the SDK triggers this callback when the remote media stream falls back to audio-only mode due to poor uplink conditions, or when the remote media stream switches back to the video after the downlink network condition improves. Once the remote media stream switches to the low-quality stream due to poor network conditions, you can monitor the stream switch between a high-quality and low-quality stream in the onRemoteVideoStats callback.
+   *
+   * @param uid The user ID of the remote user.
+   * @param isFallbackOrRecover true : The remotely subscribed media stream falls back to audio-only due to poor network conditions. false : The remotely subscribed media stream switches back to the video stream after the network conditions improved.
    */
   onRemoteSubscribeFallbackToAudioOnly?(
     uid: number,
@@ -2542,6 +2548,16 @@ export interface IRtcEngineEventHandler {
     layoutCount: number,
     layoutlist: VideoLayout[]
   ): void;
+
+  /**
+   * @ignore
+   */
+  onAudioMetadataReceived?(
+    connection: RtcConnection,
+    uid: number,
+    metadata: string,
+    length: number
+  ): void;
 }
 
 /**
@@ -2748,31 +2764,31 @@ export interface IMetadataObserver {
 }
 
 /**
- * The CDN streaming error.
+ * @ignore
  */
 export enum DirectCdnStreamingError {
   /**
-   * 0: No error.
+   * @ignore
    */
   DirectCdnStreamingErrorOk = 0,
   /**
-   * 1: A general error; no specific reason. You can try to push the media stream again.
+   * @ignore
    */
   DirectCdnStreamingErrorFailed = 1,
   /**
-   * 2: An error occurs when pushing audio streams. For example, the local audio capture device is not working properly, is occupied by another process, or does not get the permission required.
+   * @ignore
    */
   DirectCdnStreamingErrorAudioPublication = 2,
   /**
-   * 3: An error occurs when pushing video streams. For example, the local video capture device is not working properly, is occupied by another process, or does not get the permission required.
+   * @ignore
    */
   DirectCdnStreamingErrorVideoPublication = 3,
   /**
-   * 4: Fails to connect to the CDN.
+   * @ignore
    */
   DirectCdnStreamingErrorNetConnect = 4,
   /**
-   * 5: The URL is already being used. Use a new URL for streaming.
+   * @ignore
    */
   DirectCdnStreamingErrorBadName = 5,
 }
@@ -2839,7 +2855,7 @@ export interface IDirectCdnStreamingEventHandler {
    * When the host directly pushes streams to the CDN, if the streaming state changes, the SDK triggers this callback to report the changed streaming state, error codes, and other information. You can troubleshoot issues by referring to this callback.
    *
    * @param state The current CDN streaming state. See DirectCdnStreamingState.
-   * @param error The CDN streaming error. See DirectCdnStreamingError.
+   * @param error The CDN streaming error.
    * @param message The information about the changed streaming state.
    */
   onDirectCdnStreamingStateChanged?(
@@ -3037,7 +3053,7 @@ export abstract class IRtcEngine {
    *  All numeric characters: 0 to 9.
    *  Space
    *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
-   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as NULL. Supported characters are (89 in total):
+   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null. Supported characters are (89 in total):
    *  The 26 lowercase English letters: a to z.
    *  The 26 uppercase English letters: A to Z.
    *  All numeric characters: 0 to 9.
@@ -3208,7 +3224,7 @@ export abstract class IRtcEngine {
    * 0: Success.
    *  < 0: Failure.
    */
-  abstract startEchoTest(intervalInSeconds?: number): number;
+  abstract startEchoTest(config: EchoTestConfiguration): number;
 
   /**
    * Stops the audio call test.
@@ -3475,7 +3491,7 @@ export abstract class IRtcEngine {
   /**
    * Initializes the local video view.
    *
-   * This method initializes the video view of a local stream on the local device. It affects only the video view that the local user sees, not the published local video stream. Call this method to bind the local video stream to a video view (view) and to set the rendering and mirror modes of the video view. After initialization, call this method to set the local video and then join the channel. The local video still binds to the view after you leave the channel. To unbind the local video from the view, set the view parameter as NULL.
+   * This method initializes the video view of a local stream on the local device. It affects only the video view that the local user sees, not the published local video stream. Call this method to bind the local video stream to a video view (view) and to set the rendering and mirror modes of the video view. After initialization, call this method to set the local video and then join the channel. The local video still binds to the view after you leave the channel. To unbind the local video from the view, set the view parameter as null.
    *  You can call this method either before or after joining a channel.
    *
    * @param canvas The local video view and settings. See VideoCanvas.
@@ -5032,12 +5048,28 @@ export abstract class IRtcEngine {
   abstract adjustUserPlaybackSignalVolume(uid: number, volume: number): number;
 
   /**
-   * @ignore
+   * Sets the fallback option for the published video stream based on the network conditions.
+   *
+   * An unstable network affects the audio and video quality in a video call or interactive live video streaming. If option is set as StreamFallbackOptionAudioOnly (2), the SDK disables the upstream video but enables audio only when the network conditions deteriorate and cannot support both video and audio. The SDK monitors the network quality and restores the video stream when the network conditions improve. When the published video stream falls back to audio-only or when the audio-only stream switches back to the video, the SDK triggers the callback.
+   *  In stream push scenarios, set the local push fallback to StreamFallbackOptionAudioOnly (2) may result n some delay for remote CDN users to hear the sound. In this case, Agora recommends that you do not enable this option.
+   *  Ensure that you call this method before joining a channel.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract setLocalPublishFallbackOption(option: StreamFallbackOptions): number;
 
   /**
-   * @ignore
+   * Sets the fallback option for the remotely subscribed video stream based on the network conditions.
+   *
+   * When the network is not ideal, the quality of live audio and video can be degraded. If option is set as StreamFallbackOptionVideoStreamLow or StreamFallbackOptionAudioOnly, the SDK automatically switches the video from a high-quality stream to a low-quality stream or disables the video when the downlink network conditions cannot support both audio and video to guarantee the quality of the audio. The SDK monitors the network quality and restores the video stream when the network conditions improve. When the remote video stream falls back to audio-only or when the audio-only stream switches back to the video, the SDK triggers the onRemoteSubscribeFallbackToAudioOnly callback. Ensure that you call this method before joining a channel.
+   *
+   * @param option The fallback option for the remotely subscribed video stream. The default value is StreamFallbackOptionVideoStreamLow (1). See STREAM_FALLBACK_OPTIONS.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract setRemoteSubscribeFallbackOption(
     option: StreamFallbackOptions
@@ -5570,7 +5602,7 @@ export abstract class IRtcEngine {
    * @param config The configuration of the captured screen. See ScreenCaptureConfiguration.
    */
   abstract startScreenCaptureBySourceType(
-    type: VideoSourceType,
+    sourceType: VideoSourceType,
     config: ScreenCaptureConfiguration
   ): number;
 
@@ -5620,7 +5652,7 @@ export abstract class IRtcEngine {
    * 0: Success.
    *  < 0: Failure.
    */
-  abstract stopScreenCaptureBySourceType(type: VideoSourceType): number;
+  abstract stopScreenCaptureBySourceType(sourceType: VideoSourceType): number;
 
   /**
    * Retrieves the call ID.
@@ -6108,7 +6140,7 @@ export abstract class IRtcEngine {
    *  To ensure smooth communication, use the same parameter type to identify the user. For example, if a user joins the channel with a user ID, then ensure all the other users use the user ID too. The same applies to the user account. If a user joins the channel with the Agora Web SDK, ensure that the ID of the user is set to the same parameter type.
    *
    * @param appId The App ID of your project on Agora Console.
-   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as NULL. Supported characters are as follow(89 in total):
+   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null. Supported characters are as follow(89 in total):
    *  The 26 lowercase English letters: a to z.
    *  The 26 uppercase English letters: A to Z.
    *  All numeric characters: 0 to 9.
@@ -6135,7 +6167,7 @@ export abstract class IRtcEngine {
    *  All numeric characters: 0 to 9.
    *  Space
    *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
-   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as NULL. Supported characters are (89 in total):
+   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null. Supported characters are (89 in total):
    *  The 26 lowercase English letters: a to z.
    *  The 26 uppercase English letters: A to Z.
    *  All numeric characters: 0 to 9.
@@ -6175,7 +6207,7 @@ export abstract class IRtcEngine {
    *  All numeric characters: 0 to 9.
    *  Space
    *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
-   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as NULL. Supported characters are (89 in total):
+   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null. Supported characters are (89 in total):
    *  The 26 lowercase English letters: a to z.
    *  The 26 uppercase English letters: A to Z.
    *  All numeric characters: 0 to 9.
@@ -6203,7 +6235,7 @@ export abstract class IRtcEngine {
    *
    * @returns
    * A pointer to the UserInfo instance, if the method call succeeds.
-   *  If the call fails, returns NULL.
+   *  If the call fails, returns null.
    */
   abstract getUserInfoByUserAccount(userAccount: string): UserInfo;
 
@@ -6216,7 +6248,7 @@ export abstract class IRtcEngine {
    *
    * @returns
    * A pointer to the UserInfo instance, if the method call succeeds.
-   *  If the call fails, returns NULL.
+   *  If the call fails, returns null.
    */
   abstract getUserInfoByUid(uid: number): UserInfo;
 
@@ -6603,29 +6635,9 @@ export abstract class IRtcEngine {
   abstract isFeatureAvailableOnDevice(type: FeatureType): boolean;
 
   /**
-   * Destroys a video renderer object.
-   *
-   * @param view The HTMLElement object to be destroyed.
+   * @ignore
    */
-  abstract destroyRendererByView(view: any): void;
-
-  /**
-   * Destroys multiple video renderer objects at one time.
-   *
-   * @param sourceType The type of the video source. See VideoSourceType.
-   * @param channelId The channel name. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters:
-   *  All lowercase English letters: a to z.
-   *  All uppercase English letters: A to Z.
-   *  All numeric characters: 0 to 9.
-   *  Space
-   *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
-   * @param uid The user ID of the remote user.
-   */
-  abstract destroyRendererByConfig(
-    sourceType: VideoSourceType,
-    channelId?: string,
-    uid?: number
-  ): void;
+  abstract sendAudioMetadata(metadata: string, length: number): number;
 
   /**
    * Gets the IAudioDeviceManager object to manage audio devices.
@@ -6705,6 +6717,31 @@ export abstract class IRtcEngine {
    *  < 0: Failure.
    */
   abstract setMaxMetadataSize(size: number): number;
+
+  /**
+   * Destroys a video renderer object.
+   *
+   * @param view The HTMLElement object to be destroyed.
+   */
+  abstract destroyRendererByView(view: any): void;
+
+  /**
+   * Destroys multiple video renderer objects at one time.
+   *
+   * @param sourceType The type of the video source. See VideoSourceType.
+   * @param channelId The channel name. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters:
+   *  All lowercase English letters: a to z.
+   *  All uppercase English letters: A to Z.
+   *  All numeric characters: 0 to 9.
+   *  Space
+   *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
+   * @param uid The user ID of the remote user.
+   */
+  abstract destroyRendererByConfig(
+    sourceType: VideoSourceType,
+    channelId?: string,
+    uid?: number
+  ): void;
 
   /**
    * Unregisters the encoded audio frame observer.
