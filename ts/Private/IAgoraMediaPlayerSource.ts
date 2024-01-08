@@ -18,7 +18,7 @@ export interface IMediaPlayerSourceObserver {
    * When the state of the media player changes, the SDK triggers this callback to report the current playback state.
    *
    * @param state The playback state. See MediaPlayerState.
-   * @param ec The error code. See MediaPlayerError.
+   * @param ec The error code.
    */
   onPlayerSourceStateChanged?(
     state: MediaPlayerState,

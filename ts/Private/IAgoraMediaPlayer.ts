@@ -133,7 +133,7 @@ export abstract class IMediaPlayer {
    *
    * @returns
    * Returns the current playback progress (ms) if the call succeeds.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure.
    */
   abstract getPlayPosition(): number;
 
@@ -144,7 +144,7 @@ export abstract class IMediaPlayer {
    *
    * @returns
    * The number of the media streams in the media resource if the method call succeeds.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure.
    */
   abstract getStreamCount(): number;
 
@@ -157,7 +157,7 @@ export abstract class IMediaPlayer {
    *
    * @returns
    * If the call succeeds, returns the detailed information of the media stream. See PlayerStreamInfo.
-   *  If the call fails, returns NULL.
+   *  If the call fails, returns null.
    */
   abstract getStreamInfo(index: number): PlayerStreamInfo;
 
@@ -584,7 +584,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure.
    */
   abstract removeAllCaches(): number;
 
@@ -595,7 +595,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure.
    */
   abstract removeOldCache(): number;
 
@@ -608,7 +608,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure.
    */
   abstract removeCacheByUri(uri: string): number;
 
@@ -621,7 +621,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure.
    */
   abstract setCacheDir(path: string): number;
 
@@ -632,7 +632,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure.
    */
   abstract setMaxCacheFileCount(count: number): number;
 
@@ -643,7 +643,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure.
    */
   abstract setMaxCacheFileSize(cacheSize: number): number;
 
@@ -656,7 +656,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure.
    */
   abstract enableAutoRemoveCache(enable: boolean): number;
 
@@ -669,7 +669,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * The call succeeds, and the SDK returns the storage path of the cached media files.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure.
    */
   abstract getCacheDir(length: number): string;
 
@@ -680,7 +680,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * > 0: The call succeeds and returns the maximum number of media files that can be cached.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure.
    */
   abstract getMaxCacheFileCount(): number;
 
@@ -691,7 +691,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * > 0: The call succeeds and returns the maximum size (in bytes) of the aggregate storage space for cached media files.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure.
    */
   abstract getMaxCacheFileSize(): number;
 
@@ -700,7 +700,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * ≥ 0: The call succeeds and returns the number of media files that are cached.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure.
    */
   abstract getCacheFileCount(): number;
 }

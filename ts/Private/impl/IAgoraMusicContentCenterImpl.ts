@@ -380,31 +380,8 @@ export class IMusicContentCenterImpl implements IMusicContentCenter {
     return 'MusicContentCenter_searchMusic';
   }
 
-  preload(songCode: number, jsonOption: string): number {
-    const apiType = this.getApiTypeFromPreload(songCode, jsonOption);
-    const jsonParams = {
-      songCode: songCode,
-      jsonOption: jsonOption,
-      toJSON: () => {
-        return {
-          songCode: songCode,
-          jsonOption: jsonOption,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromPreload(
-    songCode: number,
-    jsonOption: string
-  ): string {
-    return 'MusicContentCenter_preload';
-  }
-
-  preloadWithRequestId(songCode: number): string {
-    const apiType = this.getApiTypeFromPreloadWithRequestId(songCode);
+  preload(songCode: number): string {
+    const apiType = this.getApiTypeFromPreload(songCode);
     const jsonParams = {
       songCode: songCode,
       toJSON: () => {
@@ -418,8 +395,8 @@ export class IMusicContentCenterImpl implements IMusicContentCenter {
     return requestId;
   }
 
-  protected getApiTypeFromPreloadWithRequestId(songCode: number): string {
-    return 'MusicContentCenter_preloadWithRequestId';
+  protected getApiTypeFromPreload(songCode: number): string {
+    return 'MusicContentCenter_preload';
   }
 
   removeCache(songCode: number): number {
