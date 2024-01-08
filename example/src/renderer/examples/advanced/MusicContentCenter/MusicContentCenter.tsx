@@ -152,7 +152,7 @@ export default class MusicContentCenter
       this.error(`songCode is invalid`);
     }
 
-    this.musicContentCenter?.preload(songCode!, '');
+    this.musicContentCenter?.preload(songCode);
   };
 
   /**

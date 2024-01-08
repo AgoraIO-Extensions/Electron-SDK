@@ -9,6 +9,7 @@ import {
   ClientRoleOptions,
   ClientRoleType,
   DataStreamConfig,
+  EchoTestConfiguration,
   ErrorCodeType,
   IAudioEncodedFrameObserver,
   SimulcastStreamConfig,
@@ -336,9 +337,9 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   }
 
   protected override getApiTypeFromStartEchoTest(
-    intervalInSeconds: number = 10
+    config: EchoTestConfiguration
   ): string {
-    return 'RtcEngine_startEchoTest2';
+    return 'RtcEngine_startEchoTest3';
   }
 
   protected override getApiTypeFromStartPreview(
