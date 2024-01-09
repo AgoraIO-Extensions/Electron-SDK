@@ -19,6 +19,8 @@ export class YUVCanvasRenderer extends IRenderer {
       width: 0,
       height: 0,
       yStride: 0,
+      uStride: 0,
+      vStride: 0,
       yBuffer: new Uint8Array(0),
       uBuffer: new Uint8Array(0),
       vBuffer: new Uint8Array(0),

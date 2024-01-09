@@ -184,6 +184,14 @@ export interface ShareVideoFrame {
   /**
    * @ignore
    */
+  uStride: number;
+  /**
+   * @ignore
+   */
+  vStride: number;
+  /**
+   * @ignore
+   */
   yBuffer: Buffer | Uint8Array;
   /**
    * @ignore
@@ -270,6 +278,8 @@ export interface AgoraElectronBridge {
     ret: number;
     isNewFrame: boolean;
     yStride: number;
+    uStride: number;
+    vStride: number;
     width: number;
     height: number;
     rotation: number;

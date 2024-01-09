@@ -373,14 +373,16 @@ export class RendererManager extends IRendererManager {
           break;
         case 1: {
           // GET_VIDEO_FRAME_CACHE_RETURN_TYPE::RESIZED
-          const { width, height, yStride } = finalResult;
+          const { width, height, yStride, uStride, vStride } = finalResult;
           const newShareVideoFrame = this.resizeShareVideoFrame(
             videoSourceType,
             channelId,
             uid,
             width,
             height,
-            yStride
+            yStride,
+            uStride,
+            vStride
           );
           rendererItem.shareVideoFrame = newShareVideoFrame;
           finalResult = this.msgBridge.GetVideoFrame(newShareVideoFrame);
@@ -621,7 +623,9 @@ export class RendererManager extends IRendererManager {
     uid: number,
     width = 0,
     height = 0,
-    yStride = 0
+    yStride = 0,
+    uStride = 0,
+    vStride = 0
   ): ShareVideoFrame {
     return {
       videoSourceType,
@@ -633,6 +637,8 @@ export class RendererManager extends IRendererManager {
       width,
       height,
       yStride,
+      uStride,
+      vStride,
     };
   }
 
