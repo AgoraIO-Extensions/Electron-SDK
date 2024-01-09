@@ -1127,7 +1127,7 @@ export enum MediaRecorderStreamType {
  */
 export enum RecorderState {
   /**
-   * -1: An error occurs during the recording. See RecorderErrorCode for the reason.
+   * -1: An error occurs during the recording. See for the reason.
    */
   RecorderStateError = -1,
   /**
@@ -1141,27 +1141,27 @@ export enum RecorderState {
 }
 
 /**
- * The reason for the state change.
+ * @ignore
  */
 export enum RecorderErrorCode {
   /**
-   * 0: No error.
+   * @ignore
    */
   RecorderErrorNone = 0,
   /**
-   * 1: The SDK fails to write the recorded data to a file.
+   * @ignore
    */
   RecorderErrorWriteFailed = 1,
   /**
-   * 2: The SDK does not detect any audio and video streams, or audio and video streams are interrupted for more than five seconds during recording.
+   * @ignore
    */
   RecorderErrorNoStream = 2,
   /**
-   * 3: The recording duration exceeds the upper limit.
+   * @ignore
    */
   RecorderErrorOverMaxDuration = 3,
   /**
-   * 4: The recording configuration changes.
+   * @ignore
    */
   RecorderErrorConfigChanged = 4,
 }

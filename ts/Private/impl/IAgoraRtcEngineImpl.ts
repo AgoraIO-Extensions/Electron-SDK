@@ -16,6 +16,7 @@ import {
   DataStreamConfig,
   DeviceInfo,
   EarMonitoringFilterType,
+  EchoTestConfiguration,
   EncryptionConfig,
   HeadphoneEqualizerPreset,
   IAudioEncodedFrameObserver,
@@ -943,6 +944,17 @@ export function processIRtcEngineEventHandler(
         );
       }
       break;
+
+    case 'onAudioMetadataReceived':
+      if (handler.onAudioMetadataReceived !== undefined) {
+        handler.onAudioMetadataReceived(
+          jsonParams.connection,
+          jsonParams.uid,
+          jsonParams.metadata,
+          jsonParams.length
+        );
+      }
+      break;
   }
 }
 
@@ -1424,13 +1436,13 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_setClientRole';
   }
 
-  startEchoTest(intervalInSeconds: number = 10): number {
-    const apiType = this.getApiTypeFromStartEchoTest(intervalInSeconds);
+  startEchoTest(config: EchoTestConfiguration): number {
+    const apiType = this.getApiTypeFromStartEchoTest(config);
     const jsonParams = {
-      intervalInSeconds: intervalInSeconds,
+      config: config,
       toJSON: () => {
         return {
-          intervalInSeconds: intervalInSeconds,
+          config: config,
         };
       },
     };
@@ -1438,9 +1450,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     return jsonResults.result;
   }
 
-  protected getApiTypeFromStartEchoTest(
-    intervalInSeconds: number = 10
-  ): string {
+  protected getApiTypeFromStartEchoTest(config: EchoTestConfiguration): string {
     return 'RtcEngine_startEchoTest';
   }
 
@@ -5071,19 +5081,19 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   startScreenCaptureBySourceType(
-    type: VideoSourceType,
+    sourceType: VideoSourceType,
     config: ScreenCaptureConfiguration
   ): number {
     const apiType = this.getApiTypeFromStartScreenCaptureBySourceType(
-      type,
+      sourceType,
       config
     );
     const jsonParams = {
-      type: type,
+      sourceType: sourceType,
       config: config,
       toJSON: () => {
         return {
-          type: type,
+          sourceType: sourceType,
           config: config,
         };
       },
@@ -5093,7 +5103,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromStartScreenCaptureBySourceType(
-    type: VideoSourceType,
+    sourceType: VideoSourceType,
     config: ScreenCaptureConfiguration
   ): string {
     return 'RtcEngine_startScreenCaptureBySourceType';
@@ -5161,13 +5171,14 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_stopScreenCapture';
   }
 
-  stopScreenCaptureBySourceType(type: VideoSourceType): number {
-    const apiType = this.getApiTypeFromStopScreenCaptureBySourceType(type);
+  stopScreenCaptureBySourceType(sourceType: VideoSourceType): number {
+    const apiType =
+      this.getApiTypeFromStopScreenCaptureBySourceType(sourceType);
     const jsonParams = {
-      type: type,
+      sourceType: sourceType,
       toJSON: () => {
         return {
-          type: type,
+          sourceType: sourceType,
         };
       },
     };
@@ -5176,7 +5187,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromStopScreenCaptureBySourceType(
-    type: VideoSourceType
+    sourceType: VideoSourceType
   ): string {
     return 'RtcEngine_stopScreenCaptureBySourceType';
   }
@@ -6646,54 +6657,27 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_isFeatureAvailableOnDevice';
   }
 
-  destroyRendererByView(view: any): void {
-    const apiType = this.getApiTypeFromDestroyRendererByView(view);
+  sendAudioMetadata(metadata: string, length: number): number {
+    const apiType = this.getApiTypeFromSendAudioMetadata(metadata, length);
     const jsonParams = {
-      view: view,
+      metadata: metadata,
+      length: length,
       toJSON: () => {
         return {
-          view: view,
+          metadata: metadata,
+          length: length,
         };
       },
     };
-    callIrisApi.call(this, apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromDestroyRendererByView(view: any): string {
-    return 'RtcEngine_destroyRendererByView';
-  }
-
-  destroyRendererByConfig(
-    sourceType: VideoSourceType,
-    channelId?: string,
-    uid: number = 0
-  ): void {
-    const apiType = this.getApiTypeFromDestroyRendererByConfig(
-      sourceType,
-      channelId,
-      uid
-    );
-    const jsonParams = {
-      sourceType: sourceType,
-      channelId: channelId,
-      uid: uid,
-      toJSON: () => {
-        return {
-          sourceType: sourceType,
-          channelId: channelId,
-          uid: uid,
-        };
-      },
-    };
-    callIrisApi.call(this, apiType, jsonParams);
-  }
-
-  protected getApiTypeFromDestroyRendererByConfig(
-    sourceType: VideoSourceType,
-    channelId?: string,
-    uid: number = 0
+  protected getApiTypeFromSendAudioMetadata(
+    metadata: string,
+    length: number
   ): string {
-    return 'RtcEngine_destroyRendererByConfig';
+    return 'RtcEngine_sendAudioMetadata';
   }
 
   getAudioDeviceManager(): IAudioDeviceManager {
@@ -6801,6 +6785,56 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromSetMaxMetadataSize(size: number): string {
     return 'RtcEngine_setMaxMetadataSize';
+  }
+
+  destroyRendererByView(view: any): void {
+    const apiType = this.getApiTypeFromDestroyRendererByView(view);
+    const jsonParams = {
+      view: view,
+      toJSON: () => {
+        return {
+          view: view,
+        };
+      },
+    };
+    callIrisApi.call(this, apiType, jsonParams);
+  }
+
+  protected getApiTypeFromDestroyRendererByView(view: any): string {
+    return 'RtcEngine_destroyRendererByView';
+  }
+
+  destroyRendererByConfig(
+    sourceType: VideoSourceType,
+    channelId?: string,
+    uid: number = 0
+  ): void {
+    const apiType = this.getApiTypeFromDestroyRendererByConfig(
+      sourceType,
+      channelId,
+      uid
+    );
+    const jsonParams = {
+      sourceType: sourceType,
+      channelId: channelId,
+      uid: uid,
+      toJSON: () => {
+        return {
+          sourceType: sourceType,
+          channelId: channelId,
+          uid: uid,
+        };
+      },
+    };
+    callIrisApi.call(this, apiType, jsonParams);
+  }
+
+  protected getApiTypeFromDestroyRendererByConfig(
+    sourceType: VideoSourceType,
+    channelId?: string,
+    uid: number = 0
+  ): string {
+    return 'RtcEngine_destroyRendererByConfig';
   }
 
   unregisterAudioEncodedFrameObserver(
