@@ -392,6 +392,9 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   int height;
   int width;
   int yStride;
+  int uStride;
+  int vStride;
+
 
   napi_obj_get_property(env, obj, "uid", config.uid);
   napi_obj_get_property(env, obj, "videoSourceType", config.video_source_type);
@@ -410,6 +413,9 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_obj_get_property(env, obj, "height", height);
   napi_obj_get_property(env, obj, "width", width);
   napi_obj_get_property(env, obj, "yStride", yStride);
+  napi_obj_get_property(env, obj, "uStride", uStride);
+  napi_obj_get_property(env, obj, "vStride", vStride);
+
 
   IrisCVideoFrame videoFrame;
   videoFrame.yBuffer = (uint8_t *) y_buffer;
@@ -418,6 +424,8 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   videoFrame.height = height;
   videoFrame.width = width;
   videoFrame.yStride = yStride;
+  videoFrame.uStride = uStride;
+  videoFrame.vStride = vStride;
   videoFrame.metadata_buffer = nullptr;
   videoFrame.metadata_size = 0;
   videoFrame.alphaBuffer = nullptr;
@@ -442,6 +450,8 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_obj_set_property(env, retObj, "width", videoFrame.width);
   napi_obj_set_property(env, retObj, "height", videoFrame.height);
   napi_obj_set_property(env, retObj, "yStride", videoFrame.yStride);
+  napi_obj_set_property(env, retObj, "uStride", videoFrame.uStride);
+  napi_obj_set_property(env, retObj, "vStride", videoFrame.vStride);
   napi_obj_set_property(env, retObj, "rotation", rotation);
   napi_obj_set_property(env, retObj, "timestamp", videoFrame.renderTimeMs);
   return retObj;
