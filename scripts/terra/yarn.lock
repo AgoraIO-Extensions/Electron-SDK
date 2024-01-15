@@ -57,16 +57,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@agoraio-extensions/terra_shared_configs@git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=05e244e0a3233363de9cfc0b1342e3c8d87c58a5":
-  version: 1.0.2
-  resolution: "@agoraio-extensions/terra_shared_configs@git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=05e244e0a3233363de9cfc0b1342e3c8d87c58a5"
+"@agoraio-extensions/terra_shared_configs@portal:/Users/guoxianzhe/agora/terra_shared_configs::locator=terra%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@agoraio-extensions/terra_shared_configs@portal:/Users/guoxianzhe/agora/terra_shared_configs::locator=terra%40workspace%3A."
   dependencies:
     "@agoraio-extensions/cxx-parser": "git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=cxx-parser"
     "@agoraio-extensions/terra-core": "git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=terra-core"
     mustache: "npm:^4.2.0"
-  checksum: f2b2d7e0918aee8114ac0027094e8edd976417004c4c516d5711708781270d9b4ef299a05adabc452f3389157fc9c9b78ae4f562db095748b8b59ca767d8b532
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@ampproject/remapping@npm:^2.2.0":
   version: 2.2.1

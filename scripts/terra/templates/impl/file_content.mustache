@@ -43,7 +43,7 @@ export class {{name}}Impl {{#base_clazzs}}extends {{.}}Impl{{/base_clazzs}} impl
   }
 
   protected {{user_data.bindingFunctionName}}({{{user_data.input}}}): string {
-    return '{{user_data.renderApiType}}';
+    return '{{user_data.IrisApiIdParser.value}}';
   }
 
 {{/methods}}

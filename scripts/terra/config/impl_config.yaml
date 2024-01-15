@@ -1,48 +1,13 @@
 parsers:
-  - name: CXXParser
-    package: '@agoraio-extensions/cxx-parser'
+  - name: RTCParser
+    package: '@agoraio-extensions/terra_shared_configs'
     args:
-      includeHeaderDirs:
-        - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.3.0/include'
-      parseFiles:
-        include:
-          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.3.0/include/*.h'
-        exclude:
-          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.3.0/include/time_utils.h'
-          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.3.0/include/IAgoraMediaComponentFactory.h'
+      sdkVersion: 4.3.0
+      definesMacros:
+        - __ELECTRON__
+      FixEnumConstantParser:
+        skipCalEnumValue: true
 
-  - name: AddNodeParser
-    package: '@agoraio-extensions/terra_shared_configs'
-    args:
-      customHeaderFileNamePrefix: 'Custom'
-      includeHeaderDirs:
-        - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.3.0/include'
-      parseFiles:
-        include:
-          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.3.0/include/*.h'
-          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.3.0/custom_headers/*.h'
-        exclude:
-          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.3.0/include/time_utils.h'
-          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.3.0/include/IAgoraMediaComponentFactory.h'
-
-  - name: RemoveNodeParser
-    package: '@agoraio-extensions/terra_shared_configs'
-  - name: PointerToArrayParser
-    package: '@agoraio-extensions/terra_shared_configs'
-  - name: UpdateSimpleTypeParser
-    package: '@agoraio-extensions/terra_shared_configs'
-  - name: ReturnTypeParser
-    package: '@agoraio-extensions/terra_shared_configs'
-    args:
-      convertReturnToVoid: false
-  - name: FixEnumConstantParser
-    package: '@agoraio-extensions/terra_shared_configs'
-    args:
-      skipCalValue: true
-  - name: MergeNodeParser
-    package: '@agoraio-extensions/terra_shared_configs'
-  - name: OrderNodeParser
-    package: '@agoraio-extensions/terra_shared_configs'
   - name: UpdateSimpleTypeParser
     package: '@agoraio-extensions/terra_shared_configs'
     args:
@@ -50,10 +15,5 @@ parsers:
       ignoreDefaultConfig: true
       configFilePath: ./c_to_ts_config.ts
 
-defines_macros:
-  - __ELECTRON__
-
 renderers:
   - path: ../impl.ts
-
-version: 4.3.0

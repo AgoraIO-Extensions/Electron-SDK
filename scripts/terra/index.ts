@@ -7,25 +7,28 @@ import {
   TerraContext,
 } from '@agoraio-extensions/terra-core';
 
-import { renderWithConfiguration } from '@agoraio-extensions/terra_shared_configs';
+import {
+  IrisApiIdParserUserData,
+  renderWithConfiguration,
+} from '@agoraio-extensions/terra_shared_configs';
 
 import { convertToCamelCase, isMatch } from './utils';
 
-interface CXXFileUserData {
+type CXXFileUserData = {
   fileName: string;
-}
+};
 
-interface TerraNodeUserData {
+type TerraNodeUserData = IrisApiIdParserUserData & {
   isStruct: boolean;
   isEnumz: boolean;
   isClazz: boolean;
   isCallback: boolean;
-}
+};
 
-interface ClazzMethodUserData {
+type ClazzMethodUserData = IrisApiIdParserUserData & {
   output: string;
   input: string;
-}
+};
 
 export default function (
   terraContext: TerraContext,
@@ -57,6 +60,7 @@ export default function (
           const clazzMethodUserData: ClazzMethodUserData = {
             output: '',
             input: '',
+            ...method.user_data,
           };
           let output_params: string[] = [];
           let input_params: string[] = [];
@@ -121,6 +125,7 @@ export default function (
         isEnumz: node.__TYPE === CXXTYPE.Enumz,
         isClazz: node.__TYPE === CXXTYPE.Clazz,
         isCallback: isCallback,
+        ...node.user_data,
       };
       node.user_data = terraNodeUserData;
 

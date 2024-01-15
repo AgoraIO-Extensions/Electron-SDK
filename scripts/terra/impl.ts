@@ -9,7 +9,10 @@ import {
 
 import { ParseResult, TerraContext } from '@agoraio-extensions/terra-core';
 
-import { renderWithConfiguration } from '@agoraio-extensions/terra_shared_configs';
+import {
+  IrisApiIdParserUserData,
+  renderWithConfiguration,
+} from '@agoraio-extensions/terra_shared_configs';
 
 import {
   convertToCamelCase,
@@ -18,7 +21,6 @@ import {
   findEnumz,
   findStruct,
   isMatch,
-  renderApiType,
   upperFirstWord,
 } from './utils';
 
@@ -27,30 +29,29 @@ interface CXXFileUserData {
   renderFileEnd: boolean;
 }
 
-interface TerraNodeUserData {
+type TerraNodeUserData = IrisApiIdParserUserData & {
   isStruct: boolean;
   isEnumz: boolean;
   isClazz: boolean;
   isCallback: boolean;
   hasBaseClazzs: boolean;
   prefix_name: string;
-}
+};
 
-interface VariableUserData {
+type VariableUserData = IrisApiIdParserUserData & {
   name: string;
-}
+};
 
-interface ClazzMethodUserData {
+type ClazzMethodUserData = IrisApiIdParserUserData & {
   output: string;
   input: string;
   input_map: Variable[];
   input_map_fixed: Variable[];
   output_map: Variable[];
   hasParameters: boolean;
-  bindingFunctionName?: string;
-  renderApiType?: string;
-  returnParam?: string;
-}
+  bindingFunctionName: string;
+  returnParam: string;
+};
 
 export function impl(parseResult: ParseResult) {
   let preParseResult = deepClone(parseResult, ['parent']);
@@ -90,12 +91,13 @@ export function impl(parseResult: ParseResult) {
             hasParameters: true,
             bindingFunctionName: `getApiTypeFrom${upperFirstWord(method.name)}`,
             returnParam: '',
-            renderApiType: renderApiType(method),
+            ...method.user_data,
           };
           method.return_type.name = convertToCamelCase(method.return_type.name);
           method.asMemberFunction().parameters.map((param) => {
             let variableUserData: VariableUserData = {
               name: convertToCamelCase(param.name, false),
+              ...param.user_data,
             };
             let typeName = convertToCamelCase(param.type.name);
             let default_value = convertToCamelCase(param.default_value);
@@ -192,6 +194,7 @@ export function impl(parseResult: ParseResult) {
           prefix_name: node.name.replace(new RegExp('^I(.*)'), '$1'),
           hasBaseClazzs: node.asClazz().base_clazzs.length > 0,
           isCallback: isMatch(node.name, 'isCallback'),
+          ...node.user_data,
         };
         node.user_data = terraNodeUserData;
         if (!cxxUserData.renderFileEnd && !terraNodeUserData.isCallback) {

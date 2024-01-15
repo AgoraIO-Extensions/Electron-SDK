@@ -26,7 +26,8 @@
   "resolutions": {
     "@agoraio-extensions/cxx-parser": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=cxx-parser",
     "@agoraio-extensions/terra": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=terra",
-    "@agoraio-extensions/terra-core": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=terra-core"
+    "@agoraio-extensions/terra-core": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=terra-core",
+    "@agoraio-extensions/terra_shared_configs": "portal:/Users/guoxianzhe/agora/terra_shared_configs"
   },
   "packageManager": "yarn@4.0.1"
 }

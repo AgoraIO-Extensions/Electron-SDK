@@ -3,12 +3,9 @@ import {
   CXXTYPE,
   Clazz,
   Enumz,
-  MemberFunction,
   Struct,
 } from '@agoraio-extensions/cxx-parser';
 import { ParseResult } from '@agoraio-extensions/terra-core';
-
-import { irisApiId } from '@agoraio-extensions/terra_shared_configs';
 
 let regMap: any = {
   isCallback: '.*(Observer|Handler|Callback|Receiver|Sink).*',
@@ -62,20 +59,6 @@ export function convertToCamelCase(str: string, upperCamelCase = true): string {
   }
 
   return camelCaseStr;
-}
-
-let newIrisTypeList = ['IAgoraH265Transcoder.h'];
-
-export function renderApiType(method: MemberFunction) {
-  let node = method.parent;
-  if (newIrisTypeList.includes(node!.asClazz().fileName)) {
-    return irisApiId(node!.asClazz(), method, { toUpperCase: false });
-  }
-  if (node?.asClazz().name.charAt(0) === 'I') {
-    return `${node!.asClazz().name.slice(1)}_${method.name}`;
-  } else {
-    return `${node!.asClazz().name}_${method.name}`;
-  }
 }
 
 export function deepClone(obj: any, skipKeys?: string[]) {
