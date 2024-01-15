@@ -15,7 +15,7 @@
     "@agoraio-extensions/cxx-parser": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=cxx-parser",
     "@agoraio-extensions/terra": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=terra",
     "@agoraio-extensions/terra-core": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=terra-core",
-    "@agoraio-extensions/terra_shared_configs": "git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=05e244e0a3233363de9cfc0b1342e3c8d87c58a5",
+    "@agoraio-extensions/terra_shared_configs": "git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=ac9ad3fb2497988e3c68178648790ae80959851e",
     "@types/js-yaml": "^4.0.8",
     "@types/node": "^18.17.9",
     "js-yaml": "^4.1.0",
@@ -25,8 +25,7 @@
   "resolutions": {
     "@agoraio-extensions/cxx-parser": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=cxx-parser",
     "@agoraio-extensions/terra": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=terra",
-    "@agoraio-extensions/terra-core": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=terra-core",
-    "@agoraio-extensions/terra_shared_configs": "portal:/Users/guoxianzhe/agora/terra_shared_configs"
+    "@agoraio-extensions/terra-core": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=terra-core"
   },
   "packageManager": "yarn@4.0.1"
 }

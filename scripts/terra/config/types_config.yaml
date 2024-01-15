@@ -13,7 +13,7 @@ parsers:
     args:
       parserDefaultValue: true
       ignoreDefaultConfig: true
-      configFilePath: ./c_to_ts_config.ts
+      configFilePath: '@agoraio-extensions/terra_shared_configs:configs/rtc/ts/c_to_ts_config.ts'
 
 renderers:
   - path: ../index.ts

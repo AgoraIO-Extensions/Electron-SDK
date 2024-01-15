@@ -39,15 +39,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@agoraio-extensions/terra_shared_configs@portal:/Users/guoxianzhe/agora/terra_shared_configs::locator=terra%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@agoraio-extensions/terra_shared_configs@portal:/Users/guoxianzhe/agora/terra_shared_configs::locator=terra%40workspace%3A."
+"@agoraio-extensions/terra_shared_configs@git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=ac9ad3fb2497988e3c68178648790ae80959851e":
+  version: 1.0.2
+  resolution: "@agoraio-extensions/terra_shared_configs@git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=ac9ad3fb2497988e3c68178648790ae80959851e"
   dependencies:
     "@agoraio-extensions/cxx-parser": "git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=cxx-parser"
     "@agoraio-extensions/terra-core": "git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=terra-core"
     mustache: "npm:^4.2.0"
+  checksum: 0756ccbb58f543071a67d893640c1973f406ad37722bc2222c326dc66ccee7280e4829e854502ff672f1653e57552f42b165a33e9367baf50a28184dd0d28091
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "@cspotcode/source-map-support@npm:^0.8.0":
   version: 0.8.1
@@ -481,7 +482,7 @@ __metadata:
     "@agoraio-extensions/cxx-parser": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=cxx-parser"
     "@agoraio-extensions/terra": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=terra"
     "@agoraio-extensions/terra-core": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=terra-core"
-    "@agoraio-extensions/terra_shared_configs": "git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=05e244e0a3233363de9cfc0b1342e3c8d87c58a5"
+    "@agoraio-extensions/terra_shared_configs": "git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=ac9ad3fb2497988e3c68178648790ae80959851e"
     "@types/js-yaml": "npm:^4.0.8"
     "@types/node": "npm:^20.6.0"
     js-yaml: "npm:^4.1.0"
