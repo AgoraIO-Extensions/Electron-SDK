@@ -57,7 +57,7 @@ export class IH265TranscoderImpl implements IH265Transcoder {
     channel: string,
     uid: number
   ): string {
-    return 'IH265Transcoder__enableTranscode__const_char_ptr__const_char_ptr__agora_rtc_uid_t';
+    return 'H265Transcoder_enableTranscode';
   }
 
   queryChannel(token: string, channel: string, uid: number): number {
@@ -83,7 +83,7 @@ export class IH265TranscoderImpl implements IH265Transcoder {
     channel: string,
     uid: number
   ): string {
-    return 'IH265Transcoder__queryChannel__const_char_ptr__const_char_ptr__agora_rtc_uid_t';
+    return 'H265Transcoder_queryChannel';
   }
 
   triggerTranscode(token: string, channel: string, uid: number): number {
@@ -109,7 +109,7 @@ export class IH265TranscoderImpl implements IH265Transcoder {
     channel: string,
     uid: number
   ): string {
-    return 'IH265Transcoder__triggerTranscode__const_char_ptr__const_char_ptr__agora_rtc_uid_t';
+    return 'H265Transcoder_triggerTranscode';
   }
 
   registerTranscoderObserver(observer: IH265TranscoderObserver): number {
@@ -127,7 +127,7 @@ export class IH265TranscoderImpl implements IH265Transcoder {
   protected getApiTypeFromRegisterTranscoderObserver(
     observer: IH265TranscoderObserver
   ): string {
-    return 'IH265Transcoder__registerTranscoderObserver__agora_rtc_IH265TranscoderObserver_ptr';
+    return 'H265Transcoder_registerTranscoderObserver';
   }
 
   unregisterTranscoderObserver(observer: IH265TranscoderObserver): number {
@@ -145,7 +145,7 @@ export class IH265TranscoderImpl implements IH265Transcoder {
   protected getApiTypeFromUnregisterTranscoderObserver(
     observer: IH265TranscoderObserver
   ): string {
-    return 'IH265Transcoder__unregisterTranscoderObserver__agora_rtc_IH265TranscoderObserver_ptr';
+    return 'H265Transcoder_unregisterTranscoderObserver';
   }
 }
 

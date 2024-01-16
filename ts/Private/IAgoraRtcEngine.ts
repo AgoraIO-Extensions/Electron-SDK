@@ -1561,13 +1561,13 @@ export interface IRtcEngineEventHandler {
   /**
    * Occurs when the local video stream state changes.
    *
-   * When the state of the local video stream changes (including the state of the video capture and encoding), the SDK triggers this callback to report the current state. This callback indicates the state of the local video stream, including camera capturing and video encoding, and allows you to troubleshoot issues when exceptions occur. The SDK triggers the onLocalVideoStateChanged callback with the state code of LocalVideoStreamStateFailed and error code of LocalVideoStreamErrorCaptureFailure in the following situations:
+   * When the state of the local video stream changes (including the state of the video capture and encoding), the SDK triggers this callback to report the current state. This callback indicates the state of the local video stream, including camera capturing and video encoding, and allows you to troubleshoot issues when exceptions occur. The SDK triggers the onLocalVideoStateChanged callback with the state code of LocalVideoStreamStateFailed and error code of in the following situations:
    *  The app switches to the background, and the system gets the camera resource.
-   *  The camera starts normally, but does not output video frames for four consecutive seconds. When the camera outputs the captured video frames, if the video frames are the same for 15 consecutive frames, the SDK triggers the onLocalVideoStateChanged callback with the state code of LocalVideoStreamStateCapturing and error code of LocalVideoStreamErrorCaptureFailure. Note that the video frame duplication detection is only available for video frames with a resolution greater than 200 × 200, a frame rate greater than or equal to 10 fps, and a bitrate less than 20 Kbps. For some device models, the SDK does not trigger this callback when the state of the local video changes while the local video capturing device is in use, so you have to make your own timeout judgment.
+   *  The camera starts normally, but does not output video frames for four consecutive seconds. When the camera outputs the captured video frames, if the video frames are the same for 15 consecutive frames, the SDK triggers the onLocalVideoStateChanged callback with the state code of LocalVideoStreamStateCapturing and error code of. Note that the video frame duplication detection is only available for video frames with a resolution greater than 200 × 200, a frame rate greater than or equal to 10 fps, and a bitrate less than 20 Kbps. For some device models, the SDK does not trigger this callback when the state of the local video changes while the local video capturing device is in use, so you have to make your own timeout judgment.
    *
    * @param source The type of the video source. See VideoSourceType.
    * @param state The state of the local video, see LocalVideoStreamState.
-   * @param error The detailed error information, see LocalVideoStreamError.
+   * @param error The detailed error information, see.
    */
   onLocalVideoStateChanged?(
     source: VideoSourceType,
@@ -1981,7 +1981,7 @@ export interface IRtcEngineEventHandler {
    *
    * @param connection The connection information. See RtcConnection.
    * @param state The state of the local audio. See LocalAudioStreamState.
-   * @param error Local audio state error codes. See LocalAudioStreamError.
+   * @param error Local audio state error codes.
    */
   onLocalAudioStateChanged?(
     connection: RtcConnection,
@@ -2105,7 +2105,7 @@ export interface IRtcEngineEventHandler {
    *
    * @param url The URL address where the state of the Media Push changes.
    * @param state The current state of the Media Push. See RtmpStreamPublishState.
-   * @param errCode The detailed error information for the Media Push. See RtmpStreamPublishErrorType.
+   * @param errCode The detailed error information for the Media Push.
    */
   onRtmpStreamingStateChanged?(
     url: string,
@@ -2163,7 +2163,12 @@ export interface IRtcEngineEventHandler {
   onLocalPublishFallbackToAudioOnly?(isFallbackOrRecover: boolean): void;
 
   /**
-   * @ignore
+   * Occurs when the remote media stream falls back to the audio-only stream due to poor network conditions or switches back to the video stream after the network conditions improve.
+   *
+   * If you call setRemoteSubscribeFallbackOption and set option as StreamFallbackOptionAudioOnly, the SDK triggers this callback when the remote media stream falls back to audio-only mode due to poor uplink conditions, or when the remote media stream switches back to the video after the downlink network condition improves. Once the remote media stream switches to the low-quality stream due to poor network conditions, you can monitor the stream switch between a high-quality and low-quality stream in the onRemoteVideoStats callback.
+   *
+   * @param uid The user ID of the remote user.
+   * @param isFallbackOrRecover true : The remotely subscribed media stream falls back to audio-only due to poor network conditions. false : The remotely subscribed media stream switches back to the video stream after the network conditions improved.
    */
   onRemoteSubscribeFallbackToAudioOnly?(
     uid: number,
@@ -2776,7 +2781,7 @@ export interface IDirectCdnStreamingEventHandler {
    * When the host directly pushes streams to the CDN, if the streaming state changes, the SDK triggers this callback to report the changed streaming state, error codes, and other information. You can troubleshoot issues by referring to this callback.
    *
    * @param state The current CDN streaming state. See DirectCdnStreamingState.
-   * @param error The CDN streaming error. See DirectCdnStreamingError.
+   * @param error The CDN streaming error.
    * @param message The information about the changed streaming state.
    */
   onDirectCdnStreamingStateChanged?(
@@ -3198,11 +3203,6 @@ export abstract class IRtcEngine {
    *  < 0: Failure.
    */
   abstract startPreview(sourceType?: VideoSourceType): number;
-
-  /**
-   * @ignore
-   */
-  abstract startPreviewWithoutSourceType(): number;
 
   /**
    * Stops the local video preview.
@@ -5003,12 +5003,28 @@ export abstract class IRtcEngine {
   abstract adjustUserPlaybackSignalVolume(uid: number, volume: number): number;
 
   /**
-   * @ignore
+   * Sets the fallback option for the published video stream based on the network conditions.
+   *
+   * An unstable network affects the audio and video quality in a video call or interactive live video streaming. If option is set as StreamFallbackOptionAudioOnly (2), the SDK disables the upstream video but enables audio only when the network conditions deteriorate and cannot support both video and audio. The SDK monitors the network quality and restores the video stream when the network conditions improve. When the published video stream falls back to audio-only or when the audio-only stream switches back to the video, the SDK triggers the callback.
+   *  In stream push scenarios, set the local push fallback to StreamFallbackOptionAudioOnly (2) may result n some delay for remote CDN users to hear the sound. In this case, Agora recommends that you do not enable this option.
+   *  Ensure that you call this method before joining a channel.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract setLocalPublishFallbackOption(option: StreamFallbackOptions): number;
 
   /**
-   * @ignore
+   * Sets the fallback option for the remotely subscribed video stream based on the network conditions.
+   *
+   * When the network is not ideal, the quality of live audio and video can be degraded. If option is set as StreamFallbackOptionVideoStreamLow or StreamFallbackOptionAudioOnly, the SDK automatically switches the video from a high-quality stream to a low-quality stream or disables the video when the downlink network conditions cannot support both audio and video to guarantee the quality of the audio. The SDK monitors the network quality and restores the video stream when the network conditions improve. When the remote video stream falls back to audio-only or when the audio-only stream switches back to the video, the SDK triggers the onRemoteSubscribeFallbackToAudioOnly callback. Ensure that you call this method before joining a channel.
+   *
+   * @param option The fallback option for the remotely subscribed video stream. The default value is StreamFallbackOptionVideoStreamLow (1). See STREAM_FALLBACK_OPTIONS.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract setRemoteSubscribeFallbackOption(
     option: StreamFallbackOptions
@@ -5544,22 +5560,6 @@ export abstract class IRtcEngine {
   abstract startScreenCapture(captureParams: ScreenCaptureParameters2): number;
 
   /**
-   * Starts screen capture.
-   *
-   * This method, as well as startScreenCaptureByDisplayId and startScreenCaptureByWindowId, all have the capability to start screen capture, with the following differences: startScreenCaptureByDisplayId and startScreenCaptureByWindowId only support capturing video from a single screen or window. By calling this method and specifying the sourceType parameter, you can capture multiple video streams used for local video mixing or multi-channel publishing.
-   *  If you call this method to start screen capture, Agora recommends that you call stopScreenCaptureBySourceType to stop the capture and avoid using stopScreenCapture.
-   *
-   * @param sourceType The type of the video source. See VideoSourceType.
-   *  Windows supports up to four screen capture video streams.
-   *  macOS supports only one screen capture video stream. You can only set this parameter to VideoSourceScreen (2).
-   * @param config The configuration of the captured screen. See ScreenCaptureConfiguration.
-   */
-  abstract startScreenCaptureBySourceType(
-    sourceType: VideoSourceType,
-    config: ScreenCaptureConfiguration
-  ): number;
-
-  /**
    * @ignore
    */
   abstract updateScreenCapture(captureParams: ScreenCaptureParameters2): number;
@@ -5592,20 +5592,6 @@ export abstract class IRtcEngine {
    *  < 0: Failure.
    */
   abstract stopScreenCapture(): number;
-
-  /**
-   * Stops screen capture.
-   *
-   * After calling startScreenCaptureBySourceType to start capturing video from one or more screens, you can call this method and set the sourceType parameter to stop capturing from the specified screens.
-   *  If you call startScreenCaptureByWindowId or startScreenCaptureByDisplayId to start screen capture, Agora recommends that you call stopScreenCapture to stop the capture and do not use this one.
-   *
-   * @param sourceType The type of the video source. See VideoSourceType.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
-   */
-  abstract stopScreenCaptureBySourceType(sourceType: VideoSourceType): number;
 
   /**
    * Retrieves the call ID.
@@ -6592,6 +6578,36 @@ export abstract class IRtcEngine {
   abstract isFeatureAvailableOnDevice(type: FeatureType): boolean;
 
   /**
+   * Starts screen capture.
+   *
+   * This method, as well as startScreenCaptureByDisplayId and startScreenCaptureByWindowId, all have the capability to start screen capture, with the following differences: startScreenCaptureByDisplayId and startScreenCaptureByWindowId only support capturing video from a single screen or window. By calling this method and specifying the sourceType parameter, you can capture multiple video streams used for local video mixing or multi-channel publishing.
+   *  If you call this method to start screen capture, Agora recommends that you call stopScreenCaptureBySourceType to stop the capture and avoid using stopScreenCapture.
+   *
+   * @param sourceType The type of the video source. See VideoSourceType.
+   *  Windows supports up to four screen capture video streams.
+   *  macOS supports only one screen capture video stream. You can only set this parameter to VideoSourceScreen (2).
+   * @param config The configuration of the captured screen. See ScreenCaptureConfiguration.
+   */
+  abstract startScreenCaptureBySourceType(
+    sourceType: VideoSourceType,
+    config: ScreenCaptureConfiguration
+  ): number;
+
+  /**
+   * Stops screen capture.
+   *
+   * After calling startScreenCaptureBySourceType to start capturing video from one or more screens, you can call this method and set the sourceType parameter to stop capturing from the specified screens.
+   *  If you call startScreenCaptureByWindowId or startScreenCaptureByDisplayId to start screen capture, Agora recommends that you call stopScreenCapture to stop the capture and do not use this one.
+   *
+   * @param sourceType The type of the video source. See VideoSourceType.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
+   */
+  abstract stopScreenCaptureBySourceType(sourceType: VideoSourceType): number;
+
+  /**
    * Releases the IRtcEngine instance.
    *
    * This method releases all resources used by the Agora SDK. Use this method for apps in which users occasionally make voice or video calls. When users do not make calls, you can free up resources for other operations. After a successful method call, you can no longer use any method or callback in the SDK anymore. If you want to use the real-time communication functions again, you must call createAgoraRtcEngine and initialize to create a new IRtcEngine instance.
@@ -6601,6 +6617,11 @@ export abstract class IRtcEngine {
    * @param sync Whether the method is called synchronously: true : Synchronous call. false : Asynchronous call. Currently this method only supports synchronous calls. Do not set this parameter to this value.
    */
   abstract release(sync?: boolean): void;
+
+  /**
+   * @ignore
+   */
+  abstract startPreviewWithoutSourceType(): number;
 
   /**
    * Gets the IAudioDeviceManager object to manage audio devices.

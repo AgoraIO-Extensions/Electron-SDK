@@ -1,4 +1,5 @@
 import './extension/IAgoraRhythmPlayerExtension';
+
 /**
  * @ignore
  */

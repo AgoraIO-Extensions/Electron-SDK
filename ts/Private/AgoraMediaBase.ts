@@ -1180,7 +1180,7 @@ export enum MediaRecorderStreamType {
  */
 export enum RecorderState {
   /**
-   * -1: An error occurs during the recording. See RecorderErrorCode for the reason.
+   * -1: An error occurs during the recording. See for the reason.
    */
   RecorderStateError = -1,
   /**
