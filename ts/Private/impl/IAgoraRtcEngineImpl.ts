@@ -1207,7 +1207,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     channelId: string,
     uid: number
   ): string {
-    return '';
+    return 'RtcEngine_preloadChannel';
   }
 
   preloadChannelWithUserAccount(
@@ -1241,7 +1241,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     channelId: string,
     userAccount: string
   ): string {
-    return '';
+    return 'RtcEngine_preloadChannelWithUserAccount';
   }
 
   updatePreloadChannelToken(token: string): number {
@@ -1298,7 +1298,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     uid: number,
     options: ChannelMediaOptions
   ): string {
-    return '';
+    return 'RtcEngine_joinChannel';
   }
 
   updateChannelMediaOptions(options: ChannelMediaOptions): number {
@@ -1336,7 +1336,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromLeaveChannel(options?: LeaveChannelOptions): string {
-    return '';
+    return 'RtcEngine_leaveChannel';
   }
 
   renewToken(token: string): number {
@@ -1397,7 +1397,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     role: ClientRoleType,
     options?: ClientRoleOptions
   ): string {
-    return '';
+    return 'RtcEngine_setClientRole';
   }
 
   startEchoTest(config: EchoTestConfiguration): number {
@@ -1415,7 +1415,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromStartEchoTest(config: EchoTestConfiguration): string {
-    return '';
+    return 'RtcEngine_startEchoTest';
   }
 
   stopEchoTest(): number {
@@ -1496,7 +1496,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   protected getApiTypeFromStartPreview(
     sourceType: VideoSourceType = VideoSourceType.VideoSourceCameraPrimary
   ): string {
-    return '';
+    return 'RtcEngine_startPreview';
   }
 
   stopPreview(
@@ -1518,7 +1518,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   protected getApiTypeFromStopPreview(
     sourceType: VideoSourceType = VideoSourceType.VideoSourceCameraPrimary
   ): string {
-    return '';
+    return 'RtcEngine_stopPreview';
   }
 
   startLastmileProbeTest(config: LastmileProbeConfig): number {
@@ -1868,7 +1868,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     profile: AudioProfileType,
     scenario: AudioScenarioType = AudioScenarioType.AudioScenarioDefault
   ): string {
-    return '';
+    return 'RtcEngine_setAudioProfile';
   }
 
   setAudioScenario(scenario: AudioScenarioType): number {
@@ -2318,7 +2318,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   protected getApiTypeFromStartAudioRecording(
     config: AudioRecordingConfiguration
   ): string {
-    return '';
+    return 'RtcEngine_startAudioRecording';
   }
 
   registerAudioEncodedFrameObserver(
@@ -2463,7 +2463,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     cycle: number,
     startPos: number = 0
   ): string {
-    return '';
+    return 'RtcEngine_startAudioMixing';
   }
 
   stopAudioMixing(): number {
@@ -3567,7 +3567,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     renderMode: RenderModeType,
     mirrorMode: VideoMirrorModeType = VideoMirrorModeType.VideoMirrorModeAuto
   ): string {
-    return '';
+    return 'RtcEngine_setLocalRenderMode';
   }
 
   setRemoteRenderMode(
@@ -3650,7 +3650,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     enabled: boolean,
     streamConfig?: SimulcastStreamConfig
   ): string {
-    return '';
+    return 'RtcEngine_enableDualStreamMode';
   }
 
   setDualStreamMode(
@@ -3676,7 +3676,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     mode: SimulcastStreamMode,
     streamConfig?: SimulcastStreamConfig
   ): string {
-    return '';
+    return 'RtcEngine_setDualStreamMode';
   }
 
   enableCustomAudioLocalPlayback(trackId: number, enabled: boolean): number {
@@ -4144,7 +4144,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     enable: boolean = true,
     type: MediaSourceType = MediaSourceType.UnknownMediaSource
   ): string {
-    return '';
+    return 'RtcEngine_enableExtension';
   }
 
   setExtensionProperty(
@@ -4188,7 +4188,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     value: string,
     type: MediaSourceType = MediaSourceType.UnknownMediaSource
   ): string {
-    return '';
+    return 'RtcEngine_setExtensionProperty';
   }
 
   getExtensionProperty(
@@ -4233,7 +4233,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     bufLen: number,
     type: MediaSourceType = MediaSourceType.UnknownMediaSource
   ): string {
-    return '';
+    return 'RtcEngine_getExtensionProperty';
   }
 
   enableLoopbackRecording(enabled: boolean, deviceName?: string): number {
@@ -5126,7 +5126,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   protected getApiTypeFromStartScreenCapture(
     captureParams: ScreenCaptureParameters2
   ): string {
-    return '';
+    return 'RtcEngine_startScreenCapture';
   }
 
   updateScreenCapture(captureParams: ScreenCaptureParameters2): number {
@@ -5188,7 +5188,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromStopScreenCapture(): string {
-    return '';
+    return 'RtcEngine_stopScreenCapture';
   }
 
   getCallId(): string {
@@ -5642,7 +5642,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromCreateDataStream(config: DataStreamConfig): string {
-    return '';
+    return 'RtcEngine_createDataStream';
   }
 
   sendStreamMessage(
@@ -5698,7 +5698,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     watermarkUrl: string,
     options: WatermarkOptions
   ): string {
-    return '';
+    return 'RtcEngine_addVideoWatermark';
   }
 
   clearVideoWatermarks(): number {
@@ -6023,7 +6023,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     userAccount: string,
     options?: ChannelMediaOptions
   ): string {
-    return '';
+    return 'RtcEngine_joinChannelWithUserAccount';
   }
 
   joinChannelWithUserAccountEx(
@@ -6682,7 +6682,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     sourceType: VideoSourceType,
     config: ScreenCaptureConfiguration
   ): string {
-    return '';
+    return 'RtcEngine_startScreenCaptureBySourceType';
   }
 
   stopScreenCaptureBySourceType(sourceType: VideoSourceType): number {
@@ -6703,7 +6703,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   protected getApiTypeFromStopScreenCaptureBySourceType(
     sourceType: VideoSourceType
   ): string {
-    return '';
+    return 'RtcEngine_stopScreenCaptureBySourceType';
   }
 
   release(sync: boolean = false): void {
@@ -6720,7 +6720,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromRelease(sync: boolean = false): string {
-    return '';
+    return 'RtcEngine_release';
   }
 
   startPreviewWithoutSourceType(): number {
@@ -6731,7 +6731,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromStartPreviewWithoutSourceType(): string {
-    return '';
+    return 'RtcEngine_startPreviewWithoutSourceType';
   }
 
   getAudioDeviceManager(): IAudioDeviceManager {
@@ -6742,7 +6742,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromGetAudioDeviceManager(): string {
-    return '';
+    return 'RtcEngine_getAudioDeviceManager';
   }
 
   getVideoDeviceManager(): IVideoDeviceManager {
@@ -6753,7 +6753,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromGetVideoDeviceManager(): string {
-    return '';
+    return 'RtcEngine_getVideoDeviceManager';
   }
 
   getMusicContentCenter(): IMusicContentCenter {
@@ -6764,7 +6764,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromGetMusicContentCenter(): string {
-    return '';
+    return 'RtcEngine_getMusicContentCenter';
   }
 
   getMediaEngine(): IMediaEngine {
@@ -6775,7 +6775,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromGetMediaEngine(): string {
-    return '';
+    return 'RtcEngine_getMediaEngine';
   }
 
   getLocalSpatialAudioEngine(): ILocalSpatialAudioEngine {
@@ -6786,7 +6786,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromGetLocalSpatialAudioEngine(): string {
-    return '';
+    return 'RtcEngine_getLocalSpatialAudioEngine';
   }
 
   getH265Transcoder(): IH265Transcoder {
@@ -6797,7 +6797,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromGetH265Transcoder(): string {
-    return '';
+    return 'RtcEngine_getH265Transcoder';
   }
 
   sendMetaData(metadata: Metadata, sourceType: VideoSourceType): number {
@@ -6820,7 +6820,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     metadata: Metadata,
     sourceType: VideoSourceType
   ): string {
-    return '';
+    return 'RtcEngine_sendMetaData';
   }
 
   setMaxMetadataSize(size: number): number {
@@ -6838,7 +6838,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromSetMaxMetadataSize(size: number): string {
-    return '';
+    return 'RtcEngine_setMaxMetadataSize';
   }
 
   destroyRendererByView(view: any): void {
@@ -6855,7 +6855,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromDestroyRendererByView(view: any): string {
-    return '';
+    return 'RtcEngine_destroyRendererByView';
   }
 
   destroyRendererByConfig(
@@ -6888,7 +6888,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     channelId?: string,
     uid: number = 0
   ): string {
-    return '';
+    return 'RtcEngine_destroyRendererByConfig';
   }
 
   unregisterAudioEncodedFrameObserver(
@@ -6909,7 +6909,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   protected getApiTypeFromUnregisterAudioEncodedFrameObserver(
     observer: IAudioEncodedFrameObserver
   ): string {
-    return '';
+    return 'RtcEngine_unregisterAudioEncodedFrameObserver';
   }
 
   getNativeHandle(): number {
@@ -6920,7 +6920,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromGetNativeHandle(): string {
-    return '';
+    return 'RtcEngine_getNativeHandle';
   }
 }
 
