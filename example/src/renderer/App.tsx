@@ -1,6 +1,7 @@
 import { GithubOutlined, SettingOutlined } from '@ant-design/icons';
 import { createAgoraRtcEngine } from 'agora-electron-sdk';
 import { Layout, Menu } from 'antd';
+import { ItemType } from 'antd/lib/menu/hooks/useItems';
 import React, { Component } from 'react';
 import {
   Link,
@@ -20,7 +21,6 @@ import Hooks from './examples/hook';
 const DATA = [Basic, Advanced, Hooks];
 
 const { Content, Footer, Sider } = Layout;
-const { SubMenu } = Menu;
 
 class App extends Component {
   state = {
@@ -48,28 +48,38 @@ class App extends Component {
             }}
           >
             <div className="logo" />
-            <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
-              <Menu.Item key="1" icon={<SettingOutlined />}>
-                <Link to="/">Setting</Link>
-              </Menu.Item>
-              {DATA.map((value, index) => {
-                return (
-                  <SubMenu
-                    key={`sub${index}`}
-                    icon={<GithubOutlined />}
-                    title={value.title}
-                  >
-                    {value.data.map(({ name }) => {
-                      return (
-                        <Menu.Item key={name}>
-                          <Link to={`/${name}`}>{name}</Link>
-                        </Menu.Item>
-                      );
-                    })}
-                  </SubMenu>
-                );
-              })}
-            </Menu>
+            <Menu
+              theme="dark"
+              defaultSelectedKeys={['1']}
+              mode="inline"
+              //@ts-ignore
+              items={((): ItemType[] => {
+                let list = [
+                  {
+                    key: '1',
+                    label: <Link to="/">Setting</Link>,
+                    icon: <SettingOutlined />,
+                  },
+                ];
+                DATA.map((value, index) => {
+                  let subMenu = {
+                    key: `sub${index}`,
+                    label: <>{value.title}</>,
+                    icon: <GithubOutlined />,
+                    children: [] as ItemType[],
+                  };
+                  value.data.map(({ name }) => {
+                    subMenu.children.push({
+                      key: name,
+                      label: <Link to={`/${name}`}>{name}</Link>,
+                      icon: <SettingOutlined />,
+                    });
+                  });
+                  list.push(subMenu);
+                });
+                return list;
+              })()}
+            ></Menu>
           </Sider>
           <Layout className="site-layout" style={{ marginLeft: 200 }}>
             <Content>
