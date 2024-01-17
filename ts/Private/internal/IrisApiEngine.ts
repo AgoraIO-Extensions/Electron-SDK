@@ -481,7 +481,7 @@ export function callIrisApi(funcName: string, params: any): any {
         case 'RtcEngine_initialize_0320339':
           AgoraRtcNg.InitializeEnv();
           break;
-        case 'RtcEngine_release_5039d15':
+        case 'RtcEngine_release':
           AgoraRtcNg.CallApi(
             funcName,
             JSON.stringify(params),

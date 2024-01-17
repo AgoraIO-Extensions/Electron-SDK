@@ -100,6 +100,7 @@ export default class MusicContentCenter
     const { rtmAppId, rtmToken, mccUid } = this.state;
     if (!rtmAppId) {
       this.error(`appId is invalid`);
+      return;
     }
     if (!rtmToken) {
       this.error(`rtmToken is invalid`);

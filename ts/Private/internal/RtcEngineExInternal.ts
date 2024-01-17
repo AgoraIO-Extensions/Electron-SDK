@@ -734,7 +734,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     enable: boolean = true,
     type: MediaSourceType = MediaSourceType.UnknownMediaSource
   ): string {
-    return 'RtcEngine_enableExtension';
+    return 'RtcEngine_enableExtension_0b60a2c';
   }
 
   protected override getApiTypeFromSetAudioProfile(
@@ -742,5 +742,9 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     scenario: AudioScenarioType = AudioScenarioType.AudioScenarioDefault
   ): string {
     return 'RtcEngine_setAudioProfile_d944543';
+  }
+
+  protected override getApiTypeFromRelease(sync: boolean): string {
+    return 'RtcEngine_release';
   }
 }
