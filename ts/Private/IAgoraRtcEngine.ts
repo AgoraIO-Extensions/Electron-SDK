@@ -6619,7 +6619,17 @@ export abstract class IRtcEngine {
   abstract release(sync?: boolean): void;
 
   /**
-   * @ignore
+   * Enables the local video preview.
+   *
+   * You can call this method to enable local video preview. Call this method after the following:
+   *  Call setView to initialize the local preview.
+   *  Call enableVideo to enable the video module.
+   *  The local preview enables the mirror mode by default.
+   *  After the local video preview is enabled, if you call to exit the channel, the local preview remains until you call to disable it.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract startPreviewWithoutSourceType(): number;
 

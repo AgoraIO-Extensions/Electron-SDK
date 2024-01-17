@@ -395,11 +395,8 @@ function handleEvent(...[event, data, buffers]: any) {
     _event = _event.replace(/Ex$/g, '');
   }
   // for new IrisType, but this is temporary
-  if (_event.startsWith('_') && _event.indexOf('__') !== -1) {
-    _event = _event.substring(
-      _event.indexOf('_') + 1,
-      _event.lastIndexOf('__')
-    );
+  if (_event.includes('_')) {
+    _event = _event.substring(0, _event.indexOf('_'));
   }
 
   let _data: any;
@@ -441,14 +438,11 @@ export function callIrisApi(funcName: string, params: any): any {
 
     if (funcName.startsWith('MediaEngine_')) {
       switch (funcName) {
-        case 'MediaEngine_pushAudioFrame':
-        case 'MediaEngine_pushCaptureAudioFrame':
-        case 'MediaEngine_pushReverseAudioFrame':
-        case 'MediaEngine_pushDirectAudioFrame':
+        case 'MediaEngine_pushAudioFrame_c71f4ab':
           // frame.buffer
           buffers.push(params.frame.buffer);
           break;
-        case 'MediaEngine_pushVideoFrame':
+        case 'MediaEngine_pushVideoFrame_4e544e2':
           // frame.buffer
           buffers.push(params.frame.buffer);
           // frame.eglContext
@@ -460,7 +454,7 @@ export function callIrisApi(funcName: string, params: any): any {
           // frame.d3d11_texture_2d
           buffers.push(Buffer.from(''));
           break;
-        case 'MediaEngine_pushEncodedVideoImage':
+        case 'MediaEngine_pushEncodedVideoImage_e71452b':
           // imageBuffer
           buffers.push(params.imageBuffer);
           break;
@@ -484,10 +478,10 @@ export function callIrisApi(funcName: string, params: any): any {
       };
     } else if (funcName.startsWith('RtcEngine_')) {
       switch (funcName) {
-        case 'RtcEngine_initialize':
+        case 'RtcEngine_initialize_0320339':
           AgoraRtcNg.InitializeEnv();
           break;
-        case 'RtcEngine_release':
+        case 'RtcEngine_release_5039d15':
           AgoraRtcNg.CallApi(
             funcName,
             JSON.stringify(params),
@@ -496,22 +490,22 @@ export function callIrisApi(funcName: string, params: any): any {
           );
           AgoraRtcNg.ReleaseEnv();
           return;
-        case 'RtcEngine_sendMetaData':
+        case 'RtcEngine_sendMetaData_c58275f':
           // metadata.buffer
           buffers.push(params.metadata.buffer);
           break;
-        case 'RtcEngine_sendStreamMessage':
-        case 'RtcEngine_sendStreamMessageEx':
+        case 'RtcEngine_sendStreamMessage_8715a45':
+        case 'RtcEngineEx_sendStreamMessageEx_0c34857':
           // data
           buffers.push(params.data);
           break;
-        case 'RtcEngine_destroyMediaPlayer':
+        case 'RtcEngine_destroyMediaPlayer_328a49b':
           params.mediaPlayerId = params.media_player.getMediaPlayerId();
           params.toJSON = function () {
             return { playerId: params.mediaPlayerId };
           };
           break;
-        case 'RtcEngine_destroyMediaRecorder':
+        case 'RtcEngine_destroyMediaRecorder_95cdef5':
           // @ts-ignore
           params.nativeHandle = (
             params.mediaRecorder as MediaRecorderInternal

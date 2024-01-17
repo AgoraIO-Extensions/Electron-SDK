@@ -39,14 +39,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@agoraio-extensions/terra_shared_configs@git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=ac9ad3fb2497988e3c68178648790ae80959851e":
+"@agoraio-extensions/terra_shared_configs@git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=0b3318299a385dfa914e14e594e1301ddda81777":
   version: 1.0.2
-  resolution: "@agoraio-extensions/terra_shared_configs@git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=ac9ad3fb2497988e3c68178648790ae80959851e"
+  resolution: "@agoraio-extensions/terra_shared_configs@git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=0b3318299a385dfa914e14e594e1301ddda81777"
   dependencies:
     "@agoraio-extensions/cxx-parser": "git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=cxx-parser"
     "@agoraio-extensions/terra-core": "git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=terra-core"
     mustache: "npm:^4.2.0"
-  checksum: 0756ccbb58f543071a67d893640c1973f406ad37722bc2222c326dc66ccee7280e4829e854502ff672f1653e57552f42b165a33e9367baf50a28184dd0d28091
+  checksum: 78884794e9f4063441a08997cc7a0f343ec39b8e5bebb803c58a8aced26f0cdee488368cb4e0439f95436ca529983f0d3c495a2bd2f5ea5beaa4cad3856551cc
   languageName: node
   linkType: hard
 
@@ -482,7 +482,7 @@ __metadata:
     "@agoraio-extensions/cxx-parser": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=cxx-parser"
     "@agoraio-extensions/terra": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=terra"
     "@agoraio-extensions/terra-core": "git@github.com:AgoraIO-Extensions/terra.git#commit=d6ec3a950d800ebf92dcabca19c9c5b5831431a0&workspace=terra-core"
-    "@agoraio-extensions/terra_shared_configs": "git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=ac9ad3fb2497988e3c68178648790ae80959851e"
+    "@agoraio-extensions/terra_shared_configs": "git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=0b3318299a385dfa914e14e594e1301ddda81777"
     "@types/js-yaml": "npm:^4.0.8"
     "@types/node": "npm:^20.6.0"
     js-yaml: "npm:^4.1.0"

@@ -558,12 +558,34 @@ export abstract class IMediaPlayer {
   abstract setSoundPositionParams(pan: number, gain: number): number;
 
   /**
-   * @ignore
+   * Sets the private options for the media player.
+   *
+   * The media player supports setting private options by key and value. Under normal circumstances, you do not need to know the private option settings, and just use the default option settings.
+   *  Ensure that you call this method before open.
+   *  If you need to push streams with SEI into the CDN, call setPlayerOptionInInt ("sei_data_with_uuid", 1); otherwise, the loss of SEI might occurs.
+   *
+   * @param key The key of the option.
+   * @param value The value of the key.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract setPlayerOptionInInt(key: string, value: number): number;
 
   /**
-   * @ignore
+   * Sets the private options for the media player.
+   *
+   * The media player supports setting private options by key and value. Under normal circumstances, you do not need to know the private option settings, and just use the default option settings.
+   *  Ensure that you call this method before open.
+   *  If you need to push streams with SEI into the CDN, call setPlayerOptionInInt ("sei_data_with_uuid", 1); otherwise, the loss of SEI might occurs.
+   *
+   * @param key The key of the option.
+   * @param value The value of the key.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract setPlayerOptionInString(key: string, value: string): number;
 }
