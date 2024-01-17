@@ -24,10 +24,6 @@ export class AudioDeviceManagerInternal extends IAudioDeviceManagerImpl {
     };
   }
 
-  protected override getApiTypeFromGetPlaybackDefaultDevice(): string {
-    return 'AudioDeviceManager_getPlaybackDefaultDevice';
-  }
-
   override getPlaybackDefaultDevice(): AudioDeviceInfo {
     const apiType = this.getApiTypeFromGetPlaybackDefaultDevice();
     const jsonParams = {};
@@ -36,10 +32,6 @@ export class AudioDeviceManagerInternal extends IAudioDeviceManagerImpl {
       deviceId: jsonResults.deviceId,
       deviceName: jsonResults.deviceName,
     };
-  }
-
-  protected override getApiTypeFromGetRecordingDefaultDevice(): string {
-    return 'AudioDeviceManager_getRecordingDefaultDevice';
   }
 
   override getRecordingDefaultDevice(): AudioDeviceInfo {

@@ -194,7 +194,7 @@ export class IMusicPlayerImpl extends IMediaPlayerImpl implements IMusicPlayer {
     songCode: number,
     startPos: number = 0
   ): string {
-    return '';
+    return 'MusicPlayer_openWithSongCode';
   }
 }
 
@@ -396,7 +396,7 @@ export class IMusicContentCenterImpl implements IMusicContentCenter {
   }
 
   protected getApiTypeFromPreload(songCode: number): string {
-    return '';
+    return 'MusicContentCenter_preload';
   }
 
   removeCache(songCode: number): number {

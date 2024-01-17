@@ -539,7 +539,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     observer: IAudioPcmFrameSink,
     mode: RawAudioFrameOpModeType = RawAudioFrameOpModeType.RawAudioFrameOpModeReadOnly
   ): string {
-    return '';
+    return 'MediaPlayer_registerAudioFrameObserver';
   }
 
   unregisterAudioFrameObserver(observer: IAudioPcmFrameSink): number {
@@ -575,7 +575,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
   protected getApiTypeFromRegisterVideoFrameObserver(
     observer: IMediaPlayerVideoFrameObserver
   ): string {
-    return '';
+    return 'MediaPlayer_registerVideoFrameObserver';
   }
 
   unregisterVideoFrameObserver(
@@ -595,7 +595,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
   protected getApiTypeFromUnregisterVideoFrameObserver(
     observer: IMediaPlayerVideoFrameObserver
   ): string {
-    return '';
+    return 'MediaPlayer_unregisterVideoFrameObserver';
   }
 
   registerMediaPlayerAudioSpectrumObserver(
@@ -958,7 +958,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     key: string,
     value: number
   ): string {
-    return '';
+    return 'MediaPlayer_setPlayerOptionInInt';
   }
 
   setPlayerOptionInString(key: string, value: string): number {
@@ -981,7 +981,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     key: string,
     value: string
   ): string {
-    return '';
+    return 'MediaPlayer_setPlayerOptionInString';
   }
 }
 

@@ -425,7 +425,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
   }
 
   protected getApiTypeFromGetPlaybackDefaultDevice(): string {
-    return '';
+    return 'AudioDeviceManager_getPlaybackDefaultDevice';
   }
 
   getRecordingDefaultDevice(): AudioDeviceInfo {
@@ -436,7 +436,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
   }
 
   protected getApiTypeFromGetRecordingDefaultDevice(): string {
-    return '';
+    return 'AudioDeviceManager_getRecordingDefaultDevice';
   }
 }
 

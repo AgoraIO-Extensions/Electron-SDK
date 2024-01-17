@@ -390,7 +390,7 @@ export class IMediaEngineImpl implements IMediaEngine {
   protected getApiTypeFromUnregisterAudioFrameObserver(
     observer: IAudioFrameObserver
   ): string {
-    return '';
+    return 'MediaEngine_unregisterAudioFrameObserver';
   }
 
   unregisterVideoFrameObserver(observer: IVideoFrameObserver): number {
@@ -408,7 +408,7 @@ export class IMediaEngineImpl implements IMediaEngine {
   protected getApiTypeFromUnregisterVideoFrameObserver(
     observer: IVideoFrameObserver
   ): string {
-    return '';
+    return 'MediaEngine_unregisterVideoFrameObserver';
   }
 
   unregisterVideoEncodedFrameObserver(
@@ -429,7 +429,7 @@ export class IMediaEngineImpl implements IMediaEngine {
   protected getApiTypeFromUnregisterVideoEncodedFrameObserver(
     observer: IVideoEncodedFrameObserver
   ): string {
-    return '';
+    return 'MediaEngine_unregisterVideoEncodedFrameObserver';
   }
 }
 

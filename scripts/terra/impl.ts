@@ -93,6 +93,17 @@ export function impl(parseResult: ParseResult) {
             returnParam: '',
             ...method.user_data,
           };
+          if (!clazzMethodUserData.IrisApiIdParser) {
+            clazzMethodUserData.IrisApiIdParser = {
+              key: `${method.parent_name.replace(new RegExp('^I(.*)'), '$1')}_${
+                method.name
+              }`,
+              value: `${method.parent_name.replace(
+                new RegExp('^I(.*)'),
+                '$1'
+              )}_${method.name}`,
+            };
+          }
           method.return_type.name = convertToCamelCase(method.return_type.name);
           method.asMemberFunction().parameters.map((param) => {
             let variableUserData: VariableUserData = {
