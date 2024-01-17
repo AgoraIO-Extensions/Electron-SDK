@@ -490,7 +490,7 @@ export function callIrisApi(funcName: string, params: any): any {
           );
           AgoraRtcNg.ReleaseEnv();
           return;
-        case 'RtcEngine_sendMetaData_c58275f':
+        case 'RtcEngine_sendMetaData':
           // metadata.buffer
           buffers.push(params.metadata.buffer);
           break;

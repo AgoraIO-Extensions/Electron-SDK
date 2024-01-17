@@ -708,26 +708,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return 'RtcEngine_sendMetaData';
   }
 
-  protected override getApiTypeFromGetExtensionProperty(
-    provider: string,
-    extension: string,
-    key: string,
-    bufLen: number,
-    type: MediaSourceType = MediaSourceType.UnknownMediaSource
-  ): string {
-    return 'RtcEngine_getExtensionProperty';
-  }
-
-  protected override getApiTypeFromSetExtensionProperty(
-    provider: string,
-    extension: string,
-    key: string,
-    value: string,
-    type: MediaSourceType = MediaSourceType.UnknownMediaSource
-  ): string {
-    return 'RtcEngine_setExtensionProperty';
-  }
-
   protected override getApiTypeFromEnableExtension(
     provider: string,
     extension: string,
