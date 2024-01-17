@@ -110,7 +110,7 @@ export enum AudioRoute {
   /**
    * @ignore
    */
-  RouteHeadsetbluetooth = 5,
+  RouteBluetoothDeviceHfp = 5,
   /**
    * 7: The audio route is a USB peripheral device. (For macOS only)
    */
@@ -130,7 +130,7 @@ export enum AudioRoute {
   /**
    * @ignore
    */
-  RouteBluetoothSpeaker = 10,
+  RouteBluetoothDeviceA2dp = 10,
 }
 
 /**
