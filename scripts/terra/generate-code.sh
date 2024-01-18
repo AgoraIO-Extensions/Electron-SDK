@@ -9,6 +9,7 @@ PROJECT_ROOT=$(realpath ${MY_PATH}/../..)
 touch yarn.lock
 rm -rf node_modules
 rm -rf .terra
+YARN_ENABLE_IMMUTABLE_INSTALLS=false
 yarn
 rm yarn.lock
 
