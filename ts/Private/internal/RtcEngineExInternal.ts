@@ -38,7 +38,6 @@ import {
   IRtcEngineEventHandler,
   IVideoDeviceManager,
   LeaveChannelOptions,
-  Metadata,
   MetadataType,
   RtcEngineContext,
   SDKBuildInfo,
@@ -693,21 +692,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     });
   }
 
-  protected override getApiTypeFromGetNativeHandle(): string {
-    return 'RtcEngine_getNativeHandle';
-  }
-
-  protected override getApiTypeFromSetMaxMetadataSize(size: number): string {
-    return 'RtcEngine_setMaxMetadataSize';
-  }
-
-  protected override getApiTypeFromSendMetaData(
-    metadata: Metadata,
-    sourceType: VideoSourceType
-  ): string {
-    return 'RtcEngine_sendMetaData';
-  }
-
   protected override getApiTypeFromEnableExtension(
     provider: string,
     extension: string,
@@ -722,9 +706,5 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     scenario: AudioScenarioType = AudioScenarioType.AudioScenarioDefault
   ): string {
     return 'RtcEngine_setAudioProfile_d944543';
-  }
-
-  protected override getApiTypeFromRelease(sync: boolean): string {
-    return 'RtcEngine_release';
   }
 }
