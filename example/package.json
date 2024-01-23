@@ -32,8 +32,14 @@
       "gatekeeperAssess": false,
       "hardenedRuntime": true,
       "identity": null,
+      "mergeASARs": false,
       "target": [
-        "zip"
+        {
+          "target": "zip",
+          "arch": [
+            "universal"
+          ]
+        }
       ],
       "type": "distribution"
     },
