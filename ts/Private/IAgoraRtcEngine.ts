@@ -5023,15 +5023,7 @@ export abstract class IRtcEngine {
   abstract adjustUserPlaybackSignalVolume(uid: number, volume: number): number;
 
   /**
-   * Sets the fallback option for the published video stream based on the network conditions.
-   *
-   * An unstable network affects the audio and video quality in a video call or interactive live video streaming. If option is set as StreamFallbackOptionAudioOnly (2), the SDK disables the upstream video but enables audio only when the network conditions deteriorate and cannot support both video and audio. The SDK monitors the network quality and restores the video stream when the network conditions improve. When the published video stream falls back to audio-only or when the audio-only stream switches back to the video, the SDK triggers the callback.
-   *  In stream push scenarios, set the local push fallback to StreamFallbackOptionAudioOnly (2) may result n some delay for remote CDN users to hear the sound. In this case, Agora recommends that you do not enable this option.
-   *  Ensure that you call this method before joining a channel.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
+   * @ignore
    */
   abstract setLocalPublishFallbackOption(option: StreamFallbackOptions): number;
 

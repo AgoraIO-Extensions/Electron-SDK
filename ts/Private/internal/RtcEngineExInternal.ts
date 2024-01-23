@@ -3,13 +3,8 @@
 import { AgoraEnv, logError } from '../../Utils';
 import {
   AudioEncodedFrameObserverConfig,
-  AudioProfileType,
-  AudioRecordingConfiguration,
-  AudioScenarioType,
   ClientRoleOptions,
   ClientRoleType,
-  DataStreamConfig,
-  EchoTestConfiguration,
   ErrorCodeType,
   IAudioEncodedFrameObserver,
   RecorderStreamInfo,
@@ -17,11 +12,9 @@ import {
   SimulcastStreamMode,
   VideoCanvas,
   VideoMirrorModeType,
-  WatermarkOptions,
 } from '../AgoraBase';
 import {
   IAudioSpectrumObserver,
-  MediaSourceType,
   RenderModeType,
   VideoSourceType,
 } from '../AgoraMediaBase';
@@ -333,7 +326,9 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     if (AgoraEnv.AgoraRendererManager) {
       AgoraEnv.AgoraRendererManager.defaultChannelId = channelId;
     }
-    return 'RtcEngine_joinChannel_cdbb747';
+    return options === undefined
+      ? 'RtcEngine_joinChannel_f097389'
+      : 'RtcEngine_joinChannel_cdbb747';
   }
 
   protected override getApiTypeFromLeaveChannel(
@@ -353,41 +348,8 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       : 'RtcEngine_setClientRole_b46cc48';
   }
 
-  protected override getApiTypeFromStartEchoTest(
-    config: EchoTestConfiguration
-  ): string {
-    return 'RtcEngine_startEchoTest_16140d7';
-  }
-
-  protected override getApiTypeFromStartPreview(
-    sourceType: VideoSourceType = VideoSourceType.VideoSourceCameraPrimary
-  ): string {
-    return 'RtcEngine_startPreview_4fd718e';
-  }
-
   protected override getApiTypeFromStartPreviewWithoutSourceType(): string {
     return 'RtcEngine_startPreview';
-  }
-
-  protected override getApiTypeFromStopPreview(
-    sourceType: VideoSourceType = VideoSourceType.VideoSourceCameraPrimary
-  ): string {
-    return 'RtcEngine_stopPreview_4fd718e';
-  }
-
-  protected override getApiTypeFromStartAudioRecording(
-    config: AudioRecordingConfiguration
-  ): string {
-    return 'RtcEngine_startAudioRecording_e32bb3b';
-  }
-
-  protected override getApiTypeFromStartAudioMixing(
-    filePath: string,
-    loopback: boolean,
-    cycle: number,
-    startPos: number = 0
-  ): string {
-    return 'RtcEngine_startAudioMixing_1ee1b1e';
   }
 
   protected override getApiTypeFromEnableDualStreamMode(
@@ -408,26 +370,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       : 'RtcEngine_setDualStreamMode_b3a4f6c';
   }
 
-  protected override getApiTypeFromLeaveChannelEx(
-    connection: RtcConnection,
-    options?: LeaveChannelOptions
-  ): string {
-    return 'RtcEngineEx_leaveChannelEx_b03ee9a';
-  }
-
-  protected override getApiTypeFromCreateDataStream(
-    config: DataStreamConfig
-  ): string {
-    return 'RtcEngine_createDataStream_5862815';
-  }
-
-  protected override getApiTypeFromAddVideoWatermark(
-    watermarkUrl: string,
-    options: WatermarkOptions
-  ): string {
-    return 'RtcEngine_addVideoWatermark_7480410';
-  }
-
   protected override getApiTypeFromJoinChannelWithUserAccount(
     token: string,
     channelId: string,
@@ -440,13 +382,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return options === undefined
       ? 'RtcEngine_joinChannelWithUserAccount_0e4f59e'
       : 'RtcEngine_joinChannelWithUserAccount_4685af9';
-  }
-
-  protected override getApiTypeFromCreateDataStreamEx(
-    config: DataStreamConfig,
-    connection: RtcConnection
-  ): string {
-    return 'RtcEngineEx_createDataStreamEx_9f641b6';
   }
 
   protected override getApiTypeFromStartScreenCaptureBySourceType(
@@ -690,21 +625,5 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       channelId,
       uid,
     });
-  }
-
-  protected override getApiTypeFromEnableExtension(
-    provider: string,
-    extension: string,
-    enable: boolean = true,
-    type: MediaSourceType = MediaSourceType.UnknownMediaSource
-  ): string {
-    return 'RtcEngine_enableExtension_0b60a2c';
-  }
-
-  protected override getApiTypeFromSetAudioProfile(
-    profile: AudioProfileType,
-    scenario: AudioScenarioType = AudioScenarioType.AudioScenarioDefault
-  ): string {
-    return 'RtcEngine_setAudioProfile_d944543';
   }
 }
