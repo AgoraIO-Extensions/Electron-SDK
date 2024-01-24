@@ -163,17 +163,11 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
         }
       } else {
         std::smatch output;
-        std::regex pattern = std::regex(
-            "^.*(Observer|Handler|Callback|Receiver|DirectCdnStreaming)$");
+        std::regex pattern =
+            std::regex("^.*_.*((EventHandler|Observer|startDirectCdnStreaming|"
+                       "Source|VideoFrameRenderer)(_[a-zA-Z0-9]*)?)$");
 
-        std::string _funcName = "";
-        size_t first_ = funcName.find('_');
-        size_t second_ = funcName.find('_', first_ + 1);
-        if (first_ != std::string::npos && second_ != std::string::npos) {
-          _funcName = funcName.substr(first_ + 1, second_ - first_ - 1);
-        }
-
-        if (std::regex_match(_funcName, output, pattern)) {
+        if (std::regex_match(funcName, output, pattern)) {
           bufferCount = 1;
           buffer.resize(bufferCount);
           buffer[0] = agoraElectronBridge->_iris_rtc_event_handler.get();
