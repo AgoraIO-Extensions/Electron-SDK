@@ -32,7 +32,6 @@
       "gatekeeperAssess": false,
       "hardenedRuntime": true,
       "identity": null,
-      "mergeASARs": false,
       "target": [
         {
           "target": "zip",
