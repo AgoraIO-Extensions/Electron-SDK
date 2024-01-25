@@ -5,6 +5,13 @@ set -x
 MY_PATH=$(realpath $(dirname "$0"))
 PROJECT_ROOT=$(realpath ${MY_PATH}/../..)
 
+# treated as a completely separate project (not even a workspace), create an empty yarn.lock file in it.
+touch yarn.lock
+rm -rf node_modules
+rm -rf .terra
+yarn install
+rm yarn.lock
+
 npm exec terra -- run \
     --config ${PROJECT_ROOT}/scripts/terra/code_config.yaml  \
     --output-dir=${PROJECT_ROOT}/ts/Private
