@@ -1,5 +1,12 @@
 
 
+## [4.2.6-build.5-dev.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.3-rc.1...v4.2.6-build.5-dev.1) (2024-01-25)
+
+
+### Bug Fixes
+
+* set preserveDrawingBuffer true to fix canvas.toDataURL can not work ([7452bb0](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/7452bb0b3a08040266f0d90c9f0e5ecfc475f751))
+
 ## [4.2.6-dev.5-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.3-rc.1...v4.2.6-dev.5-rc.1) (2024-01-25)
 
 
