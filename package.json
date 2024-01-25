@@ -136,7 +136,7 @@
     "yuv-canvas": "1.2.6"
   },
   "agora_electron": {
-    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.2.6.4-build.1_DCG_Windows_Video_20240115_1044.zip",
-    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.2.6.4-build.1_DCG_Mac_Video_20240115_1044.zip"
+    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.2.6.5-dev.1_DCG_Windows_Video_20240125_1002.zip",
+    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.2.6.5-dev.1_DCG_Mac_Video_20240125_1002.zip"
   }
 }
