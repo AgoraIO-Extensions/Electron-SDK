@@ -70,67 +70,67 @@ export enum MediaPlayerState {
 }
 
 /**
- * Error codes of the media player.
+ * @ignore
  */
 export enum MediaPlayerError {
   /**
-   * 0: No error.
+   * @ignore
    */
   PlayerErrorNone = 0,
   /**
-   * -1: Invalid arguments.
+   * @ignore
    */
   PlayerErrorInvalidArguments = -1,
   /**
-   * -2: Internal error.
+   * @ignore
    */
   PlayerErrorInternal = -2,
   /**
-   * -3: No resource.
+   * @ignore
    */
   PlayerErrorNoResource = -3,
   /**
-   * -4: Invalid media resource.
+   * @ignore
    */
   PlayerErrorInvalidMediaSource = -4,
   /**
-   * -5: The media stream type is unknown.
+   * @ignore
    */
   PlayerErrorUnknownStreamType = -5,
   /**
-   * -6: The object is not initialized.
+   * @ignore
    */
   PlayerErrorObjNotInitialized = -6,
   /**
-   * -7: The codec is not supported.
+   * @ignore
    */
   PlayerErrorCodecNotSupported = -7,
   /**
-   * -8: Invalid renderer.
+   * @ignore
    */
   PlayerErrorVideoRenderFailed = -8,
   /**
-   * -9: An error with the internal state of the player occurs.
+   * @ignore
    */
   PlayerErrorInvalidState = -9,
   /**
-   * -10: The URL of the media resource cannot be found.
+   * @ignore
    */
   PlayerErrorUrlNotFound = -10,
   /**
-   * -11: Invalid connection between the player and the Agora Server.
+   * @ignore
    */
   PlayerErrorInvalidConnectionState = -11,
   /**
-   * -12: The playback buffer is insufficient.
+   * @ignore
    */
   PlayerErrorSrcBufferUnderflow = -12,
   /**
-   * -13: The playback is interrupted.
+   * @ignore
    */
   PlayerErrorInterrupted = -13,
   /**
-   * -14: The SDK does not support the method being called.
+   * @ignore
    */
   PlayerErrorNotSupported = -14,
   /**
@@ -142,7 +142,7 @@ export enum MediaPlayerError {
    */
   PlayerErrorIpExpired = -16,
   /**
-   * -17: An unknown error.
+   * @ignore
    */
   PlayerErrorUnknown = -17,
 }
@@ -370,7 +370,7 @@ export class CacheStatistics {
  */
 export class PlayerUpdatedInfo {
   /**
-   * The ID of a media player.
+   * @ignore
    */
   playerId?: string;
   /**
@@ -378,7 +378,7 @@ export class PlayerUpdatedInfo {
    */
   deviceId?: string;
   /**
-   * The statistics about the media file being cached. If you call the openWithMediaSource method and set enableCache as true, the statistics about the media file being cached is updated every second after the media file is played. See CacheStatistics.
+   * @ignore
    */
   cacheStatistics?: CacheStatistics;
 }
@@ -411,7 +411,7 @@ export class MediaSource {
    */
   enableCache?: boolean;
   /**
-   * @ignore
+   * Whether to allow the selection of different audio tracks when playing this media file: true : Allow to select different audio tracks. false : (Default) Do not allow to select different audio tracks. If you need to set different audio tracks for local playback and publishing to the channel, you need to set this parameter to true, and then call the selectMultiAudioTrack method to select the audio track.
    */
   enableMultiAudioTrack?: boolean;
   /**

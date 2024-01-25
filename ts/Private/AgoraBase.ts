@@ -867,7 +867,7 @@ export enum VideoCodecType {
    */
   VideoCodecVp8 = 1,
   /**
-   * 2: (Default) Standard H.264.
+   * 2: Standard H.264.
    */
   VideoCodecH264 = 2,
   /**
@@ -1337,7 +1337,7 @@ export class VideoEncoderConfiguration {
    */
   frameRate?: number;
   /**
-   * The encoding bitrate (Kbps) of the video.
+   * The encoding bitrate (Kbps) of the video. This parameter does not need to be set; keeping the default value STANDARD_BITRATE is sufficient. The SDK automatically matches the most suitable bitrate based on the video resolution and frame rate you have set. For the correspondence between video resolution, frame rate, and bitrate, please refer to. STANDARD_BITRATE (0): (Recommended) Standard bitrate mode. COMPATIBLE_BITRATE (-1): Adaptive bitrate mode. In general, Agora suggests that you do not use this value.
    */
   bitrate?: number;
   /**
@@ -1383,7 +1383,7 @@ export class DataStreamConfig {
  */
 export enum SimulcastStreamMode {
   /**
-   * -1: By default, the low-quality video steam is not sent; the SDK automatically switches to low-quality video stream mode after it receives a request to subscribe to a low-quality video stream.
+   * -1: By default, do not send the low-quality video stream until a subscription request for the low-quality video stream is received from the receiving end, then automatically start sending low-quality video stream.
    */
   AutoSimulcastStream = -1,
   /**
@@ -1463,7 +1463,7 @@ export class WatermarkRatio {
  */
 export class WatermarkOptions {
   /**
-   * Reserved for future use.
+   * Is the watermark visible in the local preview view? true : (Default) The watermark is visible in the local preview view. false : The watermark is not visible in the local preview view.
    */
   visibleInPreview?: boolean;
   /**
@@ -1969,19 +1969,19 @@ export enum LocalAudioStreamState {
 }
 
 /**
- * Local audio state error codes.
+ * @ignore
  */
 export enum LocalAudioStreamError {
   /**
-   * 0: The local audio is normal.
+   * @ignore
    */
   LocalAudioStreamErrorOk = 0,
   /**
-   * 1: No specified reason for the local audio failure. Remind your users to try to rejoin the channel.
+   * @ignore
    */
   LocalAudioStreamErrorFailure = 1,
   /**
-   * 2: No permission to use the local audio capturing device. Remind your users to grant permission. Deprecated: This enumerator is deprecated. Please use RecordAudio in the onPermissionError callback instead.
+   * @ignore
    */
   LocalAudioStreamErrorDeviceNoPermission = 2,
   /**
@@ -1989,19 +1989,19 @@ export enum LocalAudioStreamError {
    */
   LocalAudioStreamErrorDeviceBusy = 3,
   /**
-   * 4: The local audio capture fails.
+   * @ignore
    */
   LocalAudioStreamErrorRecordFailure = 4,
   /**
-   * 5: The local audio encoding fails.
+   * @ignore
    */
   LocalAudioStreamErrorEncodeFailure = 5,
   /**
-   * 6: (Windows only) The application cannot find the local audio capture device. Remind your users to check whether the microphone is connected to the device properly in the control plane of the device or if the microphone is working properly.
+   * @ignore
    */
   LocalAudioStreamErrorNoRecordingDevice = 6,
   /**
-   * 7: (Windows only) The application cannot find the local audio playback device. Remind your users to check whether the speaker is connected to the device properly in the control plane of the device or if the speaker is working properly.
+   * @ignore
    */
   LocalAudioStreamErrorNoPlayoutDevice = 7,
   /**
@@ -2009,11 +2009,11 @@ export enum LocalAudioStreamError {
    */
   LocalAudioStreamErrorInterrupted = 8,
   /**
-   * 9: (Windows only) The ID of the local audio-capture device is invalid. Check the audio capture device ID.
+   * @ignore
    */
   LocalAudioStreamErrorRecordInvalidId = 9,
   /**
-   * 10: (Windows only) The ID of the local audio-playback device is invalid. Check the audio playback device ID.
+   * @ignore
    */
   LocalAudioStreamErrorPlayoutInvalidId = 10,
 }
@@ -2041,31 +2041,31 @@ export enum LocalVideoStreamState {
 }
 
 /**
- * Local video state error codes.
+ * @ignore
  */
 export enum LocalVideoStreamError {
   /**
-   * 0: The local video is normal.
+   * @ignore
    */
   LocalVideoStreamErrorOk = 0,
   /**
-   * 1: No specified reason for the local video failure.
+   * @ignore
    */
   LocalVideoStreamErrorFailure = 1,
   /**
-   * 2: No permission to use the local video capturing device. Remind the user to grant permissions and rejoin the channel. Deprecated: This enumerator is deprecated. Please use CAMERA in the onPermissionError callback instead.
+   * @ignore
    */
   LocalVideoStreamErrorDeviceNoPermission = 2,
   /**
-   * 3: The local video capturing device is in use. Remind the user to check whether another application occupies the camera.
+   * @ignore
    */
   LocalVideoStreamErrorDeviceBusy = 3,
   /**
-   * 4: The local video capture fails. Remind your user to check whether the video capture device is working properly, whether the camera is occupied by another application, or try to rejoin the channel.
+   * @ignore
    */
   LocalVideoStreamErrorCaptureFailure = 4,
   /**
-   * 5: The local video encoding fails.
+   * @ignore
    */
   LocalVideoStreamErrorEncodeFailure = 5,
   /**
@@ -2077,15 +2077,15 @@ export enum LocalVideoStreamError {
    */
   LocalVideoStreamErrorCaptureMultipleForegroundApps = 7,
   /**
-   * 8: Fails to find a local video capture device. Remind the user to check whether the camera is connected to the device properly or the camera is working properly, and then to rejoin the channel.
+   * @ignore
    */
   LocalVideoStreamErrorDeviceNotFound = 8,
   /**
-   * 9: (macOS only) The video capture device currently in use is disconnected (such as being unplugged).
+   * @ignore
    */
   LocalVideoStreamErrorDeviceDisconnected = 9,
   /**
-   * 10: (macOS and Windows only) The SDK cannot find the video device in the video device list. Check whether the ID of the video device is valid.
+   * @ignore
    */
   LocalVideoStreamErrorDeviceInvalidId = 10,
   /**
@@ -2097,22 +2097,19 @@ export enum LocalVideoStreamError {
    */
   LocalVideoStreamErrorDeviceFatalError = 15,
   /**
-   * 101: The current video capture device is unavailable due to excessive system pressure.
+   * @ignore
    */
   LocalVideoStreamErrorDeviceSystemPressure = 101,
   /**
-   * 11: (macOS only) The shared window is minimized when you call startScreenCaptureByWindowId to share a window. The SDK cannot share a minimized window. You can cancel the minimization of this window at the application layer, for example by maximizing this window.
+   * @ignore
    */
   LocalVideoStreamErrorScreenCaptureWindowMinimized = 11,
   /**
-   * 12: (macOS and Windows only) The error code indicates that a window shared by the window ID has been closed or a full-screen window shared by the window ID has exited full-screen mode. After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a black screen, Agora recommends that you immediately stop screen sharing. Common scenarios reporting this error code:
-   *  When the local user closes the shared window, the SDK reports this error code.
-   *  The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After the user exits full-screen mode, the SDK reports this error code.
-   *  The local user watches a web video or reads a web document in full-screen mode first, and then shares the window of the web video or document. After the user exits full-screen mode, the SDK reports this error code.
+   * @ignore
    */
   LocalVideoStreamErrorScreenCaptureWindowClosed = 12,
   /**
-   * 13: (Windows only) The window being shared is overlapped by another window, so the overlapped area is blacked out by the SDK during window sharing.
+   * @ignore
    */
   LocalVideoStreamErrorScreenCaptureWindowOccluded = 13,
   /**
@@ -2284,11 +2281,11 @@ export enum RemoteVideoStateReason {
    */
   RemoteVideoStateReasonRemoteOffline = 7,
   /**
-   * @ignore
+   * 8: The remote audio-and-video stream falls back to the audio-only stream due to poor network conditions.
    */
   RemoteVideoStateReasonAudioFallback = 8,
   /**
-   * @ignore
+   * 9: The remote audio-only stream switches back to the audio-and-video stream after the network conditions improve.
    */
   RemoteVideoStateReasonAudioFallbackRecovery = 9,
   /**
@@ -2544,7 +2541,7 @@ export class LocalAudioStats {
    */
   txPacketLossRate?: number;
   /**
-   * The delay of the audio device module when playing or recording audio.
+   * The audio device module delay (ms) when playing or recording audio.
    */
   audioDeviceDelay?: number;
 }
@@ -2582,63 +2579,63 @@ export enum RtmpStreamPublishState {
 }
 
 /**
- * Error codes of the RTMP or RTMPS streaming.
+ * @ignore
  */
 export enum RtmpStreamPublishErrorType {
   /**
-   * 0: The RTMP or RTMPS streaming has not started or has ended.
+   * @ignore
    */
   RtmpStreamPublishErrorOk = 0,
   /**
-   * 1: Invalid argument used. Check the parameter setting.
+   * @ignore
    */
   RtmpStreamPublishErrorInvalidArgument = 1,
   /**
-   * 2: The RTMP or RTMPS streaming is encrypted and cannot be published.
+   * @ignore
    */
   RtmpStreamPublishErrorEncryptedStreamNotAllowed = 2,
   /**
-   * 3: Timeout for the RTMP or RTMPS streaming.
+   * @ignore
    */
   RtmpStreamPublishErrorConnectionTimeout = 3,
   /**
-   * 4: An error occurs in Agora's streaming server.
+   * @ignore
    */
   RtmpStreamPublishErrorInternalServerError = 4,
   /**
-   * 5: An error occurs in the CDN server.
+   * @ignore
    */
   RtmpStreamPublishErrorRtmpServerError = 5,
   /**
-   * 6: The RTMP or RTMPS streaming publishes too frequently.
+   * @ignore
    */
   RtmpStreamPublishErrorTooOften = 6,
   /**
-   * 7: The host publishes more than 10 URLs. Delete the unnecessary URLs before adding new ones.
+   * @ignore
    */
   RtmpStreamPublishErrorReachLimit = 7,
   /**
-   * 8: The host manipulates other hosts' URLs. For example, the host updates or stops other hosts' streams. Check your app logic.
+   * @ignore
    */
   RtmpStreamPublishErrorNotAuthorized = 8,
   /**
-   * 9: Agora's server fails to find the RTMP or RTMPS streaming.
+   * @ignore
    */
   RtmpStreamPublishErrorStreamNotFound = 9,
   /**
-   * 10: The format of the RTMP or RTMPS streaming URL is not supported. Check whether the URL format is correct.
+   * @ignore
    */
   RtmpStreamPublishErrorFormatNotSupported = 10,
   /**
-   * 11: The user role is not host, so the user cannot use the CDN live streaming function. Check your application code logic.
+   * @ignore
    */
   RtmpStreamPublishErrorNotBroadcaster = 11,
   /**
-   * 13: The updateRtmpTranscoding method is called to update the transcoding configuration in a scenario where there is streaming without transcoding. Check your application code logic.
+   * @ignore
    */
   RtmpStreamPublishErrorTranscodingNoMixStream = 13,
   /**
-   * 14: Errors occurred in the host's network.
+   * @ignore
    */
   RtmpStreamPublishErrorNetDown = 14,
   /**
@@ -2646,11 +2643,11 @@ export enum RtmpStreamPublishErrorType {
    */
   RtmpStreamPublishErrorInvalidAppid = 15,
   /**
-   * 16: Your project does not have permission to use streaming services. Refer to Media Push to enable the Media Push permission.
+   * @ignore
    */
   RtmpStreamPublishErrorInvalidPrivilege = 16,
   /**
-   * 100: The streaming has been stopped normally. After you stop the Media Push, the SDK returns this value.
+   * @ignore
    */
   RtmpStreamUnpublishErrorOk = 100,
 }
@@ -2688,19 +2685,19 @@ export class RtcImage {
    */
   url?: string;
   /**
-   * The x coordinate (pixel) of the image on the video frame (taking the upper left corner of the video frame as the origin).
+   * The x-coordinate (px) of the image on the video frame (taking the upper left corner of the video frame as the origin).
    */
   x?: number;
   /**
-   * The y coordinate (pixel) of the image on the video frame (taking the upper left corner of the video frame as the origin).
+   * The y-coordinate (px) of the image on the video frame (taking the upper left corner of the video frame as the origin).
    */
   y?: number;
   /**
-   * The width (pixel) of the image on the video frame.
+   * The width (px) of the image on the video frame.
    */
   width?: number;
   /**
-   * The height (pixel) of the image on the video frame.
+   * The height (px) of the image on the video frame.
    */
   height?: number;
   /**
@@ -3377,7 +3374,7 @@ export class VideoCanvas {
    */
   cropArea?: Rectangle;
   /**
-   * (Optional) Whether the receiver enables alpha mask rendering: true : The receiver enables alpha mask rendering. false : (default) The receiver disables alpha mask rendering. Alpha mask rendering can create images with transparent effects and extract portraits from videos. When used in combination with other methods, you can implement effects such as picture-in-picture and watermarking.
+   * (Optional) Whether the receiver enables alpha mask rendering: true : The receiver enables alpha mask rendering. false : (default) The receiver disables alpha mask rendering. Alpha mask rendering can create images with transparent effects and extract portraits from videos. When used in combination with other methods, you can implement effects such as portrait-in-picture and watermarking.
    *  This property applies to macOS only.
    *  The receiver can render alpha channel information only when the sender enables alpha transmission.
    *  To enable alpha transmission,.
@@ -3586,11 +3583,11 @@ export class VirtualBackgroundSource {
    */
   background_source_type?: BackgroundSourceType;
   /**
-   * The type of the custom background image. The color of the custom background image. The format is a hexadecimal integer defined by RGB, without the # sign, such as 0xFFB6C1 for light pink. The default value is 0xFFFFFF, which signifies white. The value range is [0x000000, 0xffffff]. If the value is invalid, the SDK replaces the original background image with a white background image. This parameter takes effect only when the type of the custom background image is BackgroundColor.
+   * The type of the custom background image. The color of the custom background image. The format is a hexadecimal integer defined by RGB, without the # sign, such as 0xFFB6C1 for light pink. The default value is 0xFFFFFF, which signifies white. The value range is [0x000000, 0xffffff]. If the value is invalid, the SDK replaces the original background image with a white background image. This parameter is only applicable to custom backgrounds of the following types: BackgroundColor : The background image is a solid-colored image of the color passed in by the parameter. BackgroundImg : If the image in source has a transparent background, the transparent background will be filled with the color passed in by the parameter.
    */
   color?: number;
   /**
-   * The local absolute path of the custom background image. PNG and JPG formats are supported. If the path is invalid, the SDK replaces the original background image with a white background image. This parameter takes effect only when the type of the custom background image is BackgroundImg.
+   * The local absolute path of the custom background image. Supports PNG, JPG, MP4, AVI, MKV, and FLV formats. If the path is invalid, the SDK will use either the original background image or the solid color image specified by color. This parameter takes effect only when the type of the custom background image is BackgroundImg or BackgroundVideo.
    */
   source?: string;
   /**
@@ -4243,6 +4240,8 @@ export enum ChannelMediaRelayError {
 
 /**
  * The event code of channel media relay.
+ *
+ * Deprecated This class is deprecated.
  */
 export enum ChannelMediaRelayEvent {
   /**
@@ -4638,7 +4637,7 @@ export class EchoTestConfiguration {
    */
   enableAudio?: boolean;
   /**
-   * Whether to enable the video device for the loop test: true : (Default) Enable the video device. To test the video device, set this parameter as true. false : Disable the video device.
+   * Whether to enable the video device for the loop test. Currently, video device loop test is not supported. Please set this parameter to false.
    */
   enableVideo?: boolean;
   /**
@@ -4650,7 +4649,9 @@ export class EchoTestConfiguration {
    */
   channelId?: string;
   /**
-   * The time interval (s) between when you start the call and when the recording plays back. The value range is [2, 10], and the default value is 2.
+   * Set the time interval or delay for returning the results of the audio and video loop test. The value range is [2,10], in seconds, with the default value being 2 seconds.
+   *  For audio loop tests, the test results will be returned according to the time interval you set.
+   *  For video loop tests, the video will be displayed in a short time, after which the delay will gradually increase until it reaches the delay you set.
    */
   intervalInSeconds?: number;
 }
