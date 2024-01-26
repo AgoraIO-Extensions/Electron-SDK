@@ -463,7 +463,7 @@ export class WebGLRenderer extends IRenderer {
             alpha: false,
             antialias: false,
             premultipliedAlpha: true,
-            preserveDrawingBuffer: false,
+            preserveDrawingBuffer: true,
             powerPreference: 'default',
             failIfMajorPerformanceCaveat: false,
           });
