@@ -23,6 +23,7 @@ jobs:
           generate-code: false
           generate-comment: true
           generate-comment-command: |
+            sh prepare.sh
             sh generate-comment.sh
 
       - name: Create pull request
