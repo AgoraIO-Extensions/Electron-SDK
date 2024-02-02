@@ -491,7 +491,7 @@ export default class LocalVideoTranscoder
             };
           })}
           value={videoDeviceId}
-          onValueChange={(value, index) => {
+          onValueChange={(value) => {
             if (videoDeviceId?.indexOf(value) === -1) {
               this.setState(
                 (preState) => {
@@ -503,15 +503,6 @@ export default class LocalVideoTranscoder
                   this.startCameraCapture(value);
                 }
               );
-            } else {
-              this.stopCameraCapture(value);
-              this.setState((preState) => {
-                return {
-                  videoDeviceId: preState.videoDeviceId?.filter(
-                    (v) => v !== value
-                  ),
-                };
-              });
             }
           }}
         />
