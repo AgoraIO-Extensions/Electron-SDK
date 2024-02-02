@@ -503,6 +503,14 @@ export default class LocalVideoTranscoder
                   this.startCameraCapture(value);
                 }
               );
+            } else {
+              this.setState((preState) => {
+                return {
+                  videoDeviceId: preState.videoDeviceId?.filter(
+                    (v) => v !== value
+                  ),
+                };
+              });
             }
           }}
         />
