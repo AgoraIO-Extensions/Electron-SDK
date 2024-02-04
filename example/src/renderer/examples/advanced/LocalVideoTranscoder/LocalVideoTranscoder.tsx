@@ -38,7 +38,7 @@ import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   videoDevices?: VideoDeviceInfo[];
-  videoDeviceId?: string[];
+  selectedVideoDeviceIdList?: string[];
   sources?: ScreenCaptureSourceInfo[];
   targetSources?: ScreenCaptureSourceInfo[];
   url: string;
@@ -65,7 +65,7 @@ export default class LocalVideoTranscoder
       remoteUsers: [],
       startPreview: false,
       videoDevices: [],
-      videoDeviceId: [],
+      selectedVideoDeviceIdList: [],
       sources: [],
       targetSources: undefined,
       url: 'https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov',
@@ -149,7 +149,7 @@ export default class LocalVideoTranscoder
     this.setState(
       {
         videoDevices,
-        videoDeviceId: [deviceId],
+        selectedVideoDeviceIdList: [deviceId],
       },
       () => {
         this.startCameraCapture(deviceId);
@@ -287,9 +287,9 @@ export default class LocalVideoTranscoder
   };
 
   _getVideoSourceTypeCamera = (value: string) => {
-    const { videoDeviceId } = this.state;
+    const { videoDevices } = this.state;
     const index =
-      videoDeviceId?.findIndex((deviceId) => deviceId === value) ?? -1;
+      videoDevices?.findIndex((device) => device.deviceId === value) ?? -1;
     return [
       VideoSourceType.VideoSourceCameraPrimary,
       VideoSourceType.VideoSourceCameraSecondary,
@@ -312,14 +312,15 @@ export default class LocalVideoTranscoder
   };
 
   _generateLocalTranscoderConfiguration = (): LocalTranscoderConfiguration => {
-    const { videoDeviceId, targetSources, open, imageUrl } = this.state;
+    const { selectedVideoDeviceIdList, targetSources, open, imageUrl } =
+      this.state;
     const max_width = 1080,
       max_height = 720,
       width = 300,
       height = 300;
 
     const streams: TranscodingVideoStream[] = [];
-    videoDeviceId?.map((v) => {
+    selectedVideoDeviceIdList?.map((v) => {
       streams.push({
         sourceType: this._getVideoSourceTypeCamera(v),
       });
@@ -396,7 +397,7 @@ export default class LocalVideoTranscoder
     this.info('onLeaveChannel', 'connection', connection, 'stats', stats);
     const state = this.createState();
     delete state.videoDevices;
-    delete state.videoDeviceId;
+    delete state.selectedVideoDeviceIdList;
     delete state.sources;
     delete state.targetSources;
     delete state.startLocalVideoTranscoder;
@@ -449,7 +450,7 @@ export default class LocalVideoTranscoder
       startPreview,
       joinChannelSuccess,
       startLocalVideoTranscoder,
-      videoDeviceId,
+      selectedVideoDeviceIdList,
     } = this.state;
     return (
       <>
@@ -460,7 +461,7 @@ export default class LocalVideoTranscoder
             })
           : undefined}
         {startPreview || joinChannelSuccess
-          ? videoDeviceId?.map((value) =>
+          ? selectedVideoDeviceIdList?.map((value) =>
               this.renderUser({
                 sourceType: this._getVideoSourceTypeCamera(value),
               })
@@ -473,7 +474,7 @@ export default class LocalVideoTranscoder
   protected renderConfiguration(): ReactElement | undefined {
     const {
       videoDevices,
-      videoDeviceId,
+      selectedVideoDeviceIdList,
       sources,
       targetSources,
       url,
@@ -490,13 +491,16 @@ export default class LocalVideoTranscoder
               label: value.deviceName!,
             };
           })}
-          value={videoDeviceId}
+          value={selectedVideoDeviceIdList}
           onValueChange={(value) => {
-            if (videoDeviceId?.indexOf(value) === -1) {
+            if (!selectedVideoDeviceIdList?.includes(value)) {
               this.setState(
                 (preState) => {
                   return {
-                    videoDeviceId: [...(preState.videoDeviceId ?? []), value],
+                    selectedVideoDeviceIdList: [
+                      ...(preState.selectedVideoDeviceIdList ?? []),
+                      value,
+                    ],
                   };
                 },
                 () => {
@@ -506,9 +510,10 @@ export default class LocalVideoTranscoder
             } else {
               this.setState((preState) => {
                 return {
-                  videoDeviceId: preState.videoDeviceId?.filter(
-                    (v) => v !== value
-                  ),
+                  selectedVideoDeviceIdList:
+                    preState.selectedVideoDeviceIdList?.filter(
+                      (v) => v !== value
+                    ),
                 };
               });
             }
