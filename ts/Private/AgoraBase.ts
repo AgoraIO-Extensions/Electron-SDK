@@ -859,7 +859,7 @@ export enum VideoCodecCapabilityLevel {
  */
 export enum VideoCodecType {
   /**
-   * @ignore
+   * 0: (Default) Unspecified codec format. The SDK automatically matches the appropriate codec format based on the current video stream's resolution and device performance.
    */
   VideoCodecNone = 0,
   /**

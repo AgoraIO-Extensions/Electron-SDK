@@ -1123,6 +1123,14 @@ export class ChannelMediaOptions {
    */
   publishMixedAudioTrack?: boolean;
   /**
+   * @ignore
+   */
+  mixPolicyForMixedTrack?: number;
+  /**
+   * @ignore
+   */
+  publishLipSyncTrack?: boolean;
+  /**
    * Whether to automatically subscribe to all remote audio streams when the user joins a channel: true : Subscribe to all remote audio streams. false : Do not automatically subscribe to any remote audio streams.
    */
   autoSubscribeAudio?: boolean;
@@ -2832,6 +2840,30 @@ export class DirectCdnStreamingMediaOptions {
    * The video track ID returned by calling the createCustomVideoTrack method. The default value is 0.
    */
   customVideoTrackId?: number;
+  /**
+   * @ignore
+   */
+  publishScreenTrack?: boolean;
+  /**
+   * @ignore
+   */
+  publishSecondaryScreenTrack?: boolean;
+  /**
+   * @ignore
+   */
+  publishThirdScreenTrack?: boolean;
+  /**
+   * @ignore
+   */
+  publishFourthScreenTrack?: boolean;
+  /**
+   * @ignore
+   */
+  publishLoopbackAudioTrack?: boolean;
+  /**
+   * @ignore
+   */
+  publishLoopbackDeviceName?: string;
 }
 
 /**
@@ -3664,7 +3696,11 @@ export abstract class IRtcEngine {
   /**
    * Sets the video stream type to subscribe to.
    *
-   * Under limited network conditions, if the publisher does not disable the dual-stream mode using enableDualStreamMode (false), the receiver can choose to receive either the high-quality video stream, or the low-quality video stream. The high-quality video stream has a higher resolution and bitrate, while the low-quality video stream has a lower resolution and bitrate. By default, users receive the high-quality video stream. Call this method if you want to switch to the low-quality video stream. The SDK will dynamically adjust the size of the corresponding video stream based on the size of the video window to save bandwidth and computing resources. The default aspect ratio of the low-quality video stream is the same as that of the high-quality video stream. According to the current aspect ratio of the high-quality video stream, the system will automatically allocate the resolution, frame rate, and bitrate of the low-quality video stream. The SDK defaults to enabling low-quality video stream adaptive mode (AutoSimulcastStream) on the sender side, which means the sender does not actively send low-quality video stream. The receiver can initiate a low-quality video stream request by calling this method, and the sender will automatically start sending low-quality video stream upon receiving the request. You can call this method either before or after joining a channel. If you call both setRemoteVideoStreamType and setRemoteDefaultVideoStreamType, the setting of setRemoteVideoStreamType takes effect.
+   * The SDK defaults to enabling low-quality video stream adaptive mode (AutoSimulcastStream) on the sending end, which means the sender does not actively send low-quality video stream. The receiver with the role of the host can initiate a low-quality video stream request by calling this method, and upon receiving the request, the sending end automatically starts sending the low-quality video stream. The SDK will dynamically adjust the size of the corresponding video stream based on the size of the video window to save bandwidth and computing resources. The default aspect ratio of the low-quality video stream is the same as that of the high-quality video stream. According to the current aspect ratio of the high-quality video stream, the system will automatically allocate the resolution, frame rate, and bitrate of the low-quality video stream.
+   *  You can call this method either before or after joining a channel.
+   *  If the publisher has already called setDualStreamMode and set mode to DisableSimulcastStream (never send low-quality video stream), calling this method will not take effect, you should call setDualStreamMode again on the sending end and adjust the settings.
+   *  Calling this method on the receiving end of the audience role will not take effect.
+   *  If you call both setRemoteVideoStreamType and setRemoteDefaultVideoStreamType, the settings in setRemoteVideoStreamType take effect.
    *
    * @param uid The user ID.
    * @param streamType The video stream type, see VideoStreamType.
@@ -3705,7 +3741,7 @@ export abstract class IRtcEngine {
   /**
    * Sets the default video stream type to subscribe to.
    *
-   * The SDK defaults to enabling low-quality video stream adaptive mode (AutoSimulcastStream) on the sender side, which means the sender does not actively send low-quality video stream. The receiver can initiate a low-quality video stream request by calling this method, and the sender will automatically start sending low-quality video stream upon receiving the request. By default, users receive the high-quality video stream. Call this method if you want to switch to the low-quality video stream. The SDK will dynamically adjust the size of the corresponding video stream based on the size of the video window to save bandwidth and computing resources. The default aspect ratio of the low-quality video stream is the same as that of the high-quality video stream. According to the current aspect ratio of the high-quality video stream, the system will automatically allocate the resolution, frame rate, and bitrate of the low-quality video stream. Under limited network conditions, if the publisher does not disable the dual-stream mode using enableDualStreamMode (false), the receiver can choose to receive either the high-quality video stream, or the low-quality video stream. The high-quality video stream has a higher resolution and bitrate, while the low-quality video stream has a lower resolution and bitrate.
+   * The SDK will dynamically adjust the size of the corresponding video stream based on the size of the video window to save bandwidth and computing resources. The default aspect ratio of the low-quality video stream is the same as that of the high-quality video stream. According to the current aspect ratio of the high-quality video stream, the system will automatically allocate the resolution, frame rate, and bitrate of the low-quality video stream. The SDK defaults to enabling low-quality video stream adaptive mode (AutoSimulcastStream) on the sending end, which means the sender does not actively send low-quality video stream. The receiver with the role of the host can initiate a low-quality video stream request by calling this method, and upon receiving the request, the sending end automatically starts sending the low-quality video stream.
    *  Call this method before joining a channel. The SDK does not support changing the default subscribed video stream type after joining a channel.
    *  If you call both this method and setRemoteVideoStreamType, the setting of setRemoteVideoStreamType takes effect.
    *
@@ -4787,7 +4823,7 @@ export abstract class IRtcEngine {
   /**
    * Sets dual-stream mode configuration on the sender side.
    *
-   * The SDK defaults to enabling low-quality video stream adaptive mode (AutoSimulcastStream) on the sender side, which means the sender does not actively send low-quality video stream. The receiver can initiate a low-quality video stream request by calling setRemoteVideoStreamType, and the sender then automatically starts sending low-quality video stream upon receiving the request.
+   * The SDK defaults to enabling low-quality video stream adaptive mode (AutoSimulcastStream) on the sender side, which means the sender does not actively send low-quality video stream. The receiving end with the role of the host can initiate a low-quality video stream request by calling setRemoteVideoStreamType, and upon receiving the request, the sending end automatically starts sending low-quality stream.
    *  If you want to modify this behavior, you can call this method and set mode to DisableSimulcastStream (never send low-quality video streams) or EnableSimulcastStream (always send low-quality video streams).
    *  If you want to restore the default behavior after making changes, you can call this method again with mode set to AutoSimulcastStream. The difference and connection between this method and enableDualStreamMode is as follows:
    *  When calling this method and setting mode to DisableSimulcastStream, it has the same effect as calling enableDualStreamMode and setting enabled to false.
