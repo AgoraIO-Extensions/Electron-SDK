@@ -74,6 +74,10 @@ export enum VideoSourceType {
    */
   VideoSourceScreenFourth = 14,
   /**
+   * @ignore
+   */
+  VideoSourceSpeechDriven = 15,
+  /**
    * 100: An unknown video source.
    */
   VideoSourceUnknown = 100,
@@ -180,6 +184,20 @@ export enum RawAudioFrameOpModeType {
 }
 
 /**
+ * @ignore
+ */
+export enum TrackAudioMixedPolicyType {
+  /**
+   * @ignore
+   */
+  TrackAudioMixedLocal = 1 << 0,
+  /**
+   * @ignore
+   */
+  TrackAudioMixedRemote = 1 << 1,
+}
+
+/**
  * The AudioDeviceInfo class that contains the ID and device name of the audio devices.
  */
 export class AudioDeviceInfo {
@@ -261,6 +279,10 @@ export enum MediaSourceType {
    * @ignore
    */
   TranscodedVideoSource = 12,
+  /**
+   * @ignore
+   */
+  SpeechDrivenVideoSource = 13,
   /**
    * 100: Unknown media source.
    */
@@ -479,6 +501,10 @@ export enum VideoPixelFormat {
    * @ignore
    */
   VideoTextureId3d11texture2d = 17,
+  /**
+   * @ignore
+   */
+  VideoPixelI010 = 18,
 }
 
 /**
@@ -1275,6 +1301,16 @@ export class MediaRecorderConfiguration {
    * @ignore
    */
   recorderInfoUpdateInterval?: number;
+}
+
+/**
+ * @ignore
+ */
+export interface IFaceInfoObserver {
+  /**
+   * @ignore
+   */
+  onFaceInfo?(outFaceInfo: string): boolean;
 }
 
 /**
