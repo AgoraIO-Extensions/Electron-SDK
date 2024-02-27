@@ -1,5 +1,25 @@
 
 
+# [4.3.0-dev.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6...v4.3.0-dev.1) (2024-02-27)
+
+
+### Bug Fixes
+
+* destroymediarecorder NMS-18021 ([2da2d86](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/2da2d86c056e83c215294c5c5a51aae561ebd645))
+* yuv renderer issue ([#1136](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1136)) ([94c5ad1](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/94c5ad1bd1a8e2db09676b54d0b82c0751013dfb))
+
+
+### Features
+
+* add IH265Transcoder ([e03c3f7](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/e03c3f72a82b73acf959421cdc010c49e0988df3))
+* optimize for renderer ([#1132](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1132)) ([d0098c1](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/d0098c1c9f6d44dbfa6b790cf127b070d2201ac8))
+
+
+### Performance Improvements
+
+* remove EncodedVideoFrame video renderer TES-14300 ([b735692](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/b7356924cd53f41cf91879059a66a1f52e679e24))
+* remove useless lib after isynclib ([#1150](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1150)) ([cb81a8c](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/cb81a8ce48708755cc4600b218e8046d1f85bb35))
+
 ## [4.2.6](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.4...v4.2.6) (2023-11-22)
 
 
