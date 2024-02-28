@@ -163,8 +163,10 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
         }
       } else {
         std::smatch output;
-        std::regex pattern = std::regex(
-            "^.*(Observer|Handler|Callback|Receiver|DirectCdnStreaming)$");
+        std::regex pattern =
+            std::regex("^.*_.*((EventHandler|Observer|startDirectCdnStreaming|"
+                       "Source|VideoFrameRenderer)(_[a-zA-Z0-9]*)?)$");
+
         if (std::regex_match(funcName, output, pattern)) {
           bufferCount = 1;
           buffer.resize(bufferCount);
@@ -398,6 +400,8 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   int width;
   int height;
   int yStride;
+  int uStride;
+  int vStride;
 
   napi_obj_get_property(env, obj1, "yBuffer", y_buffer_obj);
   napi_get_buffer_info(env, y_buffer_obj, &y_buffer, &y_length);
@@ -411,6 +415,8 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_obj_get_property(env, obj1, "width", width);
   napi_obj_get_property(env, obj1, "height", height);
   napi_obj_get_property(env, obj1, "yStride", yStride);
+  napi_obj_get_property(env, obj1, "uStride", uStride);
+  napi_obj_get_property(env, obj1, "vStride", vStride);
 
   IrisCVideoFrame videoFrame;
   videoFrame.yBuffer = (uint8_t *) y_buffer;
@@ -419,6 +425,8 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   videoFrame.width = width;
   videoFrame.height = height;
   videoFrame.yStride = yStride;
+  videoFrame.uStride = uStride;
+  videoFrame.vStride = vStride;
   videoFrame.metadata_buffer = nullptr;
   videoFrame.metadata_size = 0;
   videoFrame.alphaBuffer = nullptr;

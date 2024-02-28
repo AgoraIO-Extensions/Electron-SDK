@@ -14,6 +14,7 @@ import {
   IVideoFrameObserver,
   VideoFrame,
 } from '../AgoraMediaBase';
+import { IH265TranscoderObserver } from '../IAgoraH265Transcoder';
 import {
   IMediaPlayer,
   IMediaPlayerVideoFrameObserver,
@@ -39,6 +40,7 @@ import {
   processIVideoEncodedFrameObserver,
   processIVideoFrameObserver,
 } from '../impl/AgoraMediaBaseImpl';
+import { processIH265TranscoderObserver } from '../impl/IAgoraH265TranscoderImpl';
 import { processIMediaPlayerVideoFrameObserver } from '../impl/IAgoraMediaPlayerImpl';
 import { processIMediaPlayerSourceObserver } from '../impl/IAgoraMediaPlayerSourceImpl';
 import { processIMusicContentCenterEventHandler } from '../impl/IAgoraMusicContentCenterImpl';
@@ -48,6 +50,8 @@ import {
   processIRtcEngineEventHandler,
 } from '../impl/IAgoraRtcEngineImpl';
 
+import { H265TranscoderInternal } from './AgoraH265TranscoderInternal';
+import { VideoFrameMetaInfoInternal } from './AgoraMediaBaseInternal';
 import { MediaEngineInternal } from './MediaEngineInternal';
 import { MediaPlayerInternal } from './MediaPlayerInternal';
 import { MediaRecorderInternal } from './MediaRecorderInternal';
@@ -105,6 +109,7 @@ export enum EVENT_TYPE {
   IMediaRecorder,
   IRtcEngine,
   IMusicContentCenter,
+  IAgoraH265Transcoder,
 }
 
 type ProcessorType =
@@ -120,7 +125,8 @@ type ProcessorType =
   | IMetadataObserver
   | IDirectCdnStreamingEventHandler
   | IRtcEngineEventHandler
-  | IMusicContentCenterEventHandler;
+  | IMusicContentCenterEventHandler
+  | IH265TranscoderObserver;
 
 type EventProcessors = {
   IAudioFrameObserver: EventProcessor<IAudioFrameObserver>;
@@ -136,6 +142,7 @@ type EventProcessors = {
   IDirectCdnStreamingEventHandler: EventProcessor<IDirectCdnStreamingEventHandler>;
   IRtcEngineEventHandler: EventProcessor<IRtcEngineEventHandler>;
   IMusicContentCenterEventHandler: EventProcessor<IMusicContentCenterEventHandler>;
+  IH265TranscoderObserver: EventProcessor<IH265TranscoderObserver>;
 };
 
 /**
@@ -173,6 +180,8 @@ export const EVENT_PROCESSORS: EventProcessors = {
         data.videoFrame.vBuffer = buffers[2];
         data.videoFrame.metadata_buffer = buffers[3];
         data.videoFrame.alphaBuffer = buffers[4];
+        let metaInfo = data.videoFrame.metaInfo;
+        data.videoFrame.metaInfo = new VideoFrameMetaInfoInternal(metaInfo);
       }
     },
     handlers: (event: string, data: any) =>
@@ -268,6 +277,8 @@ export const EVENT_PROCESSORS: EventProcessors = {
         data.frame.vBuffer = buffers[2];
         data.frame.metadata_buffer = buffers[3];
         data.frame.alphaBuffer = buffers[4];
+        let metaInfo = data.frame.metaInfo;
+        data.frame.metaInfo = new VideoFrameMetaInfoInternal(metaInfo);
       }
     },
     handlers: (event: string, data: any) =>
@@ -351,6 +362,12 @@ export const EVENT_PROCESSORS: EventProcessors = {
     handlers: (event: string, data: any) =>
       MusicContentCenterInternal._event_handlers,
   },
+  IH265TranscoderObserver: {
+    suffix: 'H265TranscoderObserver_',
+    type: () => EVENT_TYPE.IAgoraH265Transcoder,
+    func: [processIH265TranscoderObserver],
+    handlers: () => H265TranscoderInternal._h265_transcoder_observers,
+  },
 };
 
 function handleEvent(...[event, data, buffers]: any) {
@@ -376,6 +393,10 @@ function handleEvent(...[event, data, buffers]: any) {
   _event = _event.replace(reg, '');
   if (_event.endsWith('Ex')) {
     _event = _event.replace(/Ex$/g, '');
+  }
+  // for new IrisType, but this is temporary
+  if (_event.includes('_')) {
+    _event = _event.substring(0, _event.indexOf('_'));
   }
 
   let _data: any;
@@ -417,14 +438,11 @@ export function callIrisApi(funcName: string, params: any): any {
 
     if (funcName.startsWith('MediaEngine_')) {
       switch (funcName) {
-        case 'MediaEngine_pushAudioFrame':
-        case 'MediaEngine_pushCaptureAudioFrame':
-        case 'MediaEngine_pushReverseAudioFrame':
-        case 'MediaEngine_pushDirectAudioFrame':
+        case 'MediaEngine_pushAudioFrame_c71f4ab':
           // frame.buffer
           buffers.push(params.frame.buffer);
           break;
-        case 'MediaEngine_pushVideoFrame':
+        case 'MediaEngine_pushVideoFrame_4e544e2':
           // frame.buffer
           buffers.push(params.frame.buffer);
           // frame.eglContext
@@ -436,7 +454,7 @@ export function callIrisApi(funcName: string, params: any): any {
           // frame.d3d11_texture_2d
           buffers.push(Buffer.from(''));
           break;
-        case 'MediaEngine_pushEncodedVideoImage':
+        case 'MediaEngine_pushEncodedVideoImage_e71452b':
           // imageBuffer
           buffers.push(params.imageBuffer);
           break;
@@ -460,7 +478,7 @@ export function callIrisApi(funcName: string, params: any): any {
       };
     } else if (funcName.startsWith('RtcEngine_')) {
       switch (funcName) {
-        case 'RtcEngine_initialize':
+        case 'RtcEngine_initialize_0320339':
           AgoraRtcNg.InitializeEnv();
           break;
         case 'RtcEngine_release':
@@ -476,20 +494,22 @@ export function callIrisApi(funcName: string, params: any): any {
           // metadata.buffer
           buffers.push(params.metadata.buffer);
           break;
-        case 'RtcEngine_sendStreamMessage':
-        case 'RtcEngine_sendStreamMessageEx':
+        case 'RtcEngine_sendStreamMessage_8715a45':
+        case 'RtcEngineEx_sendStreamMessageEx_0c34857':
           // data
           buffers.push(params.data);
           break;
-        case 'RtcEngine_destroyMediaPlayer':
+        case 'RtcEngine_destroyMediaPlayer_328a49b':
           params.mediaPlayerId = params.media_player.getMediaPlayerId();
           params.toJSON = function () {
             return { playerId: params.mediaPlayerId };
           };
           break;
-        case 'RtcEngine_destroyMediaRecorder':
+        case 'RtcEngine_destroyMediaRecorder_95cdef5':
           // @ts-ignore
-          params.nativeHandle = (this as MediaRecorderInternal).nativeHandle;
+          params.nativeHandle = (
+            params.mediaRecorder as MediaRecorderInternal
+          ).nativeHandle;
           params.toJSON = function () {
             return { nativeHandle: params.nativeHandle };
           };
@@ -504,7 +524,7 @@ export function callIrisApi(funcName: string, params: any): any {
       buffers.length
     );
     let ret = callApiResult;
-    if (ret !== undefined && ret !== null && ret !== '') {
+    if (ret !== undefined && ret !== null && ret !== '' && ret !== 'null') {
       const retObj = JSON.parse(ret);
       if (isDebuggable()) {
         if (typeof retObj.result === 'number' && retObj.result < 0) {

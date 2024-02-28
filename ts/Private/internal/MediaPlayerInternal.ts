@@ -291,14 +291,14 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     key: string,
     value: number
   ): string {
-    return 'MediaPlayer_setPlayerOption';
+    return 'MediaPlayer_setPlayerOption_4d05d29';
   }
 
   protected override getApiTypeFromSetPlayerOptionInString(
     key: string,
     value: string
   ): string {
-    return 'MediaPlayer_setPlayerOption2';
+    return 'MediaPlayer_setPlayerOption_ccad422';
   }
 
   override setView(view: HTMLElement): number {

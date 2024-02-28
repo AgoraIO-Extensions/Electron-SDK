@@ -1,4 +1,5 @@
 import './extension/IAgoraRhythmPlayerExtension';
+
 /**
  * @ignore
  */
@@ -28,27 +29,27 @@ export enum RhythmPlayerStateType {
 /**
  * @ignore
  */
-export enum RhythmPlayerErrorType {
+export enum RhythmPlayerReason {
   /**
    * @ignore
    */
-  RhythmPlayerErrorOk = 0,
+  RhythmPlayerReasonOk = 0,
   /**
    * @ignore
    */
-  RhythmPlayerErrorFailed = 1,
+  RhythmPlayerReasonFailed = 1,
   /**
    * @ignore
    */
-  RhythmPlayerErrorCanNotOpen = 801,
+  RhythmPlayerReasonCanNotOpen = 801,
   /**
    * @ignore
    */
-  RhythmPlayerErrorCanNotPlay = 802,
+  RhythmPlayerReasonCanNotPlay = 802,
   /**
    * @ignore
    */
-  RhythmPlayerErrorFileOverDurationLimit = 803,
+  RhythmPlayerReasonFileOverDurationLimit = 803,
 }
 
 /**
