@@ -1,5 +1,23 @@
 
 
+# [4.3.0](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6...v4.3.0) (2024-02-28)
+
+
+### Bug Fixes
+
+* yuv renderer issue ([#1136](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1136)) ([94c5ad1](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/94c5ad1bd1a8e2db09676b54d0b82c0751013dfb))
+
+
+### Features
+
+* optimize for renderer ([#1132](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1132)) ([d0098c1](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/d0098c1c9f6d44dbfa6b790cf127b070d2201ac8))
+* support 4.3.0 ([#1130](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1130)) ([2ab7994](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/2ab79943338f27e454f173f67d5fb1749a39d98e))
+
+
+### Performance Improvements
+
+* remove useless lib after isynclib ([#1150](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1150)) ([cb81a8c](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/cb81a8ce48708755cc4600b218e8046d1f85bb35))
+
 ## [4.2.6](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.4...v4.2.6) (2023-11-22)
 
 
