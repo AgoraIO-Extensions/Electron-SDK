@@ -139,7 +139,7 @@ export default class DirectCdnStreaming
       pitch: 1.0,
       pan: 0,
       gain: 100,
-      publish: false,
+      publish: true,
       playEffectStartPos: 0,
       playEffect: false,
       pauseEffect: false,
@@ -815,6 +815,7 @@ export default class DirectCdnStreaming
       startScreenCapture,
       startDirectCdnStreaming,
       playEffect,
+      publish,
       pauseEffect,
     } = this.state;
     return (
@@ -844,6 +845,57 @@ export default class DirectCdnStreaming
           disabled={!startAudioMixing}
           title={`get Audio Mixing Current Position`}
           onPress={this.getAudioMixingCurrentPosition}
+        />
+        <AgoraSwitch
+          title={'publish effect'}
+          value={publish}
+          onValueChange={(value) => {
+            this.setState({ publish: value });
+          }}
+        />
+        <AgoraTextInput
+          style={AgoraStyle.fullSize}
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              loopCount: text === '' ? this.createState().loopCount : +text,
+            });
+          }}
+          numberKeyboard={true}
+          placeholder={`loopCount (defaults: ${this.createState().loopCount})`}
+        />
+        <AgoraTextInput
+          style={AgoraStyle.fullSize}
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              pitch: text === '' ? this.createState().pitch : +text,
+            });
+          }}
+          numberKeyboard={true}
+          placeholder={`pitch (defaults: ${this.createState().pitch})`}
+        />
+        <AgoraTextInput
+          style={AgoraStyle.fullSize}
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              pan: text === '' ? this.createState().pan : +text,
+            });
+          }}
+          numberKeyboard={true}
+          placeholder={`pan (defaults: ${this.createState().pan})`}
+        />
+        <AgoraTextInput
+          style={AgoraStyle.fullSize}
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              gain: text === '' ? this.createState().gain : +text,
+            });
+          }}
+          numberKeyboard={true}
+          placeholder={`gain (defaults: ${this.createState().gain})`}
         />
         <AgoraButton
           title={`${playEffect ? 'stop' : 'play'} Effect`}
