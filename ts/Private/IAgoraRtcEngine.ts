@@ -1186,7 +1186,7 @@ export class ChannelMediaOptions {
   publishRhythmPlayerTrack?: boolean;
   /**
    * Whether to enable interactive mode: true : Enable interactive mode. Once this mode is enabled and the user role is set as audience, the user can receive remote video streams with low latency. false :Do not enable interactive mode. If this mode is disabled, the user receives the remote video streams in default settings.
-   *  This parameter only applies to scenarios involving cohosting across channels. The cohosts need to call the joinChannelEx method to join the other host's channel as an audience member, and set isInteractiveAudience to true.
+   *  This parameter only applies to co-streaming scenarios. The cohosts need to call the joinChannelEx method to join the other host's channel as an audience member, and set isInteractiveAudience to true.
    *  This parameter takes effect only when the user role is ClientRoleAudience.
    */
   isInteractiveAudience?: boolean;
@@ -2420,7 +2420,7 @@ export interface IRtcEngineEventHandler {
   /**
    * Occurs when the extension is enabled.
    *
-   * After a successful call of enableExtension (true), the extension triggers this callback.
+   * The extension triggers this callback after it is successfully enabled.
    *
    * @param provider The name of the extension provider.
    * @param extension The name of the extension.
@@ -2430,7 +2430,7 @@ export interface IRtcEngineEventHandler {
   /**
    * Occurs when the extension is disabled.
    *
-   * After a successful call of enableExtension (false), this callback is triggered.
+   * The extension triggers this callback after it is successfully destroyed.
    *
    * @param provider The name of the extension provider.
    * @param extension The name of the extension.
@@ -2440,7 +2440,7 @@ export interface IRtcEngineEventHandler {
   /**
    * Occurs when the extension runs incorrectly.
    *
-   * When calling enableExtension (true) fails or the extension runs in error, the extension triggers this callback and reports the error code and reason.
+   * In case of extension enabling failure or runtime errors, the extension triggers this callback and reports the error code along with the reasons.
    *
    * @param provider The name of the extension provider.
    * @param extension The name of the extension.
@@ -3328,9 +3328,7 @@ export abstract class IRtcEngine {
    *
    * @param enabled Whether to enable the image enhancement function: true : Enable the image enhancement function. false : (Default) Disable the image enhancement function.
    * @param options The image enhancement options. See BeautyOptions.
-   * @param type Type of media source. See MediaSourceType. In this method, this parameter supports only the following two settings:
-   *  The default value is UnknownMediaSource.
-   *  If you want to use the second camera to capture video, set this parameter to SecondaryCameraSource.
+   * @param type Source type of the extension. See MediaSourceType.
    *
    * @returns
    * 0: Success.
@@ -3355,7 +3353,7 @@ export abstract class IRtcEngine {
    *  When you use an external video source to implement custom video capture, or send an external video source to the SDK, Agora recommends using setExtensionProperty.
    *  This method relies on the image enhancement dynamic library libagora_clear_vision_extension.dll. If the dynamic library is deleted, the function cannot be enabled normally.
    *
-   * @param enabled Whether to enable low-light enhancement function: true : Enable low-light enhancement function. false : (Default) Disable low-light enhancement function.
+   * @param enabled Whether to enable low-light enhancement: true : Enable low-light enhancement. false : (Default) Disable low-light enhancement.
    * @param options The low-light enhancement options. See LowlightEnhanceOptions.
    * @param type The type of the video source. See MediaSourceType.
    *
@@ -5217,13 +5215,13 @@ export abstract class IRtcEngine {
   /**
    * Registers an extension.
    *
-   * After the extension is loaded, you can call this method to register the extension. This method applies to Windows only.
+   * After the extension is loaded, you can call this method to register the extension.
+   *  Before calling this method, you need to call loadExtensionProvider to load the extension first.
+   *  For extensions external to the SDK (such as Extensions Marketplace extensions and SDK extensions), you need to call this method before calling setExtensionProperty.
    *
    * @param provider The name of the extension provider.
    * @param extension The name of the extension.
-   * @param type Type of media source. See MediaSourceType. In this method, this parameter supports only the following two settings:
-   *  The default value is UnknownMediaSource.
-   *  If you want to use the second camera to capture video, set this parameter to SecondaryCameraSource.
+   * @param type Source type of the extension. See MediaSourceType.
    *
    * @returns
    * 0: Success.
@@ -5245,9 +5243,7 @@ export abstract class IRtcEngine {
    * @param provider The name of the extension provider.
    * @param extension The name of the extension.
    * @param enable Whether to enable the extension: true : Enable the extension. false : Disable the extension.
-   * @param type Type of media source. See MediaSourceType. In this method, this parameter supports only the following two settings:
-   *  The default value is UnknownMediaSource.
-   *  If you want to use the second camera to capture video, set this parameter to SecondaryCameraSource.
+   * @param type Source type of the extension. See MediaSourceType.
    *
    * @returns
    * 0: Success.
@@ -5270,9 +5266,7 @@ export abstract class IRtcEngine {
    * @param extension The name of the extension.
    * @param key The key of the extension.
    * @param value The value of the extension key.
-   * @param type Type of media source. See MediaSourceType. In this method, this parameter supports only the following two settings:
-   *  The default value is UnknownMediaSource.
-   *  If you want to use the second camera to capture video, set this parameter to SecondaryCameraSource.
+   * @param type Source type of the extension. See MediaSourceType.
    *
    * @returns
    * 0: Success.
