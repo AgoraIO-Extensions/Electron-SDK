@@ -668,6 +668,10 @@ export class ExternalVideoFrame {
    */
   alphaBuffer?: Uint8Array;
   /**
+   * @ignore
+   */
+  fillAlphaBuffer?: boolean;
+  /**
    * This parameter only applies to video data in Windows Texture format. It represents an index of an ID3D11Texture2D texture object used by the video frame in the ID3D11Texture2D array.
    */
   texture_slice_index?: number;

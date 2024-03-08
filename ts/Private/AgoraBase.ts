@@ -968,6 +968,18 @@ export enum AudioCodecType {
    * @ignore
    */
   AudioCodecLpcnet = 12,
+  /**
+   * @ignore
+   */
+  AudioCodecOpus4c = 13,
+  /**
+   * @ignore
+   */
+  AudioCodecOpus6c = 14,
+  /**
+   * @ignore
+   */
+  AudioCodecOpus8c = 15,
 }
 
 /**
