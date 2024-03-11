@@ -11,6 +11,7 @@ import {
   AudioSessionOperationRestriction,
   AudioVolumeInfo,
   BeautyOptions,
+  CameraStabilizationMode,
   CaptureBrightnessLevelType,
   ChannelMediaRelayConfiguration,
   ChannelMediaRelayError,
@@ -547,6 +548,10 @@ export class RemoteAudioStats {
    * @ignore
    */
   rxAudioBytes?: number;
+  /**
+   * @ignore
+   */
+  e2eDelay?: number;
 }
 
 /**
@@ -856,6 +861,10 @@ export class CameraCapturerConfiguration {
    */
   deviceId?: string;
   /**
+   * @ignore
+   */
+  cameraId?: string;
+  /**
    * The format of the video frame. See VideoFormat.
    */
   format?: VideoFormat;
@@ -1120,6 +1129,10 @@ export class ChannelMediaOptions {
    */
   publishMixedAudioTrack?: boolean;
   /**
+   * @ignore
+   */
+  publishLipSyncTrack?: boolean;
+  /**
    * Whether to automatically subscribe to all remote audio streams when the user joins a channel: true : Subscribe to all remote audio streams. false : Do not automatically subscribe to any remote audio streams.
    */
   autoSubscribeAudio?: boolean;
@@ -1175,7 +1188,7 @@ export class ChannelMediaOptions {
   publishRhythmPlayerTrack?: boolean;
   /**
    * Whether to enable interactive mode: true : Enable interactive mode. Once this mode is enabled and the user role is set as audience, the user can receive remote video streams with low latency. false :Do not enable interactive mode. If this mode is disabled, the user receives the remote video streams in default settings.
-   *  This parameter only applies to scenarios involving cohosting across channels. The cohosts need to call the joinChannelEx method to join the other host's channel as an audience member, and set isInteractiveAudience to true.
+   *  This parameter only applies to co-streaming scenarios. The cohosts need to call the joinChannelEx method to join the other host's channel as an audience member, and set isInteractiveAudience to true.
    *  This parameter takes effect only when the user role is ClientRoleAudience.
    */
   isInteractiveAudience?: boolean;
@@ -2432,6 +2445,16 @@ export interface IRtcEngineEventHandler {
   ): void;
 
   /**
+   * @ignore
+   */
+  onAudioMetadataReceived?(
+    connection: RtcConnection,
+    uid: number,
+    metadata: string,
+    length: number
+  ): void;
+
+  /**
    * The event callback of the extension.
    *
    * To listen for events while the extension is running, you need to register this callback.
@@ -2451,7 +2474,7 @@ export interface IRtcEngineEventHandler {
   /**
    * Occurs when the extension is enabled.
    *
-   * After a successful call of enableExtension (true), the extension triggers this callback.
+   * The extension triggers this callback after it is successfully enabled.
    *
    * @param provider The name of the extension provider.
    * @param extension The name of the extension.
@@ -2461,7 +2484,7 @@ export interface IRtcEngineEventHandler {
   /**
    * Occurs when the extension is disabled.
    *
-   * After a successful call of enableExtension (false), this callback is triggered.
+   * The extension triggers this callback after it is successfully destroyed.
    *
    * @param provider The name of the extension provider.
    * @param extension The name of the extension.
@@ -2471,7 +2494,7 @@ export interface IRtcEngineEventHandler {
   /**
    * Occurs when the extension runs incorrectly.
    *
-   * When calling enableExtension (true) fails or the extension runs in error, the extension triggers this callback and reports the error code and reason.
+   * In case of extension enabling failure or runtime errors, the extension triggers this callback and reports the error code along with the reasons.
    *
    * @param provider The name of the extension provider.
    * @param extension The name of the extension.
@@ -3275,9 +3298,7 @@ export abstract class IRtcEngine {
    *
    * @param enabled Whether to enable the image enhancement function: true : Enable the image enhancement function. false : (Default) Disable the image enhancement function.
    * @param options The image enhancement options. See BeautyOptions.
-   * @param type Type of media source. See MediaSourceType. In this method, this parameter supports only the following two settings:
-   *  The default value is UnknownMediaSource.
-   *  If you want to use the second camera to capture video, set this parameter to SecondaryCameraSource.
+   * @param type Source type of the extension. See MediaSourceType.
    *
    * @returns
    * 0: Success.
@@ -3302,7 +3323,7 @@ export abstract class IRtcEngine {
    *  When you use an external video source to implement custom video capture, or send an external video source to the SDK, Agora recommends using setExtensionProperty.
    *  This method relies on the image enhancement dynamic library libagora_clear_vision_extension.dll. If the dynamic library is deleted, the function cannot be enabled normally.
    *
-   * @param enabled Whether to enable low-light enhancement function: true : Enable low-light enhancement function. false : (Default) Disable low-light enhancement function.
+   * @param enabled Whether to enable low-light enhancement: true : Enable low-light enhancement. false : (Default) Disable low-light enhancement.
    * @param options The low-light enhancement options. See LowlightEnhanceOptions.
    * @param type The type of the video source. See MediaSourceType.
    *
@@ -3634,7 +3655,7 @@ export abstract class IRtcEngine {
   /**
    * Sets the default video stream type to subscribe to.
    *
-   * The SDK defaults to enabling low-quality video stream adaptive mode (AutoSimulcastStream) on the sender side, which means the sender does not actively send low-quality video stream. The receiver can initiate a low-quality video stream request by calling this method, and the sender will automatically start sending low-quality video stream upon receiving the request. By default, users receive the high-quality video stream. Call this method if you want to switch to the low-quality video stream. The SDK will dynamically adjust the size of the corresponding video stream based on the size of the video window to save bandwidth and computing resources. The default aspect ratio of the low-quality video stream is the same as that of the high-quality video stream. According to the current aspect ratio of the high-quality video stream, the system will automatically allocate the resolution, frame rate, and bitrate of the low-quality video stream. Under limited network conditions, if the publisher does not disable the dual-stream mode using enableDualStreamMode (false), the receiver can choose to receive either the high-quality video stream, or the low-quality video stream. The high-quality video stream has a higher resolution and bitrate, while the low-quality video stream has a lower resolution and bitrate.
+   * The SDK will dynamically adjust the size of the corresponding video stream based on the size of the video window to save bandwidth and computing resources. The default aspect ratio of the low-quality video stream is the same as that of the high-quality video stream. According to the current aspect ratio of the high-quality video stream, the system will automatically allocate the resolution, frame rate, and bitrate of the low-quality video stream. The SDK defaults to enabling low-quality video stream adaptive mode (AutoSimulcastStream) on the sending end, which means the sender does not actively send low-quality video stream. The receiver with the role of the host can initiate a low-quality video stream request by calling this method, and upon receiving the request, the sending end automatically starts sending the low-quality video stream.
    *  Call this method before joining a channel. The SDK does not support changing the default subscribed video stream type after joining a channel.
    *  If you call both this method and setRemoteVideoStreamType, the setting of setRemoteVideoStreamType takes effect.
    *
@@ -3663,7 +3684,11 @@ export abstract class IRtcEngine {
   /**
    * Sets the video stream type to subscribe to.
    *
-   * Under limited network conditions, if the publisher does not disable the dual-stream mode using enableDualStreamMode (false), the receiver can choose to receive either the high-quality video stream, or the low-quality video stream. The high-quality video stream has a higher resolution and bitrate, while the low-quality video stream has a lower resolution and bitrate. By default, users receive the high-quality video stream. Call this method if you want to switch to the low-quality video stream. The SDK will dynamically adjust the size of the corresponding video stream based on the size of the video window to save bandwidth and computing resources. The default aspect ratio of the low-quality video stream is the same as that of the high-quality video stream. According to the current aspect ratio of the high-quality video stream, the system will automatically allocate the resolution, frame rate, and bitrate of the low-quality video stream. The SDK defaults to enabling low-quality video stream adaptive mode (AutoSimulcastStream) on the sender side, which means the sender does not actively send low-quality video stream. The receiver can initiate a low-quality video stream request by calling this method, and the sender will automatically start sending low-quality video stream upon receiving the request. You can call this method either before or after joining a channel. If you call both setRemoteVideoStreamType and setRemoteDefaultVideoStreamType, the setting of setRemoteVideoStreamType takes effect.
+   * The SDK defaults to enabling low-quality video stream adaptive mode (AutoSimulcastStream) on the sending end, which means the sender does not actively send low-quality video stream. The receiver with the role of the host can initiate a low-quality video stream request by calling this method, and upon receiving the request, the sending end automatically starts sending the low-quality video stream. The SDK will dynamically adjust the size of the corresponding video stream based on the size of the video window to save bandwidth and computing resources. The default aspect ratio of the low-quality video stream is the same as that of the high-quality video stream. According to the current aspect ratio of the high-quality video stream, the system will automatically allocate the resolution, frame rate, and bitrate of the low-quality video stream.
+   *  You can call this method either before or after joining a channel.
+   *  If the publisher has already called setDualStreamMode and set mode to DisableSimulcastStream (never send low-quality video stream), calling this method will not take effect, you should call setDualStreamMode again on the sending end and adjust the settings.
+   *  Calling this method on the receiving end of the audience role will not take effect.
+   *  If you call both setRemoteVideoStreamType and setRemoteDefaultVideoStreamType, the settings in setRemoteVideoStreamType take effect.
    *
    * @param uid The user ID.
    * @param streamType The video stream type, see VideoStreamType.
@@ -4092,6 +4117,11 @@ export abstract class IRtcEngine {
    *  < 0: Failure.
    */
   abstract setAudioMixingPitch(pitch: number): number;
+
+  /**
+   * @ignore
+   */
+  abstract setAudioMixingPlaybackSpeed(speed: number): number;
 
   /**
    * Retrieves the volume of the audio effects.
@@ -4688,6 +4718,11 @@ export abstract class IRtcEngine {
   abstract uploadLogFile(): string;
 
   /**
+   * @ignore
+   */
+  abstract writeLog(level: LogLevel, fmt: string): number;
+
+  /**
    * Updates the display mode of the local video view.
    *
    * After initializing the local video view, you can call this method to update its rendering and mirror modes. It affects only the video view that the local user sees, not the published local video stream.
@@ -4766,7 +4801,7 @@ export abstract class IRtcEngine {
   /**
    * Sets dual-stream mode configuration on the sender side.
    *
-   * The SDK defaults to enabling low-quality video stream adaptive mode (AutoSimulcastStream) on the sender side, which means the sender does not actively send low-quality video stream. The receiver can initiate a low-quality video stream request by calling setRemoteVideoStreamType, and the sender then automatically starts sending low-quality video stream upon receiving the request.
+   * The SDK defaults to enabling low-quality video stream adaptive mode (AutoSimulcastStream) on the sender side, which means the sender does not actively send low-quality video stream. The receiving end with the role of the host can initiate a low-quality video stream request by calling setRemoteVideoStreamType, and upon receiving the request, the sending end automatically starts sending low-quality stream.
    *  If you want to modify this behavior, you can call this method and set mode to DisableSimulcastStream (never send low-quality video streams) or EnableSimulcastStream (always send low-quality video streams).
    *  If you want to restore the default behavior after making changes, you can call this method again with mode set to AutoSimulcastStream. The difference and connection between this method and enableDualStreamMode is as follows:
    *  When calling this method and setting mode to DisableSimulcastStream, it has the same effect as calling enableDualStreamMode and setting enabled to false.
@@ -5060,9 +5095,7 @@ export abstract class IRtcEngine {
    * @param provider The name of the extension provider.
    * @param extension The name of the extension.
    * @param enable Whether to enable the extension: true : Enable the extension. false : Disable the extension.
-   * @param type Type of media source. See MediaSourceType. In this method, this parameter supports only the following two settings:
-   *  The default value is UnknownMediaSource.
-   *  If you want to use the second camera to capture video, set this parameter to SecondaryCameraSource.
+   * @param type Source type of the extension. See MediaSourceType.
    *
    * @returns
    * 0: Success.
@@ -5085,9 +5118,7 @@ export abstract class IRtcEngine {
    * @param extension The name of the extension.
    * @param key The key of the extension.
    * @param value The value of the extension key.
-   * @param type Type of media source. See MediaSourceType. In this method, this parameter supports only the following two settings:
-   *  The default value is UnknownMediaSource.
-   *  If you want to use the second camera to capture video, set this parameter to SecondaryCameraSource.
+   * @param type Source type of the extension. See MediaSourceType.
    *
    * @returns
    * 0: Success.
@@ -5232,13 +5263,13 @@ export abstract class IRtcEngine {
   /**
    * Registers an extension.
    *
-   * After the extension is loaded, you can call this method to register the extension. This method applies to Windows only.
+   * After the extension is loaded, you can call this method to register the extension.
+   *  Before calling this method, you need to call loadExtensionProvider to load the extension first.
+   *  For extensions external to the SDK (such as Extensions Marketplace extensions and SDK extensions), you need to call this method before calling setExtensionProperty.
    *
    * @param provider The name of the extension provider.
    * @param extension The name of the extension.
-   * @param type Type of media source. See MediaSourceType. In this method, this parameter supports only the following two settings:
-   *  The default value is UnknownMediaSource.
-   *  If you want to use the second camera to capture video, set this parameter to SecondaryCameraSource.
+   * @param type Source type of the extension. See MediaSourceType.
    *
    * @returns
    * 0: Success.
@@ -5391,6 +5422,11 @@ export abstract class IRtcEngine {
   /**
    * @ignore
    */
+  abstract setCameraStabilizationMode(mode: CameraStabilizationMode): number;
+
+  /**
+   * @ignore
+   */
   abstract setDefaultAudioRouteToSpeakerphone(
     defaultToSpeaker: boolean
   ): number;
@@ -5409,6 +5445,16 @@ export abstract class IRtcEngine {
    * @ignore
    */
   abstract setRouteInCommunicationMode(route: number): number;
+
+  /**
+   * @ignore
+   */
+  abstract isSupportPortraitCenterStage(): boolean;
+
+  /**
+   * @ignore
+   */
+  abstract enablePortraitCenterStage(enabled: boolean): number;
 
   /**
    * Gets a list of shareable screens and windows.
@@ -6591,6 +6637,11 @@ export abstract class IRtcEngine {
   abstract isFeatureAvailableOnDevice(type: FeatureType): boolean;
 
   /**
+   * @ignore
+   */
+  abstract sendAudioMetadata(metadata: string, length: number): number;
+
+  /**
    * Starts screen capture.
    *
    * This method, as well as startScreenCaptureByDisplayId and startScreenCaptureByWindowId, can all be used to enable screen capture, with the following differences: startScreenCaptureByDisplayId and startScreenCaptureByWindowId only support capturing video from a single screen or window. By calling this method and specifying the sourceType parameter, you can capture multiple video streams used for local video mixing or multi-channel publishing.
@@ -7144,6 +7195,10 @@ export class AudioDeviceInfo {
    * The device ID.
    */
   deviceId?: string;
+  /**
+   * @ignore
+   */
+  deviceTypeName?: string;
   /**
    * The device name.
    */

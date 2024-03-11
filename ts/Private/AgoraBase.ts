@@ -327,6 +327,10 @@ export enum ErrorCodeType {
    */
   ErrInvalidUserId = 121,
   /**
+   * @ignore
+   */
+  ErrDatastreamDecryptionFailed = 122,
+  /**
    * 123: The user is banned from the server.
    */
   ErrClientIsBannedByServer = 123,
@@ -1196,6 +1200,10 @@ export class EncodedVideoFrameInfo {
    * The type of video streams. See VideoStreamType.
    */
   streamType?: VideoStreamType;
+  /**
+   * @ignore
+   */
+  presentationMs?: number;
 }
 
 /**
@@ -1465,7 +1473,7 @@ export class WatermarkRatio {
  */
 export class WatermarkOptions {
   /**
-   * Is the watermark visible in the local preview view? true : (Default) The watermark is visible in the local preview view. false : The watermark is not visible in the local preview view.
+   * Whether the watermark is visible in the local preview view: true : (Default) The watermark is visible in the local preview view. false : The watermark is not visible in the local preview view.
    */
   visibleInPreview?: boolean;
   /**
@@ -1941,6 +1949,36 @@ export enum CaptureBrightnessLevelType {
 }
 
 /**
+ * @ignore
+ */
+export enum CameraStabilizationMode {
+  /**
+   * @ignore
+   */
+  CameraStabilizationModeOff = -1,
+  /**
+   * @ignore
+   */
+  CameraStabilizationModeAuto = 0,
+  /**
+   * @ignore
+   */
+  CameraStabilizationModeLevel1 = 1,
+  /**
+   * @ignore
+   */
+  CameraStabilizationModeLevel2 = 2,
+  /**
+   * @ignore
+   */
+  CameraStabilizationModeLevel3 = 3,
+  /**
+   * @ignore
+   */
+  CameraStabilizationModeMaxLevel = 3,
+}
+
+/**
  * The state of the local audio.
  */
 export enum LocalAudioStreamState {
@@ -2083,6 +2121,14 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonDeviceInvalidId = 10,
   /**
+   * @ignore
+   */
+  LocalVideoStreamErrorDeviceInterrupt = 14,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorDeviceFatalError = 15,
+  /**
    * 101: The current video capture device is unavailable due to excessive system pressure.
    */
   LocalVideoStreamReasonDeviceSystemPressure = 101,
@@ -2201,6 +2247,14 @@ export enum RemoteAudioStateReason {
    * 7: The remote user leaves the channel.
    */
   RemoteAudioReasonRemoteOffline = 7,
+  /**
+   * @ignore
+   */
+  RemoteAudioReasonNoPacketReceive = 8,
+  /**
+   * @ignore
+   */
+  RemoteAudioReasonLocalPlayFailed = 9,
 }
 
 /**
@@ -2640,7 +2694,7 @@ export enum RtmpStreamPublishReason {
    */
   RtmpStreamPublishReasonInvalidAppid = 15,
   /**
-   * 16: Your project does not have permission to use streaming services. Refer to Media Push to enable the Media Push permission.
+   * 16: Your project does not have permission to use streaming services.
    */
   RtmpStreamPublishReasonInvalidPrivilege = 16,
   /**
@@ -3778,6 +3832,10 @@ export enum AudioEffectPreset {
    */
   RoomAcousticsVirtualSurroundSound = 0x02010900,
   /**
+   * @ignore
+   */
+  RoomAcousticsChorus = 0x02010d00,
+  /**
    * A middle-aged man's voice. Agora recommends using this preset to process a male-sounding voice; otherwise, you may not hear the anticipated voice effect.
    */
   VoiceChangerEffectUncle = 0x02020100,
@@ -4210,7 +4268,7 @@ export enum ChannelMediaRelayError {
    */
   RelayErrorServerErrorResponse = 1,
   /**
-   * 2: No server response. You can call leaveChannel to leave the channel. This error can also occur if your project has not enabled co-host token authentication. You can to enable the service for cohosting across channels before starting a channel media relay.
+   * 2: No server response. This error may be caused by poor network connections. If this error occurs when initiating a channel media relay, you can try again later; if this error occurs during channel media relay, you can call leaveChannel to leave the channel. This error can also occur if the channel media relay service is not enabled in the project. You can contact to enable the service.
    */
   RelayErrorServerNoResponse = 2,
   /**
@@ -4431,6 +4489,10 @@ export class EncryptionConfig {
    * Salt, 32 bytes in length. Agora recommends that you use OpenSSL to generate salt on the server side. See Media Stream Encryption for details. This parameter takes effect only in Aes128Gcm2 or Aes256Gcm2 encrypted mode. In this case, ensure that this parameter is not 0.
    */
   encryptionKdfSalt?: number[];
+  /**
+   * @ignore
+   */
+  datastreamEncryptionEnabled?: boolean;
 }
 
 /**
@@ -4449,6 +4511,14 @@ export enum EncryptionErrorType {
    * 2: Encryption errors.
    */
   EncryptionErrorEncryptionFailure = 2,
+  /**
+   * @ignore
+   */
+  EncryptionErrorDatastreamDecryptionFailure = 3,
+  /**
+   * @ignore
+   */
+  EncryptionErrorDatastreamEncryptionFailure = 4,
 }
 
 /**
@@ -4605,6 +4675,10 @@ export enum EarMonitoringFilterType {
    * 1<<2: Enable noise suppression to the in-ear monitor.
    */
   EarMonitoringFilterNoiseSuppression = 1 << 2,
+  /**
+   * @ignore
+   */
+  EarMonitoringFilterReusePostProcessingFilter = 1 << 15,
 }
 
 /**
@@ -4921,7 +4995,7 @@ export class SpatialAudioParams {
   speaker_attenuation?: number;
   /**
    * Whether to enable the Doppler effect: When there is a relative displacement between the sound source and the receiver of the sound source, the tone heard by the receiver changes. true : Enable the Doppler effect. false : (Default) Disable the Doppler effect.
-   *  This parameter is suitable for scenarios where the sound source is moving at high speed (for example, racing games). It is not recommended for common audio and video interactive scenarios (for example, voice chat, cohosting, or online KTV).
+   *  This parameter is suitable for scenarios where the sound source is moving at high speed (for example, racing games). It is not recommended for common audio and video interactive scenarios (for example, voice chat, co-streaming, or online KTV).
    *  When this parameter is enabled, Agora recommends that you set a regular period (such as 30 ms), and then call the updatePlayerPositionInfo, updateSelfPosition, and updateRemotePosition methods to continuously update the relative distance between the sound source and the receiver. The following factors can cause the Doppler effect to be unpredictable or the sound to be jittery: the period of updating the distance is too long, the updating period is irregular, or the distance information is lost due to network packet loss or delay.
    */
   enable_doppler?: boolean;

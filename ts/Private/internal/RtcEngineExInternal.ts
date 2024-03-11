@@ -34,7 +34,6 @@ import {
   MetadataType,
   RtcEngineContext,
   SDKBuildInfo,
-  ScreenCaptureConfiguration,
   ScreenCaptureSourceInfo,
   Size,
 } from '../IAgoraRtcEngine';
@@ -348,10 +347,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       : 'RtcEngine_setClientRole_b46cc48';
   }
 
-  protected override getApiTypeFromStartPreviewWithoutSourceType(): string {
-    return 'RtcEngine_startPreview';
-  }
-
   protected override getApiTypeFromEnableDualStreamMode(
     enabled: boolean,
     streamConfig?: SimulcastStreamConfig
@@ -382,27 +377,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return options === undefined
       ? 'RtcEngine_joinChannelWithUserAccount_0e4f59e'
       : 'RtcEngine_joinChannelWithUserAccount_4685af9';
-  }
-
-  protected override getApiTypeFromStartScreenCaptureBySourceType(
-    sourceType: VideoSourceType,
-    config: ScreenCaptureConfiguration
-  ): string {
-    return 'RtcEngine_startScreenCapture_9ebb320';
-  }
-
-  protected override getApiTypeFromStopScreenCaptureBySourceType(
-    sourceType: VideoSourceType
-  ): string {
-    return 'RtcEngine_stopScreenCapture_4fd718e';
-  }
-
-  protected override getApiTypeFromPreloadChannelWithUserAccount(
-    token: string,
-    channelId: string,
-    userAccount: string
-  ): string {
-    return 'RtcEngine_preloadChannel_a0779eb';
   }
 
   override getAudioDeviceManager(): IAudioDeviceManager {
