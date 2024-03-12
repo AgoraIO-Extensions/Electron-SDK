@@ -110,6 +110,9 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     this._media_engine.release();
     this._local_spatial_audio_engine.release();
     RtcEngineExInternal._event_handlers = [];
+    RtcEngineExInternal._event_handlers.map((it) => {
+      super.unregisterEventHandler(it);
+    });
     RtcEngineExInternal._direct_cdn_streaming_event_handler = [];
     RtcEngineExInternal._metadata_observer = [];
     RtcEngineExInternal._audio_encoded_frame_observers = [];
