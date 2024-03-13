@@ -2123,11 +2123,11 @@ export enum LocalVideoStreamReason {
   /**
    * @ignore
    */
-  LocalVideoStreamErrorDeviceInterrupt = 14,
+  LocalVideoStreamReasonDeviceInterrupt = 14,
   /**
    * @ignore
    */
-  LocalVideoStreamErrorDeviceFatalError = 15,
+  LocalVideoStreamReasonDeviceFatalError = 15,
   /**
    * 101: The current video capture device is unavailable due to excessive system pressure.
    */
