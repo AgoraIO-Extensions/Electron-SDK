@@ -1535,7 +1535,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
 
   sendAudioMetadataEx(
     connection: RtcConnection,
-    metadata: string,
+    metadata: Uint8Array,
     length: number
   ): number {
     const apiType = this.getApiTypeFromSendAudioMetadataEx(
@@ -1550,7 +1550,6 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
       toJSON: () => {
         return {
           connection: connection,
-          metadata: metadata,
           length: length,
         };
       },
@@ -1561,7 +1560,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
 
   protected getApiTypeFromSendAudioMetadataEx(
     connection: RtcConnection,
-    metadata: string,
+    metadata: Uint8Array,
     length: number
   ): string {
     return 'RtcEngineEx_sendAudioMetadataEx';
