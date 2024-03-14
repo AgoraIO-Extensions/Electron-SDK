@@ -3,7 +3,7 @@ const path = require('path');
 const download = require('download');
 const fs = require('fs-extra');
 
-const { cleanBuildDir, buildDir } = require('./clean');
+const { cleanDir, buildDir } = require('./clean');
 const getConfig = require('./getConfig');
 const logger = require('./logger');
 const { getOS } = require('./util');
@@ -70,7 +70,7 @@ const removeFileByFilter = async () => {
 };
 
 module.exports = async () => {
-  await cleanBuildDir();
+  await cleanDir(buildDir);
 
   const downloadUrl = getDownloadURL();
 
