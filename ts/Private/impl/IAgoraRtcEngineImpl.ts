@@ -912,6 +912,44 @@ export function processIRtcEngineEventHandler(
       }
       break;
 
+    case 'needExtensionContext':
+      if (handler.needExtensionContext !== undefined) {
+        handler.needExtensionContext();
+      }
+      break;
+
+    case 'onExtensionEventWithContext':
+      if (handler.onExtensionEventWithContext !== undefined) {
+        handler.onExtensionEventWithContext(
+          jsonParams.context,
+          jsonParams.key,
+          jsonParams.value
+        );
+      }
+      break;
+
+    case 'onExtensionStartedWithContext':
+      if (handler.onExtensionStartedWithContext !== undefined) {
+        handler.onExtensionStartedWithContext(jsonParams.context);
+      }
+      break;
+
+    case 'onExtensionStoppedWithContext':
+      if (handler.onExtensionStoppedWithContext !== undefined) {
+        handler.onExtensionStoppedWithContext(jsonParams.context);
+      }
+      break;
+
+    case 'onExtensionErrorWithContext':
+      if (handler.onExtensionErrorWithContext !== undefined) {
+        handler.onExtensionErrorWithContext(
+          jsonParams.context,
+          jsonParams.error,
+          jsonParams.message
+        );
+      }
+      break;
+
     case 'onVideoRenderingTracingResult':
       if (handler.onVideoRenderingTracingResult !== undefined) {
         handler.onVideoRenderingTracingResult(
@@ -3479,6 +3517,26 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromUploadLogFile(): string {
     return 'RtcEngine_uploadLogFile';
+  }
+
+  writeLog(level: LogLevel, fmt: string): number {
+    const apiType = this.getApiTypeFromWriteLog(level, fmt);
+    const jsonParams = {
+      level: level,
+      fmt: fmt,
+      toJSON: () => {
+        return {
+          level: level,
+          fmt: fmt,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromWriteLog(level: LogLevel, fmt: string): string {
+    return 'RtcEngine_writeLog';
   }
 
   setLocalRenderMode(
@@ -6657,14 +6715,13 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_isFeatureAvailableOnDevice';
   }
 
-  sendAudioMetadata(metadata: string, length: number): number {
+  sendAudioMetadata(metadata: Uint8Array, length: number): number {
     const apiType = this.getApiTypeFromSendAudioMetadata(metadata, length);
     const jsonParams = {
       metadata: metadata,
       length: length,
       toJSON: () => {
         return {
-          metadata: metadata,
           length: length,
         };
       },
@@ -6674,7 +6731,7 @@ export class IRtcEngineImpl implements IRtcEngine {
   }
 
   protected getApiTypeFromSendAudioMetadata(
-    metadata: string,
+    metadata: Uint8Array,
     length: number
   ): string {
     return 'RtcEngine_sendAudioMetadata';
