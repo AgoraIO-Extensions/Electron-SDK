@@ -370,7 +370,7 @@ export class CacheStatistics {
  */
 export class PlayerUpdatedInfo {
   /**
-   * The ID of a media player.
+   * @ignore
    */
   playerId?: string;
   /**
@@ -378,7 +378,7 @@ export class PlayerUpdatedInfo {
    */
   deviceId?: string;
   /**
-   * The statistics about the media file being cached. If you call the openWithMediaSource method and set enableCache as true, the statistics about the media file being cached is updated every second after the media file is played. See CacheStatistics.
+   * @ignore
    */
   cacheStatistics?: CacheStatistics;
 }
@@ -411,7 +411,7 @@ export class MediaSource {
    */
   enableCache?: boolean;
   /**
-   * @ignore
+   * Whether to allow the selection of different audio tracks when playing this media file: true : Allow to select different audio tracks. false : (Default) Do not allow to select different audio tracks. If you need to set different audio tracks for local playback and publishing to the channel, you need to set this parameter to true, and then call the selectMultiAudioTrack method to select the audio track.
    */
   enableMultiAudioTrack?: boolean;
   /**

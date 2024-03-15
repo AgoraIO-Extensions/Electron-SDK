@@ -829,11 +829,45 @@ export enum ScreenCaptureCapabilityLevel {
 }
 
 /**
+ * @ignore
+ */
+export enum VideoCodecCapabilityLevel {
+  /**
+   * @ignore
+   */
+  CodecCapabilityLevelUnspecified = -1,
+  /**
+   * @ignore
+   */
+  CodecCapabilityLevelBasicSupport = 5,
+  /**
+   * @ignore
+   */
+  CodecCapabilityLevel1080p30fps = 10,
+  /**
+   * @ignore
+   */
+  CodecCapabilityLevel1080p60fps = 20,
+  /**
+   * @ignore
+   */
+  CodecCapabilityLevel2k30fps = 23,
+  /**
+   * @ignore
+   */
+  CodecCapabilityLevel2k60fps = 26,
+  /**
+   * @ignore
+   */
+  CodecCapabilityLevel4k60fps = 30,
+}
+
+/**
  * Video codec types.
  */
 export enum VideoCodecType {
   /**
-   * @ignore
+   * 0: (Default) Unspecified codec format. The SDK automatically matches the appropriate codec format based on the current video stream's resolution and device performance.
    */
   VideoCodecNone = 0,
   /**
@@ -841,7 +875,7 @@ export enum VideoCodecType {
    */
   VideoCodecVp8 = 1,
   /**
-   * 2: (Default) Standard H.264.
+   * 2: Standard H.264.
    */
   VideoCodecH264 = 2,
   /**
@@ -1277,17 +1311,35 @@ export enum CodecCapMask {
 }
 
 /**
+ * The level of the codec capability.
+ */
+export class CodecCapLevels {
+  /**
+   * Hardware decoding capability level, which represents the device's ability to perform hardware decoding on videos of different quality. See VIDEO_CODEC_CAPABILITY_LEVEL.
+   */
+  hwDecodingLevel?: VideoCodecCapabilityLevel;
+  /**
+   * Software decoding capability level, which represents the device's ability to perform software decoding on videos of different quality. See VIDEO_CODEC_CAPABILITY_LEVEL.
+   */
+  swDecodingLevel?: VideoCodecCapabilityLevel;
+}
+
+/**
  * The codec capability of the device.
  */
 export class CodecCapInfo {
   /**
-   * @ignore
+   * The video codec types. See VideoCodecType.
    */
-  codec_type?: VideoCodecType;
+  codecType?: VideoCodecType;
   /**
-   * @ignore
+   * The bit mask of the codec type. See CodecCapMask.
    */
-  codec_cap_mask?: number;
+  codecCapMask?: number;
+  /**
+   * The level of the codec capability. See CodecCapLevels.
+   */
+  codecLevels?: CodecCapLevels;
 }
 
 /**
@@ -1307,7 +1359,7 @@ export class VideoEncoderConfiguration {
    */
   frameRate?: number;
   /**
-   * The encoding bitrate (Kbps) of the video.
+   * The encoding bitrate (Kbps) of the video. This parameter does not need to be set; keeping the default value STANDARD_BITRATE is sufficient. The SDK automatically matches the most suitable bitrate based on the video resolution and frame rate you have set. For the correspondence between video resolution, frame rate, and bitrate, please refer to. STANDARD_BITRATE (0): (Recommended) Standard bitrate mode. COMPATIBLE_BITRATE (-1): Adaptive bitrate mode. In general, Agora suggests that you do not use this value.
    */
   bitrate?: number;
   /**
@@ -1353,7 +1405,7 @@ export class DataStreamConfig {
  */
 export enum SimulcastStreamMode {
   /**
-   * -1: By default, the low-quality video steam is not sent; the SDK automatically switches to low-quality video stream mode after it receives a request to subscribe to a low-quality video stream.
+   * -1: By default, do not send the low-quality video stream until a subscription request for the low-quality video stream is received from the receiving end, then automatically start sending low-quality video stream.
    */
   AutoSimulcastStream = -1,
   /**
@@ -1433,7 +1485,7 @@ export class WatermarkRatio {
  */
 export class WatermarkOptions {
   /**
-   * Reserved for future use.
+   * Whether the watermark is visible in the local preview view: true : (Default) The watermark is visible in the local preview view. false : The watermark is not visible in the local preview view.
    */
   visibleInPreview?: boolean;
   /**
@@ -2031,6 +2083,10 @@ export enum LocalVideoStreamError {
    * @ignore
    */
   LocalVideoStreamErrorScreenCaptureWindowRecoverFromHidden = 26,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorScreenCaptureWindowRecoverFromMinimized = 27,
 }
 
 /**
@@ -2160,11 +2216,11 @@ export enum RemoteVideoStateReason {
    */
   RemoteVideoStateReasonRemoteOffline = 7,
   /**
-   * @ignore
+   * 8: The remote audio-and-video stream falls back to the audio-only stream due to poor network conditions.
    */
   RemoteVideoStateReasonAudioFallback = 8,
   /**
-   * @ignore
+   * 9: The remote audio-only stream switches back to the audio-and-video stream after the network conditions improve.
    */
   RemoteVideoStateReasonAudioFallbackRecovery = 9,
   /**
@@ -2420,7 +2476,7 @@ export class LocalAudioStats {
    */
   txPacketLossRate?: number;
   /**
-   * The delay of the audio device module when playing or recording audio.
+   * The audio device module delay (ms) when playing or recording audio.
    */
   audioDeviceDelay?: number;
   /**
@@ -2428,13 +2484,21 @@ export class LocalAudioStats {
    */
   audioPlayoutDelay?: number;
   /**
-   * @ignore
+   * The ear monitor delay (ms), which is the delay from microphone input to headphone output.
    */
   earMonitorDelay?: number;
   /**
-   * @ignore
+   * Acoustic echo cancellation (AEC) module estimated delay (ms), which is the signal delay between when audio is played locally before being locally captured.
    */
   aecEstimatedDelay?: number;
+  /**
+   * @ignore
+   */
+  aedVoiceRes?: number;
+  /**
+   * @ignore
+   */
+  aedMusicRes?: number;
 }
 
 /**
@@ -2576,19 +2640,19 @@ export class RtcImage {
    */
   url?: string;
   /**
-   * The x coordinate (pixel) of the image on the video frame (taking the upper left corner of the video frame as the origin).
+   * The x-coordinate (px) of the image on the video frame (taking the upper left corner of the video frame as the origin).
    */
   x?: number;
   /**
-   * The y coordinate (pixel) of the image on the video frame (taking the upper left corner of the video frame as the origin).
+   * The y-coordinate (px) of the image on the video frame (taking the upper left corner of the video frame as the origin).
    */
   y?: number;
   /**
-   * The width (pixel) of the image on the video frame.
+   * The width (px) of the image on the video frame.
    */
   width?: number;
   /**
-   * The height (pixel) of the image on the video frame.
+   * The height (px) of the image on the video frame.
    */
   height?: number;
   /**
@@ -3239,7 +3303,7 @@ export class VideoCanvas {
    */
   uid?: number;
   /**
-   * @ignore
+   * Reserved for future use.
    */
   subviewUid?: number;
   /**
@@ -3269,7 +3333,7 @@ export class VideoCanvas {
    */
   cropArea?: Rectangle;
   /**
-   * (Optional) Whether the receiver enables alpha mask rendering: true : The receiver enables alpha mask rendering. false : (default) The receiver disables alpha mask rendering. Alpha mask rendering can create images with transparent effects and extract portraits from videos. When used in combination with other methods, you can implement effects such as picture-in-picture and watermarking.
+   * (Optional) Whether the receiver enables alpha mask rendering: true : The receiver enables alpha mask rendering. false : (default) The receiver disables alpha mask rendering. Alpha mask rendering can create images with transparent effects and extract portraits from videos. When used in combination with other methods, you can implement effects such as portrait-in-picture and watermarking.
    *  This property applies to macOS only.
    *  The receiver can render alpha channel information only when the sender enables alpha transmission.
    *  To enable alpha transmission,.
@@ -3470,11 +3534,11 @@ export class VirtualBackgroundSource {
    */
   background_source_type?: BackgroundSourceType;
   /**
-   * The type of the custom background image. The color of the custom background image. The format is a hexadecimal integer defined by RGB, without the # sign, such as 0xFFB6C1 for light pink. The default value is 0xFFFFFF, which signifies white. The value range is [0x000000, 0xffffff]. If the value is invalid, the SDK replaces the original background image with a white background image. This parameter takes effect only when the type of the custom background image is BackgroundColor.
+   * The type of the custom background image. The color of the custom background image. The format is a hexadecimal integer defined by RGB, without the # sign, such as 0xFFB6C1 for light pink. The default value is 0xFFFFFF, which signifies white. The value range is [0x000000, 0xffffff]. If the value is invalid, the SDK replaces the original background image with a white background image. This parameter is only applicable to custom backgrounds of the following types: BackgroundColor : The background image is a solid-colored image of the color passed in by the parameter. BackgroundImg : If the image in source has a transparent background, the transparent background will be filled with the color passed in by the parameter.
    */
   color?: number;
   /**
-   * The local absolute path of the custom background image. PNG and JPG formats are supported. If the path is invalid, the SDK replaces the original background image with a white background image. This parameter takes effect only when the type of the custom background image is BackgroundImg.
+   * The local absolute path of the custom background image. Supports PNG, JPG, MP4, AVI, MKV, and FLV formats. If the path is invalid, the SDK will use either the original background image or the solid color image specified by color. This parameter takes effect only when the type of the custom background image is BackgroundImg or BackgroundVideo.
    */
   source?: string;
   /**
@@ -4081,7 +4145,7 @@ export enum ChannelMediaRelayError {
    */
   RelayErrorServerErrorResponse = 1,
   /**
-   * 2: No server response. You can call leaveChannel to leave the channel. This error can also occur if your project has not enabled co-host token authentication. You can to enable the service for cohosting across channels before starting a channel media relay.
+   * 2: No server response. This error may be caused by poor network connections. If this error occurs when initiating a channel media relay, you can try again later; if this error occurs during channel media relay, you can call leaveChannel to leave the channel. This error can also occur if the channel media relay service is not enabled in the project. You can contact to enable the service.
    */
   RelayErrorServerNoResponse = 2,
   /**
@@ -4123,39 +4187,39 @@ export enum ChannelMediaRelayError {
 }
 
 /**
- * The event code of channel media relay.
+ * @ignore
  */
 export enum ChannelMediaRelayEvent {
   /**
-   * 0: The user disconnects from the server due to a poor network connection.
+   * @ignore
    */
   RelayEventNetworkDisconnected = 0,
   /**
-   * 1: The user is connected to the server.
+   * @ignore
    */
   RelayEventNetworkConnected = 1,
   /**
-   * 2: The user joins the source channel.
+   * @ignore
    */
   RelayEventPacketJoinedSrcChannel = 2,
   /**
-   * 3: The user joins the target channel.
+   * @ignore
    */
   RelayEventPacketJoinedDestChannel = 3,
   /**
-   * 4: The SDK starts relaying the media stream to the target channel.
+   * @ignore
    */
   RelayEventPacketSentToDestChannel = 4,
   /**
-   * 5: The server receives the audio stream from the source channel.
+   * @ignore
    */
   RelayEventPacketReceivedVideoFromSrc = 5,
   /**
-   * 6: The server receives the audio stream from the source channel.
+   * @ignore
    */
   RelayEventPacketReceivedAudioFromSrc = 6,
   /**
-   * 7: The target channel is updated.
+   * @ignore
    */
   RelayEventPacketUpdateDestChannel = 7,
   /**
@@ -4163,31 +4227,31 @@ export enum ChannelMediaRelayEvent {
    */
   RelayEventPacketUpdateDestChannelRefused = 8,
   /**
-   * 9: The target channel does not change, which means that the target channel fails to be updated.
+   * @ignore
    */
   RelayEventPacketUpdateDestChannelNotChange = 9,
   /**
-   * 10: The target channel name is null.
+   * @ignore
    */
   RelayEventPacketUpdateDestChannelIsNull = 10,
   /**
-   * 11: The video profile is sent to the server.
+   * @ignore
    */
   RelayEventVideoProfileUpdate = 11,
   /**
-   * 12: The SDK successfully pauses relaying the media stream to target channels.
+   * @ignore
    */
   RelayEventPauseSendPacketToDestChannelSuccess = 12,
   /**
-   * 13: The SDK fails to pause relaying the media stream to target channels.
+   * @ignore
    */
   RelayEventPauseSendPacketToDestChannelFailed = 13,
   /**
-   * 14: The SDK successfully resumes relaying the media stream to target channels.
+   * @ignore
    */
   RelayEventResumeSendPacketToDestChannelSuccess = 14,
   /**
-   * 15: The SDK fails to resume relaying the media stream to target channels.
+   * @ignore
    */
   RelayEventResumeSendPacketToDestChannelFailed = 15,
 }
@@ -4507,7 +4571,7 @@ export class EchoTestConfiguration {
    */
   enableAudio?: boolean;
   /**
-   * Whether to enable the video device for the loop test: true : (Default) Enable the video device. To test the video device, set this parameter as true. false : Disable the video device.
+   * Whether to enable the video device for the loop test. Currently, video device loop test is not supported. Please set this parameter to false.
    */
   enableVideo?: boolean;
   /**
@@ -4754,7 +4818,7 @@ export class SpatialAudioParams {
   speaker_attenuation?: number;
   /**
    * Whether to enable the Doppler effect: When there is a relative displacement between the sound source and the receiver of the sound source, the tone heard by the receiver changes. true : Enable the Doppler effect. false : (Default) Disable the Doppler effect.
-   *  This parameter is suitable for scenarios where the sound source is moving at high speed (for example, racing games). It is not recommended for common audio and video interactive scenarios (for example, voice chat, cohosting, or online KTV).
+   *  This parameter is suitable for scenarios where the sound source is moving at high speed (for example, racing games). It is not recommended for common audio and video interactive scenarios (for example, voice chat, co-streaming, or online KTV).
    *  When this parameter is enabled, Agora recommends that you set a regular period (such as 30 ms), and then call the updatePlayerPositionInfo, updateSelfPosition, and updateRemotePosition methods to continuously update the relative distance between the sound source and the receiver. The following factors can cause the Doppler effect to be unpredictable or the sound to be jittery: the period of updating the distance is too long, the updating period is irregular, or the distance information is lost due to network packet loss or delay.
    */
   enable_doppler?: boolean;

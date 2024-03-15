@@ -2,6 +2,28 @@ import './extension/AgoraMediaBaseExtension';
 import { EncodedVideoFrameInfo } from './AgoraBase';
 
 /**
+ * @ignore
+ */
+export class ExtensionContext {
+  /**
+   * @ignore
+   */
+  isValid?: boolean;
+  /**
+   * @ignore
+   */
+  uid?: number;
+  /**
+   * @ignore
+   */
+  providerName?: string;
+  /**
+   * @ignore
+   */
+  extensionName?: string;
+}
+
+/**
  * The type of the video source.
  */
 export enum VideoSourceType {
@@ -192,7 +214,7 @@ export enum MediaSourceType {
    */
   PrimaryCameraSource = 2,
   /**
-   * 3: The secondary camera.
+   * 3: A secondary camera.
    */
   SecondaryCameraSource = 3,
   /**
@@ -204,7 +226,7 @@ export enum MediaSourceType {
    */
   SecondaryScreenSource = 5,
   /**
-   * @ignore
+   * 6. Custom video source.
    */
   CustomVideoSource = 6,
   /**
@@ -692,7 +714,7 @@ export enum MediaPlayerSourceType {
  */
 export enum VideoModulePosition {
   /**
-   * 1: The post-capturer position, which corresponds to the video data in the onCaptureVideoFrame callback.
+   * 1: The location of the locally collected video data after preprocessing corresponds to the onCaptureVideoFrame callback. The observed video here has the effect of video pre-processing, which can be verified by enabling image enhancement, virtual background, or watermark.
    */
   PositionPostCapturer = 1 << 0,
   /**
@@ -700,7 +722,9 @@ export enum VideoModulePosition {
    */
   PositionPreRenderer = 1 << 1,
   /**
-   * 4: The pre-encoder position, which corresponds to the video data in the onPreEncodeVideoFrame callback.
+   * 4: The pre-encoder position, which corresponds to the video data in the onPreEncodeVideoFrame callback. The observed video here has the effects of video pre-processing and encoding pre-processing.
+   *  To verify the pre-processing effects of the video, you can enable image enhancement, virtual background, or watermark.
+   *  To verify the pre-encoding processing effect, you can set a lower frame rate (for example, 5 fps).
    */
   PositionPreEncoder = 1 << 2,
 }
@@ -1127,7 +1151,7 @@ export enum MediaRecorderStreamType {
  */
 export enum RecorderState {
   /**
-   * -1: An error occurs during the recording. See for the reason.
+   * -1: An error occurs during the recording. See RecorderReasonCode for the reason.
    */
   RecorderStateError = -1,
   /**
