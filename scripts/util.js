@@ -3,6 +3,7 @@ const os = require('os');
 const fs = require('fs-extra');
 
 const getConfig = require('./getConfig');
+const logger = require('./logger');
 
 exports.getOS = () => {
   const { platform } = getConfig();
@@ -16,3 +17,12 @@ exports.getOS = () => {
 };
 
 exports.createTmpDir = async () => await fs.mkdtemp(`${os.tmpdir()}_AgoraTmp`);
+
+exports.moveFile = (sp, tp) => {
+  logger.info(`move file from ${sp} to ${tp}`);
+  fs.rename(sp, tp, function (err) {
+    if (err) {
+      throw err;
+    }
+  });
+};

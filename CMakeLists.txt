@@ -61,7 +61,7 @@ file(GLOB TARGET_AGORA_NODE_EXT_FILE
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
   set(AGORA_IRIS_PROJECT_ARCH "MAC")
   set(AGORA_RTC_SDK_PATH
-          ${CMAKE_CURRENT_SOURCE_DIR}/native/libs
+          ${CMAKE_CURRENT_SOURCE_DIR}/native/Agora_Native_SDK_for_Mac_FULL/libs
           )
   # native rtc sdk library
   set(AGORA_RTC_SDK_LIBRARY
