@@ -5,17 +5,23 @@ const download = require('download');
 const { destIrisSDKDir, cleanDir, destNativeSDKDir } = require('./clean');
 const getConfig = require('./getConfig');
 const logger = require('./logger');
-const { getOS, moveFile } = require('./util');
+const { getOS, moveFile, getIrisStandAlone } = require('./util');
 
 const config = getConfig();
 
 const { iris_sdk_mac, iris_sdk_win, native_sdk_mac, native_sdk_win } = config;
 
-const downloadSDK = async ({ preHook, postHook, sdkURL, destDir }) => {
+const downloadSDK = async ({
+  preHook,
+  postHook,
+  sdkURL,
+  destDir,
+  strip = 1,
+}) => {
   logger.info(`Downloading:${sdkURL}`);
   await preHook();
   await download(sdkURL, destDir, {
-    strip: 1,
+    strip: strip,
     extract: true,
     filter: (file) => {
       return (
@@ -31,34 +37,25 @@ const downloadSDK = async ({ preHook, postHook, sdkURL, destDir }) => {
 
 const syncLib = async (cb) => {
   const os = getOS();
-  let iris_standalone = false;
-  if (
-    (os === 'mac' &&
-      iris_sdk_mac &&
-      iris_sdk_mac.indexOf('standalone') !== -1) ||
-    (os === 'win' && iris_sdk_win && iris_sdk_win.indexOf('standalone') !== -1)
-  ) {
-    iris_standalone = true;
-    logger.info('iris use standalone package');
-  }
+  let irisStandAlone = getIrisStandAlone();
   await downloadSDK({
     preHook: () => {
       cleanDir(destIrisSDKDir);
     },
     postHook: () => {
-      if (iris_standalone) {
+      if (irisStandAlone) {
         cleanDir(destNativeSDKDir);
       }
     },
     sdkURL: os === 'mac' ? iris_sdk_mac : iris_sdk_win,
     destDir: destIrisSDKDir,
   });
-
-  if (iris_standalone) {
+  if (irisStandAlone) {
     await downloadSDK({
       preHook: () => {
         cleanDir(destNativeSDKDir);
       },
+      strip: 0,
       sdkURL: os === 'mac' ? native_sdk_mac : native_sdk_win,
       destDir: destNativeSDKDir,
     });

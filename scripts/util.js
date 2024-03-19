@@ -26,3 +26,22 @@ exports.moveFile = (sp, tp) => {
     }
   });
 };
+
+exports.getIrisStandAlone = () => {
+  const { iris_sdk_mac, iris_sdk_win } = getConfig();
+  const os = this.getOS();
+  if (
+    (os === 'mac' &&
+      iris_sdk_mac &&
+      iris_sdk_mac.toLowerCase().indexOf('standalone') !== -1) ||
+    (os === 'win' &&
+      iris_sdk_win &&
+      iris_sdk_win.toLowerCase().indexOf('standalone') !== -1)
+  ) {
+    logger.info('iris use standalone package');
+    return true;
+  } else {
+    logger.info('iris use non-standalone package');
+    return false;
+  }
+};
