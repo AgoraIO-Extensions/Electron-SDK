@@ -34,7 +34,7 @@ exports.getIrisStandAlone = () => {
     (os === 'mac' &&
       iris_sdk_mac &&
       iris_sdk_mac.toLowerCase().indexOf('standalone') !== -1) ||
-    (os === 'win' &&
+    (os === 'win32' &&
       iris_sdk_win &&
       iris_sdk_win.toLowerCase().indexOf('standalone') !== -1)
   ) {
