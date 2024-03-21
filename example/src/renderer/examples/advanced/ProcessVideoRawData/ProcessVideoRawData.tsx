@@ -9,10 +9,7 @@ import {
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
 import download from 'download';
-import ffi, {
-  LibraryObject,
-  LibraryObjectDefinitionToLibraryDefinition,
-} from 'ffi-napi';
+import ffi, { IKoffiLib } from 'koffi';
 import React, { ReactElement } from 'react';
 
 import {
@@ -33,12 +30,21 @@ if (process.platform === 'darwin') {
 }
 pluginName += postfix;
 
-type PluginType = {
-  EnablePlugin: ['bool', ['uint64']];
-  DisablePlugin: ['bool', ['uint64']];
-  CreateSamplePlugin: ['uint64', ['uint64']];
-  DestroySamplePlugin: ['void', ['uint64']];
-  CreateSampleAudioPlugin: ['uint64', ['uint64']];
+type FuncConfig = {
+  returnType: string;
+  paramTypes: string[];
+};
+
+type PluginConfig = {
+  [funcName: string]: FuncConfig;
+};
+
+const pluginConfig: PluginConfig = {
+  CreateSampleAudioPlugin: { returnType: 'uint64', paramTypes: ['uint64'] },
+  CreateSamplePlugin: { returnType: 'uint64', paramTypes: ['uint64'] },
+  DestroySamplePlugin: { returnType: 'void', paramTypes: ['uint64'] },
+  DisablePlugin: { returnType: 'bool', paramTypes: ['uint64'] },
+  EnablePlugin: { returnType: 'bool', paramTypes: ['uint64'] },
 };
 
 interface State extends BaseVideoComponentState {
@@ -49,9 +55,16 @@ export default class ProcessVideoRawData
   extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler
 {
-  pluginLibrary?: LibraryObject<
-    LibraryObjectDefinitionToLibraryDefinition<PluginType>
-  >;
+  nativeLib?: IKoffiLib;
+  pluginLibrary: {
+    [funcName: string]: Function;
+  } = {
+    CreateSampleAudioPlugin: () => {},
+    CreateSamplePlugin: () => {},
+    DestroySamplePlugin: () => {},
+    DisablePlugin: () => {},
+    EnablePlugin: () => {},
+  };
   plugin?: string | number;
   pluginAudio?: string | number;
 
@@ -137,21 +150,24 @@ export default class ProcessVideoRawData
       console.log(`download success`);
     }
 
-    const plugin: PluginType = {
-      CreateSampleAudioPlugin: ['uint64', ['uint64']],
-      CreateSamplePlugin: ['uint64', ['uint64']],
-      DestroySamplePlugin: ['void', ['uint64']],
-      DisablePlugin: ['bool', ['uint64']],
-      EnablePlugin: ['bool', ['uint64']],
-    };
-    this.pluginLibrary ??= ffi.Library(dllPath, plugin);
+    this.nativeLib ??= ffi.load(dllPath);
+
+    for (const [funcName, { returnType, paramTypes }] of Object.entries(
+      pluginConfig
+    )) {
+      this.pluginLibrary[funcName] = this.nativeLib.func(
+        funcName,
+        returnType,
+        paramTypes
+      );
+    }
 
     const handle = this.engine?.getNativeHandle();
     if (handle !== undefined) {
-      this.plugin = this.pluginLibrary.CreateSamplePlugin(handle);
-      this.pluginLibrary.EnablePlugin(this.plugin);
-      this.pluginAudio = this.pluginLibrary.CreateSampleAudioPlugin(handle);
-      this.pluginLibrary.EnablePlugin(this.pluginAudio);
+      this.plugin = this.pluginLibrary.CreateSamplePlugin?.(handle);
+      this.pluginLibrary.EnablePlugin?.(this.plugin);
+      this.pluginAudio = this.pluginLibrary.CreateSampleAudioPlugin?.(handle);
+      this.pluginLibrary.EnablePlugin?.(this.pluginAudio);
     }
     this.setState({ enablePlugin: true });
   };
@@ -161,16 +177,16 @@ export default class ProcessVideoRawData
    */
   disablePlugin = () => {
     if (this.plugin) {
-      this.pluginLibrary?.DisablePlugin(this.plugin);
-      this.pluginLibrary?.DestroySamplePlugin(this.plugin);
+      this.pluginLibrary.DisablePlugin?.(this.plugin);
+      this.pluginLibrary.DestroySamplePlugin?.(this.plugin);
       this.plugin = undefined;
     } else {
       this.error('plugin is invalid');
     }
 
     if (this.pluginAudio) {
-      this.pluginLibrary?.DisablePlugin(this.pluginAudio);
-      this.pluginLibrary?.DestroySamplePlugin(this.pluginAudio);
+      this.pluginLibrary.DisablePlugin?.(this.pluginAudio);
+      this.pluginLibrary.DestroySamplePlugin?.(this.pluginAudio);
       this.pluginAudio = undefined;
     } else {
       this.error('pluginAudio is invalid');

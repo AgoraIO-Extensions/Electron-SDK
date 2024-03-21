@@ -3,12 +3,19 @@ const path = require('path');
 const download = require('download');
 const fs = require('fs-extra');
 
-const { cleanBuildDir, buildDir } = require('./clean');
+const { cleanDir, buildDir } = require('./clean');
 const getConfig = require('./getConfig');
 const logger = require('./logger');
 const { getOS } = require('./util');
 
-const { platform, packageVersion, arch, no_symbol } = getConfig();
+const {
+  platform,
+  packageVersion,
+  arch,
+  no_symbol,
+  native_sdk_mac,
+  native_sdk_win,
+} = getConfig();
 
 const workspaceDir = `${path.join(__dirname, '..')}`;
 
@@ -18,6 +25,28 @@ const getDownloadURL = () => {
     downloadUrl = `https://download.agora.io/sdk/release/Electron-win64-${packageVersion}-napi.zip`;
   }
   return downloadUrl;
+};
+
+const getNativeDownloadURL = () => {
+  let downloadUrl = '';
+  if (platform === 'win32' && arch === 'x64') {
+    downloadUrl = native_sdk_win;
+  } else if (platform === 'darwin') {
+    downloadUrl = native_sdk_mac;
+  }
+  return downloadUrl;
+};
+
+const matchNativeFile = (path) => {
+  if (platform === 'win32' && arch === 'ia32') {
+    return /^sdk\/x86\/.*\.dll$/.test(path);
+  } else if (platform === 'win32' && arch === 'x64') {
+    return /^sdk\/x86_64\/.*\.dll$/.test(path);
+  } else if (platform === 'darwin') {
+    return /^libs\/.*\.xcframework\/macos-arm64_x86_64\/.*\.framework$/.test(
+      path
+    );
+  }
 };
 
 const macNoSymbolList = [
@@ -70,9 +99,10 @@ const removeFileByFilter = async () => {
 };
 
 module.exports = async () => {
-  await cleanBuildDir();
+  await cleanDir(buildDir);
 
   const downloadUrl = getDownloadURL();
+  const nativeDownloadURL = getNativeDownloadURL();
 
   /** start download */
   logger.info('Package Version: %s', packageVersion);
@@ -92,6 +122,23 @@ module.exports = async () => {
       );
     },
   });
+
+  if (nativeDownloadURL) {
+    logger.info('Native SDK URL  %s ', nativeDownloadURL);
+    logger.info('Downloading native SDK for Agora Electron SDK...');
+    await download(nativeDownloadURL, `${buildDir}/Release`, {
+      strip: 1,
+      extract: true,
+      filter: (file) => {
+        return (
+          file.type !== 'directory' &&
+          matchNativeFile(file.path) &&
+          !file.path.endsWith(path.sep) &&
+          file.data.length !== 0
+        );
+      },
+    });
+  }
 
   if (no_symbol) {
     await removeFileByFilter();

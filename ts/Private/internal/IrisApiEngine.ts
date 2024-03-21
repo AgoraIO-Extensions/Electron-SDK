@@ -9,6 +9,7 @@ import {
   IAudioFrameObserver,
   IAudioPcmFrameSink,
   IAudioSpectrumObserver,
+  IFaceInfoObserver,
   IMediaRecorderObserver,
   IVideoEncodedFrameObserver,
   IVideoFrameObserver,
@@ -36,6 +37,7 @@ import {
   processIAudioFrameObserverBase,
   processIAudioPcmFrameSink,
   processIAudioSpectrumObserver,
+  processIFaceInfoObserver,
   processIMediaRecorderObserver,
   processIVideoEncodedFrameObserver,
   processIVideoFrameObserver,
@@ -126,7 +128,8 @@ type ProcessorType =
   | IDirectCdnStreamingEventHandler
   | IRtcEngineEventHandler
   | IMusicContentCenterEventHandler
-  | IH265TranscoderObserver;
+  | IH265TranscoderObserver
+  | IFaceInfoObserver;
 
 type EventProcessors = {
   IAudioFrameObserver: EventProcessor<IAudioFrameObserver>;
@@ -143,6 +146,7 @@ type EventProcessors = {
   IRtcEngineEventHandler: EventProcessor<IRtcEngineEventHandler>;
   IMusicContentCenterEventHandler: EventProcessor<IMusicContentCenterEventHandler>;
   IH265TranscoderObserver: EventProcessor<IH265TranscoderObserver>;
+  IFaceInfoObserver: EventProcessor<IFaceInfoObserver>;
 };
 
 /**
@@ -367,6 +371,12 @@ export const EVENT_PROCESSORS: EventProcessors = {
     type: () => EVENT_TYPE.IAgoraH265Transcoder,
     func: [processIH265TranscoderObserver],
     handlers: () => H265TranscoderInternal._h265_transcoder_observers,
+  },
+  IFaceInfoObserver: {
+    suffix: 'FaceInfoObserver_',
+    type: () => EVENT_TYPE.IMediaEngine,
+    func: [processIFaceInfoObserver],
+    handlers: () => MediaEngineInternal._face_info_observers,
   },
 };
 

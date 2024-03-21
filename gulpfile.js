@@ -2,7 +2,13 @@ const gulp = require('gulp');
 
 const build = require('./scripts/build');
 const buildJS = require('./scripts/buildJS');
-const { cleanBuildDir, cleanJSDir, cleanIrisDir } = require('./scripts/clean');
+const {
+  buildDir,
+  jsDir,
+  cleanDir,
+  destIrisSDKDir,
+  destNativeSDKDir,
+} = require('./scripts/clean');
 const downloadPrebuild = require('./scripts/downloadPrebuild');
 const getConfig = require('./scripts/getConfig');
 const logger = require('./scripts/logger');
@@ -13,9 +19,10 @@ const config = getConfig();
 logger.info(`Get Config: \n${JSON.stringify(config, undefined, 4)}`);
 
 const clean = async (cb) => {
-  await cleanIrisDir();
-  await cleanBuildDir();
-  await cleanJSDir();
+  await cleanDir(destIrisSDKDir);
+  await cleanDir(destNativeSDKDir);
+  await cleanDir(buildDir);
+  await cleanDir(jsDir);
   cb();
 };
 

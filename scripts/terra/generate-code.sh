@@ -17,4 +17,3 @@ cd ${PROJECT_ROOT}
 
 npm run build:ts-interface
 
-npm run lint -- --fix
