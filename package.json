@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "3.6.1-rc.127-build.314",
+  "version": "3.6.1-rc.128-build.326",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -75,7 +75,7 @@
   },
   "agora_electron": {
     "lib_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_v3.6.1.127_FULL_20240311_9716_295258.zip",
-    "lib_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v3.6.1.8_FULL_20220726_2811_222960.zip"
+    "lib_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v3.6.1.128_FULL_20240322_3548_296533.zip"
   },
   "keywords": [
     "electron",
