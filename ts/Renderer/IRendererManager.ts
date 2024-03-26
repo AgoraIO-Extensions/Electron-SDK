@@ -34,9 +34,15 @@ export abstract class IRendererManager {
    * @ignore
    */
   private _context: RendererContext;
+  /**
+   * @ignore
+   */
+  private _webCodecDecoderEnabled: boolean;
 
   constructor() {
     this._renderingFps = 15;
+    //todo Enable the WebCodecDecoder by default temporarily
+    this._webCodecDecoderEnabled = true;
     this._currentFrameCount = 0;
     this._previousFirstFrameTime = 0;
     this._rendererCaches = [];
@@ -44,6 +50,14 @@ export abstract class IRendererManager {
       renderMode: RenderModeType.RenderModeHidden,
       mirrorMode: VideoMirrorModeType.VideoMirrorModeDisabled,
     };
+  }
+
+  public set webCodecDecoderEnabled(value: boolean) {
+    this._webCodecDecoderEnabled = value;
+  }
+
+  public get webCodecDecoderEnabled(): boolean {
+    return this._webCodecDecoderEnabled;
   }
 
   public set renderingFps(fps: number) {
