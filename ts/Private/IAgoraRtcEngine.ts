@@ -2172,11 +2172,7 @@ export interface IRtcEngineEventHandler {
   ): void;
 
   /**
-   * Reports events during the media stream relay.
-   *
-   * Deprecated: This callback is deprecated.
-   *
-   * @param code The event code of channel media relay. See ChannelMediaRelayEvent.
+   * @ignore
    */
   onChannelMediaRelayEvent?(code: ChannelMediaRelayEvent): void;
 
@@ -2996,38 +2992,7 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
-   * Preloads a channel with token, channelId, and userAccount.
-   *
-   * When audience members need to switch between different channels frequently, calling the method can help shortening the time of joining a channel, thus reducing the time it takes for audience members to hear and see the host. As it may take a while for the SDK to preload a channel, Agora recommends that you call this method as soon as possible after obtaining the channel name and user ID to join a channel. If you join a preloaded channel, leave it and want to rejoin the same channel, you do not need to call this method unless the token for preloading the channel expires.
-   *  Failing to preload a channel does not mean that you can't join a channel, nor will it increase the time of joining a channel.
-   *  One IRtcEngine instance supports preloading 20 channels at most. When exceeding this limit, the latest 20 preloaded channels take effect.
-   *  When calling this method, ensure you set the user role as audience and do not set the audio scenario as AudioScenarioChorus, otherwise, this method does not take effect.
-   *  You also need to make sure that the User Account, channel ID and token passed in for preloading are the same as the values passed in when joining the channel, otherwise, this method does not take effect.
-   *
-   * @param token The token generated on your server for authentication. When the token for preloading channels expires, you can update the token based on the number of channels you preload.
-   *  When preloading one channel, calling this method to pass in the new token.
-   *  When preloading more than one channels:
-   *  If you use a wildcard token for all preloaded channels, call updatePreloadChannelToken to update the token. When generating a wildcard token, ensure the user ID is not set as 0.
-   *  If you use different tokens to preload different channels, call this method to pass in your user ID, channel name and the new token.
-   * @param channelId The channel name that you want to preload. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters (89 characters in total):
-   *  All lowercase English letters: a to z.
-   *  All uppercase English letters: A to Z.
-   *  All numeric characters: 0 to 9.
-   *  Space
-   *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
-   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null. Supported characters are (89 in total):
-   *  The 26 lowercase English letters: a to z.
-   *  The 26 uppercase English letters: A to Z.
-   *  All numeric characters: 0 to 9.
-   *  Space
-   *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
-   *  -2: The parameter is invalid. For example, the User Account is empty. You need to pass in a valid parameter and join the channel again.
-   *  -7: The IRtcEngine object has not been initialized. You need to initialize the IRtcEngine object before calling this method.
-   *  -102: The channel name is invalid. You need to pass in a valid channel name and join the channel again.
+   * @ignore
    */
   abstract preloadChannelWithUserAccount(
     token: string,
@@ -5548,15 +5513,7 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
-   * Gets the audio device information.
-   *
-   * After calling this method, you can get whether the audio device supports ultra-low-latency capture and playback.
-   *  You can call this method either before or after joining a channel.
-   *
-   * @returns
-   * The DeviceInfo object that identifies the audio device information.
-   *  Not null: Success.
-   *  Null: Failure.
+   * @ignore
    */
   abstract getAudioDeviceInfo(): DeviceInfo;
 
@@ -6353,41 +6310,14 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
-   * Starts relaying media streams across channels. This method can be used to implement scenarios such as co-host across channels.
-   *
-   * Deprecated: This method is deprecated. Use startOrUpdateChannelMediaRelay instead. After a successful method call, the SDK triggers the onChannelMediaRelayStateChanged and onChannelMediaRelayEvent callbacks, and these callbacks return the state and events of the media stream relay.
-   *  If the onChannelMediaRelayStateChanged callback returns RelayStateRunning (2) and RelayOk (0), and the onChannelMediaRelayEvent callback returns RelayEventPacketSentToDestChannel (4), it means that the SDK starts relaying media streams between the source channel and the target channel.
-   *  If the onChannelMediaRelayStateChanged callback returns RelayStateFailure (3), an exception occurs during the media stream relay.
-   *  Call this method after joining the channel.
-   *  This method takes effect only when you are a host in a live streaming channel.
-   *  After a successful method call, if you want to call this method again, ensure that you call the stopChannelMediaRelay method to quit the current relay.
-   *  The relaying media streams across channels function needs to be enabled by contacting.
-   *  Agora does not support string user accounts in this API.
-   *
-   * @param configuration The configuration of the media stream relay. See ChannelMediaRelayConfiguration.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
-   *  -1: A general error occurs (no specified reason).
-   *  -2: The parameter is invalid.
-   *  -7: The method call was rejected. It may be because the SDK has not been initialized successfully, or the user role is not a host.
-   *  -8: Internal state error. Probably because the user is not a broadcaster.
+   * @ignore
    */
   abstract startChannelMediaRelay(
     configuration: ChannelMediaRelayConfiguration
   ): number;
 
   /**
-   * Updates the channels for media stream relay.
-   *
-   * Deprecated: This method is deprecated. Use startOrUpdateChannelMediaRelay instead. After the media relay starts, if you want to relay the media stream to more channels, or leave the current relay channel, you can call this method. After a successful method call, the SDK triggers the onChannelMediaRelayEvent callback with the RelayEventPacketUpdateDestChannel (7) state code. Call the method after successfully calling the startChannelMediaRelay method and receiving onChannelMediaRelayStateChanged (RelayStateRunning, RelayOk); otherwise, the method call fails.
-   *
-   * @param configuration The configuration of the media stream relay. See ChannelMediaRelayConfiguration.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
+   * @ignore
    */
   abstract updateChannelMediaRelay(
     configuration: ChannelMediaRelayConfiguration
