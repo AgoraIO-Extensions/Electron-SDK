@@ -1,11 +1,9 @@
 import {
-  AgoraEnv,
   ChannelProfileType,
   ClientRoleType,
   DegradationPreference,
   IRtcEngineEventHandler,
   OrientationMode,
-  RENDER_MODE,
   RenderModeType,
   VideoCodecType,
   VideoMirrorModeType,
@@ -37,8 +35,7 @@ interface State extends BaseVideoComponentState {
   bitrate: number;
   minBitrate: number;
   orientationMode: OrientationMode;
-  renderMode: RENDER_MODE;
-  renderModeType: RenderModeType;
+  renderMode: RenderModeType;
   degradationPreference: DegradationPreference;
   mirrorMode: VideoMirrorModeType;
 }
@@ -64,8 +61,7 @@ export default class VideoEncoderConfiguration
       bitrate: 0,
       minBitrate: -1,
       orientationMode: OrientationMode.OrientationModeAdaptive,
-      renderMode: RENDER_MODE.WEBGL,
-      renderModeType: RenderModeType.RenderModeFit,
+      renderMode: RenderModeType.RenderModeHidden,
       degradationPreference: DegradationPreference.MaintainQuality,
       mirrorMode: VideoMirrorModeType.VideoMirrorModeDisabled,
     };
@@ -130,18 +126,9 @@ export default class VideoEncoderConfiguration
   /**
    * Step 3-1: setRenderMode,need leave and join channel again
    */
-  setRenderMode = () => {
-    const { renderMode } = this.state;
-    // @ts-ignore
-    AgoraEnv?.AgoraRendererManager?.['setRenderMode'](renderMode);
-  };
-
-  /**
-   * Step 3-2: setVideoRenderMode
-   */
   setVideoRenderMode = () => {
-    const { renderModeType, mirrorMode } = this.state;
-    this.engine?.setLocalRenderMode(renderModeType, mirrorMode);
+    const { renderMode, mirrorMode } = this.state;
+    this.engine?.setLocalRenderMode(renderMode, mirrorMode);
   };
 
   /**
@@ -194,7 +181,6 @@ export default class VideoEncoderConfiguration
       codecType,
       orientationMode,
       renderMode,
-      renderModeType,
       degradationPreference,
       mirrorMode,
     } = this.state;
@@ -284,16 +270,6 @@ export default class VideoEncoderConfiguration
         />
         <AgoraDivider />
         <AgoraDropdown
-          title={'renderMode'}
-          items={enumToItems(RENDER_MODE)}
-          value={renderMode}
-          onValueChange={(value) => {
-            this.setState({ renderMode: value });
-          }}
-        />
-        <AgoraButton title={`set Render Mode`} onPress={this.setRenderMode} />
-        <AgoraDivider />
-        <AgoraDropdown
           title={'mirrorMode'}
           items={enumToItems(VideoMirrorModeType)}
           value={mirrorMode}
@@ -302,11 +278,11 @@ export default class VideoEncoderConfiguration
           }}
         />
         <AgoraDropdown
-          title={'renderModeType'}
+          title={'renderMode'}
           items={enumToItems(RenderModeType)}
-          value={renderModeType}
+          value={renderMode}
           onValueChange={(value) => {
-            this.setState({ renderModeType: value });
+            this.setState({ renderMode: value });
           }}
         />
         <AgoraButton

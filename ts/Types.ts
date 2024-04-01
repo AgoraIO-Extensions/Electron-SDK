@@ -1,5 +1,7 @@
-import { RenderModeType, VideoSourceType } from './Private/AgoraMediaBase';
-import { IRenderer, IRendererManager } from './Renderer';
+import { VideoCanvas } from './Private/AgoraBase';
+import { VideoFrame } from './Private/AgoraMediaBase';
+import { RtcConnection } from './Private/IAgoraRtcEngineEx';
+import { IRendererManager } from './Renderer';
 
 /**
  * @ignore
@@ -36,51 +38,7 @@ export interface AgoraEnvType extends AgoraEnvOptions {
 /**
  * @ignore
  */
-export interface CanvasOptions {
-  /**
-   * @ignore
-   */
-  frameWidth: number;
-  /**
-   * @ignore
-   */
-  frameHeight: number;
-  /**
-   * @ignore
-   */
-  rotation: number;
-  /**
-   * @ignore
-   */
-  contentMode: RenderModeType;
-  /**
-   * @ignore
-   */
-  clientWidth: number;
-  /**
-   * @ignore
-   */
-  clientHeight: number;
-}
-
-/**
- * @ignore
- */
-export interface RendererOptions {
-  /**
-   * @ignore
-   */
-  contentMode?: RenderModeType;
-  /**
-   * @ignore
-   */
-  mirror?: boolean;
-}
-
-/**
- * @ignore
- */
-export enum RENDER_MODE {
+export enum RendererType {
   /**
    * @ignore
    */
@@ -91,129 +49,14 @@ export enum RENDER_MODE {
   SOFTWARE = 2,
 }
 
-export type User = 'local' | 'videoSource' | number | string;
+export type RENDER_MODE = RendererType;
 
-export type Channel = '' | string;
+export type RendererContext = VideoCanvas & RtcConnection;
 
-/**
- * @ignore
- */
-export interface RendererVideoConfig {
-  /**
-   * @ignore
-   */
-  videoSourceType?: VideoSourceType;
-  /**
-   * @ignore
-   */
-  channelId?: Channel;
-  /**
-   * @ignore
-   */
-  uid?: number;
-  /**
-   * @ignore
-   */
-  view?: HTMLElement;
-  /**
-   * @ignore
-   */
-  rendererOptions?: RendererOptions;
-}
-
-/**
- * @ignore
- */
-export interface FormatRendererVideoConfig {
-  /**
-   * @ignore
-   */
-  videoSourceType: VideoSourceType;
-  /**
-   * @ignore
-   */
-  channelId: Channel;
-  /**
-   * @ignore
-   */
-  uid: number;
-  /**
-   * @ignore
-   */
-  view?: HTMLElement;
-  /**
-   * @ignore
-   */
-  rendererOptions: RendererOptions;
-}
-
-/**
- * @ignore
- */
-export interface VideoFrameCacheConfig {
-  /**
-   * @ignore
-   */
-  uid: number;
-  /**
-   * @ignore
-   */
-  channelId: string;
-  /**
-   * @ignore
-   */
-  videoSourceType: VideoSourceType;
-}
-
-/**
- * @ignore
- */
-export interface ShareVideoFrame {
-  /**
-   * @ignore
-   */
-  width: number;
-  /**
-   * @ignore
-   */
-  height: number;
-  /**
-   * @ignore
-   */
-  yStride: number;
-  /**
-   * @ignore
-   */
-  yBuffer: Buffer | Uint8Array;
-  /**
-   * @ignore
-   */
-  uBuffer: Buffer | Uint8Array;
-  /**
-   * @ignore
-   */
-  vBuffer: Buffer | Uint8Array;
-  /**
-   * @ignore
-   */
-  mirror?: boolean;
-  /**
-   * @ignore
-   */
-  rotation?: number;
-  /**
-   * @ignore
-   */
-  uid?: number;
-  /**
-   * @ignore
-   */
-  channelId?: string;
-  /**
-   * @ignore
-   */
-  videoSourceType: VideoSourceType;
-}
+export type RendererCacheContext = Pick<
+  RendererContext,
+  'channelId' | 'uid' | 'sourceType'
+>;
 
 /**
  * @ignore
@@ -260,20 +103,18 @@ export interface AgoraElectronBridge {
 
   ReleaseRenderer(): void;
 
-  EnableVideoFrameCache(config: VideoFrameCacheConfig): void;
+  EnableVideoFrameCache(context: RendererCacheContext): void;
 
-  DisableVideoFrameCache(config: VideoFrameCacheConfig): void;
+  DisableVideoFrameCache(context: RendererCacheContext): void;
 
   GetBuffer(ptr: number, length: number): Buffer;
 
-  GetVideoFrame(streamInfo: ShareVideoFrame): {
+  GetVideoFrame(
+    context: RendererCacheContext,
+    videoFrame: VideoFrame
+  ): {
     ret: number;
     isNewFrame: boolean;
-    yStride: number;
-    width: number;
-    height: number;
-    rotation: number;
-    timestamp: number;
   };
 
   sendMsg: (
@@ -283,21 +124,3 @@ export interface AgoraElectronBridge {
     bufferCount?: number
   ) => Result;
 }
-
-/**
- * @ignore
- */
-export interface RenderConfig {
-  /**
-   * @ignore
-   */
-  renders: IRenderer[];
-  /**
-   * @ignore
-   */
-  shareVideoFrame: ShareVideoFrame;
-}
-
-export type UidMap = Map<number, RenderConfig>;
-export type ChannelIdMap = Map<Channel, UidMap>;
-export type RenderMap = Map<VideoSourceType, ChannelIdMap>;

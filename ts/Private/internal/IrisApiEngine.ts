@@ -1,7 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import JSON from 'json-bigint';
 
-import { AgoraEnv } from '../../Utils';
+import { AgoraEnv, logDebug, logError, logInfo, logWarn } from '../../Utils';
 import { IAudioEncodedFrameObserver } from '../AgoraBase';
 import {
   AudioFrame,
@@ -355,7 +355,7 @@ export const EVENT_PROCESSORS: EventProcessors = {
 
 function handleEvent(...[event, data, buffers]: any) {
   if (isDebuggable()) {
-    console.info('onEvent', event, data, buffers);
+    logInfo('onEvent', event, data, buffers);
   }
 
   let _event: string = event;
@@ -506,35 +506,30 @@ export function callIrisApi(funcName: string, params: any): any {
       const retObj = JSON.parse(ret);
       if (isDebuggable()) {
         if (typeof retObj.result === 'number' && retObj.result < 0) {
-          console.error('callApi', funcName, JSON.stringify(params), ret);
+          logError('callApi', funcName, JSON.stringify(params), ret);
         } else {
-          console.debug('callApi', funcName, JSON.stringify(params), ret);
+          logDebug('callApi', funcName, JSON.stringify(params), ret);
         }
       }
       return retObj;
     } else {
       if (isDebuggable()) {
-        console.error(
+        logError(
           'callApi',
           funcName,
           JSON.stringify(params),
           callApiReturnCode
         );
       } else {
-        console.warn(
-          'callApi',
-          funcName,
-          JSON.stringify(params),
-          callApiReturnCode
-        );
+        logWarn('callApi', funcName, JSON.stringify(params), callApiReturnCode);
       }
       return { result: callApiReturnCode };
     }
   } catch (e) {
     if (isDebuggable()) {
-      console.error('callApi', funcName, JSON.stringify(params), e);
+      logError('callApi', funcName, JSON.stringify(params), e);
     } else {
-      console.warn('callApi', funcName, JSON.stringify(params), e);
+      logWarn('callApi', funcName, JSON.stringify(params), e);
     }
   }
   return {};

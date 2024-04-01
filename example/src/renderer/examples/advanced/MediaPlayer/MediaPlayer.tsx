@@ -5,6 +5,7 @@ import {
   MediaPlayerError,
   MediaPlayerEvent,
   MediaPlayerState,
+  RenderModeType,
   VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
@@ -353,6 +354,7 @@ export default class MediaPlayer
             canvas={{
               mediaPlayerId: this.player?.getMediaPlayerId(),
               sourceType: VideoSourceType.VideoSourceMediaPlayer,
+              renderMode: RenderModeType.RenderModeFit,
             }}
           />
         ) : undefined}
