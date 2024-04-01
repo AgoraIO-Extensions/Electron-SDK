@@ -61,6 +61,7 @@
     "@commitlint/config-conventional": "^17.0.2",
     "@evilmartians/lefthook": "^1.2.2",
     "@release-it/conventional-changelog": "^5.0.0",
+    "@types/dom-webcodecs": "^0.1.11",
     "@types/jest": "^28.1.2",
     "@types/json-bigint": "^1.0.1",
     "@types/lodash.isequal": "^4.5.6",
