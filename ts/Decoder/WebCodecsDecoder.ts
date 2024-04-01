@@ -12,11 +12,9 @@ const frameTypeMapping = {
 export class WebCodecsDecoder {
   public enableFps = false;
 
-  // eslint-disable-next-line auto-import/auto-import
   private _decoder: VideoDecoder;
   private _startTime: number | null = null;
   private renderer: any;
-  // eslint-disable-next-line auto-import/auto-import
   private pendingFrame: VideoFrame | null = null;
   private _frameCount = 0;
 
@@ -30,7 +28,6 @@ export class WebCodecsDecoder {
       'webgl2',
       document.querySelector('canvas')!.transferControlToOffscreen()
     );
-    // eslint-disable-next-line auto-import/auto-import
     this._decoder = new VideoDecoder({
       // @ts-ignore
       output: this._output.bind(this),
@@ -43,12 +40,10 @@ export class WebCodecsDecoder {
     });
   }
 
-  // eslint-disable-next-line auto-import/auto-import
   getDecoder(): VideoDecoder {
     return this._decoder;
   }
 
-  // eslint-disable-next-line auto-import/auto-import
   _output(frame: VideoFrame) {
     this.getFps();
     // Schedule the frame to be rendered.
@@ -79,7 +74,6 @@ export class WebCodecsDecoder {
     return fps;
   }
 
-  // eslint-disable-next-line auto-import/auto-import
   _renderFrame(frame: VideoFrame) {
     if (!this.pendingFrame) {
       // Schedule rendering in the next animation frame.
@@ -132,7 +126,6 @@ export class WebCodecsDecoder {
       return;
     }
     this._decoder.decode(
-      // eslint-disable-next-line auto-import/auto-import
       new EncodedVideoChunk({
         data: imageBuffer,
         timestamp: this._last_ts_ntp,
