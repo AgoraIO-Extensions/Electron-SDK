@@ -58,15 +58,31 @@ export class WebCodecsDecoder {
     } else {
       const elapsed = (performance.now() - this._startTime) / 1000;
       fps = ++this._frameCount / elapsed;
-      // logDebug('render', `${fps.toFixed(0)} fps`);
     }
 
     if (AgoraEnv.enableWebCodecDecode) {
-      let span = document.createElement('span');
-      span.innerText = `fps: ${fps.toFixed(0)}`;
-
       for (let renderer of this.renderers) {
-        renderer.container?.appendChild(span);
+        if (!renderer.container) continue;
+
+        let span = renderer.container.querySelector('span');
+        if (!span) {
+          span = document.createElement('span');
+
+          Object.assign(span.style, {
+            position: 'absolute',
+            bottom: '0',
+            left: '0',
+            zIndex: '10',
+            width: '50px',
+            background: '#fff',
+          });
+
+          renderer.container.style.position = 'relative';
+
+          renderer.container.appendChild(span);
+        }
+
+        span.innerText = `fps: ${fps.toFixed(0)}`;
       }
     }
 
@@ -99,13 +115,13 @@ export class WebCodecsDecoder {
     frameInfo: EncodedVideoFrameInfo,
     ts: number
   ) {
-    console.log(
-      'FRAMETYPE',
-      frameInfo.frameType,
-      frameInfo,
-      imageBuffer,
-      imageBuffer.length
-    );
+    // console.log(
+    //   'FRAMETYPE',
+    //   frameInfo.frameType,
+    //   frameInfo,
+    //   imageBuffer,
+    //   imageBuffer.length
+    // );
     if (!imageBuffer) {
       logDebug('imageBuffer is empty, skip decode frame');
       return;
@@ -146,7 +162,7 @@ export class WebCodecsDecoder {
   }
 
   release() {
-    this._decoder.reset();
+    this.pendingFrame = null;
     this._decoder.close();
   }
 }

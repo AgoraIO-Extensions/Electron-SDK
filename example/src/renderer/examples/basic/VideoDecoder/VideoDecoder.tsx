@@ -109,6 +109,7 @@ export default class VideoDecoder
   protected releaseRtcEngine() {
     this.engine?.unregisterEventHandler(this);
     this.engine?.release();
+    AgoraEnv.enableWebCodecDecode = false;
   }
 
   protected renderUsers(): ReactElement | undefined {

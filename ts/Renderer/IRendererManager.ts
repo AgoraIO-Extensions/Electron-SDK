@@ -180,6 +180,7 @@ export abstract class IRendererManager {
       rendererCache.removeRenderer();
     }
     if (rendererCache.renderers.length === 0) {
+      rendererCache.release();
       this._rendererCaches.splice(
         this._rendererCaches.indexOf(rendererCache),
         1

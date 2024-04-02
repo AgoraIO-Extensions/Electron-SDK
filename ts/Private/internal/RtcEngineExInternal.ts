@@ -111,6 +111,9 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     this._video_device_manager.release();
     this._media_engine.release();
     this._local_spatial_audio_engine.release();
+    RtcEngineExInternal._event_handlers.map((it) => {
+      super.unregisterEventHandler(it);
+    });
     RtcEngineExInternal._event_handlers = [];
     RtcEngineExInternal._direct_cdn_streaming_event_handler = [];
     RtcEngineExInternal._metadata_observer = [];
@@ -231,6 +234,8 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   }
 
   override registerEventHandler(eventHandler: IRtcEngineEventHandler): boolean {
+    // only call iris when no event handler registered
+    let callIris = RtcEngineExInternal._event_handlers.length === 0;
     if (
       !RtcEngineExInternal._event_handlers.find(
         (value) => value === eventHandler
@@ -238,7 +243,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     ) {
       RtcEngineExInternal._event_handlers.push(eventHandler);
     }
-    return super.registerEventHandler(eventHandler);
+    return callIris ? super.registerEventHandler(eventHandler) : true;
   }
 
   override unregisterEventHandler(
@@ -248,7 +253,9 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       RtcEngineExInternal._event_handlers.filter(
         (value) => value !== eventHandler
       );
-    return super.unregisterEventHandler(eventHandler);
+    // only call iris when no event handler registered
+    let callIris = RtcEngineExInternal._event_handlers.length === 0;
+    return callIris ? super.unregisterEventHandler(eventHandler) : true;
   }
 
   override createMediaPlayer(): IMediaPlayer {

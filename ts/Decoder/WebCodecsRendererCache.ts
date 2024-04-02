@@ -13,7 +13,7 @@ export class WebCodecsRendererCache
   extends IRendererCache
   implements IVideoEncodedFrameObserver, IRtcEngineEventHandler
 {
-  private _decoder?: WebCodecsDecoder;
+  private _decoder?: WebCodecsDecoder | null;
   private _engine?: IRtcEngineEx;
 
   constructor({ channelId, uid, sourceType }: RendererContext) {
@@ -57,9 +57,10 @@ export class WebCodecsRendererCache
   }
 
   public release(): void {
-    this._decoder?.release();
     this._engine?.getMediaEngine().unregisterVideoEncodedFrameObserver(this);
     this._engine?.unregisterEventHandler(this);
+    this._decoder?.release();
+    this._decoder = null;
     super.release();
   }
 }
