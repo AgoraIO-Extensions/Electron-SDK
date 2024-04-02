@@ -1,6 +1,6 @@
 import { EncodedVideoFrameInfo, VideoFrameType } from '../Private/AgoraBase';
 
-import { logDebug } from '../Utils';
+import { AgoraEnv, logDebug } from '../Utils';
 
 import { WebCodecsRenderer } from './WebCodecsRenderer';
 
@@ -58,8 +58,18 @@ export class WebCodecsDecoder {
     } else {
       const elapsed = (performance.now() - this._startTime) / 1000;
       fps = ++this._frameCount / elapsed;
-      logDebug('render', `${fps.toFixed(0)} fps`);
+      // logDebug('render', `${fps.toFixed(0)} fps`);
     }
+
+    if (AgoraEnv.enableWebCodecDecode) {
+      let span = document.createElement('span');
+      span.innerText = `fps: ${fps.toFixed(0)}`;
+
+      for (let renderer of this.renderers) {
+        renderer.container?.appendChild(span);
+      }
+    }
+
     return fps;
   }
 
@@ -89,6 +99,13 @@ export class WebCodecsDecoder {
     frameInfo: EncodedVideoFrameInfo,
     ts: number
   ) {
+    console.log(
+      'FRAMETYPE',
+      frameInfo.frameType,
+      frameInfo,
+      imageBuffer,
+      imageBuffer.length
+    );
     if (!imageBuffer) {
       logDebug('imageBuffer is empty, skip decode frame');
       return;

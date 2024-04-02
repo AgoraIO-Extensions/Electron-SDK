@@ -55,4 +55,11 @@ export class WebCodecsRendererCache
   public draw() {
     this._engine?.getMediaEngine().registerVideoEncodedFrameObserver(this);
   }
+
+  public release(): void {
+    this._decoder?.release();
+    this._engine?.getMediaEngine().unregisterVideoEncodedFrameObserver(this);
+    this._engine?.unregisterEventHandler(this);
+    super.release();
+  }
 }

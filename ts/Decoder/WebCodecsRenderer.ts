@@ -96,6 +96,7 @@ export class WebCodecsRenderer extends IRenderer {
     if (!this.offscreenCanvas) return;
     this.offscreenCanvas.width = frame.displayWidth;
     this.offscreenCanvas.height = frame.displayHeight;
+    this.updateRenderMode();
     if (!this.gl) return;
 
     if (this.gl) {

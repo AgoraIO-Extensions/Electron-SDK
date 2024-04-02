@@ -71,7 +71,6 @@ export abstract class IRenderer {
     const canvasAspectRatio = width / height;
     const widthScale = clientWidth / width;
     const heightScale = clientHeight / height;
-
     const isHidden =
       this.context?.renderMode === RenderModeType.RenderModeHidden;
 

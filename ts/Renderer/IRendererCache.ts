@@ -81,4 +81,8 @@ export abstract class IRendererCache {
       return this._renderers.length > 0;
     }
   }
+
+  public release(): void {
+    this.removeRenderer();
+  }
 }

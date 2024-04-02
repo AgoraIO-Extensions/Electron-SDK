@@ -60,7 +60,11 @@ export abstract class IRendererManager {
   }
 
   public get renderingFps(): number {
-    return this._renderingFps;
+    if (AgoraEnv.enableWebCodecDecode) {
+      return new Error('Not supported') as any;
+    } else {
+      return this._renderingFps;
+    }
   }
 
   public set defaultChannelId(channelId: string) {
@@ -185,7 +189,7 @@ export abstract class IRendererManager {
 
   public clearRendererCache(): void {
     for (const rendererCache of this._rendererCaches) {
-      rendererCache.removeRenderer();
+      rendererCache.release();
     }
     this._rendererCaches.splice(0);
   }
@@ -216,7 +220,7 @@ export abstract class IRendererManager {
   ): IRenderer;
 
   public startRendering(): void {
-    if (this._renderingTimer) return;
+    if (AgoraEnv.enableWebCodecDecode && this._renderingTimer) return;
 
     const renderingLooper = () => {
       if (this._previousFirstFrameTime === 0) {

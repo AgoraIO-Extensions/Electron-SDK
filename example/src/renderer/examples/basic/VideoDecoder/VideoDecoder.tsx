@@ -4,10 +4,8 @@ import {
   ClientRoleType,
   IRtcEngineEventHandler,
   IRtcEngineEx,
-  RtcConnection,
-  UserOfflineReasonType,
+  RenderModeType,
   VideoSourceType,
-  VideoStreamType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
 import React, { ReactElement } from 'react';
@@ -28,9 +26,7 @@ export default class VideoDecoder
   extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler
 {
-  // @ts-ignore
   protected engine?: IRtcEngineEx;
-  // private decoder?: WebCodecsDecoder;
 
   protected createState(): State {
     return {
@@ -115,44 +111,6 @@ export default class VideoDecoder
     this.engine?.release();
   }
 
-  onUserJoined(connection: RtcConnection, remoteUid: number, elapsed: number) {
-    this.engine?.setRemoteVideoSubscriptionOptions(remoteUid, {
-      type: VideoStreamType.VideoStreamHigh,
-      encodedFrameOnly: true,
-    });
-    super.onUserJoined(connection, remoteUid, elapsed);
-  }
-
-  onUserOffline(
-    connection: RtcConnection,
-    remoteUid: number,
-    reason: UserOfflineReasonType
-  ) {
-    // if (remoteUid == SCREEN_UID) {
-    //   // stop decode
-    //   this.decoder?.release();
-    // }
-    super.onUserOffline(connection, remoteUid, reason);
-  }
-
-  // protected renderUsers(): ReactElement | undefined {
-  //   let { fps } = this.state;
-  //   return (
-  //     <>
-  //       <p>Current Fps: {fps}</p>
-  //       <canvas />
-  //       {
-  //         <RtcSurfaceView
-  //           canvas={{
-  //             sourceType: VideoSourceType.VideoSourceRemote,
-  //             renderMode: RenderModeType.RenderModeFit,
-  //           }}
-  //         />
-  //       }
-  //     </>
-  //   );
-  // }
-
   protected renderUsers(): ReactElement | undefined {
     let { remoteUsers } = this.state;
     return (
@@ -163,6 +121,7 @@ export default class VideoDecoder
             this.renderUser({
               uid: item,
               sourceType: VideoSourceType.VideoSourceRemote,
+              renderMode: RenderModeType.RenderModeFit,
             })
           }
         />

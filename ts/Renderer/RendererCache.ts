@@ -104,4 +104,8 @@ export class RendererCache extends IRendererCache {
     super.removeRenderer(renderer);
     this.shouldEnable();
   }
+
+  public release(): void {
+    super.release();
+  }
 }
