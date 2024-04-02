@@ -1,7 +1,9 @@
+import { WebCodecsRendererCache } from './Decoder/WebCodecsRendererCache';
 import { VideoCanvas } from './Private/AgoraBase';
 import { VideoFrame } from './Private/AgoraMediaBase';
 import { RtcConnection } from './Private/IAgoraRtcEngineEx';
 import { IRendererManager } from './Renderer';
+import { RendererCache } from './Renderer/RendererCache';
 
 /**
  * @ignore
@@ -19,6 +21,10 @@ export interface AgoraEnvOptions {
    * @ignore
    */
   webEnvReady?: boolean;
+  /**
+   * @ignore
+   */
+  enableWebCodecDecode?: boolean;
 }
 
 /**
@@ -52,6 +58,7 @@ export enum RendererType {
 export type RENDER_MODE = RendererType;
 
 export type RendererContext = VideoCanvas & RtcConnection;
+export type RendererCacheType = RendererCache | WebCodecsRendererCache;
 
 export type RendererCacheContext = Pick<
   RendererContext,

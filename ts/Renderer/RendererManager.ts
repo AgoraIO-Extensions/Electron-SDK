@@ -1,14 +1,16 @@
+import { WebCodecsRenderer } from '../Decoder/WebCodecsRenderer';
+
 import {
   RENDER_MODE,
   RendererCacheContext,
+  RendererCacheType,
   RendererContext,
   RendererType,
 } from '../Types';
-import { isSupportWebGL } from '../Utils';
+import { AgoraEnv, isSupportWebGL } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 import { IRendererManager } from './IRendererManager';
-import { RendererCache } from './RendererCache';
 import { WebGLFallback, WebGLRenderer } from './WebGLRenderer';
 import { YUVCanvasRenderer } from './YUVCanvasRenderer';
 
@@ -55,7 +57,9 @@ export class RendererManager extends IRendererManager {
   /**
    * @deprecated Use getRendererCache instead
    */
-  public getRender(context: RendererCacheContext): RendererCache | undefined {
+  public getRender(
+    context: RendererCacheContext
+  ): RendererCacheType | undefined {
     return this.getRendererCache(context);
   }
 
@@ -70,9 +74,13 @@ export class RendererManager extends IRendererManager {
     let renderer: IRenderer;
     switch (rendererType) {
       case RendererType.WEBGL:
-        renderer = new WebGLRenderer(
-          this.handleWebGLFallback(context).bind(this)
-        );
+        if (AgoraEnv.enableWebCodecDecode) {
+          renderer = new WebCodecsRenderer();
+        } else {
+          renderer = new WebGLRenderer(
+            this.handleWebGLFallback(context).bind(this)
+          );
+        }
         break;
       case RendererType.SOFTWARE:
         renderer = new YUVCanvasRenderer();
@@ -89,7 +97,7 @@ export class RendererManager extends IRendererManager {
     return renderer;
   }
 
-  public override doRendering(rendererCache: RendererCache): void {
+  public override doRendering(rendererCache: RendererCacheType): void {
     rendererCache.draw();
   }
 

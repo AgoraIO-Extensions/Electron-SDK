@@ -1,6 +1,6 @@
 import { VideoMirrorModeType } from '../Private/AgoraBase';
 import { RenderModeType, VideoFrame } from '../Private/AgoraMediaBase';
-import { RendererContext } from '../Types';
+import { RendererContext, RendererType } from '../Types';
 
 type Context = Pick<RendererContext, 'renderMode' | 'mirrorMode'>;
 
@@ -8,6 +8,7 @@ export abstract class IRenderer {
   parentElement?: HTMLElement;
   container?: HTMLElement;
   canvas?: HTMLCanvasElement;
+  rendererType: RendererType | undefined;
   _context: Context = {};
 
   public bind(element: HTMLElement) {

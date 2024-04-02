@@ -123,6 +123,36 @@ export function isSupportWebGL(): boolean {
   return flag;
 }
 
+/**
+ * @ignore
+ */
+export function getContextByCanvas(
+  // eslint-disable-next-line auto-import/auto-import
+  canvas: OffscreenCanvas
+): WebGLRenderingContext | WebGL2RenderingContext | null {
+  const contextNames = ['webgl2', 'webgl', 'experimental-webgl'];
+
+  for (const contextName of contextNames) {
+    //@ts-ignore
+    const context = canvas.getContext(contextName, {
+      depth: true,
+      stencil: true,
+      alpha: false,
+      antialias: false,
+      premultipliedAlpha: true,
+      preserveDrawingBuffer: true,
+      powerPreference: 'default',
+      failIfMajorPerformanceCaveat: false,
+    }) as WebGLRenderingContext | WebGL2RenderingContext | null;
+
+    if (context) {
+      return context;
+    }
+  }
+
+  return null;
+}
+
 const AgoraNode = require('../build/Release/agora_node_ext');
 
 /**
@@ -131,6 +161,7 @@ const AgoraNode = require('../build/Release/agora_node_ext');
 export const AgoraEnv: AgoraEnvType = {
   enableLogging: true,
   enableDebugLogging: false,
+  enableWebCodecDecode: false,
   webEnvReady: true,
   AgoraElectronBridge: new AgoraNode.AgoraElectronBridge(),
 };

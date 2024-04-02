@@ -1,8 +1,8 @@
 import { EncodedVideoFrameInfo, VideoFrameType } from '../Private/AgoraBase';
 
-import { logDebug, logError } from '../Utils';
+import { logDebug } from '../Utils';
 
-import { WebGLRenderer } from './renderer_webgl';
+import { WebCodecsRenderer } from './WebCodecsRenderer';
 
 const frameTypeMapping = {
   [VideoFrameType.VideoFrameTypeDeltaFrame]: 'delta',
@@ -14,7 +14,7 @@ export class WebCodecsDecoder {
 
   private _decoder: VideoDecoder;
   private _startTime: number | null = null;
-  private renderer: any;
+  private renderers: WebCodecsRenderer[] = [];
   private pendingFrame: VideoFrame | null = null;
   private _frameCount = 0;
 
@@ -23,25 +23,18 @@ export class WebCodecsDecoder {
   private _base_ts_ntp = 1;
   private _last_ts_ntp = 1;
 
-  constructor() {
-    this.renderer = new WebGLRenderer(
-      'webgl2',
-      document.querySelector('canvas')!.transferControlToOffscreen()
-    );
+  constructor(renders: WebCodecsRenderer[]) {
+    this.renderers = renders;
     this._decoder = new VideoDecoder({
       // @ts-ignore
       output: this._output.bind(this),
       error: this._error.bind(this),
     });
-    this.decoder!.configure({
+    this._decoder!.configure({
       codec: 'hvc1.1.2.H153.90',
       codedWidth: 3840,
       codedHeight: 2160,
     });
-  }
-
-  getDecoder(): VideoDecoder {
-    return this._decoder;
   }
 
   _output(frame: VideoFrame) {
@@ -54,11 +47,7 @@ export class WebCodecsDecoder {
     console.error('Decoder error:', e);
   }
 
-  get decoder() {
-    return this._decoder;
-  }
-
-  getFps(): number {
+  public getFps(): number {
     let fps = 0;
     if (!this.enableFps) {
       return fps;
@@ -74,7 +63,7 @@ export class WebCodecsDecoder {
     return fps;
   }
 
-  _renderFrame(frame: VideoFrame) {
+  private _renderFrame(frame: VideoFrame) {
     if (!this.pendingFrame) {
       // Schedule rendering in the next animation frame.
       // eslint-disable-next-line auto-import/auto-import
@@ -88,8 +77,10 @@ export class WebCodecsDecoder {
   }
 
   renderAnimationFrame() {
-    this.renderer.draw(this.pendingFrame);
-    this.pendingFrame = null;
+    for (let renderer of this.renderers) {
+      renderer.drawFrame(this.pendingFrame);
+      this.pendingFrame = null;
+    }
   }
 
   // @ts-ignore
@@ -99,7 +90,16 @@ export class WebCodecsDecoder {
     ts: number
   ) {
     if (!imageBuffer) {
-      logError('imageBuffer is empty, cannot decode frame');
+      logDebug('imageBuffer is empty, skip decode frame');
+      return;
+    }
+    let frameType: string | undefined;
+    if (frameInfo.frameType !== undefined) {
+      // @ts-ignore
+      frameType = frameTypeMapping[frameInfo.frameType];
+    }
+    if (!frameType) {
+      logDebug('frameType is not in frameTypeMapping, skip decode frame');
       return;
     }
     this._frame_ts.push(ts);
@@ -115,15 +115,6 @@ export class WebCodecsDecoder {
     } else {
       this._base_ts = ts;
       this._last_ts_ntp = 1;
-    }
-    let frameType: string | undefined;
-    if (frameInfo.frameType !== undefined) {
-      // @ts-ignore
-      frameType = frameTypeMapping[frameInfo.frameType];
-    }
-    if (!frameType) {
-      logError('frameType is incorrect, cannot decode frame');
-      return;
     }
     this._decoder.decode(
       new EncodedVideoChunk({
