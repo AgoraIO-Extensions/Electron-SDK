@@ -7,7 +7,7 @@ import {
   RendererContext,
   RendererType,
 } from '../Types';
-import { AgoraEnv, isSupportWebGL } from '../Utils';
+import { isSupportWebGL } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 import { IRendererManager } from './IRendererManager';
@@ -74,7 +74,7 @@ export class RendererManager extends IRendererManager {
     let renderer: IRenderer;
     switch (rendererType) {
       case RendererType.WEBGL:
-        if (AgoraEnv.enableWebCodecDecode) {
+        if (context.useWebCodecsDecoder) {
           renderer = new WebCodecsRenderer();
         } else {
           renderer = new WebGLRenderer(

@@ -15,6 +15,7 @@ export class WebCodecsRendererCache
 {
   private _decoder?: WebCodecsDecoder | null;
   private _engine?: IRtcEngineEx;
+  private _firstFrame = true;
 
   constructor({ channelId, uid, sourceType }: RendererContext) {
     super({ channelId, uid, sourceType });
@@ -23,6 +24,7 @@ export class WebCodecsRendererCache
       this._renderers as WebCodecsRenderer[]
     );
     this._decoder.enableFps = true;
+    this.selfDecode = true;
     this._engine.registerEventHandler(this);
   }
 
@@ -36,8 +38,12 @@ export class WebCodecsRendererCache
     this._decoder.decodeFrame(
       imageBuffer,
       videoEncodedFrameInfo,
-      new Date().getTime()
+      new Date().getTime(),
+      this._firstFrame
     );
+    if (this._firstFrame) {
+      this._firstFrame = false;
+    }
   }
 
   onUserJoined(connection: RtcConnection, remoteUid: number, _elapsed: number) {

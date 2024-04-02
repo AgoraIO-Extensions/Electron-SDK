@@ -1,5 +1,4 @@
 import {
-  AgoraEnv,
   ChannelProfileType,
   ClientRoleType,
   IRtcEngineEventHandler,
@@ -50,7 +49,6 @@ export default class VideoDecoder
     if (!appId) {
       this.error(`appId is invalid`);
     }
-    AgoraEnv.enableWebCodecDecode = true;
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
     this.engine.initialize({
       appId,
@@ -67,6 +65,7 @@ export default class VideoDecoder
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();
     // Start preview before joinChannel
+    this.engine?.startPreview();
     this.setState({ startPreview: true });
   }
 
@@ -109,19 +108,24 @@ export default class VideoDecoder
   protected releaseRtcEngine() {
     this.engine?.unregisterEventHandler(this);
     this.engine?.release();
-    AgoraEnv.enableWebCodecDecode = false;
   }
 
   protected renderUsers(): ReactElement | undefined {
-    let { remoteUsers } = this.state;
+    let { remoteUsers, startPreview, joinChannelSuccess } = this.state;
     return (
       <>
+        {!!startPreview || joinChannelSuccess
+          ? this.renderUser({
+              sourceType: VideoSourceType.VideoSourceCamera,
+            })
+          : undefined}
         <AgoraList
           data={remoteUsers ?? []}
           renderItem={(item) =>
             this.renderUser({
               uid: item,
               sourceType: VideoSourceType.VideoSourceRemote,
+              useWebCodecsDecoder: true,
               renderMode: RenderModeType.RenderModeFit,
             })
           }

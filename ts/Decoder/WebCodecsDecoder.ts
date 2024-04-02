@@ -1,12 +1,23 @@
-import { EncodedVideoFrameInfo, VideoFrameType } from '../Private/AgoraBase';
+import {
+  EncodedVideoFrameInfo,
+  VideoCodecType,
+  VideoFrameType,
+} from '../Private/AgoraBase';
 
-import { AgoraEnv, logDebug } from '../Utils';
+import { logDebug, logInfo } from '../Utils';
 
 import { WebCodecsRenderer } from './WebCodecsRenderer';
 
 const frameTypeMapping = {
   [VideoFrameType.VideoFrameTypeDeltaFrame]: 'delta',
   [VideoFrameType.VideoFrameTypeKeyFrame]: 'key',
+};
+
+export const frameCodecMapping = {
+  [VideoCodecType.VideoCodecH265]: 'hvc1.1.6.L5.90',
+  [VideoCodecType.VideoCodecH264]: 'avc1.64e01f',
+  [VideoCodecType.VideoCodecVp8]: 'vp8',
+  [VideoCodecType.VideoCodecVp9]: 'vp9',
 };
 
 export class WebCodecsDecoder {
@@ -30,11 +41,6 @@ export class WebCodecsDecoder {
       output: this._output.bind(this),
       error: this._error.bind(this),
     });
-    this._decoder!.configure({
-      codec: 'hvc1.1.2.H153.90',
-      codedWidth: 3840,
-      codedHeight: 2160,
-    });
   }
 
   _output(frame: VideoFrame) {
@@ -44,6 +50,7 @@ export class WebCodecsDecoder {
   }
 
   _error(e: any) {
+    window.alert(`Decoder error:${JSON.stringify(e)}`);
     console.error('Decoder error:', e);
   }
 
@@ -60,30 +67,28 @@ export class WebCodecsDecoder {
       fps = ++this._frameCount / elapsed;
     }
 
-    if (AgoraEnv.enableWebCodecDecode) {
-      for (let renderer of this.renderers) {
-        if (!renderer.container) continue;
+    for (let renderer of this.renderers) {
+      if (!renderer.container) continue;
 
-        let span = renderer.container.querySelector('span');
-        if (!span) {
-          span = document.createElement('span');
+      let span = renderer.container.querySelector('span');
+      if (!span) {
+        span = document.createElement('span');
 
-          Object.assign(span.style, {
-            position: 'absolute',
-            bottom: '0',
-            left: '0',
-            zIndex: '10',
-            width: '50px',
-            background: '#fff',
-          });
+        Object.assign(span.style, {
+          position: 'absolute',
+          bottom: '0',
+          left: '0',
+          zIndex: '10',
+          width: '55px',
+          background: '#fff',
+        });
 
-          renderer.container.style.position = 'relative';
+        renderer.container.style.position = 'relative';
 
-          renderer.container.appendChild(span);
-        }
-
-        span.innerText = `fps: ${fps.toFixed(0)}`;
+        renderer.container.appendChild(span);
       }
+
+      span.innerText = `fps: ${fps.toFixed(0)}`;
     }
 
     return fps;
@@ -113,7 +118,8 @@ export class WebCodecsDecoder {
   decodeFrame(
     imageBuffer: Uint8Array,
     frameInfo: EncodedVideoFrameInfo,
-    ts: number
+    ts: number,
+    firstFrame: boolean
   ) {
     // console.log(
     //   'FRAMETYPE',
@@ -134,6 +140,22 @@ export class WebCodecsDecoder {
     if (!frameType) {
       logDebug('frameType is not in frameTypeMapping, skip decode frame');
       return;
+    }
+    // @ts-ignore
+    let codec = frameCodecMapping[frameInfo.codecType];
+    if (!codec) {
+      logDebug('codec is not in frameCodecMapping, skip decode frame');
+      return;
+    }
+    if (firstFrame) {
+      this._decoder!.configure({
+        codec: codec,
+        codedWidth: frameInfo.width,
+        codedHeight: frameInfo.height,
+      });
+      logInfo(
+        `configure decoder: codedWidth: ${frameInfo.width}, codedHeight: ${frameInfo.height},codec: ${codec}`
+      );
     }
     this._frame_ts.push(ts);
     if (this._base_ts !== 0) {
@@ -163,6 +185,8 @@ export class WebCodecsDecoder {
 
   release() {
     this.pendingFrame = null;
-    this._decoder.close();
+    try {
+      this._decoder.close();
+    } catch (e) {}
   }
 }

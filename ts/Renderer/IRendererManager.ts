@@ -3,7 +3,7 @@ import { WebCodecsRendererCache } from '../Decoder/WebCodecsRendererCache';
 import { VideoMirrorModeType, VideoViewSetupMode } from '../Private/AgoraBase';
 import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
 import { RendererCacheType, RendererContext, RendererType } from '../Types';
-import { AgoraEnv, logDebug } from '../Utils';
+import { logDebug } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 import { generateRendererCacheKey } from './IRendererCache';
@@ -60,11 +60,7 @@ export abstract class IRendererManager {
   }
 
   public get renderingFps(): number {
-    if (AgoraEnv.enableWebCodecDecode) {
-      return new Error('Not supported') as any;
-    } else {
-      return this._renderingFps;
-    }
+    return this._renderingFps;
   }
 
   public set defaultChannelId(channelId: string) {
@@ -155,7 +151,7 @@ export abstract class IRendererManager {
 
     let rendererCache = this.getRendererCache(checkedContext);
     if (!rendererCache) {
-      if (AgoraEnv.enableWebCodecDecode) {
+      if (context.useWebCodecsDecoder) {
         rendererCache = new WebCodecsRendererCache(checkedContext);
       } else {
         rendererCache = new RendererCache(checkedContext);
@@ -163,7 +159,9 @@ export abstract class IRendererManager {
       this._rendererCaches.push(rendererCache);
     }
     rendererCache.addRenderer(this.createRenderer(checkedContext));
-    this.startRendering();
+    if (!context.useWebCodecsDecoder) {
+      this.startRendering();
+    }
     return rendererCache;
   }
 
@@ -221,7 +219,7 @@ export abstract class IRendererManager {
   ): IRenderer;
 
   public startRendering(): void {
-    if (AgoraEnv.enableWebCodecDecode && this._renderingTimer) return;
+    if (this._renderingTimer) return;
 
     const renderingLooper = () => {
       if (this._previousFirstFrameTime === 0) {

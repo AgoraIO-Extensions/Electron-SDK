@@ -21,10 +21,6 @@ export interface AgoraEnvOptions {
    * @ignore
    */
   webEnvReady?: boolean;
-  /**
-   * @ignore
-   */
-  enableWebCodecDecode?: boolean;
 }
 
 /**
@@ -62,7 +58,7 @@ export type RendererCacheType = RendererCache | WebCodecsRendererCache;
 
 export type RendererCacheContext = Pick<
   RendererContext,
-  'channelId' | 'uid' | 'sourceType'
+  'channelId' | 'uid' | 'sourceType' | 'useWebCodecsDecoder'
 >;
 
 /**
