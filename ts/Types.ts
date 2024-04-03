@@ -1,8 +1,8 @@
 import { VideoCanvas } from './Private/AgoraBase';
 import { VideoFrame } from './Private/AgoraMediaBase';
 import { RtcConnection } from './Private/IAgoraRtcEngineEx';
-import { IRendererManager } from './Renderer';
 import { RendererCache } from './Renderer/RendererCache';
+import { RendererManager } from './Renderer/RendererManager';
 import { WebCodecsRendererCache } from './Renderer/WebCodecsRendererCache';
 
 /**
@@ -34,7 +34,7 @@ export interface AgoraEnvType extends AgoraEnvOptions {
   /**
    * @ignore
    */
-  AgoraRendererManager?: IRendererManager;
+  AgoraRendererManager?: RendererManager;
 }
 
 /**
