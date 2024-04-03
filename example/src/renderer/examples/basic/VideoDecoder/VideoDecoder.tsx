@@ -117,6 +117,7 @@ export default class VideoDecoder
         {!!startPreview || joinChannelSuccess
           ? this.renderUser({
               sourceType: VideoSourceType.VideoSourceCamera,
+              enableFps: true,
             })
           : undefined}
         <AgoraList
@@ -126,6 +127,7 @@ export default class VideoDecoder
               uid: item,
               sourceType: VideoSourceType.VideoSourceRemote,
               useWebCodecsDecoder: true,
+              enableFps: true,
               renderMode: RenderModeType.RenderModeFit,
             })
           }

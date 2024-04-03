@@ -11,42 +11,27 @@ export function generateRendererCacheKey({
 }
 
 export abstract class IRendererCache {
-  _renderers: IRenderer[];
-  _context: RendererCacheContext;
+  renderers: IRenderer[];
+  context: RendererCacheContext;
   selfDecode: boolean = false;
 
   constructor({ channelId, uid, sourceType }: RendererContext) {
-    this._renderers = [];
-    this._context = { channelId, uid, sourceType };
+    this.renderers = [];
+    this.context = { channelId, uid, sourceType };
   }
 
   public get key(): string {
-    return generateRendererCacheKey(this._context);
-  }
-
-  public get renderers(): IRenderer[] {
-    return this._renderers;
-  }
-
-  public get context(): RendererCacheContext {
-    return this._context;
-  }
-
-  /**
-   * @deprecated Use renderers instead
-   */
-  public get renders(): IRenderer[] {
-    return this.renderers;
+    return generateRendererCacheKey(this.context);
   }
 
   public abstract draw(): void;
 
   public findRenderer(view: Element): IRenderer | undefined {
-    return this._renderers.find((renderer) => renderer.parentElement === view);
+    return this.renderers.find((renderer) => renderer.parentElement === view);
   }
 
   public addRenderer(renderer: IRenderer): void {
-    this._renderers.push(renderer);
+    this.renderers.push(renderer);
   }
 
   /**
@@ -54,32 +39,28 @@ export abstract class IRendererCache {
    */
   public removeRenderer(renderer?: IRenderer): void {
     let start = 0;
-    let deleteCount = this._renderers.length;
+    let deleteCount = this.renderers.length;
     if (renderer) {
-      start = this._renderers.indexOf(renderer);
+      start = this.renderers.indexOf(renderer);
       if (start < 0) return;
       deleteCount = 1;
     }
-    this._renderers.splice(start, deleteCount).forEach((it) => it.unbind());
+    this.renderers.splice(start, deleteCount).forEach((it) => it.unbind());
   }
 
-  public setRendererContext({
-    view,
-    renderMode,
-    mirrorMode,
-  }: RendererContext): boolean {
-    if (view) {
-      const renderer = this.findRenderer(view);
+  public setRendererContext(context: RendererContext): boolean {
+    if (context.view) {
+      const renderer = this.findRenderer(context.view);
       if (renderer) {
-        renderer.context = { renderMode, mirrorMode };
+        renderer.context = context;
         return true;
       }
       return false;
     } else {
-      this._renderers.forEach((it) => {
-        it.context = { renderMode, mirrorMode };
+      this.renderers.forEach((it) => {
+        it.context = context;
       });
-      return this._renderers.length > 0;
+      return this.renderers.length > 0;
     }
   }
 

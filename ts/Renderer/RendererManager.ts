@@ -21,21 +21,11 @@ export class RendererManager extends IRendererManager {
   /**
    * @ignore
    */
-  private _rendererType: RendererType;
-
-  public set rendererType(rendererType: RendererType) {
-    if (this._rendererType !== rendererType) {
-      this._rendererType = rendererType;
-    }
-  }
-
-  public get rendererType(): RendererType {
-    return this._rendererType;
-  }
+  rendererType: RendererType;
 
   constructor() {
     super();
-    this._rendererType = isSupportWebGL()
+    this.rendererType = isSupportWebGL()
       ? RendererType.WEBGL
       : RendererType.SOFTWARE;
   }
@@ -45,13 +35,6 @@ export class RendererManager extends IRendererManager {
    */
   public setRenderMode(mode: RENDER_MODE) {
     this.rendererType = mode;
-  }
-
-  /**
-   * @deprecated Use renderingFps instead
-   */
-  public setFPS(fps: number) {
-    this.renderingFps = fps;
   }
 
   /**
@@ -65,12 +48,8 @@ export class RendererManager extends IRendererManager {
 
   protected override createRenderer(
     context: RendererContext,
-    rendererType?: RendererType
+    rendererType: RendererType = this.rendererType
   ): IRenderer {
-    if (rendererType === undefined) {
-      rendererType = this.rendererType;
-    }
-
     let renderer: IRenderer;
     switch (rendererType) {
       case RendererType.WEBGL:
@@ -90,10 +69,7 @@ export class RendererManager extends IRendererManager {
     }
 
     renderer.bind(context.view);
-    renderer.context = {
-      renderMode: context.renderMode,
-      mirrorMode: context.mirrorMode,
-    };
+    renderer.setContext(context);
     return renderer;
   }
 
@@ -103,15 +79,9 @@ export class RendererManager extends IRendererManager {
 
   private handleWebGLFallback(context: RendererContext): WebGLFallback {
     return (renderer: WebGLRenderer) => {
-      const {
-        context: { renderMode, mirrorMode },
-      } = renderer;
       const renderers = this.getRenderers(context);
       renderer.unbind();
-      const newRenderer = this.createRenderer(
-        { ...context, renderMode, mirrorMode },
-        RendererType.SOFTWARE
-      );
+      const newRenderer = this.createRenderer(context, RendererType.SOFTWARE);
       renderers.splice(renderers.indexOf(renderer), 1, newRenderer);
     };
   }

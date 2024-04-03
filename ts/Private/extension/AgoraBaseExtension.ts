@@ -6,5 +6,9 @@ declare module '../AgoraBase' {
      * @ignore
      */
     useWebCodecsDecoder?: boolean;
+    /**
+     * @ignore
+     */
+    enableFps?: boolean;
   }
 }

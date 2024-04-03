@@ -6,12 +6,12 @@ import { IRenderer } from './IRenderer';
 import { IRendererCache } from './IRendererCache';
 
 export class RendererCache extends IRendererCache {
-  private _videoFrame: VideoFrame;
+  private videoFrame: VideoFrame;
   private _enabled: boolean;
 
   constructor({ channelId, uid, sourceType }: RendererContext) {
     super({ channelId, uid, sourceType });
-    this._videoFrame = {
+    this.videoFrame = {
       yBuffer: Buffer.alloc(0),
       uBuffer: Buffer.alloc(0),
       vBuffer: Buffer.alloc(0),
@@ -24,10 +24,6 @@ export class RendererCache extends IRendererCache {
     };
     this._enabled = false;
     this.selfDecode = false;
-  }
-
-  public get videoFrame(): VideoFrame {
-    return this._videoFrame;
   }
 
   /**
@@ -43,13 +39,13 @@ export class RendererCache extends IRendererCache {
 
   private enable() {
     if (this._enabled) return;
-    this.bridge.EnableVideoFrameCache(this._context);
+    this.bridge.EnableVideoFrameCache(this.context);
     this._enabled = true;
   }
 
   private disable() {
     if (!this._enabled) return;
-    this.bridge.DisableVideoFrameCache(this._context);
+    this.bridge.DisableVideoFrameCache(this.context);
     this._enabled = false;
   }
 

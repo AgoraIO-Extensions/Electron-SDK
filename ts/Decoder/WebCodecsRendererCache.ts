@@ -21,10 +21,9 @@ export class WebCodecsRendererCache
     super({ channelId, uid, sourceType });
     this._engine = createAgoraRtcEngine();
     this._decoder = new WebCodecsDecoder(
-      this._renderers as WebCodecsRenderer[],
+      this.renderers as WebCodecsRenderer[],
       this.onDecoderError
     );
-    this._decoder.enableFps = true;
     this.selfDecode = true;
     this._engine.registerEventHandler(this);
   }

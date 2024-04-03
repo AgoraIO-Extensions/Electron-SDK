@@ -58,7 +58,7 @@ export type RendererCacheType = RendererCache | WebCodecsRendererCache;
 
 export type RendererCacheContext = Pick<
   RendererContext,
-  'channelId' | 'uid' | 'sourceType' | 'useWebCodecsDecoder'
+  'channelId' | 'uid' | 'sourceType' | 'useWebCodecsDecoder' | 'enableFps'
 >;
 
 /**

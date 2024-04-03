@@ -21,13 +21,9 @@ export const frameCodecMapping = {
 };
 
 export class WebCodecsDecoder {
-  public enableFps = false;
-
   private _decoder: VideoDecoder;
-  private _startTime: number | null = null;
   private renderers: WebCodecsRenderer[] = [];
   private pendingFrame: VideoFrame | null = null;
-  private _frameCount = 0;
 
   private _frame_ts: number[] = [];
   private _base_ts = 0;
@@ -44,49 +40,8 @@ export class WebCodecsDecoder {
   }
 
   _output(frame: VideoFrame) {
-    this.getFps();
     // Schedule the frame to be rendered.
     this._renderFrame(frame);
-  }
-
-  public getFps(): number {
-    let fps = 0;
-    if (!this.enableFps) {
-      return fps;
-    }
-    // Update statistics.
-    if (this._startTime == null) {
-      this._startTime = performance.now();
-    } else {
-      const elapsed = (performance.now() - this._startTime) / 1000;
-      fps = ++this._frameCount / elapsed;
-    }
-
-    for (let renderer of this.renderers) {
-      if (!renderer.container) continue;
-
-      let span = renderer.container.querySelector('span');
-      if (!span) {
-        span = document.createElement('span');
-
-        Object.assign(span.style, {
-          position: 'absolute',
-          bottom: '0',
-          left: '0',
-          zIndex: '10',
-          width: '55px',
-          background: '#fff',
-        });
-
-        renderer.container.style.position = 'relative';
-
-        renderer.container.appendChild(span);
-      }
-
-      span.innerText = `fps: ${fps.toFixed(0)}`;
-    }
-
-    return fps;
   }
 
   private _renderFrame(frame: VideoFrame) {
@@ -140,14 +95,14 @@ export class WebCodecsDecoder {
     frameInfo: EncodedVideoFrameInfo,
     ts: number
   ) {
-    console.log(
-      'FRAMETYPE',
-      frameInfo.uid,
-      // frameInfo.frameType,
-      // frameInfo,
-      // imageBuffer,
-      imageBuffer.length
-    );
+    // console.log(
+    //   'FRAMETYPE',
+    //   frameInfo.uid,
+    //   // frameInfo.frameType,
+    //   // frameInfo,
+    //   // imageBuffer,
+    //   imageBuffer.length
+    // );
     if (!imageBuffer) {
       logDebug('imageBuffer is empty, skip decode frame');
       return;

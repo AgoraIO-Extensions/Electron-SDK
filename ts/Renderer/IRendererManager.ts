@@ -16,7 +16,7 @@ export abstract class IRendererManager {
   /**
    * @ignore
    */
-  private _renderingFps: number;
+  private renderingFps: number;
   /**
    * @ignore
    */
@@ -39,7 +39,7 @@ export abstract class IRendererManager {
   private _context: RendererContext;
 
   constructor() {
-    this._renderingFps = 15;
+    this.renderingFps = 60;
     this._currentFrameCount = 0;
     this._previousFirstFrameTime = 0;
     this._rendererCaches = [];
@@ -49,18 +49,12 @@ export abstract class IRendererManager {
     };
   }
 
-  public set renderingFps(fps: number) {
-    if (this._renderingFps !== fps) {
-      this._renderingFps = fps;
-      if (this._renderingTimer) {
-        this.stopRendering();
-        this.startRendering();
-      }
+  public setRenderingFps(fps: number) {
+    this.renderingFps = fps;
+    if (this._renderingTimer) {
+      this.stopRendering();
+      this.startRendering();
     }
-  }
-
-  public get renderingFps(): number {
-    return this._renderingFps;
   }
 
   public set defaultChannelId(channelId: string) {
@@ -84,40 +78,38 @@ export abstract class IRendererManager {
     this.clearRendererCache();
   }
 
-  private precheckRendererContext(context: RendererContext): RendererContext {
-    let {
-      sourceType,
-      uid,
-      channelId,
-      mediaPlayerId,
-      renderMode = this.defaultRenderMode,
-      mirrorMode = this.defaultMirrorMode,
-    } = context;
-    switch (sourceType) {
+  private presetRendererContext(context: RendererContext): RendererContext {
+    //this is for preset default value
+    context.renderMode = context.renderMode || this.defaultRenderMode;
+    context.mirrorMode = context.mirrorMode || this.defaultMirrorMode;
+    context.useWebCodecsDecoder = context.useWebCodecsDecoder || false;
+    context.enableFps = context.enableFps || false;
+
+    switch (context.sourceType) {
       case VideoSourceType.VideoSourceRemote:
-        if (uid === undefined) {
+        if (context.uid === undefined) {
           throw new Error('uid is required');
         }
-        channelId = channelId ?? this.defaultChannelId;
+        context.channelId = context.channelId ?? this.defaultChannelId;
         break;
       case VideoSourceType.VideoSourceMediaPlayer:
-        if (mediaPlayerId === undefined) {
+        if (context.mediaPlayerId === undefined) {
           throw new Error('mediaPlayerId is required');
         }
-        channelId = '';
-        uid = mediaPlayerId;
+        context.channelId = '';
+        context.uid = context.mediaPlayerId;
         break;
       case undefined:
-        if (uid) {
-          sourceType = VideoSourceType.VideoSourceRemote;
+        if (context.uid) {
+          context.sourceType = VideoSourceType.VideoSourceRemote;
         }
         break;
       default:
-        channelId = '';
-        uid = 0;
+        context.channelId = '';
+        context.uid = 0;
         break;
     }
-    return { ...context, sourceType, uid, channelId, renderMode, mirrorMode };
+    return context;
   }
 
   public addOrRemoveRenderer(
@@ -141,7 +133,7 @@ export abstract class IRendererManager {
   private addRendererToCache(
     context: RendererContext
   ): RendererCacheType | undefined {
-    const checkedContext = this.precheckRendererContext(context);
+    const checkedContext = this.presetRendererContext(context);
 
     if (!checkedContext.view) return undefined;
 
@@ -166,7 +158,7 @@ export abstract class IRendererManager {
   }
 
   public removeRendererFromCache(context: RendererContext): void {
-    const checkedContext = this.precheckRendererContext(context);
+    const checkedContext = this.presetRendererContext(context);
 
     const rendererCache = this.getRendererCache(checkedContext);
     if (!rendererCache) return;
@@ -237,8 +229,7 @@ export abstract class IRendererManager {
       // Calculate the time difference between the current frame and the previous frame
       const deltaTime = currentFrameTime - this._previousFirstFrameTime;
       // Calculate the expected time of the current frame
-      const expectedTime =
-        (this._currentFrameCount * 1000) / this._renderingFps;
+      const expectedTime = (this._currentFrameCount * 1000) / this.renderingFps;
       logDebug(
         new Date().toLocaleTimeString(),
         'currentFrameCount',
@@ -288,7 +279,7 @@ export abstract class IRendererManager {
   }
 
   public setRendererContext(context: RendererContext): boolean {
-    const checkedContext = this.precheckRendererContext(context);
+    const checkedContext = this.presetRendererContext(context);
 
     for (const rendererCache of this._rendererCaches) {
       const result = rendererCache.setRendererContext(checkedContext);

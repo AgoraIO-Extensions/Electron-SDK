@@ -2,14 +2,14 @@ import { VideoMirrorModeType } from '../Private/AgoraBase';
 import { RenderModeType, VideoFrame } from '../Private/AgoraMediaBase';
 import { RendererContext, RendererType } from '../Types';
 
-type Context = Pick<RendererContext, 'renderMode' | 'mirrorMode'>;
-
 export abstract class IRenderer {
   parentElement?: HTMLElement;
   container?: HTMLElement;
   canvas?: HTMLCanvasElement;
   rendererType: RendererType | undefined;
-  _context: Context = {};
+  context: RendererContext = {};
+  private _frameCount = 0;
+  private _startTime: number | null = null;
 
   public bind(element: HTMLElement) {
     this.parentElement = element;
@@ -45,20 +45,15 @@ export abstract class IRenderer {
 
   public abstract drawFrame(videoFrame: VideoFrame): void;
 
-  public set context({ renderMode, mirrorMode }: Context) {
-    if (this.context.renderMode !== renderMode) {
-      this.context.renderMode = renderMode;
+  public setContext(context: RendererContext) {
+    if (this.context.renderMode !== context.renderMode) {
       this.updateRenderMode();
     }
 
-    if (this.context.mirrorMode !== mirrorMode) {
-      this.context.mirrorMode = mirrorMode;
+    if (this.context.mirrorMode !== context.mirrorMode) {
       this.updateMirrorMode();
     }
-  }
-
-  public get context(): Context {
-    return this._context;
+    this.context = context;
   }
 
   protected updateRenderMode() {
@@ -113,5 +108,40 @@ export abstract class IRenderer {
         `Invalid rotation: ${rotation}, only 0, 90, 180, 270 are supported`
       );
     }
+  }
+
+  public getFps(): number {
+    let fps = 0;
+    if (!this.context.enableFps || !this.container) {
+      return fps;
+    }
+    if (this._startTime == null) {
+      this._startTime = performance.now();
+    } else {
+      const elapsed = (performance.now() - this._startTime) / 1000;
+      fps = ++this._frameCount / elapsed;
+    }
+
+    let span = this.container.querySelector('span');
+    if (!span) {
+      span = document.createElement('span');
+
+      Object.assign(span.style, {
+        position: 'absolute',
+        bottom: '0',
+        left: '0',
+        zIndex: '10',
+        width: '55px',
+        background: '#fff',
+      });
+
+      this.container.style.position = 'relative';
+
+      this.container.appendChild(span);
+    }
+
+    span.innerText = `fps: ${fps.toFixed(0)}`;
+
+    return fps;
   }
 }

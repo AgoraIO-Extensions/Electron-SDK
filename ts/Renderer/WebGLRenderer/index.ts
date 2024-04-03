@@ -250,6 +250,7 @@ export class WebGLRenderer extends IRenderer {
     );
 
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+    this.getFps();
   }
 
   protected override rotateCanvas({ width, height, rotation }: VideoFrame) {
