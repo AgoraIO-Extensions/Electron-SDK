@@ -2,6 +2,11 @@ import { IRenderer } from '../Renderer/IRenderer';
 
 import { getContextByCanvas } from '../Utils';
 
+type frameSize = {
+  width: number;
+  height: number;
+};
+
 export class WebCodecsRenderer extends IRenderer {
   gl?: WebGLRenderingContext | WebGL2RenderingContext | null;
   // eslint-disable-next-line auto-import/auto-import
@@ -92,10 +97,18 @@ export class WebCodecsRenderer extends IRenderer {
     );
   }
 
+  setFrameSize(frameSize: frameSize) {
+    if (!this.offscreenCanvas) return;
+    this.offscreenCanvas.width = frameSize.width;
+    this.offscreenCanvas.height = frameSize.height;
+  }
+
   drawFrame(frame: any) {
     if (!this.offscreenCanvas) return;
-    this.offscreenCanvas.width = frame.displayWidth;
-    this.offscreenCanvas.height = frame.displayHeight;
+    this.setFrameSize({
+      width: frame.displayWidth,
+      height: frame.displayHeight,
+    });
     this.updateRenderMode();
     if (!this.gl) return;
 

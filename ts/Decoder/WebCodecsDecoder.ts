@@ -34,12 +34,12 @@ export class WebCodecsDecoder {
   private _base_ts_ntp = 1;
   private _last_ts_ntp = 1;
 
-  constructor(renders: WebCodecsRenderer[]) {
+  constructor(renders: WebCodecsRenderer[], onError: (e: any) => void) {
     this.renderers = renders;
     this._decoder = new VideoDecoder({
       // @ts-ignore
       output: this._output.bind(this),
-      error: this._error.bind(this),
+      error: onError,
     });
   }
 
@@ -47,11 +47,6 @@ export class WebCodecsDecoder {
     this.getFps();
     // Schedule the frame to be rendered.
     this._renderFrame(frame);
-  }
-
-  _error(e: any) {
-    window.alert(`Decoder error:${JSON.stringify(e)}`);
-    console.error('Decoder error:', e);
   }
 
   public getFps(): number {
@@ -114,20 +109,45 @@ export class WebCodecsDecoder {
     }
   }
 
+  decoderConfigure(frameInfo: EncodedVideoFrameInfo): boolean {
+    // @ts-ignore
+    let codec = frameCodecMapping[frameInfo.codecType];
+    if (!codec) {
+      logInfo('codec is not in frameCodecMapping, stop decode frame');
+      return false;
+    }
+    this._decoder!.configure({
+      codec: codec,
+      codedWidth: frameInfo.width,
+      codedHeight: frameInfo.height,
+    });
+    logInfo(
+      `configure decoder: codedWidth: ${frameInfo.width}, codedHeight: ${frameInfo.height},codec: ${codec}`
+    );
+    for (let renderer of this.renderers) {
+      renderer.setFrameSize({
+        width: frameInfo.width!,
+        height: frameInfo.height!,
+      });
+      this.pendingFrame = null;
+    }
+    return true;
+  }
+
   // @ts-ignore
   decodeFrame(
     imageBuffer: Uint8Array,
     frameInfo: EncodedVideoFrameInfo,
-    ts: number,
-    firstFrame: boolean
+    ts: number
   ) {
-    // console.log(
-    //   'FRAMETYPE',
-    //   frameInfo.frameType,
-    //   frameInfo,
-    //   imageBuffer,
-    //   imageBuffer.length
-    // );
+    console.log(
+      'FRAMETYPE',
+      frameInfo.uid,
+      // frameInfo.frameType,
+      // frameInfo,
+      // imageBuffer,
+      imageBuffer.length
+    );
     if (!imageBuffer) {
       logDebug('imageBuffer is empty, skip decode frame');
       return;
@@ -140,22 +160,6 @@ export class WebCodecsDecoder {
     if (!frameType) {
       logDebug('frameType is not in frameTypeMapping, skip decode frame');
       return;
-    }
-    // @ts-ignore
-    let codec = frameCodecMapping[frameInfo.codecType];
-    if (!codec) {
-      logDebug('codec is not in frameCodecMapping, skip decode frame');
-      return;
-    }
-    if (firstFrame) {
-      this._decoder!.configure({
-        codec: codec,
-        codedWidth: frameInfo.width,
-        codedHeight: frameInfo.height,
-      });
-      logInfo(
-        `configure decoder: codedWidth: ${frameInfo.width}, codedHeight: ${frameInfo.height},codec: ${codec}`
-      );
     }
     this._frame_ts.push(ts);
     if (this._base_ts !== 0) {

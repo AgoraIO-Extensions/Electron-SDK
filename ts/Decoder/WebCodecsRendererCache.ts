@@ -1,4 +1,4 @@
-import { createAgoraRtcEngine } from '../AgoraSdk';
+import { createAgoraRtcEngine, logInfo } from '../AgoraSdk';
 import { EncodedVideoFrameInfo, VideoStreamType } from '../Private/AgoraBase';
 import { IVideoEncodedFrameObserver } from '../Private/AgoraMediaBase';
 import { IRtcEngineEventHandler } from '../Private/IAgoraRtcEngine';
@@ -21,11 +21,18 @@ export class WebCodecsRendererCache
     super({ channelId, uid, sourceType });
     this._engine = createAgoraRtcEngine();
     this._decoder = new WebCodecsDecoder(
-      this._renderers as WebCodecsRenderer[]
+      this._renderers as WebCodecsRenderer[],
+      this.onDecoderError
     );
     this._decoder.enableFps = true;
     this.selfDecode = true;
     this._engine.registerEventHandler(this);
+  }
+
+  onDecoderError(e: any) {
+    window.alert(`Decoder error:${JSON.stringify(e)}`);
+    console.error('Decoder error:', e);
+    this.release();
   }
 
   onEncodedVideoFrameReceived(
@@ -35,15 +42,20 @@ export class WebCodecsRendererCache
     videoEncodedFrameInfo: EncodedVideoFrameInfo
   ) {
     if (!this._decoder) return;
+    if (this._firstFrame) {
+      let result = this._decoder.decoderConfigure(videoEncodedFrameInfo);
+      if (!result) {
+        logInfo('Failed to configure decoder, stop decoding frames.');
+        this.release();
+        return;
+      }
+      this._firstFrame = false;
+    }
     this._decoder.decodeFrame(
       imageBuffer,
       videoEncodedFrameInfo,
-      new Date().getTime(),
-      this._firstFrame
+      new Date().getTime()
     );
-    if (this._firstFrame) {
-      this._firstFrame = false;
-    }
   }
 
   onUserJoined(connection: RtcConnection, remoteUid: number, _elapsed: number) {
