@@ -26,7 +26,7 @@ export class WebCodecsRendererCache
       this.onDecoderError
     );
     this.selfDecode = true;
-    this._engine.registerEventHandler(this);
+    this.draw();
   }
 
   onDecoderError(e: any) {
@@ -71,6 +71,7 @@ export class WebCodecsRendererCache
   }
 
   public draw() {
+    this._engine?.registerEventHandler(this);
     this._engine?.getMediaEngine().registerVideoEncodedFrameObserver(this);
   }
 

@@ -1,16 +1,20 @@
 import {
   ChannelProfileType,
   ClientRoleType,
+  DegradationPreference,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   LocalVideoStreamError,
   LocalVideoStreamState,
+  OrientationMode,
   RenderModeType,
   RtcConnection,
   RtcStats,
   ScreenCaptureSourceInfo,
   ScreenCaptureSourceType,
   UserOfflineReasonType,
+  VideoCodecType,
+  VideoMirrorModeType,
   VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
@@ -73,13 +77,13 @@ export default class ScreenShare
       remoteUsers: [],
       startPreview: false,
       token2: '',
-      uid2: 0,
+      uid2: 7,
       sources: [],
       targetSource: undefined,
-      width: 1920,
-      height: 1080,
-      frameRate: 15,
-      bitrate: 0,
+      width: 3840,
+      height: 2160,
+      frameRate: 60,
+      bitrate: 20000,
       captureMouseCursor: true,
       windowFocus: false,
       excludeWindowList: [],
@@ -118,6 +122,27 @@ export default class ScreenShare
 
     // Start preview before joinChannel
     this.engine.startPreview();
+    this.engine.setParameters(
+      JSON.stringify({ 'che.video.h265_screen_enable': 1 })
+    );
+    this.engine.setVideoEncoderConfigurationEx(
+      {
+        codecType: VideoCodecType.VideoCodecH265,
+        frameRate: 65,
+        bitrate: 2000,
+        orientationMode: OrientationMode.OrientationModeAdaptive,
+        degradationPreference: DegradationPreference.MaintainQuality,
+        mirrorMode: VideoMirrorModeType.VideoMirrorModeDisabled,
+        dimensions: {
+          width: 3840,
+          height: 2160,
+        },
+      },
+      {
+        localUid: this.state.uid,
+        channelId: this.state.channelId,
+      }
+    );
     this.setState({ startPreview: true });
 
     this.getScreenCaptureSources();
