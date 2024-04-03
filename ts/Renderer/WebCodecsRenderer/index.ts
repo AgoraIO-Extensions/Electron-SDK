@@ -1,6 +1,5 @@
-import { IRenderer } from '../Renderer/IRenderer';
-
-import { getContextByCanvas } from '../Utils';
+import { getContextByCanvas } from '../../Utils';
+import { IRenderer } from '../IRenderer';
 
 type frameSize = {
   width: number;

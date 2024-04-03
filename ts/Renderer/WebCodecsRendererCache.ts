@@ -1,13 +1,14 @@
 import { createAgoraRtcEngine, logInfo } from '../AgoraSdk';
+import { WebCodecsDecoder } from '../Decoder/index';
 import { EncodedVideoFrameInfo, VideoStreamType } from '../Private/AgoraBase';
 import { IVideoEncodedFrameObserver } from '../Private/AgoraMediaBase';
 import { IRtcEngineEventHandler } from '../Private/IAgoraRtcEngine';
 import { IRtcEngineEx, RtcConnection } from '../Private/IAgoraRtcEngineEx';
-import { IRendererCache } from '../Renderer/IRendererCache';
+
 import { RendererContext } from '../Types';
 
-import { WebCodecsDecoder } from './WebCodecsDecoder';
-import { WebCodecsRenderer } from './WebCodecsRenderer';
+import { IRendererCache } from './IRendererCache';
+import { WebCodecsRenderer } from './WebCodecsRenderer/index';
 
 export class WebCodecsRendererCache
   extends IRendererCache

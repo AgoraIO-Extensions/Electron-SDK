@@ -1,5 +1,3 @@
-import { WebCodecsRenderer } from '../Decoder/WebCodecsRenderer';
-
 import {
   RENDER_MODE,
   RendererCacheContext,
@@ -11,6 +9,7 @@ import { isSupportWebGL } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 import { IRendererManager } from './IRendererManager';
+import { WebCodecsRenderer } from './WebCodecsRenderer/index';
 import { WebGLFallback, WebGLRenderer } from './WebGLRenderer';
 import { YUVCanvasRenderer } from './YUVCanvasRenderer';
 

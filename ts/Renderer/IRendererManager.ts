@@ -1,5 +1,3 @@
-import { WebCodecsRendererCache } from '../Decoder/WebCodecsRendererCache';
-
 import { VideoMirrorModeType, VideoViewSetupMode } from '../Private/AgoraBase';
 import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
 import { RendererCacheType, RendererContext, RendererType } from '../Types';
@@ -8,6 +6,7 @@ import { logDebug } from '../Utils';
 import { IRenderer } from './IRenderer';
 import { generateRendererCacheKey } from './IRendererCache';
 import { RendererCache } from './RendererCache';
+import { WebCodecsRendererCache } from './WebCodecsRendererCache';
 
 /**
  * @ignore

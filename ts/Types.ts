@@ -1,9 +1,9 @@
-import { WebCodecsRendererCache } from './Decoder/WebCodecsRendererCache';
 import { VideoCanvas } from './Private/AgoraBase';
 import { VideoFrame } from './Private/AgoraMediaBase';
 import { RtcConnection } from './Private/IAgoraRtcEngineEx';
 import { IRendererManager } from './Renderer';
 import { RendererCache } from './Renderer/RendererCache';
+import { WebCodecsRendererCache } from './Renderer/WebCodecsRendererCache';
 
 /**
  * @ignore

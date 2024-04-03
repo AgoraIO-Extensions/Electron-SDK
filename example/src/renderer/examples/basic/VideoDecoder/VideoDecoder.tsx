@@ -125,6 +125,7 @@ export default class VideoDecoder
             this.renderUser({
               uid: item,
               sourceType: VideoSourceType.VideoSourceRemote,
+              // Use WebCodecs to decode video stream
               useWebCodecsDecoder: true,
               renderMode: RenderModeType.RenderModeFit,
             })
