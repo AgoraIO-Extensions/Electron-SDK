@@ -23,7 +23,7 @@ export class WebCodecsRendererCache
     this._engine = createAgoraRtcEngine();
     this._decoder = new WebCodecsDecoder(
       this.renderers as WebCodecsRenderer[],
-      this.onDecoderError
+      this.onDecoderError.bind(this)
     );
     this.selfDecode = true;
     this.draw();

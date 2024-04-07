@@ -35,7 +35,7 @@ export class WebCodecsDecoder {
     this._decoder = new VideoDecoder({
       // @ts-ignore
       output: this._output.bind(this),
-      error: onError.bind(this),
+      error: onError,
     });
   }
 
