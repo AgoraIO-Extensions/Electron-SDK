@@ -1,20 +1,16 @@
 import {
   ChannelProfileType,
   ClientRoleType,
-  DegradationPreference,
   IRtcEngineEventHandler,
   IRtcEngineEx,
   LocalVideoStreamError,
   LocalVideoStreamState,
-  OrientationMode,
   RenderModeType,
   RtcConnection,
   RtcStats,
   ScreenCaptureSourceInfo,
   ScreenCaptureSourceType,
   UserOfflineReasonType,
-  VideoCodecType,
-  VideoMirrorModeType,
   VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
@@ -55,6 +51,8 @@ interface State extends BaseVideoComponentState {
   highLightWidth: number;
   highLightColor: number;
   enableHighLight: boolean;
+  videoCodec: number;
+  videoCodecList: { key: string; value: number }[];
   startScreenCapture: boolean;
   publishScreenCapture: boolean;
 }
@@ -90,6 +88,17 @@ export default class ScreenShare
       highLightWidth: 0,
       highLightColor: 0xff8cbf26,
       enableHighLight: false,
+      videoCodec: 2,
+      videoCodecList: [
+        {
+          key: 'h264',
+          value: 1,
+        },
+        {
+          key: 'h265',
+          value: 2,
+        },
+      ],
       startScreenCapture: false,
       publishScreenCapture: false,
     };
@@ -122,27 +131,6 @@ export default class ScreenShare
 
     // Start preview before joinChannel
     this.engine.startPreview();
-    this.engine.setParameters(
-      JSON.stringify({ 'che.video.h265_screen_enable': 1 })
-    );
-    this.engine.setVideoEncoderConfigurationEx(
-      {
-        codecType: VideoCodecType.VideoCodecH265,
-        frameRate: 65,
-        bitrate: 2000,
-        orientationMode: OrientationMode.OrientationModeAdaptive,
-        degradationPreference: DegradationPreference.MaintainQuality,
-        mirrorMode: VideoMirrorModeType.VideoMirrorModeDisabled,
-        dimensions: {
-          width: 3840,
-          height: 2160,
-        },
-      },
-      {
-        localUid: this.state.uid,
-        channelId: this.state.channelId,
-      }
-    );
     this.setState({ startPreview: true });
 
     this.getScreenCaptureSources();
@@ -205,12 +193,18 @@ export default class ScreenShare
       highLightWidth,
       highLightColor,
       enableHighLight,
+      videoCodec,
     } = this.state;
 
     if (!targetSource) {
       this.error('targetSource is invalid');
       return;
     }
+
+    this.engine?.setParameters(
+      JSON.stringify({ 'che.video.videoCodecIndex': videoCodec })
+    );
+    console.log('che.video.videoCodecIndex', videoCodec);
 
     if (
       targetSource.type ===
@@ -445,6 +439,8 @@ export default class ScreenShare
       highLightColor,
       enableHighLight,
       publishScreenCapture,
+      videoCodecList,
+      videoCodec,
     } = this.state;
     return (
       <>
@@ -592,6 +588,21 @@ export default class ScreenShare
           value={enableHighLight}
           onValueChange={(value) => {
             this.setState({ enableHighLight: value });
+          }}
+        />
+        <AgoraDropdown
+          title={'videoCodec'}
+          items={videoCodecList?.map((value) => {
+            return {
+              value: value.value!,
+              label: value.key!,
+            };
+          })}
+          value={videoCodec}
+          onValueChange={(value, index) => {
+            this.setState((preState) => {
+              return { videoCodec: preState.videoCodecList?.at(index)?.value! };
+            });
           }}
         />
         {enableHighLight ? (
