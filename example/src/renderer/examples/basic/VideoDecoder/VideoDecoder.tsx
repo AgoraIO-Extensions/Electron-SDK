@@ -4,6 +4,7 @@ import {
   IRtcEngineEventHandler,
   IRtcEngineEx,
   RenderModeType,
+  RtcConnection,
   VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
@@ -13,13 +14,16 @@ import {
   BaseAudioComponentState,
   BaseComponent,
 } from '../../../components/BaseComponent';
-import { AgoraList } from '../../../components/ui';
+import { AgoraTextInput } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseAudioComponentState {
   fps: number;
+  decodeRemoteUserUid: number;
 }
+
+const SCREEN_UID = 7;
 
 export default class VideoDecoder
   extends BaseComponent<{}, State>
@@ -36,6 +40,7 @@ export default class VideoDecoder
       token: Config.token,
       uid: Config.uid,
       joinChannelSuccess: false,
+      decodeRemoteUserUid: SCREEN_UID,
       remoteUsers: [],
       startPreview: false,
     };
@@ -110,8 +115,28 @@ export default class VideoDecoder
     this.engine?.release();
   }
 
+  onUserJoined(connection: RtcConnection, remoteUid: number, elapsed: number) {
+    this.info(
+      'onUserJoined',
+      'connection',
+      connection,
+      'remoteUid',
+      remoteUid,
+      'elapsed',
+      elapsed
+    );
+    // only support one decoder at the same time for now
+    if (remoteUid === SCREEN_UID) {
+      this.setState((preState) => {
+        return {
+          remoteUsers: [...(preState.remoteUsers ?? []), remoteUid],
+        };
+      });
+    }
+  }
+
   protected renderUsers(): ReactElement | undefined {
-    let { remoteUsers, startPreview, joinChannelSuccess } = this.state;
+    let { decodeRemoteUserUid, startPreview, joinChannelSuccess } = this.state;
     return (
       <>
         {!!startPreview || joinChannelSuccess
@@ -119,17 +144,34 @@ export default class VideoDecoder
               sourceType: VideoSourceType.VideoSourceCamera,
             })
           : undefined}
-        <AgoraList
-          data={remoteUsers ?? []}
-          renderItem={(item) =>
-            this.renderUser({
-              uid: item,
+        {joinChannelSuccess && decodeRemoteUserUid
+          ? this.renderUser({
+              uid: decodeRemoteUserUid,
               sourceType: VideoSourceType.VideoSourceRemote,
               // Use WebCodecs to decode video stream
               useWebCodecsDecoder: true,
               renderMode: RenderModeType.RenderModeFit,
             })
-          }
+          : undefined}
+      </>
+    );
+  }
+
+  protected renderConfiguration(): ReactElement | undefined {
+    return (
+      <>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              decodeRemoteUserUid:
+                text === '' ? this.createState().decodeRemoteUserUid : +text,
+            });
+          }}
+          numberKeyboard={true}
+          placeholder={`remoteUserUid (defaults: ${
+            this.createState().decodeRemoteUserUid
+          })`}
         />
       </>
     );

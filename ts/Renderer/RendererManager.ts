@@ -278,8 +278,10 @@ export class RendererManager {
         return;
       }
 
-      // Render all renderers
-      for (const rendererCache of this._rendererCaches) {
+      // Render all renderers that do not use WebCodecs
+      for (const rendererCache of this._rendererCaches.filter(
+        (cache) => !cache.selfDecode
+      )) {
         this.doRendering(rendererCache);
       }
 

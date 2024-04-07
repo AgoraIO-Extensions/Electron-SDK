@@ -5,6 +5,7 @@ import {
 } from '../Private/AgoraBase';
 
 import { WebCodecsRenderer } from '../Renderer/WebCodecsRenderer/index';
+import { RendererType } from '../Types';
 import { logDebug, logInfo } from '../Utils';
 
 const frameTypeMapping = {
@@ -58,6 +59,9 @@ export class WebCodecsDecoder {
 
   renderAnimationFrame() {
     for (let renderer of this.renderers) {
+      if (renderer.rendererType !== RendererType.WEBCODECSRENDERER) {
+        continue;
+      }
       renderer.drawFrame(this.pendingFrame);
       this.pendingFrame = null;
     }
@@ -79,6 +83,9 @@ export class WebCodecsDecoder {
       `configure decoder: codedWidth: ${frameInfo.width}, codedHeight: ${frameInfo.height},codec: ${codec}`
     );
     for (let renderer of this.renderers) {
+      if (renderer.rendererType !== RendererType.WEBCODECSRENDERER) {
+        continue;
+      }
       renderer.setFrameSize({
         width: frameInfo.width!,
         height: frameInfo.height!,

@@ -49,6 +49,10 @@ export enum RendererType {
    * @ignore
    */
   SOFTWARE = 2,
+  /**
+   * @ignore
+   */
+  WEBCODECSRENDERER = 3,
 }
 
 export type RENDER_MODE = RendererType;

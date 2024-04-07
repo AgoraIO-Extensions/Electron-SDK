@@ -1,3 +1,4 @@
+import { RendererType } from '../../Types';
 import { getContextByCanvas } from '../../Utils';
 import { IRenderer } from '../IRenderer';
 
@@ -10,6 +11,12 @@ export class WebCodecsRenderer extends IRenderer {
   gl?: WebGLRenderingContext | WebGL2RenderingContext | null;
   // eslint-disable-next-line auto-import/auto-import
   offscreenCanvas: OffscreenCanvas | undefined;
+
+  constructor() {
+    super();
+    this.rendererType = RendererType.WEBCODECSRENDERER;
+  }
+
   static vertexShaderSource = `
     attribute vec2 xy;
     varying highp vec2 uv;
