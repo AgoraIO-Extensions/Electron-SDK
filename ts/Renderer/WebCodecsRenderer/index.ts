@@ -110,7 +110,7 @@ export class WebCodecsRenderer extends IRenderer {
   }
 
   drawFrame(frame: any) {
-    if (!this.offscreenCanvas) return;
+    if (!this.offscreenCanvas || !frame) return;
     this.setFrameSize({
       width: frame.displayWidth,
       height: frame.displayHeight,

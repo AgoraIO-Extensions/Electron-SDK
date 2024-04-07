@@ -1,4 +1,4 @@
-import { createAgoraRtcEngine, logInfo } from '../AgoraSdk';
+import { createAgoraRtcEngine, logError, logInfo } from '../AgoraSdk';
 import { WebCodecsDecoder } from '../Decoder/index';
 import { EncodedVideoFrameInfo, VideoStreamType } from '../Private/AgoraBase';
 import { IVideoEncodedFrameObserver } from '../Private/AgoraMediaBase';
@@ -30,8 +30,8 @@ export class WebCodecsRendererCache
   }
 
   onDecoderError(e: any) {
-    window.alert(`Decoder error:${JSON.stringify(e)}`);
-    console.error('Decoder error:', e);
+    logError('Decoder error:', e);
+    //todo need add some fallback logic
     this.release();
   }
 
@@ -76,10 +76,10 @@ export class WebCodecsRendererCache
   }
 
   public release(): void {
+    super.release();
     this._engine?.getMediaEngine().unregisterVideoEncodedFrameObserver(this);
     this._engine?.unregisterEventHandler(this);
     this._decoder?.release();
     this._decoder = null;
-    super.release();
   }
 }
