@@ -3,7 +3,7 @@ import semver from 'semver';
 import { VideoMirrorModeType, VideoViewSetupMode } from '../Private/AgoraBase';
 import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
 import { RendererCacheType, RendererContext, RendererType } from '../Types';
-import { isSupportWebGL, logDebug } from '../Utils';
+import { isSupportWebGL, logDebug, logError } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 import { generateRendererCacheKey } from './IRendererCache';
@@ -97,10 +97,13 @@ export class RendererManager {
     context.useWebCodecsDecoder = context.useWebCodecsDecoder || false;
     context.enableFps = context.enableFps || false;
 
-    //videoDecoder is not supported in electron version < 22.0.0
+    //videoDecoder is not supported in electron version < 20.0.0
     //@ts-ignore
     if (semver.lt(process.versions.electron, '20.0.0')) {
       context.useWebCodecsDecoder = false;
+      logError(
+        'WebCodecsDecoder is not supported in electron version < 20.0.0, please upgrade electron to 20.0.0 or later.'
+      );
     }
 
     switch (context.sourceType) {
