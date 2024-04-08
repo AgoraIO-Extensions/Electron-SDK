@@ -1,3 +1,5 @@
+import semver from 'semver';
+
 import { VideoMirrorModeType, VideoViewSetupMode } from '../Private/AgoraBase';
 import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
 import { RendererCacheType, RendererContext, RendererType } from '../Types';
@@ -94,6 +96,12 @@ export class RendererManager {
     context.mirrorMode = context.mirrorMode || this.defaultMirrorMode;
     context.useWebCodecsDecoder = context.useWebCodecsDecoder || false;
     context.enableFps = context.enableFps || false;
+
+    //videoDecoder is not supported in electron version < 22.0.0
+    //@ts-ignore
+    if (semver.lt(process.versions.electron, '20.0.0')) {
+      context.useWebCodecsDecoder = false;
+    }
 
     switch (context.sourceType) {
       case VideoSourceType.VideoSourceRemote:
