@@ -76,10 +76,10 @@ export class WebCodecsRendererCache
   }
 
   public release(): void {
-    super.release();
     this._engine?.getMediaEngine().unregisterVideoEncodedFrameObserver(this);
     this._engine?.unregisterEventHandler(this);
     this._decoder?.release();
     this._decoder = null;
+    super.release();
   }
 }

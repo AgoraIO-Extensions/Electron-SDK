@@ -88,6 +88,10 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     new LocalSpatialAudioEngineInternal();
 
   override initialize(context: RtcEngineContext): number {
+    const ret = super.initialize(context);
+    callIrisApi.call(this, 'RtcEngine_setAppType', {
+      appType: 3,
+    });
     if (AgoraEnv.webEnvReady) {
       // @ts-ignore
       window.AgoraEnv = AgoraEnv;
@@ -96,10 +100,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
         AgoraEnv.AgoraRendererManager = new RendererManager();
       }
     }
-    const ret = super.initialize(context);
-    callIrisApi.call(this, 'RtcEngine_setAppType', {
-      appType: 3,
-    });
     return ret;
   }
 

@@ -62,6 +62,9 @@ export class MediaEngineInternal extends IMediaEngineImpl {
   override registerVideoEncodedFrameObserver(
     observer: IVideoEncodedFrameObserver
   ): number {
+    // only call iris when no event handler registered
+    let callIris =
+      MediaEngineInternal._video_encoded_frame_observers.length === 0;
     if (
       !MediaEngineInternal._video_encoded_frame_observers.find(
         (value) => value === observer
@@ -69,7 +72,7 @@ export class MediaEngineInternal extends IMediaEngineImpl {
     ) {
       MediaEngineInternal._video_encoded_frame_observers.push(observer);
     }
-    return super.registerVideoEncodedFrameObserver(observer);
+    return callIris ? super.registerVideoEncodedFrameObserver(observer) : 1;
   }
 
   override unregisterVideoEncodedFrameObserver(
@@ -79,7 +82,10 @@ export class MediaEngineInternal extends IMediaEngineImpl {
       MediaEngineInternal._video_encoded_frame_observers.filter(
         (value) => value !== observer
       );
-    return super.unregisterVideoEncodedFrameObserver(observer);
+    // only call iris when no event handler registered
+    let callIris =
+      MediaEngineInternal._video_encoded_frame_observers.length === 0;
+    return callIris ? super.unregisterVideoEncodedFrameObserver(observer) : 1;
   }
 
   override release() {
