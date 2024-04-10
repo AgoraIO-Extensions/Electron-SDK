@@ -21,6 +21,10 @@ export interface AgoraEnvOptions {
    * @ignore
    */
   webEnvReady?: boolean;
+  /**
+   * @ignore
+   */
+  enableWebCodecsDecoder?: boolean;
 }
 
 /**

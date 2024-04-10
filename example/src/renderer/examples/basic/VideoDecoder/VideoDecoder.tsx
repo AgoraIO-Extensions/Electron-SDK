@@ -1,4 +1,5 @@
 import {
+  AgoraEnv,
   ChannelProfileType,
   ClientRoleType,
   IRtcEngineEventHandler,
@@ -58,6 +59,9 @@ export default class VideoDecoder
     }
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
     this.engine.setLogFilter(LogFilterType.LogFilterDebug);
+    // register video encoded frame observer after initialize the engine
+    // need to enable WebCodecsDecoder before call engine.initialize
+    AgoraEnv.enableWebCodecsDecoder = true;
     this.engine.initialize({
       appId,
       logConfig: { filePath: Config.logFilePath },

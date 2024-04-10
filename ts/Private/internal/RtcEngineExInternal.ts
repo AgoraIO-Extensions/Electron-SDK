@@ -92,6 +92,10 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     callIrisApi.call(this, 'RtcEngine_setAppType', {
       appType: 3,
     });
+    if (AgoraEnv.enableWebCodecsDecoder) {
+      this._media_engine.registerVideoEncodedFrameObserver({});
+      MediaEngineInternal._video_encoded_frame_observers = [];
+    }
     if (AgoraEnv.webEnvReady) {
       // @ts-ignore
       window.AgoraEnv = AgoraEnv;

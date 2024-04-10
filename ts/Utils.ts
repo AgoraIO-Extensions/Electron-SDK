@@ -177,5 +177,6 @@ export const AgoraEnv: AgoraEnvType = {
   enableLogging: true,
   enableDebugLogging: false,
   webEnvReady: true,
+  enableWebCodecsDecoder: true,
   AgoraElectronBridge: new AgoraNode.AgoraElectronBridge(),
 };
