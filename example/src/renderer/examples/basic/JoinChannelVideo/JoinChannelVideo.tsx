@@ -18,7 +18,7 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import { AgoraDropdown } from '../../../components/ui';
+import { AgoraDropdown, AgoraList } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { arrayToItems } from '../../../utils';
 import { askMediaAccess } from '../../../utils/permissions';
@@ -170,7 +170,24 @@ export default class JoinChannelVideo
   }
 
   protected renderUsers(): ReactElement | undefined {
-    return super.renderUsers();
+    const { startPreview, joinChannelSuccess, remoteUsers } = this.state;
+    return (
+      <>
+        {!!startPreview || joinChannelSuccess
+          ? this.renderUser({
+              sourceType: VideoSourceType.VideoSourceCamera,
+            })
+          : undefined}
+        {!!startPreview || joinChannelSuccess
+          ? remoteUsers.map((item) =>
+              this.renderUser({
+                uid: item,
+                sourceType: VideoSourceType.VideoSourceRemote,
+              })
+            )
+          : undefined}
+      </>
+    );
   }
 
   protected renderVideo(user: VideoCanvas): ReactElement | undefined {
