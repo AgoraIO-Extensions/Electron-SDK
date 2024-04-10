@@ -3,6 +3,7 @@ import {
   ClientRoleType,
   IRtcEngineEventHandler,
   IRtcEngineEx,
+  LogFilterType,
   RenderModeType,
   RtcConnection,
   UserOfflineReasonType,
@@ -56,6 +57,7 @@ export default class VideoDecoder
       this.error(`appId is invalid`);
     }
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
+    this.engine.setLogFilter(LogFilterType.LogFilterDebug);
     this.engine.initialize({
       appId,
       logConfig: { filePath: Config.logFilePath },

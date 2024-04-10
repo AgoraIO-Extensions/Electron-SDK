@@ -18,7 +18,7 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import { AgoraDropdown, AgoraList } from '../../../components/ui';
+import { AgoraDropdown } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { arrayToItems } from '../../../utils';
 import { askMediaAccess } from '../../../utils/permissions';
