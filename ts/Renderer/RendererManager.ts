@@ -1,9 +1,17 @@
 import semver from 'semver';
 
+import { GpuInfo } from '../Decoder/gpu-utils';
+
 import { VideoMirrorModeType, VideoViewSetupMode } from '../Private/AgoraBase';
 import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
-import { RendererCacheType, RendererContext, RendererType } from '../Types';
-import { isSupportWebGL, logDebug, logError } from '../Utils';
+import { ipcSend } from '../Private/ipc/renderer';
+import {
+  IPCMessageType,
+  RendererCacheType,
+  RendererContext,
+  RendererType,
+} from '../Types';
+import { AgoraEnv, isSupportWebGL, logDebug, logError } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 import { generateRendererCacheKey } from './IRendererCache';
@@ -45,7 +53,12 @@ export class RendererManager {
   /**
    * @ignore
    */
-  rendererType: RendererType;
+  private rendererType: RendererType;
+
+  /**
+   * @ignore
+   */
+  gpuInfo: GpuInfo = new GpuInfo();
 
   constructor() {
     this.renderingFps = 60;
@@ -59,6 +72,9 @@ export class RendererManager {
     this.rendererType = isSupportWebGL()
       ? RendererType.WEBGL
       : RendererType.SOFTWARE;
+    if (AgoraEnv.enableWebCodecsDecoder) {
+      this.getGpuInfo();
+    }
   }
 
   public setRenderingFps(fps: number) {
@@ -83,6 +99,24 @@ export class RendererManager {
 
   public get defaultMirrorMode(): VideoMirrorModeType {
     return this._context.mirrorMode!;
+  }
+
+  public getGpuInfo(): void {
+    //@ts-ignore
+    if (process.type === 'renderer') {
+      ipcSend(IPCMessageType.AGORA_IPC_GET_GPU_INFO)
+        .then((result) => {
+          this.gpuInfo.videoDecodeAcceleratorSupportedProfile = result;
+        })
+        .catch((error) => {
+          logError(
+            'Failed to get GPU info, please check if you are already import agora-electron-sdk in the main process.',
+            error
+          );
+        });
+    } else {
+      logError('This function only works in renderer process');
+    }
   }
 
   public release(): void {

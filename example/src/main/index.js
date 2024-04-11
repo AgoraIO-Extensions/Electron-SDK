@@ -1,6 +1,7 @@
 import path from 'path';
 import { format as formatUrl } from 'url';
 
+require('agora-electron-sdk/js/Private/ipc/main');
 import { BrowserWindow, app, ipcMain, systemPreferences } from 'electron';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -82,38 +83,38 @@ app.on('ready', () => {
   mainWindow = createMainWindow();
 });
 
-app.whenReady().then(() => {
-  const gpu = new BrowserWindow({
-    show: false,
-    webPreferences: { offscreen: true },
-  });
-  gpu.loadURL('chrome://gpu');
-  gpu.webContents.on('did-finish-load', () => {
-    let executeJavaScriptText =
-      `` +
-      `let videoAccelerationInfo = [];` +
-      `let nodeList = document.querySelector('info-view')?.shadowRoot?.querySelector('#video-acceleration-info info-view-table')?.shadowRoot?.querySelectorAll('#info-view-table info-view-table-row') || [];` +
-      `for (node of nodeList) {` +
-      `  videoAccelerationInfo.push({` +
-      `     title: node.shadowRoot.querySelector('#title')?.innerText,` +
-      `     value: node.shadowRoot.querySelector('#value')?.innerText,` +
-      ` })` +
-      `}` +
-      `JSON.stringify(videoAccelerationInfo)`;
-    gpu.webContents
-      .executeJavaScript(executeJavaScriptText)
-      .then((result) => {
-        if (!result) {
-          return;
-        }
-        let filterResult = JSON.parse(result).filter((item) => {
-          return item.title.indexOf('Decode') !== -1;
-        });
-        console.log(filterResult);
-        gpu.close();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  });
-});
+// app.whenReady().then(() => {
+//   const gpu = new BrowserWindow({
+//     show: false,
+//     webPreferences: { offscreen: true },
+//   });
+//   gpu.loadURL('chrome://gpu');
+//   // gpu.webContents.on('did-finish-load', () => {
+//   let executeJavaScriptText =
+//     `` +
+//     `let videoAccelerationInfo = [];` +
+//     `let nodeList = document.querySelector('info-view')?.shadowRoot?.querySelector('#video-acceleration-info info-view-table')?.shadowRoot?.querySelectorAll('#info-view-table info-view-table-row') || [];` +
+//     `for (node of nodeList) {` +
+//     `  videoAccelerationInfo.push({` +
+//     `     title: node.shadowRoot.querySelector('#title')?.innerText,` +
+//     `     value: node.shadowRoot.querySelector('#value')?.innerText,` +
+//     ` })` +
+//     `}` +
+//     `JSON.stringify(videoAccelerationInfo)`;
+//   gpu.webContents
+//     .executeJavaScript(executeJavaScriptText)
+//     .then((result) => {
+//       if (!result) {
+//         return;
+//       }
+//       let filterResult = JSON.parse(result).filter((item) => {
+//         return item.title.indexOf('Decode') !== -1;
+//       });
+//       console.log(filterResult);
+//       gpu.close();
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//     });
+//   // });
+// });

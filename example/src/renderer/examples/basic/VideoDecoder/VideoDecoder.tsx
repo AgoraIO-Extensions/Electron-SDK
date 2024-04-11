@@ -1,4 +1,5 @@
 import {
+  AgoraEnv,
   ChannelProfileType,
   ClientRoleType,
   IRtcEngineEventHandler,
@@ -9,7 +10,6 @@ import {
   UserOfflineReasonType,
   VideoSourceType,
   createAgoraRtcEngine,
-  getGpuInfo,
 } from 'agora-electron-sdk';
 import React, { ReactElement } from 'react';
 
@@ -26,8 +26,6 @@ interface State extends BaseAudioComponentState {
   decodeRemoteUserUid: number;
   decodeRemoteUserUidJoined: boolean;
 }
-
-getGpuInfo();
 
 export default class VideoDecoder
   extends BaseComponent<{}, State>
@@ -64,7 +62,7 @@ export default class VideoDecoder
     // if enableWebCodecsDecoder is true, the video stream will be decoded by WebCodecs
     // will automatically register videoEncodedFrameObserver
     // videoEncodedFrameObserver will be released when engine.release
-    // AgoraEnv.enableWebCodecsDecoder = true;
+    AgoraEnv.enableWebCodecsDecoder = true;
     this.engine.initialize({
       appId,
       logConfig: { filePath: Config.logFilePath },

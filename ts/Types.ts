@@ -135,3 +135,10 @@ export interface AgoraElectronBridge {
     bufferCount?: number
   ) => Result;
 }
+
+/**
+ * @ignore
+ */
+export enum IPCMessageType {
+  AGORA_IPC_GET_GPU_INFO = 'AGORA_IPC_GET_GPU_INFO',
+}
