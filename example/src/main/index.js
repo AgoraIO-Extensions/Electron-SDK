@@ -82,28 +82,38 @@ app.on('ready', () => {
   mainWindow = createMainWindow();
 });
 
-app.commandLine.appendSwitch('--disable-software-rasterizer');
-
 app.whenReady().then(() => {
-  const w = new BrowserWindow({
+  const gpu = new BrowserWindow({
     show: false,
-    webPreferences: { contextIsolation: true },
+    webPreferences: { offscreen: true },
   });
-  w.webContents.once('did-finish-load', () => {
-    app.getGPUInfo('complete').then(
-      (gpuInfo) => {
-        console.log(
-          'HERE COMES THE JSON: ' +
-            JSON.stringify(gpuInfo) +
-            ' AND THERE IT WAS'
-        );
-        setImmediate(() => app.exit(0));
-      },
-      (error) => {
-        console.error(error);
-        setImmediate(() => app.exit(1));
-      }
-    );
+  gpu.loadURL('chrome://gpu');
+  gpu.webContents.on('did-finish-load', () => {
+    let executeJavaScriptText =
+      `` +
+      `let videoAccelerationInfo = [];` +
+      `let nodeList = document.querySelector('info-view')?.shadowRoot?.querySelector('#video-acceleration-info info-view-table')?.shadowRoot?.querySelectorAll('#info-view-table info-view-table-row') || [];` +
+      `for (node of nodeList) {` +
+      `  videoAccelerationInfo.push({` +
+      `     title: node.shadowRoot.querySelector('#title')?.innerText,` +
+      `     value: node.shadowRoot.querySelector('#value')?.innerText,` +
+      ` })` +
+      `}` +
+      `JSON.stringify(videoAccelerationInfo)`;
+    gpu.webContents
+      .executeJavaScript(executeJavaScriptText)
+      .then((result) => {
+        if (!result) {
+          return;
+        }
+        let filterResult = JSON.parse(result).filter((item) => {
+          return item.title.indexOf('Decode') !== -1;
+        });
+        console.log(filterResult);
+        gpu.close();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   });
-  w.loadURL('data:text/html;<canvas></canvas>');
 });

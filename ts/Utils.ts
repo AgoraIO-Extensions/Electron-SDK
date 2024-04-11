@@ -1,3 +1,5 @@
+import { getGpuInfoInternal } from './Decoder/gpu-utils';
+import { IPCMessageType, ipcSend } from './Private/internal/ipc';
 import { AgoraEnvType } from './Types';
 
 /**
@@ -166,6 +168,17 @@ export function getContextByCanvas(
   }
 
   return null;
+}
+
+export function getGpuInfo() {
+  if (process.type === 'browser') {
+    getGpuInfoInternal();
+  } else if (process.type === 'renderer') {
+    //
+  } else {
+    ipcSend(IPCMessageType.AGORA_IPC_GET_GPU_INFO);
+    console.log('This function only works in main process or renderer process');
+  }
 }
 
 const AgoraNode = require('../build/Release/agora_node_ext');

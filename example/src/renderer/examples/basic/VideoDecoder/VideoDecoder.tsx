@@ -9,6 +9,7 @@ import {
   UserOfflineReasonType,
   VideoSourceType,
   createAgoraRtcEngine,
+  getGpuInfo,
 } from 'agora-electron-sdk';
 import React, { ReactElement } from 'react';
 
@@ -25,6 +26,8 @@ interface State extends BaseAudioComponentState {
   decodeRemoteUserUid: number;
   decodeRemoteUserUidJoined: boolean;
 }
+
+getGpuInfo();
 
 export default class VideoDecoder
   extends BaseComponent<{}, State>
