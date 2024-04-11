@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "4.2.6-build.9-rc.1",
+  "version": "4.2.6-build.123-rc.1",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk",
   "types": "types/AgoraSdk.d.ts",

@@ -1,5 +1,7 @@
 
 
+## [4.2.6-build.123-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.9-rc.1...v4.2.6-build.123-rc.1) (2024-04-11)
+
 ## [4.2.6-build.9-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.8-rc.1...v4.2.6-build.9-rc.1) (2024-04-08)
 
 ## [4.2.6-build.8-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.7-rc.1...v4.2.6-build.8-rc.1) (2024-03-28)
