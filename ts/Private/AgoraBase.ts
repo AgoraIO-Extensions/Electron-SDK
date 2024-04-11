@@ -3399,7 +3399,7 @@ export class VideoCanvas {
  */
 export enum LighteningContrastLevel {
   /**
-   * @ignore
+   * 0: Low contrast level.
    */
   LighteningContrastLow = 0,
   /**
