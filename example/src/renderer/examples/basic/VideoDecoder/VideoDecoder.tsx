@@ -1,5 +1,4 @@
 import {
-  AgoraEnv,
   ChannelProfileType,
   ClientRoleType,
   IRtcEngineEventHandler,
@@ -58,16 +57,18 @@ export default class VideoDecoder
       this.error(`appId is invalid`);
     }
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
-    this.engine.setLogFilter(LogFilterType.LogFilterDebug);
-    // register video encoded frame observer after initialize the engine
     // need to enable WebCodecsDecoder before call engine.initialize
-    AgoraEnv.enableWebCodecsDecoder = true;
+    // if enableWebCodecsDecoder is true, the video stream will be decoded by WebCodecs
+    // will automatically register videoEncodedFrameObserver
+    // videoEncodedFrameObserver will be released when engine.release
+    // AgoraEnv.enableWebCodecsDecoder = true;
     this.engine.initialize({
       appId,
       logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
+    this.engine.setLogFilter(LogFilterType.LogFilterDebug);
     this.engine.registerEventHandler(this);
 
     // Need granted the microphone and camera permission
