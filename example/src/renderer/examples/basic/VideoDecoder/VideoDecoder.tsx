@@ -63,6 +63,7 @@ export default class VideoDecoder
     // will automatically register videoEncodedFrameObserver
     // videoEncodedFrameObserver will be released when engine.release
     AgoraEnv.enableWebCodecsDecoder = true;
+    this.engine.setLogLevel(16);
     this.engine.initialize({
       appId,
       logConfig: { filePath: Config.logFilePath },
