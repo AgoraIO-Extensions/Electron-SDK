@@ -120,6 +120,7 @@ export default class VideoDecoder
    * Step 5: releaseRtcEngine
    */
   protected releaseRtcEngine() {
+    AgoraEnv.enableWebCodecsDecoder = false;
     this.engine?.unregisterEventHandler(this);
     this.engine?.release();
   }

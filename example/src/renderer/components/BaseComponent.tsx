@@ -1,4 +1,5 @@
 import {
+  AgoraEnv,
   ErrorCodeType,
   IRtcEngine,
   IRtcEngineEventHandler,
