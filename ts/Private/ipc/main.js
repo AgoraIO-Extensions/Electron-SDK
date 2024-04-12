@@ -1,15 +1,22 @@
-import { ipcMain } from 'electron';
+import { app, ipcMain } from 'electron';
 
 import { getGpuInfoInternal } from '../../Decoder/gpu-utils';
 
 import { IPCMessageType } from '../../Types';
+import { logInfo } from '../../Utils';
 
 if (process.type === 'browser') {
-  ipcMain.handleOnce(IPCMessageType.AGORA_IPC_GET_GPU_INFO, () => {
+  ipcMain.handle(IPCMessageType.AGORA_IPC_GET_GPU_INFO, () => {
     return new Promise((resolve) => {
       getGpuInfoInternal((result) => {
         resolve(result);
       });
     });
+  });
+  logInfo('main process AgoraIPCMain handler registered');
+
+  app.on('quit', () => {
+    ipcMain.removeHandler(IPCMessageType.AGORA_IPC_GET_GPU_INFO);
+    logInfo('main process AgoraIPCMain handler removed');
   });
 }
