@@ -32,6 +32,12 @@ export class WebCodecsRendererCache
   onDecoderError(e: any) {
     logError('Decoder error:', e);
     //todo need add some fallback logic
+    if (this.context.uid) {
+      this._engine?.setRemoteVideoSubscriptionOptions(this.context.uid, {
+        type: VideoStreamType.VideoStreamHigh,
+        encodedFrameOnly: false,
+      });
+    }
     this.release();
   }
 

@@ -120,7 +120,6 @@ export default class VideoDecoder
    * Step 5: releaseRtcEngine
    */
   protected releaseRtcEngine() {
-    AgoraEnv.enableWebCodecsDecoder = false;
     this.engine?.unregisterEventHandler(this);
     this.engine?.release();
   }
@@ -144,6 +143,7 @@ export default class VideoDecoder
         decodeRemoteUserUidJoined: false,
       });
     }
+    super.onUserOffline(connection, remoteUid, reason);
   }
 
   onUserJoined(connection: RtcConnection, remoteUid: number, elapsed: number) {
@@ -161,6 +161,7 @@ export default class VideoDecoder
         decodeRemoteUserUidJoined: true,
       });
     }
+    super.onUserJoined(connection, remoteUid, elapsed);
   }
 
   protected renderUsers(): ReactElement | undefined {
@@ -169,6 +170,7 @@ export default class VideoDecoder
       decodeRemoteUserUidJoined,
       startPreview,
       joinChannelSuccess,
+      remoteUsers,
     } = this.state;
     return (
       <>
@@ -176,6 +178,16 @@ export default class VideoDecoder
           ? this.renderUser({
               sourceType: VideoSourceType.VideoSourceCamera,
             })
+          : undefined}
+        {!!startPreview || joinChannelSuccess
+          ? remoteUsers.map(
+              (item) =>
+                item != decodeRemoteUserUid &&
+                this.renderUser({
+                  uid: item,
+                  sourceType: VideoSourceType.VideoSourceRemote,
+                })
+            )
           : undefined}
         {joinChannelSuccess && decodeRemoteUserUid && decodeRemoteUserUidJoined
           ? this.renderUser({
@@ -204,7 +216,7 @@ export default class VideoDecoder
             });
           }}
           numberKeyboard={true}
-          placeholder={`remoteUserUid (defaults: ${
+          placeholder={`VideoDecode remoteUserUid (defaults: ${
             this.createState().decodeRemoteUserUid
           })`}
         />

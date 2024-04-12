@@ -101,7 +101,7 @@ export class WebCodecsDecoder {
     frameInfo: EncodedVideoFrameInfo,
     ts: number
   ) {
-    logInfo(
+    logDebug(
       'FRAMETYPE',
       frameInfo.uid,
       frameInfo.frameType,
