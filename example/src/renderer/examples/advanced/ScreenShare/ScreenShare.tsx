@@ -204,7 +204,6 @@ export default class ScreenShare
     this.engine?.setParameters(
       JSON.stringify({ 'che.video.videoCodecIndex': videoCodec })
     );
-    console.log('che.video.videoCodecIndex', videoCodec);
 
     if (
       targetSource.type ===
