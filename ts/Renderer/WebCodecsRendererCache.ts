@@ -41,7 +41,7 @@ export class WebCodecsRendererCache
     length: number,
     videoEncodedFrameInfo: EncodedVideoFrameInfo
   ) {
-    if (!this._decoder) return;
+    if (!this._decoder || this.context.uid !== uid) return;
     if (this._firstFrame) {
       let result = this._decoder.decoderConfigure(videoEncodedFrameInfo);
       if (!result) {
