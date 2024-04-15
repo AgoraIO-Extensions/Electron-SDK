@@ -53,15 +53,18 @@ export class WebCodecsRendererCache
   }
 
   onEncodedVideoFrameReceived(...[data, buffer]: any) {
-    console.log('onEncodedVideoFrameReceived', data, buffer);
-
     let _data: any;
     try {
       _data = JSON.parse(data) ?? {};
     } catch (e) {
       _data = {};
     }
-    if (!this._decoder || this.context.uid !== _data.uid) return;
+    if (
+      Object.keys(_data).length === 0 ||
+      !this._decoder ||
+      this.context.uid !== _data.uid
+    )
+      return;
     if (this._firstFrame) {
       let result = this._decoder.decoderConfigure(_data.videoEncodedFrameInfo);
       if (!result) {
