@@ -101,14 +101,6 @@ export class WebCodecsDecoder {
     frameInfo: EncodedVideoFrameInfo,
     ts: number
   ) {
-    logDebug(
-      'FRAMETYPE',
-      frameInfo.uid,
-      frameInfo.frameType,
-      frameInfo,
-      imageBuffer,
-      imageBuffer.length
-    );
     if (!imageBuffer) {
       logDebug('imageBuffer is empty, skip decode frame');
       return;
