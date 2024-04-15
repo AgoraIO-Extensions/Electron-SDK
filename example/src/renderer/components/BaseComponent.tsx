@@ -210,7 +210,6 @@ export abstract class BaseComponent<
 
   protected renderUser(user: VideoCanvas): ReactElement | undefined {
     const { enableVideo } = this.state;
-    user.enableFps = true;
     return (
       <AgoraCard
         key={`${user.uid} - ${user.sourceType}`}

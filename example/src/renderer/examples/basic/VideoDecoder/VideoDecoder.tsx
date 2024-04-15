@@ -180,7 +180,7 @@ export default class VideoDecoder
               sourceType: VideoSourceType.VideoSourceCamera,
             })
           : undefined}
-        {!!startPreview || joinChannelSuccess
+        {/* {!!startPreview || joinChannelSuccess
           ? remoteUsers.map(
               (item) =>
                 item != decodeRemoteUserUid &&
@@ -189,7 +189,7 @@ export default class VideoDecoder
                   sourceType: VideoSourceType.VideoSourceRemote,
                 })
             )
-          : undefined}
+          : undefined} */}
         {joinChannelSuccess && decodeRemoteUserUid && decodeRemoteUserUidJoined
           ? this.renderUser({
               uid: decodeRemoteUserUid,
@@ -197,6 +197,7 @@ export default class VideoDecoder
               // Use WebCodecs to decode video stream
               // only support one remote stream to decode at the same time for now
               useWebCodecsDecoder: true,
+              enableFps: true,
               renderMode: RenderModeType.RenderModeFit,
             })
           : undefined}
