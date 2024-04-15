@@ -1,7 +1,6 @@
-import { createAgoraRtcEngine, logError, logInfo } from '../AgoraSdk';
+import { AgoraEnv, createAgoraRtcEngine, logError, logInfo } from '../AgoraSdk';
 import { WebCodecsDecoder } from '../Decoder/index';
-import { EncodedVideoFrameInfo, VideoStreamType } from '../Private/AgoraBase';
-import { IVideoEncodedFrameObserver } from '../Private/AgoraMediaBase';
+import { VideoStreamType } from '../Private/AgoraBase';
 import { IRtcEngineEventHandler } from '../Private/IAgoraRtcEngine';
 import { IRtcEngineEx, RtcConnection } from '../Private/IAgoraRtcEngineEx';
 
@@ -12,7 +11,7 @@ import { WebCodecsRenderer } from './WebCodecsRenderer/index';
 
 export class WebCodecsRendererCache
   extends IRendererCache
-  implements IVideoEncodedFrameObserver, IRtcEngineEventHandler
+  implements IRtcEngineEventHandler
 {
   private _decoder?: WebCodecsDecoder | null;
   private _engine?: IRtcEngineEx;
@@ -21,6 +20,18 @@ export class WebCodecsRendererCache
   constructor({ channelId, uid, sourceType }: RendererContext) {
     super({ channelId, uid, sourceType });
     this._engine = createAgoraRtcEngine();
+
+    const AgoraRtcNg = AgoraEnv.AgoraElectronBridge;
+    AgoraRtcNg.OnEvent(
+      'call_back_with_encoded_video_frame',
+      (...params: any) => {
+        try {
+          this.onEncodedVideoFrameReceived(...params);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    );
     this._decoder = new WebCodecsDecoder(
       this.renderers as WebCodecsRenderer[],
       this.onDecoderError.bind(this)
@@ -41,15 +52,18 @@ export class WebCodecsRendererCache
     this.release();
   }
 
-  onEncodedVideoFrameReceived(
-    uid: number,
-    imageBuffer: Uint8Array,
-    length: number,
-    videoEncodedFrameInfo: EncodedVideoFrameInfo
-  ) {
-    if (!this._decoder || this.context.uid !== uid) return;
+  onEncodedVideoFrameReceived(...[data, buffer]: any) {
+    console.log('onEncodedVideoFrameReceived', data, buffer);
+
+    let _data: any;
+    try {
+      _data = JSON.parse(data) ?? {};
+    } catch (e) {
+      _data = {};
+    }
+    if (!this._decoder || this.context.uid !== _data.uid) return;
     if (this._firstFrame) {
-      let result = this._decoder.decoderConfigure(videoEncodedFrameInfo);
+      let result = this._decoder.decoderConfigure(_data.videoEncodedFrameInfo);
       if (!result) {
         logInfo('Failed to configure decoder, stop decoding frames.');
         this.release();
@@ -58,8 +72,8 @@ export class WebCodecsRendererCache
       this._firstFrame = false;
     }
     this._decoder.decodeFrame(
-      imageBuffer,
-      videoEncodedFrameInfo,
+      buffer,
+      _data.videoEncodedFrameInfo,
       new Date().getTime()
     );
   }
@@ -78,11 +92,11 @@ export class WebCodecsRendererCache
 
   public draw() {
     this._engine?.registerEventHandler(this);
-    this._engine?.getMediaEngine().registerVideoEncodedFrameObserver(this);
+    // this._engine?.getMediaEngine().registerVideoEncodedFrameObserver(this);
   }
 
   public release(): void {
-    this._engine?.getMediaEngine().unregisterVideoEncodedFrameObserver(this);
+    // this._engine?.getMediaEngine().unregisterVideoEncodedFrameObserver(this);
     this._engine?.unregisterEventHandler(this);
     this._decoder?.release();
     this._decoder = null;
