@@ -108,7 +108,7 @@ export interface AgoraElectronBridge {
     bufferCount?: number
   ): Result;
 
-  InitializeEnv(): void;
+  InitializeEnv(env: AgoraEnvType): void;
 
   ReleaseEnv(): void;
 

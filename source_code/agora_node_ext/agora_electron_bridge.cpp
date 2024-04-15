@@ -475,6 +475,13 @@ napi_value AgoraElectronBridge::InitializeEnv(napi_env env,
   status =
       napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
 
+  napi_value obj0 = args[0];
+  AgoraEnv _agora_env;
+  std::string enableWebCodecsDecoder;
+  napi_obj_get_property(env, obj0, "enableWebCodecsDecoder",
+                        _agora_env.enable_web_codecs_decoder);
+  agoraElectronBridge->SetAgoraEnv(_agora_env);
+
   agoraElectronBridge->Init();
   LOG_F(INFO, __FUNCTION__);
   napi_value retValue = nullptr;
