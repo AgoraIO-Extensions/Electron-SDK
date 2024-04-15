@@ -95,11 +95,11 @@ export class WebCodecsRendererCache
 
   public draw() {
     this._engine?.registerEventHandler(this);
-    // this._engine?.getMediaEngine().registerVideoEncodedFrameObserver(this);
+    this._engine?.getMediaEngine().registerVideoEncodedFrameObserver(this);
   }
 
   public release(): void {
-    // this._engine?.getMediaEngine().unregisterVideoEncodedFrameObserver(this);
+    this._engine?.getMediaEngine().unregisterVideoEncodedFrameObserver(this);
     this._engine?.unregisterEventHandler(this);
     this._decoder?.release();
     this._decoder = null;
