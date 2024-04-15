@@ -121,6 +121,19 @@ export default class ScreenShare
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+    this.engine.setScreenCaptureScenario(2);
+    this.engine.setParameters(
+      JSON.stringify({ 'engine.video.enable_hw_encoder': true })
+    );
+    this.engine.setParameters(
+      JSON.stringify({ 'che.video.show_wgc_border': 1 })
+    );
+    this.engine.setParameters(
+      JSON.stringify({ 'rtc.win_allow_directx': false })
+    );
+    this.engine.setParameters(
+      JSON.stringify({ 'che.video.enable_promote_gpu_priority': true })
+    );
 
     // Need granted the microphone and camera permission
     await askMediaAccess(['microphone', 'camera', 'screen']);
