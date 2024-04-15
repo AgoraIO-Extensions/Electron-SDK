@@ -110,7 +110,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     AgoraEnv.AgoraElectronBridge.ReleaseRenderer();
     AgoraEnv.AgoraRendererManager?.release();
     AgoraEnv.AgoraRendererManager = undefined;
-    AgoraEnv.enableWebCodecsDecoder = false;
     this._audio_device_manager.release();
     this._video_device_manager.release();
     this._media_engine.release();
@@ -129,6 +128,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     MediaPlayerInternal._audio_spectrum_observers.clear();
     MediaRecorderInternal._observers.clear();
     this.removeAllListeners();
+    AgoraEnv.enableWebCodecsDecoder = false;
     super.release(sync);
   }
 

@@ -171,7 +171,6 @@ export default class VideoDecoder
       decodeRemoteUserUidJoined,
       startPreview,
       joinChannelSuccess,
-      remoteUsers,
     } = this.state;
     return (
       <>
