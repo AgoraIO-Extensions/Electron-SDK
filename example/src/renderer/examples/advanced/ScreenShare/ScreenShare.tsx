@@ -10,6 +10,7 @@ import {
   RtcStats,
   ScreenCaptureSourceInfo,
   ScreenCaptureSourceType,
+  ScreenScenarioType,
   UserOfflineReasonType,
   VideoSourceType,
   createAgoraRtcEngine,
@@ -121,7 +122,7 @@ export default class ScreenShare
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
-    this.engine.setScreenCaptureScenario(2);
+    this.engine.setScreenCaptureScenario(ScreenScenarioType.ScreenScenarioGaming);
     this.engine.setParameters(
       JSON.stringify({ 'engine.video.enable_hw_encoder': true })
     );
