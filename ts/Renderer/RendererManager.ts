@@ -102,6 +102,11 @@ export class RendererManager {
   }
 
   public getGpuInfo(): void {
+    //getGpuInfo and videoDecoder is not supported in electron version < 20.0.0
+    //@ts-ignore
+    if (semver.lt(process.versions.electron, '20.0.0')) {
+      return;
+    }
     //@ts-ignore
     if (process.type === 'renderer') {
       ipcSend(IPCMessageType.AGORA_IPC_GET_GPU_INFO)
@@ -124,6 +129,11 @@ export class RendererManager {
     this.clearRendererCache();
   }
 
+  private checkIfSupportWebCodecsDecoder(): boolean {
+    return (AgoraEnv.enableWebCodecsDecoder &&
+      this.gpuInfo.videoDecodeAcceleratorSupportedProfile.length > 0)!;
+  }
+
   private presetRendererContext(context: RendererContext): RendererContext {
     //this is for preset default value
     context.renderMode = context.renderMode || this.defaultRenderMode;
@@ -131,9 +141,7 @@ export class RendererManager {
     context.useWebCodecsDecoder = context.useWebCodecsDecoder || false;
     context.enableFps = context.enableFps || false;
 
-    //videoDecoder is not supported in electron version < 20.0.0
-    //@ts-ignore
-    if (semver.lt(process.versions.electron, '20.0.0')) {
+    if (this.checkIfSupportWebCodecsDecoder()) {
       context.useWebCodecsDecoder = false;
       logError(
         'WebCodecsDecoder is not supported in electron version < 20.0.0, please upgrade electron to 20.0.0 or later.'
