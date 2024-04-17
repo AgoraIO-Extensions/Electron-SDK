@@ -25,9 +25,12 @@ export class CapabilityManager {
   }
 
   public getGpuInfo(): void {
-    //getGpuInfo and videoDecoder is not supported in electron version < 20.0.0
+    //getGpuInfo and videoDecoder is not supported in electron version < 22.0.0
     //@ts-ignore
-    if (semver.lt(process.versions.electron, '20.0.0')) {
+    if (semver.lt(process.versions.electron, '22.0.0')) {
+      logError(
+        'WebCodecsDecoder is not supported in electron version < 22.0.0, please upgrade electron to 22.0.0 or later.'
+      );
       return;
     }
     //@ts-ignore
