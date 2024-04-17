@@ -95,7 +95,7 @@ export class RendererManager {
     context.useWebCodecsDecoder = context.useWebCodecsDecoder || false;
     context.enableFps = context.enableFps || false;
 
-    if (AgoraEnv.CapabilityManager?.enableWebCodecsDecoder) {
+    if (!AgoraEnv.CapabilityManager?.enableWebCodecsDecoder) {
       context.useWebCodecsDecoder = false;
       logError(
         'WebCodecsDecoder is not supported in electron version < 20.0.0, please upgrade electron to 20.0.0 or later.'

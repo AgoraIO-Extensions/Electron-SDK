@@ -18,14 +18,13 @@ export class CapabilityManager {
   constructor() {
     if (AgoraEnv.enableWebCodecsDecoder) {
       this.getGpuInfo();
-      this.checkIfSupportWebCodecsDecoder();
     }
   }
 
   public getGpuInfo(): void {
-    //getGpuInfo and videoDecoder is not supported in electron version >= 20.0.0
+    //getGpuInfo and videoDecoder is not supported in electron version < 20.0.0
     //@ts-ignore
-    if (semver.gte(process.versions.electron, '20.0.0')) {
+    if (semver.lt(process.versions.electron, '20.0.0')) {
       return;
     }
     //@ts-ignore
@@ -33,6 +32,8 @@ export class CapabilityManager {
       ipcSend(IPCMessageType.AGORA_IPC_GET_GPU_INFO)
         .then((result) => {
           this.gpuInfo.videoDecodeAcceleratorSupportedProfile = result;
+          this.enableWebCodecsDecoder = (AgoraEnv.enableWebCodecsDecoder &&
+            this.gpuInfo.videoDecodeAcceleratorSupportedProfile.length > 0)!;
         })
         .catch((error) => {
           logError(
@@ -43,11 +44,6 @@ export class CapabilityManager {
     } else {
       logError('This function only works in renderer process');
     }
-  }
-
-  private checkIfSupportWebCodecsDecoder() {
-    this.enableWebCodecsDecoder = (AgoraEnv.enableWebCodecsDecoder &&
-      this.gpuInfo.videoDecodeAcceleratorSupportedProfile.length > 0)!;
   }
 
   release(): void {
