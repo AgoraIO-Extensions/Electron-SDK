@@ -1,16 +1,6 @@
-import semver from 'semver';
-
-import { GpuInfo } from '../Decoder/gpu-utils';
-
 import { VideoMirrorModeType, VideoViewSetupMode } from '../Private/AgoraBase';
 import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
-import { ipcSend } from '../Private/ipc/renderer';
-import {
-  IPCMessageType,
-  RendererCacheType,
-  RendererContext,
-  RendererType,
-} from '../Types';
+import { RendererCacheType, RendererContext, RendererType } from '../Types';
 import { AgoraEnv, isSupportWebGL, logDebug, logError } from '../Utils';
 
 import { IRenderer } from './IRenderer';
@@ -55,11 +45,6 @@ export class RendererManager {
    */
   private rendererType: RendererType;
 
-  /**
-   * @ignore
-   */
-  gpuInfo: GpuInfo = new GpuInfo();
-
   constructor() {
     this.renderingFps = 60;
     this._currentFrameCount = 0;
@@ -72,9 +57,6 @@ export class RendererManager {
     this.rendererType = isSupportWebGL()
       ? RendererType.WEBGL
       : RendererType.SOFTWARE;
-    if (AgoraEnv.enableWebCodecsDecoder) {
-      this.getGpuInfo();
-    }
   }
 
   public setRenderingFps(fps: number) {
@@ -101,37 +83,9 @@ export class RendererManager {
     return this._context.mirrorMode!;
   }
 
-  public getGpuInfo(): void {
-    //getGpuInfo and videoDecoder is not supported in electron version >= 20.0.0
-    //@ts-ignore
-    if (semver.gte(process.versions.electron, '20.0.0')) {
-      return;
-    }
-    //@ts-ignore
-    if (process.type === 'renderer') {
-      ipcSend(IPCMessageType.AGORA_IPC_GET_GPU_INFO)
-        .then((result) => {
-          this.gpuInfo.videoDecodeAcceleratorSupportedProfile = result;
-        })
-        .catch((error) => {
-          logError(
-            'Failed to get GPU info, please check if you are already import agora-electron-sdk in the main process.',
-            error
-          );
-        });
-    } else {
-      logError('This function only works in renderer process');
-    }
-  }
-
   public release(): void {
     this.stopRendering();
     this.clearRendererCache();
-  }
-
-  private checkIfSupportWebCodecsDecoder(): boolean {
-    return (AgoraEnv.enableWebCodecsDecoder &&
-      this.gpuInfo.videoDecodeAcceleratorSupportedProfile.length > 0)!;
   }
 
   private presetRendererContext(context: RendererContext): RendererContext {
@@ -141,7 +95,7 @@ export class RendererManager {
     context.useWebCodecsDecoder = context.useWebCodecsDecoder || false;
     context.enableFps = context.enableFps || false;
 
-    if (this.checkIfSupportWebCodecsDecoder()) {
+    if (AgoraEnv.CapabilityManager?.enableWebCodecsDecoder) {
       context.useWebCodecsDecoder = false;
       logError(
         'WebCodecsDecoder is not supported in electron version < 20.0.0, please upgrade electron to 20.0.0 or later.'

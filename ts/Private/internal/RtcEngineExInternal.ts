@@ -92,12 +92,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     callIrisApi.call(this, 'RtcEngine_setAppType', {
       appType: 3,
     });
-    if (AgoraEnv.enableWebCodecsDecoder) {
-      this._media_engine.registerVideoEncodedFrameObserver({});
-      //need registerVideoFrameObserver here to cover the case that the webCodecsDecoder is error
-      //when the webCodecsDecoder is error, the video stream will be decoded by native
-      // this._media_engine.registerVideoFrameObserver({});
-    }
     if (AgoraEnv.webEnvReady) {
       // @ts-ignore
       window.AgoraEnv = AgoraEnv;
@@ -105,6 +99,18 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
         const { RendererManager } = require('../../Renderer/RendererManager');
         AgoraEnv.AgoraRendererManager = new RendererManager();
       }
+      if (AgoraEnv.CapabilityManager === undefined) {
+        const {
+          CapabilityManager,
+        } = require('../../Renderer/CapabilityManager');
+        AgoraEnv.CapabilityManager = new CapabilityManager();
+      }
+    }
+    if (AgoraEnv.CapabilityManager?.enableWebCodecsDecoder) {
+      this._media_engine.registerVideoEncodedFrameObserver({});
+      //need registerVideoFrameObserver here to cover the case that the webCodecsDecoder is error
+      //when the webCodecsDecoder is error, the video stream will be decoded by native
+      // this._media_engine.registerVideoFrameObserver({});
     }
     return ret;
   }
@@ -131,7 +137,8 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     MediaPlayerInternal._audio_spectrum_observers.clear();
     MediaRecorderInternal._observers.clear();
     this.removeAllListeners();
-    AgoraEnv.enableWebCodecsDecoder = false;
+    AgoraEnv.CapabilityManager?.release();
+    AgoraEnv.CapabilityManager = undefined;
     super.release(sync);
   }
 

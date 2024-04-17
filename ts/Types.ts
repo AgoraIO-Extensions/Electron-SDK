@@ -1,6 +1,7 @@
 import { VideoCanvas } from './Private/AgoraBase';
 import { VideoFrame } from './Private/AgoraMediaBase';
 import { RtcConnection } from './Private/IAgoraRtcEngineEx';
+import { CapabilityManager } from './Renderer/CapabilityManager';
 import { RendererCache } from './Renderer/RendererCache';
 import { RendererManager } from './Renderer/RendererManager';
 import { WebCodecsRendererCache } from './Renderer/WebCodecsRendererCache';
@@ -24,7 +25,7 @@ export interface AgoraEnvOptions {
   /**
    * @ignore
    */
-  enableWebCodecsDecoder?: boolean;
+  enableWebCodecsDecoder: boolean;
 }
 
 /**
@@ -39,6 +40,10 @@ export interface AgoraEnvType extends AgoraEnvOptions {
    * @ignore
    */
   AgoraRendererManager?: RendererManager;
+  /**
+   * @ignore
+   */
+  CapabilityManager?: CapabilityManager;
 }
 
 /**
@@ -110,7 +115,7 @@ export interface AgoraElectronBridge {
     bufferCount?: number
   ): Result;
 
-  InitializeEnv(env: AgoraEnvType): void;
+  InitializeEnv(): void;
 
   ReleaseEnv(): void;
 

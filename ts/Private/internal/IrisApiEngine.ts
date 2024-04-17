@@ -459,7 +459,7 @@ export function callIrisApi(funcName: string, params: any): any {
     } else if (funcName.startsWith('RtcEngine_')) {
       switch (funcName) {
         case 'RtcEngine_initialize':
-          AgoraRtcNg.InitializeEnv(AgoraEnv);
+          AgoraRtcNg.InitializeEnv();
           break;
         case 'RtcEngine_release':
           AgoraRtcNg.CallApi(
