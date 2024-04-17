@@ -95,6 +95,7 @@ export class MediaEngineInternal extends IMediaEngineImpl {
     MediaEngineInternal._video_encoded_frame_observers = [];
     if (AgoraEnv.enableWebCodecsDecoder) {
       this.unregisterVideoEncodedFrameObserver({});
+      // this.unregisterVideoFrameObserver({});
     }
     this.removeAllListeners();
     super.release();

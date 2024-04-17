@@ -23,7 +23,6 @@ export class RendererCache extends IRendererCache {
       rotation: 0,
     };
     this._enabled = false;
-    this.selfDecode = false;
   }
 
   /**

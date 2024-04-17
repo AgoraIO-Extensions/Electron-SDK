@@ -102,9 +102,9 @@ export class RendererManager {
   }
 
   public getGpuInfo(): void {
-    //getGpuInfo and videoDecoder is not supported in electron version < 20.0.0
+    //getGpuInfo and videoDecoder is not supported in electron version >= 20.0.0
     //@ts-ignore
-    if (semver.lt(process.versions.electron, '20.0.0')) {
+    if (semver.gte(process.versions.electron, '20.0.0')) {
       return;
     }
     //@ts-ignore
@@ -333,7 +333,7 @@ export class RendererManager {
 
       // Render all renderers that do not use WebCodecs
       for (const rendererCache of this._rendererCaches.filter(
-        (cache) => !cache.selfDecode
+        (cache) => cache instanceof RendererCache
       )) {
         this.doRendering(rendererCache);
       }

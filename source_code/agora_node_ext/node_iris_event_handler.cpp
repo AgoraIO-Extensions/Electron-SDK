@@ -6,6 +6,7 @@
  */
 #include "node_iris_event_handler.h"
 #include "agora_electron_bridge.h"
+#include <iostream>
 #include <memory.h>
 #include <node_api.h>
 
@@ -41,6 +42,15 @@ void NodeIrisEventHandler::addEvent(const std::string &eventName, napi_env &env,
 
   napi_status status = napi_create_reference(
       env, call_bcak, 1, &(_callbacks[eventName]->call_back_ref));
+}
+
+void NodeIrisEventHandler::removeEvent(const std::string &eventName) {
+  auto it = _callbacks.find(eventName);
+  if (it != _callbacks.end()) {
+    napi_delete_reference(it->second->env, it->second->call_back_ref);
+    delete it->second;
+    _callbacks.erase(it);
+  }
 }
 
 void NodeIrisEventHandler::OnEvent(EventParam *param) {

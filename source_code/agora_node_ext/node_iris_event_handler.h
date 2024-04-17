@@ -37,6 +37,8 @@ class NodeIrisEventHandler : public iris::IrisEventHandler {
   void addEvent(const std::string &eventName, napi_env &env,
                 napi_value &call_bcak, napi_value &global);
 
+  void removeEvent(const std::string &eventName);
+
  private:
   std::unordered_map<std::string, EventCallback *> _callbacks;
   const char *_callback_key = "call_back_with_buffer";

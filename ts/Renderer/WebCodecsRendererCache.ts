@@ -16,27 +16,15 @@ export class WebCodecsRendererCache
   private _decoder?: WebCodecsDecoder | null;
   private _engine?: IRtcEngineEx;
   private _firstFrame = true;
+  private _agoraRtcNg = AgoraEnv.AgoraElectronBridge;
 
   constructor({ channelId, uid, sourceType }: RendererContext) {
     super({ channelId, uid, sourceType });
     this._engine = createAgoraRtcEngine();
-
-    const AgoraRtcNg = AgoraEnv.AgoraElectronBridge;
-    AgoraRtcNg.OnEvent(
-      'call_back_with_encoded_video_frame',
-      (...params: any) => {
-        try {
-          this.onEncodedVideoFrameReceived(...params);
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    );
     this._decoder = new WebCodecsDecoder(
       this.renderers as WebCodecsRenderer[],
       this.onDecoderError.bind(this)
     );
-    this.selfDecode = true;
     this.draw();
   }
 
@@ -88,19 +76,32 @@ export class WebCodecsRendererCache
     ) {
       this._engine?.setRemoteVideoSubscriptionOptions(remoteUid, {
         type: VideoStreamType.VideoStreamHigh,
-        encodedFrameOnly: true,
+        encodedFrameOnly: false,
       });
     }
   }
 
   public draw() {
+    this._agoraRtcNg.OnEvent(
+      'call_back_with_encoded_video_frame',
+      (...params: any) => {
+        try {
+          this.onEncodedVideoFrameReceived(...params);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    );
     this._engine?.registerEventHandler(this);
-    this._engine?.getMediaEngine().registerVideoEncodedFrameObserver(this);
+    // this._engine?.getMediaEngine().registerVideoEncodedFrameObserver({});
+    // this._engine?.getMediaEngine().registerVideoFrameObserver({});
   }
 
   public release(): void {
-    this._engine?.getMediaEngine().unregisterVideoEncodedFrameObserver(this);
     this._engine?.unregisterEventHandler(this);
+    // this._engine?.getMediaEngine().unregisterVideoEncodedFrameObserver({});
+    // this._engine?.getMediaEngine().unregisterVideoFrameObserver({});
+    this._agoraRtcNg.UnEvent('call_back_with_encoded_video_frame');
     this._decoder?.release();
     this._decoder = null;
     super.release();

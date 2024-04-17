@@ -13,7 +13,6 @@ export function generateRendererCacheKey({
 export abstract class IRendererCache {
   renderers: IRenderer[];
   context: RendererCacheContext;
-  selfDecode: boolean = false;
 
   constructor({ channelId, uid, sourceType }: RendererContext) {
     this.renderers = [];

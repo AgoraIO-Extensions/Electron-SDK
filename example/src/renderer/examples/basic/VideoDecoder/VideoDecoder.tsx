@@ -5,9 +5,6 @@ import {
   IRtcEngineEventHandler,
   IRtcEngineEx,
   LogFilterType,
-  RenderModeType,
-  RtcConnection,
-  UserOfflineReasonType,
   VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
@@ -24,7 +21,6 @@ import { askMediaAccess } from '../../../utils/permissions';
 interface State extends BaseAudioComponentState {
   fps: number;
   decodeRemoteUserUid: number;
-  decodeRemoteUserUidJoined: boolean;
 }
 
 export default class VideoDecoder
@@ -43,7 +39,6 @@ export default class VideoDecoder
       uid: Config.uid,
       joinChannelSuccess: false,
       decodeRemoteUserUid: 7,
-      decodeRemoteUserUidJoined: false,
       remoteUsers: [],
       startPreview: false,
     };
@@ -125,53 +120,9 @@ export default class VideoDecoder
     this.engine?.release();
   }
 
-  onUserOffline(
-    connection: RtcConnection,
-    remoteUid: number,
-    reason: UserOfflineReasonType
-  ) {
-    this.info(
-      'onUserOffline',
-      'connection',
-      connection,
-      'remoteUid',
-      remoteUid,
-      'reason',
-      reason
-    );
-    if (remoteUid === this.state.decodeRemoteUserUid) {
-      this.setState({
-        decodeRemoteUserUidJoined: false,
-      });
-    }
-    super.onUserOffline(connection, remoteUid, reason);
-  }
-
-  onUserJoined(connection: RtcConnection, remoteUid: number, elapsed: number) {
-    this.info(
-      'onUserJoined',
-      'connection',
-      connection,
-      'remoteUid',
-      remoteUid,
-      'elapsed',
-      elapsed
-    );
-    if (remoteUid === this.state.decodeRemoteUserUid) {
-      this.setState({
-        decodeRemoteUserUidJoined: true,
-      });
-    }
-    super.onUserJoined(connection, remoteUid, elapsed);
-  }
-
   protected renderUsers(): ReactElement | undefined {
-    let {
-      decodeRemoteUserUid,
-      decodeRemoteUserUidJoined,
-      startPreview,
-      joinChannelSuccess,
-    } = this.state;
+    let { decodeRemoteUserUid, startPreview, remoteUsers, joinChannelSuccess } =
+      this.state;
     return (
       <>
         {!!startPreview || joinChannelSuccess
@@ -179,26 +130,17 @@ export default class VideoDecoder
               sourceType: VideoSourceType.VideoSourceCamera,
             })
           : undefined}
-        {/* {!!startPreview || joinChannelSuccess
-          ? remoteUsers.map(
-              (item) =>
-                item != decodeRemoteUserUid &&
-                this.renderUser({
-                  uid: item,
-                  sourceType: VideoSourceType.VideoSourceRemote,
-                })
+        {!!startPreview || joinChannelSuccess
+          ? remoteUsers.map((item) =>
+              this.renderUser({
+                uid: item,
+                // Use WebCodecs to decode video stream
+                // only support one remote stream to decode at the same time for now
+                useWebCodecsDecoder: item === decodeRemoteUserUid,
+                enableFps: item === decodeRemoteUserUid,
+                sourceType: VideoSourceType.VideoSourceRemote,
+              })
             )
-          : undefined} */}
-        {joinChannelSuccess && decodeRemoteUserUid && decodeRemoteUserUidJoined
-          ? this.renderUser({
-              uid: decodeRemoteUserUid,
-              sourceType: VideoSourceType.VideoSourceRemote,
-              // Use WebCodecs to decode video stream
-              // only support one remote stream to decode at the same time for now
-              useWebCodecsDecoder: true,
-              enableFps: true,
-              renderMode: RenderModeType.RenderModeFit,
-            })
           : undefined}
       </>
     );
@@ -217,7 +159,7 @@ export default class VideoDecoder
             });
           }}
           numberKeyboard={true}
-          placeholder={`VideoDecode remoteUserUid (defaults: ${
+          placeholder={`useWebCodecsDecoder Uid (defaults: ${
             this.createState().decodeRemoteUserUid
           })`}
         />
