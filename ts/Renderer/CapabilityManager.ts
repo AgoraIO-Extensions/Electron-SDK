@@ -1,8 +1,8 @@
 import semver from 'semver';
 
-import { ipcSend } from 'ts/Private/ipc/renderer';
-
 import { GpuInfo } from '../Decoder/gpu-utils';
+import { ipcSend } from '../Private/ipc/renderer';
+
 import { IPCMessageType } from '../Types';
 import { AgoraEnv, logError } from '../Utils';
 
