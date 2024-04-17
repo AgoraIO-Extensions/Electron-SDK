@@ -58,6 +58,14 @@ export class CapabilityManager {
     }
   }
 
+  public isSupportedH264(): boolean {
+    return this.frameCodecMapping[VideoCodecType.VideoCodecH264] !== undefined;
+  }
+
+  public isSupportedH265(): boolean {
+    return this.frameCodecMapping[VideoCodecType.VideoCodecH265] !== undefined;
+  }
+
   release(): void {
     AgoraEnv.enableWebCodecsDecoder = false;
   }

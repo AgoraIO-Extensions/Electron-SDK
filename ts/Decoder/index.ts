@@ -14,7 +14,6 @@ export class WebCodecsDecoder {
   private renderers: WebCodecsRenderer[] = [];
   private pendingFrame: VideoFrame | null = null;
 
-  private _frame_ts: number[] = [];
   private _base_ts = 0;
   private _base_ts_ntp = 1;
   private _last_ts_ntp = 1;
@@ -104,7 +103,6 @@ export class WebCodecsDecoder {
       logDebug('frameType is not in frameTypeMapping, skip decode frame');
       return;
     }
-    this._frame_ts.push(ts);
     if (this._base_ts !== 0) {
       if (ts > this._base_ts) {
         this._last_ts_ntp =

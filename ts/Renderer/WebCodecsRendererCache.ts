@@ -76,7 +76,7 @@ export class WebCodecsRendererCache
     ) {
       this._engine?.setRemoteVideoSubscriptionOptions(remoteUid, {
         type: VideoStreamType.VideoStreamHigh,
-        encodedFrameOnly: false,
+        encodedFrameOnly: true,
       });
     }
   }
