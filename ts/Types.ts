@@ -1,4 +1,4 @@
-import { VideoCanvas } from './Private/AgoraBase';
+import { VideoCanvas, VideoCodecType } from './Private/AgoraBase';
 import { VideoFrame } from './Private/AgoraMediaBase';
 import { RtcConnection } from './Private/IAgoraRtcEngineEx';
 import { CapabilityManager } from './Renderer/CapabilityManager';
@@ -149,3 +149,27 @@ export interface AgoraElectronBridge {
 export enum IPCMessageType {
   AGORA_IPC_GET_GPU_INFO = 'AGORA_IPC_GET_GPU_INFO',
 }
+
+interface CodecMappingItem {
+  codec: string;
+  type: VideoCodecType;
+  profile: string;
+}
+
+/**
+ * @ignore
+ */
+export const codecMapping: CodecMappingItem[] = [
+  {
+    codec: 'avc1.64e01f',
+    type: VideoCodecType.VideoCodecH264,
+    profile: 'h264',
+  },
+  {
+    codec: 'hvc1.1.6.L5.90',
+    type: VideoCodecType.VideoCodecH265,
+    profile: 'hevc',
+  },
+  { codec: 'vp8', type: VideoCodecType.VideoCodecVp8, profile: 'vp8' },
+  { codec: 'vp9', type: VideoCodecType.VideoCodecVp9, profile: 'vp9' },
+];

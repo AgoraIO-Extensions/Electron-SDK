@@ -1,9 +1,13 @@
 import semver from 'semver';
 
-import { GpuInfo } from '../Decoder/gpu-utils';
+import {
+  GpuInfo,
+  VideoDecodeAcceleratorSupportedProfile,
+} from '../Decoder/gpu-utils';
+import { VideoCodecType } from '../Private/AgoraBase';
 import { ipcSend } from '../Private/ipc/renderer';
 
-import { IPCMessageType } from '../Types';
+import { IPCMessageType, codecMapping } from '../Types';
 import { AgoraEnv, logError } from '../Utils';
 
 /**
@@ -11,8 +15,7 @@ import { AgoraEnv, logError } from '../Utils';
  */
 export class CapabilityManager {
   gpuInfo: GpuInfo = new GpuInfo();
-  isSupportH265: boolean = false;
-  isSupportH264: boolean = false;
+  frameCodecMapping: { [key in VideoCodecType]?: string } = {};
   enableWebCodecsDecoder: boolean = AgoraEnv.enableWebCodecsDecoder;
 
   constructor() {
@@ -34,6 +37,15 @@ export class CapabilityManager {
           this.gpuInfo.videoDecodeAcceleratorSupportedProfile = result;
           this.enableWebCodecsDecoder = (AgoraEnv.enableWebCodecsDecoder &&
             this.gpuInfo.videoDecodeAcceleratorSupportedProfile.length > 0)!;
+
+          result.forEach((profile: VideoDecodeAcceleratorSupportedProfile) => {
+            const match = codecMapping.find((item) =>
+              profile.title.includes(item.profile)
+            );
+            if (match) {
+              this.frameCodecMapping[match.type] = match.codec;
+            }
+          });
         })
         .catch((error) => {
           logError(

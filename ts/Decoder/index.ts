@@ -1,23 +1,12 @@
-import {
-  EncodedVideoFrameInfo,
-  VideoCodecType,
-  VideoFrameType,
-} from '../Private/AgoraBase';
+import { EncodedVideoFrameInfo, VideoFrameType } from '../Private/AgoraBase';
 
 import { WebCodecsRenderer } from '../Renderer/WebCodecsRenderer/index';
 import { RendererType } from '../Types';
-import { logDebug, logInfo } from '../Utils';
+import { AgoraEnv, logDebug, logInfo } from '../Utils';
 
 const frameTypeMapping = {
   [VideoFrameType.VideoFrameTypeDeltaFrame]: 'delta',
   [VideoFrameType.VideoFrameTypeKeyFrame]: 'key',
-};
-
-export const frameCodecMapping = {
-  [VideoCodecType.VideoCodecH265]: 'hvc1.1.6.L5.90',
-  [VideoCodecType.VideoCodecH264]: 'avc1.64e01f',
-  [VideoCodecType.VideoCodecVp8]: 'vp8',
-  [VideoCodecType.VideoCodecVp9]: 'vp9',
 };
 
 export class WebCodecsDecoder {
@@ -69,7 +58,8 @@ export class WebCodecsDecoder {
 
   decoderConfigure(frameInfo: EncodedVideoFrameInfo): boolean {
     // @ts-ignore
-    let codec = frameCodecMapping[frameInfo.codecType];
+    let codec =
+      AgoraEnv.CapabilityManager?.frameCodecMapping[frameInfo.codecType!];
     if (!codec) {
       logInfo('codec is not in frameCodecMapping, stop decode frame');
       return false;
