@@ -1,5 +1,6 @@
 ﻿import { createCheckers } from 'ts-interface-checker';
 
+import { AgoraElectronBridge } from '../../Private/internal/IrisApiEngine';
 import { AgoraEnv, logError } from '../../Utils';
 import {
   AudioEncodedFrameObserverConfig,
@@ -110,7 +111,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   }
 
   override release(sync: boolean = false) {
-    AgoraEnv.AgoraElectronBridge.ReleaseRenderer();
+    AgoraElectronBridge.ReleaseRenderer();
     AgoraEnv.AgoraRendererManager?.release();
     AgoraEnv.AgoraRendererManager = undefined;
     this._audio_device_manager.release();
@@ -569,7 +570,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
         if (!value.thumbImage?.buffer || !value.thumbImage?.length) {
           value.thumbImage!.buffer = undefined;
         } else {
-          value.thumbImage!.buffer = AgoraEnv.AgoraElectronBridge.GetBuffer(
+          value.thumbImage!.buffer = AgoraElectronBridge.GetBuffer(
             value.thumbImage!.buffer as unknown as number,
             value.thumbImage.length!
           );
@@ -577,7 +578,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
         if (!value.iconImage?.buffer || !value.iconImage?.length) {
           value.iconImage!.buffer = undefined;
         } else {
-          value.iconImage.buffer = AgoraEnv.AgoraElectronBridge.GetBuffer(
+          value.iconImage.buffer = AgoraElectronBridge.GetBuffer(
             value.iconImage!.buffer as unknown as number,
             value.iconImage.length!
           );

@@ -1,7 +1,8 @@
 import EventEmitter from 'eventemitter3';
 import JSON from 'json-bigint';
 
-import { createAgoraRtcEngine } from '../../AgoraSdk';
+import createAgoraRtcEngine from '../../AgoraSdk';
+import { IAgoraElectronBridge } from '../../Types';
 import { AgoraEnv, logDebug, logError, logInfo, logWarn } from '../../Utils';
 import { IAudioEncodedFrameObserver } from '../AgoraBase';
 import {
@@ -61,8 +62,11 @@ import { RtcEngineExInternal } from './RtcEngineExInternal';
 // @ts-ignore
 export const DeviceEventEmitter: EventEmitter = new EventEmitter();
 
-const AgoraRtcNg = AgoraEnv.AgoraElectronBridge;
-AgoraRtcNg.OnEvent('call_back_with_buffer', (...params: any) => {
+const AgoraNode = require('../../../build/Release/agora_node_ext');
+export const AgoraElectronBridge: IAgoraElectronBridge =
+  new AgoraNode.AgoraElectronBridge();
+
+AgoraElectronBridge.OnEvent('call_back_with_buffer', (...params: any) => {
   try {
     handleEvent(...params);
   } catch (e) {
@@ -460,16 +464,16 @@ export function callIrisApi(funcName: string, params: any): any {
     } else if (funcName.startsWith('RtcEngine_')) {
       switch (funcName) {
         case 'RtcEngine_initialize':
-          AgoraRtcNg.InitializeEnv();
+          AgoraElectronBridge.InitializeEnv();
           break;
         case 'RtcEngine_release':
-          AgoraRtcNg.CallApi(
+          AgoraElectronBridge.CallApi(
             funcName,
             JSON.stringify(params),
             buffers,
             buffers.length
           );
-          AgoraRtcNg.ReleaseEnv();
+          AgoraElectronBridge.ReleaseEnv();
           return;
         case 'RtcEngine_sendMetaData':
           // metadata.buffer
@@ -509,7 +513,7 @@ export function callIrisApi(funcName: string, params: any): any {
       }
     }
 
-    let { callApiReturnCode, callApiResult } = AgoraRtcNg.CallApi(
+    let { callApiReturnCode, callApiResult } = AgoraElectronBridge.CallApi(
       funcName,
       JSON.stringify(params),
       buffers,

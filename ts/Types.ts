@@ -50,10 +50,6 @@ export interface AgoraEnvType extends AgoraEnvOptions {
   /**
    * @ignore
    */
-  AgoraElectronBridge: AgoraElectronBridge;
-  /**
-   * @ignore
-   */
   AgoraRendererManager?: RendererManager;
   /**
    * @ignore
@@ -106,7 +102,7 @@ export interface Result {
 /**
  * @ignore
  */
-export interface AgoraElectronBridge {
+export interface IAgoraElectronBridge {
   /**
    * @ignore
    */

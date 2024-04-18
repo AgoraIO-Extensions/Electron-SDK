@@ -1,6 +1,8 @@
 import { VideoFrame } from '../Private/AgoraMediaBase';
+import { AgoraElectronBridge } from '../Private/internal/IrisApiEngine';
+
 import { RendererContext } from '../Types';
-import { AgoraEnv, logDebug } from '../Utils';
+import { logDebug } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 import { IRendererCache } from './IRendererCache';
@@ -32,19 +34,15 @@ export class RendererCache extends IRendererCache {
     return this.videoFrame;
   }
 
-  private get bridge() {
-    return AgoraEnv.AgoraElectronBridge;
-  }
-
   private enable() {
     if (this._enabled) return;
-    this.bridge.EnableVideoFrameCache(this.context);
+    AgoraElectronBridge.EnableVideoFrameCache(this.context);
     this._enabled = true;
   }
 
   private disable() {
     if (!this._enabled) return;
-    this.bridge.DisableVideoFrameCache(this.context);
+    AgoraElectronBridge.DisableVideoFrameCache(this.context);
     this._enabled = false;
   }
 
@@ -57,7 +55,7 @@ export class RendererCache extends IRendererCache {
   }
 
   override draw() {
-    let { ret, isNewFrame } = this.bridge.GetVideoFrame(
+    let { ret, isNewFrame } = AgoraElectronBridge.GetVideoFrame(
       this.context,
       this.videoFrame
     );
@@ -72,7 +70,10 @@ export class RendererCache extends IRendererCache {
         this.videoFrame.uBuffer = Buffer.alloc(uStride! * height!);
         this.videoFrame.vBuffer = Buffer.alloc(vStride! * height!);
 
-        const result = this.bridge.GetVideoFrame(this.context, this.videoFrame);
+        const result = AgoraElectronBridge.GetVideoFrame(
+          this.context,
+          this.videoFrame
+        );
         ret = result.ret;
         isNewFrame = result.isNewFrame;
         break;

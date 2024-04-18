@@ -1,10 +1,12 @@
-import { AgoraEnv, createAgoraRtcEngine, logError, logInfo } from '../AgoraSdk';
+import createAgoraRtcEngine, { logError, logInfo } from '../AgoraSdk';
 import { WebCodecsDecoder } from '../Decoder/index';
 import { EncodedVideoFrameInfo, VideoStreamType } from '../Private/AgoraBase';
 import { IRtcEngineEventHandler } from '../Private/IAgoraRtcEngine';
 import { IRtcEngineEx, RtcConnection } from '../Private/IAgoraRtcEngineEx';
+import { AgoraElectronBridge } from '../Private/internal/IrisApiEngine';
 
 import { RendererContext } from '../Types';
+import { AgoraEnv } from '../Utils';
 
 import { IRendererCache } from './IRendererCache';
 import { WebCodecsRenderer } from './WebCodecsRenderer/index';
@@ -16,7 +18,6 @@ export class WebCodecsRendererCache
   private _decoder?: WebCodecsDecoder | null;
   private _engine?: IRtcEngineEx;
   private _firstFrame = true;
-  private _agoraRtcNg = AgoraEnv.AgoraElectronBridge;
 
   constructor({ channelId, uid, sourceType }: RendererContext) {
     super({ channelId, uid, sourceType });
@@ -82,7 +83,7 @@ export class WebCodecsRendererCache
   }
 
   public draw() {
-    this._agoraRtcNg.OnEvent(
+    AgoraElectronBridge.OnEvent(
       'call_back_with_encoded_video_frame',
       (...params: any) => {
         try {
@@ -116,7 +117,7 @@ export class WebCodecsRendererCache
 
   public release(): void {
     this._engine?.unregisterEventHandler(this);
-    this._agoraRtcNg.UnEvent('call_back_with_encoded_video_frame');
+    AgoraElectronBridge.UnEvent('call_back_with_encoded_video_frame');
     this._decoder?.release();
     this._decoder = null;
     super.release();

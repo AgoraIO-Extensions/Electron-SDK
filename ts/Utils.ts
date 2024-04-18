@@ -168,8 +168,6 @@ export function getContextByCanvas(
   return null;
 }
 
-const AgoraNode = require('../build/Release/agora_node_ext');
-
 /**
  * @ignore
  */
@@ -179,5 +177,4 @@ export const AgoraEnv: AgoraEnvType = {
   webEnvReady: true,
   enableWebCodecsDecoder: false,
   videoFallbackStrategy: 0,
-  AgoraElectronBridge: new AgoraNode.AgoraElectronBridge(),
 };
