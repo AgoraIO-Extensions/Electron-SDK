@@ -1,4 +1,9 @@
-import { VideoMirrorModeType, VideoViewSetupMode } from '../Private/AgoraBase';
+import createAgoraRtcEngine from '../AgoraSdk';
+import {
+  VideoMirrorModeType,
+  VideoStreamType,
+  VideoViewSetupMode,
+} from '../Private/AgoraBase';
 import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
 import { RendererCacheType, RendererContext, RendererType } from '../Types';
 import { AgoraEnv, isSupportWebGL, logDebug, logError } from '../Utils';
@@ -323,6 +328,21 @@ export class RendererManager {
       const newRenderer = this.createRenderer(context, RendererType.SOFTWARE);
       renderers.splice(renderers.indexOf(renderer), 1, newRenderer);
     };
+  }
+
+  public handleWebCodecsFallback(rendererCache: WebCodecsRendererCache): void {
+    //todo need add some fallback logic
+    let engine = createAgoraRtcEngine();
+    engine.getMediaEngine().unregisterVideoEncodedFrameObserver({});
+    if (rendererCache.context.uid) {
+      engine.setRemoteVideoSubscriptionOptions(rendererCache.context.uid, {
+        type: VideoStreamType.VideoStreamHigh,
+        encodedFrameOnly: false,
+      });
+    }
+    rendererCache.release();
+    AgoraEnv.enableWebCodecsDecoder = false;
+    AgoraEnv.CapabilityManager?.setWebCodecsDecoderEnabled(false);
   }
 
   public stopRendering(): void {

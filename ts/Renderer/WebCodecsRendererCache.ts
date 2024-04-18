@@ -1,4 +1,4 @@
-import createAgoraRtcEngine, { logError, logInfo } from '../AgoraSdk';
+import createAgoraRtcEngine from '../AgoraSdk';
 import { WebCodecsDecoder } from '../Decoder/index';
 import { EncodedVideoFrameInfo, VideoStreamType } from '../Private/AgoraBase';
 import { IRtcEngineEventHandler } from '../Private/IAgoraRtcEngine';
@@ -6,7 +6,7 @@ import { IRtcEngineEx, RtcConnection } from '../Private/IAgoraRtcEngineEx';
 import { AgoraElectronBridge } from '../Private/internal/IrisApiEngine';
 
 import { RendererContext } from '../Types';
-import { AgoraEnv } from '../Utils';
+import { AgoraEnv, logInfo } from '../Utils';
 
 import { IRendererCache } from './IRendererCache';
 import { WebCodecsRenderer } from './WebCodecsRenderer/index';
@@ -29,16 +29,9 @@ export class WebCodecsRendererCache
     this.draw();
   }
 
-  onDecoderError(e: any) {
-    logError('Decoder error:', e);
-    //todo need add some fallback logic
-    if (this.context.uid) {
-      this._engine?.setRemoteVideoSubscriptionOptions(this.context.uid, {
-        type: VideoStreamType.VideoStreamHigh,
-        encodedFrameOnly: false,
-      });
-    }
-    this.release();
+  onDecoderError() {
+    logInfo('webCodecsDecoder decode failed, fallback to native decoder');
+    AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this);
   }
 
   onEncodedVideoFrameReceived(...[data, buffer]: any) {
@@ -57,17 +50,21 @@ export class WebCodecsRendererCache
     if (this._firstFrame) {
       let result = this._decoder.decoderConfigure(_data.videoEncodedFrameInfo);
       if (!result) {
-        logInfo('Failed to configure decoder, stop decoding frames.');
-        this.release();
+        logInfo('failed to configure decoder, fallback to native decoder');
+        AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this);
         return;
       }
       this._firstFrame = false;
     }
-    this._decoder.decodeFrame(
-      buffer,
-      _data.videoEncodedFrameInfo,
-      new Date().getTime()
-    );
+    if (this.fallback(_data.videoEncodedFrameInfo)) {
+      AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this);
+    } else {
+      this._decoder.decodeFrame(
+        buffer,
+        _data.videoEncodedFrameInfo,
+        new Date().getTime()
+      );
+    }
   }
 
   onUserJoined(connection: RtcConnection, remoteUid: number, _elapsed: number) {
@@ -96,23 +93,28 @@ export class WebCodecsRendererCache
     this._engine?.registerEventHandler(this);
   }
 
-  public fallback(frameInfo: EncodedVideoFrameInfo): void {
-    if (
-      !frameInfo.codecType ||
-      AgoraEnv.CapabilityManager?.frameCodecMapping[frameInfo.codecType] ===
-        undefined
-    ) {
+  public fallback(frameInfo: EncodedVideoFrameInfo): boolean {
+    let shouldFallback = false;
+    if (!frameInfo.codecType) {
+      shouldFallback = true;
       logInfo('codecType is not supported, fallback to native decoder');
-      return;
+    } else {
+      const mapping =
+        AgoraEnv.CapabilityManager?.frameCodecMapping[frameInfo.codecType];
+      if (mapping === undefined) {
+        shouldFallback = true;
+        logInfo('codecType is not supported, fallback to native decoder');
+      } else if (
+        mapping.minWidth >= frameInfo.width! &&
+        mapping.minHeight >= frameInfo.height! &&
+        mapping.maxWidth <= frameInfo.width! &&
+        mapping.maxHeight <= frameInfo.height!
+      ) {
+        shouldFallback = true;
+        logInfo('frame size is not supported, fallback to native decoder');
+      }
     }
-    // if (
-    //   !frameInfo.codecType ||
-    //   AgoraEnv.CapabilityManager?.frameCodecMapping[frameInfo.codecType] ===
-    //     undefined
-    // ) {
-    //   logInfo('codecType is not supported, fallback to native decoder');
-    //   return;
-    // }
+    return shouldFallback;
   }
 
   public release(): void {

@@ -24,6 +24,10 @@ export class CapabilityManager {
   webCodecsDecoderEnabled: boolean = AgoraEnv.enableWebCodecsDecoder;
   private _engine: IRtcEngineEx;
 
+  setWebCodecsDecoderEnabled(enabled: boolean): void {
+    this.webCodecsDecoderEnabled = enabled;
+  }
+
   constructor() {
     this._engine = createAgoraRtcEngine();
     if (AgoraEnv.enableWebCodecsDecoder) {
