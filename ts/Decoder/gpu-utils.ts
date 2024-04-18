@@ -1,8 +1,6 @@
 //@ts-ignore
 import { BrowserWindow } from 'electron';
 
-import { logError } from '../Utils';
-
 /**
  * @ignore
  */
@@ -29,7 +27,7 @@ export class GpuInfo {
 export const getGpuInfoInternal = (callback: any): void => {
   //@ts-ignore
   if (process.type !== 'browser') {
-    logError('getGpuInfoInternal should be called in main process');
+    console.error('getGpuInfoInternal should be called in main process');
     return;
   }
   const gpuPage = new BrowserWindow({
@@ -52,7 +50,7 @@ export const getGpuInfoInternal = (callback: any): void => {
     .executeJavaScript(executeJavaScriptText)
     .then((result: string) => {
       if (!result) {
-        logError(
+        console.error(
           'Failed to get GPU info, chrome://gpu is not available in this environment.'
         );
       }
@@ -82,7 +80,7 @@ export const getGpuInfoInternal = (callback: any): void => {
       typeof callback === 'function' && callback(convertResult);
     })
     .catch((error: any) => {
-      logError(
+      console.error(
         'Failed to get GPU info, please import agora-electron-sdk in main process',
         error
       );
