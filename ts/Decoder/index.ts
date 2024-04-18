@@ -7,6 +7,7 @@ import { AgoraEnv, logDebug, logInfo } from '../Utils';
 const frameTypeMapping = {
   [VideoFrameType.VideoFrameTypeDeltaFrame]: 'delta',
   [VideoFrameType.VideoFrameTypeKeyFrame]: 'key',
+  [VideoFrameType.VideoFrameTypeDroppableFrame]: 'delta', // this is a workaround for the issue that the frameType is not correct
 };
 
 export class WebCodecsDecoder {
@@ -91,6 +92,13 @@ export class WebCodecsDecoder {
     frameInfo: EncodedVideoFrameInfo,
     ts: number
   ) {
+    console.log(
+      frameInfo.frameType,
+      frameInfo.codecType,
+      frameInfo.width,
+      frameInfo.height,
+      imageBuffer.length
+    );
     if (!imageBuffer) {
       logDebug('imageBuffer is empty, skip decode frame');
       return;
