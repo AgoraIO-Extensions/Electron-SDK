@@ -6,6 +6,17 @@ import { RendererCache } from './Renderer/RendererCache';
 import { RendererManager } from './Renderer/RendererManager';
 import { WebCodecsRendererCache } from './Renderer/WebCodecsRendererCache';
 
+export enum VideoFallbackStrategy {
+  /**
+   * @ignore
+   */
+  PerformancePriority = 0,
+  /**
+   * @ignore
+   */
+  BandwidthPriority = 1,
+}
+
 /**
  * @ignore
  */
@@ -26,6 +37,10 @@ export interface AgoraEnvOptions {
    * @ignore
    */
   enableWebCodecsDecoder: boolean;
+  /**
+   * @ignore
+   */
+  videoFallbackStrategy: VideoFallbackStrategy;
 }
 
 /**

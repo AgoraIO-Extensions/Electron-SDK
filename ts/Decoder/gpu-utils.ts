@@ -8,8 +8,11 @@ import { logError } from '../Utils';
  */
 
 export type VideoDecodeAcceleratorSupportedProfile = {
-  title: string;
-  value: string;
+  codec: string;
+  minWidth: number;
+  maxWidth: number;
+  minHeight: number;
+  maxHeight: number;
 };
 
 /**
@@ -53,12 +56,30 @@ export const getGpuInfoInternal = (callback: any): void => {
           'Failed to get GPU info, chrome://gpu is not available in this environment.'
         );
       }
-      let filterResult: VideoDecodeAcceleratorSupportedProfile[] = JSON.parse(
+      let filterResult: { title: string; value: string }[] = JSON.parse(
         result
       ).filter((item: any) => {
         return item.title.indexOf('Decode') !== -1;
       });
-      typeof callback === 'function' && callback(filterResult);
+      let convertResult: VideoDecodeAcceleratorSupportedProfile[] = [];
+      const resolutionPattern = /(\d+)x(\d+) to (\d+)x(\d+)/;
+      for (const profile of filterResult) {
+        const match = profile.value.match(resolutionPattern);
+        if (!match) {
+          continue;
+        }
+
+        const [_resolution, minWidth, minHeight, maxWidth, maxHeight] = match;
+
+        convertResult.push({
+          codec: profile.title,
+          minWidth: minWidth ? Number(minWidth) : 0,
+          maxWidth: maxWidth ? Number(maxWidth) : 0,
+          minHeight: minHeight ? Number(minHeight) : 0,
+          maxHeight: maxHeight ? Number(maxHeight) : 0,
+        });
+      }
+      typeof callback === 'function' && callback(convertResult);
     })
     .catch((error: any) => {
       logError(

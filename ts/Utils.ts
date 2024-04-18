@@ -178,5 +178,6 @@ export const AgoraEnv: AgoraEnvType = {
   enableDebugLogging: false,
   webEnvReady: true,
   enableWebCodecsDecoder: false,
+  videoFallbackStrategy: 0,
   AgoraElectronBridge: new AgoraNode.AgoraElectronBridge(),
 };

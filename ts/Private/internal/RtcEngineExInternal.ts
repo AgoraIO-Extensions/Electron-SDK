@@ -106,12 +106,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
         AgoraEnv.CapabilityManager = new CapabilityManager();
       }
     }
-    if (AgoraEnv.CapabilityManager?.enableWebCodecsDecoder) {
-      this._media_engine.registerVideoEncodedFrameObserver({});
-      //need registerVideoFrameObserver here to cover the case that the webCodecsDecoder is error
-      //when the webCodecsDecoder is error, the video stream will be decoded by native
-      // this._media_engine.registerVideoFrameObserver({});
-    }
     return ret;
   }
 

@@ -95,9 +95,13 @@ export class RendererManager {
     context.useWebCodecsDecoder = context.useWebCodecsDecoder || false;
     context.enableFps = context.enableFps || false;
 
-    if (!AgoraEnv.CapabilityManager?.enableWebCodecsDecoder) {
+    if (!AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
+      if (context.useWebCodecsDecoder) {
+        logError(
+          'WebCodecsDecoder is not available now, fallback to native decoder'
+        );
+      }
       context.useWebCodecsDecoder = false;
-      logError('WebCodecsDecoder is not available now.');
     }
 
     switch (context.sourceType) {

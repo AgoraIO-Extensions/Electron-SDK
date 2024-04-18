@@ -63,9 +63,6 @@ export class MediaEngineInternal extends IMediaEngineImpl {
   override registerVideoEncodedFrameObserver(
     observer: IVideoEncodedFrameObserver
   ): number {
-    // only call iris when no event handler registered
-    let callIris =
-      MediaEngineInternal._video_encoded_frame_observers.length === 0;
     if (
       !MediaEngineInternal._video_encoded_frame_observers.find(
         (value) => value === observer
@@ -73,7 +70,7 @@ export class MediaEngineInternal extends IMediaEngineImpl {
     ) {
       MediaEngineInternal._video_encoded_frame_observers.push(observer);
     }
-    return callIris ? super.registerVideoEncodedFrameObserver(observer) : 1;
+    return super.registerVideoEncodedFrameObserver(observer);
   }
 
   override unregisterVideoEncodedFrameObserver(
@@ -83,20 +80,21 @@ export class MediaEngineInternal extends IMediaEngineImpl {
       MediaEngineInternal._video_encoded_frame_observers.filter(
         (value) => value !== observer
       );
-    // only call iris when no event handler registered
-    let callIris =
-      MediaEngineInternal._video_encoded_frame_observers.length === 0;
-    return callIris ? super.unregisterVideoEncodedFrameObserver(observer) : 1;
+    return super.unregisterVideoEncodedFrameObserver(observer);
   }
 
   override release() {
+    if (AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
+      if (MediaEngineInternal._video_frame_observers.length > 0) {
+        this.unregisterVideoFrameObserver({});
+      }
+      if (MediaEngineInternal._video_encoded_frame_observers.length > 0) {
+        this.unregisterVideoEncodedFrameObserver({});
+      }
+    }
     MediaEngineInternal._audio_frame_observers = [];
     MediaEngineInternal._video_frame_observers = [];
     MediaEngineInternal._video_encoded_frame_observers = [];
-    if (AgoraEnv.CapabilityManager?.enableWebCodecsDecoder) {
-      this.unregisterVideoEncodedFrameObserver({});
-      // this.unregisterVideoFrameObserver({});
-    }
     this.removeAllListeners();
     super.release();
   }

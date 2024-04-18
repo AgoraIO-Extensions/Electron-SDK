@@ -58,7 +58,8 @@ export class WebCodecsDecoder {
   decoderConfigure(frameInfo: EncodedVideoFrameInfo): boolean {
     // @ts-ignore
     let codec =
-      AgoraEnv.CapabilityManager?.frameCodecMapping[frameInfo.codecType!];
+      AgoraEnv.CapabilityManager?.frameCodecMapping[frameInfo.codecType!]
+        ?.codec;
     if (!codec) {
       logInfo('codec is not in frameCodecMapping, stop decode frame');
       return false;

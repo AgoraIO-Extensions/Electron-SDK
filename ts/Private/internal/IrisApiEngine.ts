@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import JSON from 'json-bigint';
 
+import { createAgoraRtcEngine } from '../../AgoraSdk';
 import { AgoraEnv, logDebug, logError, logInfo, logWarn } from '../../Utils';
 import { IAudioEncodedFrameObserver } from '../AgoraBase';
 import {
@@ -414,7 +415,7 @@ function handleEvent(...[event, data, buffers]: any) {
 export function callIrisApi(funcName: string, params: any): any {
   try {
     const buffers: Uint8Array[] = [];
-
+    const rtcEngine = createAgoraRtcEngine();
     if (funcName.startsWith('MediaEngine_')) {
       switch (funcName) {
         case 'MediaEngine_pushAudioFrame':
@@ -492,6 +493,19 @@ export function callIrisApi(funcName: string, params: any): any {
             return { nativeHandle: params.nativeHandle };
           };
           break;
+      }
+    }
+    if (funcName.indexOf('joinChannel') != -1) {
+      if (AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
+        rtcEngine.getMediaEngine().registerVideoEncodedFrameObserver({});
+        //need registerVideoFrameObserver here to cover the case that the webCodecsDecoder is error
+        //when the webCodecsDecoder is error, the video stream will be decoded by native
+        rtcEngine.getMediaEngine().registerVideoFrameObserver({});
+      }
+    } else if (funcName.indexOf('leaveChannel') != -1) {
+      if (AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
+        rtcEngine.getMediaEngine().unregisterVideoEncodedFrameObserver({});
+        rtcEngine.getMediaEngine().unregisterVideoFrameObserver({});
       }
     }
 

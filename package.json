@@ -3,6 +3,10 @@
   "version": "4.2.2-build.142-rc.1",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk",
+  "exports": {
+    ".": "./js/AgoraSdk.js",
+    "./ipc": "./js/Private/ipc/main.js"
+  },
   "types": "types/AgoraSdk.d.ts",
   "source": "ts/AgoraSdk",
   "files": [

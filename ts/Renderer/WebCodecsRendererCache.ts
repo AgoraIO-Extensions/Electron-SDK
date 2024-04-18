@@ -1,6 +1,6 @@
 import { AgoraEnv, createAgoraRtcEngine, logError, logInfo } from '../AgoraSdk';
 import { WebCodecsDecoder } from '../Decoder/index';
-import { VideoStreamType } from '../Private/AgoraBase';
+import { EncodedVideoFrameInfo, VideoStreamType } from '../Private/AgoraBase';
 import { IRtcEngineEventHandler } from '../Private/IAgoraRtcEngine';
 import { IRtcEngineEx, RtcConnection } from '../Private/IAgoraRtcEngineEx';
 
@@ -93,14 +93,29 @@ export class WebCodecsRendererCache
       }
     );
     this._engine?.registerEventHandler(this);
-    // this._engine?.getMediaEngine().registerVideoEncodedFrameObserver({});
-    // this._engine?.getMediaEngine().registerVideoFrameObserver({});
+  }
+
+  public fallback(frameInfo: EncodedVideoFrameInfo): void {
+    if (
+      !frameInfo.codecType ||
+      AgoraEnv.CapabilityManager?.frameCodecMapping[frameInfo.codecType] ===
+        undefined
+    ) {
+      logInfo('codecType is not supported, fallback to native decoder');
+      return;
+    }
+    // if (
+    //   !frameInfo.codecType ||
+    //   AgoraEnv.CapabilityManager?.frameCodecMapping[frameInfo.codecType] ===
+    //     undefined
+    // ) {
+    //   logInfo('codecType is not supported, fallback to native decoder');
+    //   return;
+    // }
   }
 
   public release(): void {
     this._engine?.unregisterEventHandler(this);
-    // this._engine?.getMediaEngine().unregisterVideoEncodedFrameObserver({});
-    // this._engine?.getMediaEngine().unregisterVideoFrameObserver({});
     this._agoraRtcNg.UnEvent('call_back_with_encoded_video_frame');
     this._decoder?.release();
     this._decoder = null;
