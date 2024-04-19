@@ -11,8 +11,8 @@ export class RendererCache extends IRendererCache {
   private videoFrame: VideoFrame;
   private _enabled: boolean;
 
-  constructor({ channelId, uid, sourceType }: RendererContext) {
-    super({ channelId, uid, sourceType });
+  constructor(context: RendererContext) {
+    super(context);
     this.videoFrame = {
       yBuffer: Buffer.alloc(0),
       uBuffer: Buffer.alloc(0),

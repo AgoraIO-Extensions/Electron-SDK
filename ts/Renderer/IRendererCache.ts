@@ -1,4 +1,4 @@
-import { RendererCacheContext, RendererContext } from '../Types';
+import { RendererContext } from '../Types';
 
 import { IRenderer } from './IRenderer';
 
@@ -12,11 +12,11 @@ export function generateRendererCacheKey({
 
 export abstract class IRendererCache {
   renderers: IRenderer[];
-  context: RendererCacheContext;
+  context: RendererContext;
 
-  constructor({ channelId, uid, sourceType }: RendererContext) {
+  constructor(context: RendererContext) {
     this.renderers = [];
-    this.context = { channelId, uid, sourceType };
+    this.context = context;
   }
 
   public get key(): string {

@@ -1,8 +1,7 @@
 import createAgoraRtcEngine from '../AgoraSdk';
 import { WebCodecsDecoder } from '../Decoder/index';
 import { EncodedVideoFrameInfo, VideoStreamType } from '../Private/AgoraBase';
-import { IRtcEngineEventHandler } from '../Private/IAgoraRtcEngine';
-import { IRtcEngineEx, RtcConnection } from '../Private/IAgoraRtcEngineEx';
+import { IRtcEngineEx } from '../Private/IAgoraRtcEngineEx';
 import { AgoraElectronBridge } from '../Private/internal/IrisApiEngine';
 
 import { RendererContext } from '../Types';
@@ -11,16 +10,13 @@ import { AgoraEnv, logInfo } from '../Utils';
 import { IRendererCache } from './IRendererCache';
 import { WebCodecsRenderer } from './WebCodecsRenderer/index';
 
-export class WebCodecsRendererCache
-  extends IRendererCache
-  implements IRtcEngineEventHandler
-{
+export class WebCodecsRendererCache extends IRendererCache {
   private _decoder?: WebCodecsDecoder | null;
   private _engine?: IRtcEngineEx;
   private _firstFrame = true;
 
-  constructor({ channelId, uid, sourceType }: RendererContext) {
-    super({ channelId, uid, sourceType });
+  constructor(context: RendererContext) {
+    super(context);
     this._engine = createAgoraRtcEngine();
     this._decoder = new WebCodecsDecoder(
       this.renderers as WebCodecsRenderer[],
@@ -31,7 +27,7 @@ export class WebCodecsRendererCache
 
   onDecoderError() {
     logInfo('webCodecsDecoder decode failed, fallback to native decoder');
-    AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this);
+    AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this.context);
   }
 
   onEncodedVideoFrameReceived(...[data, buffer]: any) {
@@ -51,13 +47,13 @@ export class WebCodecsRendererCache
       let result = this._decoder.decoderConfigure(_data.videoEncodedFrameInfo);
       if (!result) {
         logInfo('failed to configure decoder, fallback to native decoder');
-        AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this);
+        AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this.context);
         return;
       }
       this._firstFrame = false;
     }
-    if (this.fallback(_data.videoEncodedFrameInfo)) {
-      AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this);
+    if (this.shouldFallback(_data.videoEncodedFrameInfo)) {
+      AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this.context);
     } else {
       this._decoder.decodeFrame(
         buffer,
@@ -67,19 +63,11 @@ export class WebCodecsRendererCache
     }
   }
 
-  onUserJoined(connection: RtcConnection, remoteUid: number, _elapsed: number) {
-    if (
-      remoteUid === this.context.uid &&
-      connection.channelId === this.context.channelId
-    ) {
-      this._engine?.setRemoteVideoSubscriptionOptions(remoteUid, {
-        type: VideoStreamType.VideoStreamHigh,
-        encodedFrameOnly: true,
-      });
-    }
-  }
-
   public draw() {
+    this._engine?.setRemoteVideoSubscriptionOptions(this.context.uid!, {
+      type: VideoStreamType.VideoStreamHigh,
+      encodedFrameOnly: true,
+    });
     AgoraElectronBridge.OnEvent(
       'call_back_with_encoded_video_frame',
       (...params: any) => {
@@ -90,10 +78,9 @@ export class WebCodecsRendererCache
         }
       }
     );
-    this._engine?.registerEventHandler(this);
   }
 
-  public fallback(frameInfo: EncodedVideoFrameInfo): boolean {
+  public shouldFallback(frameInfo: EncodedVideoFrameInfo): boolean {
     let shouldFallback = false;
     if (!frameInfo.codecType) {
       shouldFallback = true;
@@ -118,7 +105,6 @@ export class WebCodecsRendererCache
   }
 
   public release(): void {
-    this._engine?.unregisterEventHandler(this);
     AgoraElectronBridge.UnEvent('call_back_with_encoded_video_frame');
     this._decoder?.release();
     this._decoder = null;

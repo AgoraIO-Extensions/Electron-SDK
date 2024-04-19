@@ -6,7 +6,7 @@ import {
 } from '../Private/AgoraBase';
 import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
 import { RendererCacheType, RendererContext, RendererType } from '../Types';
-import { AgoraEnv, isSupportWebGL, logDebug, logError } from '../Utils';
+import { AgoraEnv, isSupportWebGL, logDebug } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 import { generateRendererCacheKey } from './IRendererCache';
@@ -101,11 +101,6 @@ export class RendererManager {
     context.enableFps = context.enableFps || false;
 
     if (!AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
-      if (context.useWebCodecsDecoder) {
-        logError(
-          'WebCodecsDecoder is not available now, fallback to native decoder'
-        );
-      }
       context.useWebCodecsDecoder = false;
     }
 
@@ -330,19 +325,20 @@ export class RendererManager {
     };
   }
 
-  public handleWebCodecsFallback(rendererCache: WebCodecsRendererCache): void {
+  public handleWebCodecsFallback(context: RendererContext): void {
     //todo need add some fallback logic
     let engine = createAgoraRtcEngine();
     engine.getMediaEngine().unregisterVideoEncodedFrameObserver({});
-    if (rendererCache.context.uid) {
-      engine.setRemoteVideoSubscriptionOptions(rendererCache.context.uid, {
+    if (context.uid) {
+      engine.setRemoteVideoSubscriptionOptions(context.uid, {
         type: VideoStreamType.VideoStreamHigh,
         encodedFrameOnly: false,
       });
     }
-    rendererCache.release();
+    context.setupMode = VideoViewSetupMode.VideoViewSetupReplace;
     AgoraEnv.enableWebCodecsDecoder = false;
     AgoraEnv.CapabilityManager?.setWebCodecsDecoderEnabled(false);
+    this.addOrRemoveRenderer(context);
   }
 
   public stopRendering(): void {

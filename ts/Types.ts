@@ -80,11 +80,6 @@ export type RENDER_MODE = RendererType;
 export type RendererContext = VideoCanvas & RtcConnection;
 export type RendererCacheType = RendererCache | WebCodecsRendererCache;
 
-export type RendererCacheContext = Pick<
-  RendererContext,
-  'channelId' | 'uid' | 'sourceType' | 'useWebCodecsDecoder' | 'enableFps'
->;
-
 /**
  * @ignore
  */
@@ -132,14 +127,14 @@ export interface IAgoraElectronBridge {
 
   ReleaseRenderer(): void;
 
-  EnableVideoFrameCache(context: RendererCacheContext): void;
+  EnableVideoFrameCache(context: RendererContext): void;
 
-  DisableVideoFrameCache(context: RendererCacheContext): void;
+  DisableVideoFrameCache(context: RendererContext): void;
 
   GetBuffer(ptr: number, length: number): Buffer;
 
   GetVideoFrame(
-    context: RendererCacheContext,
+    context: RendererContext,
     videoFrame: VideoFrame
   ): {
     ret: number;
