@@ -319,7 +319,7 @@ export enum ErrorCodeType {
    */
   ErrSetClientRoleNotAuthorized = 119,
   /**
-   * 120: Decryption fails. The user might have entered an incorrect password to join the channel. Check the entered password, or tell the user to try rejoining the channel.
+   * 120: Media streams decryption fails. The user might use an incorrect password to join the channel. Check the entered password, or tell the user to try rejoining the channel.
    */
   ErrDecryptionFailed = 120,
   /**
@@ -1447,11 +1447,11 @@ export enum SimulcastStreamMode {
  */
 export class SimulcastStreamConfig {
   /**
-   * The video dimension. See VideoDimensions. The default value is 160 × 120.
+   * The video dimension. See VideoDimensions. The default value is 50% of the high-quality video stream.
    */
   dimensions?: VideoDimensions;
   /**
-   * Video receive bitrate (Kbps), represented by an instantaneous value. The default value is 65.
+   * Video receive bitrate (Kbps), represented by an instantaneous value. This parameter does not need to be set. The SDK automatically matches the most suitable bitrate based on the video resolution and frame rate you set.
    */
   kBitrate?: number;
   /**
@@ -1860,15 +1860,15 @@ export enum AudioScenarioType {
  */
 export class VideoFormat {
   /**
-   * The width (px) of the video frame.
+   * The width (px) of the video frame. The default value is 960.
    */
   width?: number;
   /**
-   * The height (px) of the video frame.
+   * The height (px) of the video frame. The default value is 540.
    */
   height?: number;
   /**
-   * The video frame rate (fps).
+   * The video frame rate (fps). The default value is 15.
    */
   fps?: number;
 }
@@ -2065,11 +2065,11 @@ export enum LocalAudioStreamReason {
    */
   LocalAudioStreamReasonEncodeFailure = 5,
   /**
-   * 6: No local audio capture device. Remind your users to check whether the microphone is connected to the device properly in the control plane of the device or if the microphone is working properly.
+   * 6: No local audio capture device. Remind your users to check whether the microphone is connected to the device properly in the control panel of the device or if the microphone is working properly.
    */
   LocalAudioStreamReasonNoRecordingDevice = 6,
   /**
-   * 7: No local audio capture device. Remind your users to check whether the speaker is connected to the device properly in the control plane of the device or if the speaker is working properly.
+   * 7: No local audio capture device. Remind your users to check whether the speaker is connected to the device properly in the control panel of the device or if the speaker is working properly.
    */
   LocalAudioStreamReasonNoPlayoutDevice = 7,
   /**
@@ -2077,11 +2077,11 @@ export enum LocalAudioStreamReason {
    */
   LocalAudioStreamReasonInterrupted = 8,
   /**
-   * 9: (Windows only) The ID of the local audio-capture device is invalid. Check the audio capture device ID.
+   * 9: (Windows only) The ID of the local audio-capture device is invalid. Prompt the user to check the audio capture device ID.
    */
   LocalAudioStreamReasonRecordInvalidId = 9,
   /**
-   * 10: (Windows only) The ID of the local audio-playback device is invalid. Check the audio playback device ID.
+   * 10: (Windows only) The ID of the local audio-playback device is invalid. Prompt the user to check the audio playback device ID.
    */
   LocalAudioStreamReasonPlayoutInvalidId = 10,
 }
@@ -2121,15 +2121,15 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonFailure = 1,
   /**
-   * 2: No permission to use the local video capturing device. Remind the user to grant permissions and rejoin the channel. Deprecated: This enumerator is deprecated. Please use CAMERA in the onPermissionError callback instead.
+   * 2: No permission to use the local video capturing device. Prompt the user to grant permissions and rejoin the channel. Deprecated: This enumerator is deprecated. Please use CAMERA in the onPermissionError callback instead.
    */
   LocalVideoStreamReasonDeviceNoPermission = 2,
   /**
-   * 3: The local video capturing device is in use. Remind the user to check whether another application occupies the camera.
+   * 3: The local video capturing device is in use. Prompt the user to check if the camera is being used by another app, or try to rejoin the channel.
    */
   LocalVideoStreamReasonDeviceBusy = 3,
   /**
-   * 4: The local video capture fails. Remind your user to check whether the video capture device is working properly, whether the camera is occupied by another application, or try to rejoin the channel.
+   * 4: The local video capture fails. Prompt the user to check whether the video capture device is working properly, whether the camera is used by another app, or try to rejoin the channel.
    */
   LocalVideoStreamReasonCaptureFailure = 4,
   /**
@@ -2169,12 +2169,12 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonDeviceSystemPressure = 101,
   /**
-   * 11: (macOS and Windows only) The shared windows is minimized when you call the startScreenCaptureByWindowId method to share a window. The SDK cannot share a minimized window. You can cancel the minimization of this window at the application layer, for example by maximizing this window.
+   * 11: (macOS and Windows only) The shared window is minimized when you call the startScreenCaptureByWindowId method to share a window. The SDK cannot share a minimized window. Please prompt the user to unminimize the shared window.
    */
   LocalVideoStreamReasonScreenCaptureWindowMinimized = 11,
   /**
    * 12: (macOS and Windows only) The error code indicates that a window shared by the window ID has been closed or a full-screen window shared by the window ID has exited full-screen mode. After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a black screen, Agora recommends that you immediately stop screen sharing. Common scenarios reporting this error code:
-   *  When the local user closes the shared window, the SDK reports this error code.
+   *  The local user closes the shared window.
    *  The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After the user exits full-screen mode, the SDK reports this error code.
    *  The local user watches a web video or reads a web document in full-screen mode first, and then shares the window of the web video or document. After the user exits full-screen mode, the SDK reports this error code.
    */
@@ -3439,7 +3439,7 @@ export class VideoCanvas {
    */
   subviewUid?: number;
   /**
-   * The video display window.
+   * The video display window. In one VideoCanvas, you can only choose to set either view or surfaceTexture. If both are set, only the settings in view take effect.
    */
   view?: any;
   /**
@@ -3473,8 +3473,7 @@ export class VideoCanvas {
    */
   cropArea?: Rectangle;
   /**
-   * (Optional) Whether the receiver enables alpha mask rendering: true : The receiver enables alpha mask rendering. false : (default) The receiver disables alpha mask rendering. Alpha mask rendering can create images with transparent effects and extract portraits from videos. When used in combination with other methods, you can implement effects such as portrait-in-picture and watermarking.
-   *  This property applies to macOS only.
+   * (Optional) Whether the receiver enables alpha mask rendering: true : The receiver enables alpha mask rendering. false : (Default) The receiver disables alpha mask rendering. Alpha mask rendering can create images with transparent effects and extract portraits from videos. When used in combination with other methods, you can implement effects such as portrait-in-picture and watermarking.
    *  The receiver can render alpha channel information only when the sender enables alpha transmission.
    *  To enable alpha transmission,.
    */
@@ -3722,7 +3721,7 @@ export class SegmentationProperty {
    */
   modelType?: SegModelType;
   /**
-   * The range of accuracy for identifying green colors (different shades of green) in the view. The value range is [0,1], and the default value is 0.5. The larger the value, the wider the range of identifiable shades of green. When the value of this parameter is too large, the edge of the portrait and the green color in the portrait range are also detected. Agora recommends that you dynamically adjust the value of this parameter according to the actual effect. This parameter only takes effect when modelType is set to SegModelGreen.
+   * The accuracy range for recognizing background colors in the image. The value range is [0,1], and the default value is 0.5. The larger the value, the wider the range of identifiable shades of pure color. When the value of this parameter is too large, the edge of the portrait and the pure color in the portrait range are also detected. Agora recommends that you dynamically adjust the value of this parameter according to the actual effect. This parameter only takes effect when modelType is set to SegModelGreen.
    */
   greenCapacity?: number;
 }
@@ -4526,7 +4525,7 @@ export class EncryptionConfig {
    */
   encryptionKdfSalt?: number[];
   /**
-   * @ignore
+   * Whether to enable data stream encryption: true : Enable data stream encryption. false : (Default) Disable data stream encryption.
    */
   datastreamEncryptionEnabled?: boolean;
 }
@@ -4540,11 +4539,11 @@ export enum EncryptionErrorType {
    */
   EncryptionErrorInternalFailure = 0,
   /**
-   * 1: Decryption errors. Ensure that the receiver and the sender use the same encryption mode and key.
+   * 1: Media stream decryption error. Ensure that the receiver and the sender use the same encryption mode and key.
    */
   EncryptionErrorDecryptionFailure = 1,
   /**
-   * 2: Encryption errors.
+   * 2: Media stream encryption error.
    */
   EncryptionErrorEncryptionFailure = 2,
   /**
@@ -4696,19 +4695,19 @@ export class UserInfo {
 }
 
 /**
- * The audio filter of in-ear monitoring.
+ * The audio filter types of in-ear monitoring.
  */
 export enum EarMonitoringFilterType {
   /**
-   * 1<<0: Do not add an audio filter to the in-ear monitor.
+   * 1<<0: No audio filter added to in-ear monitoring.
    */
   EarMonitoringFilterNone = 1 << 0,
   /**
-   * 1<<1: Add an audio filter to the in-ear monitor. If you implement functions such as voice beautifier and audio effect, users can hear the voice after adding these effects.
+   * 1<<1: Add vocal effects audio filter to in-ear monitoring. If you implement functions such as voice beautifier and audio effect, users can hear the voice after adding these effects.
    */
   EarMonitoringFilterBuiltInAudioFilters = 1 << 1,
   /**
-   * 1<<2: Enable noise suppression to the in-ear monitor.
+   * 1<<2: Add noise suppression audio filter to in-ear monitoring.
    */
   EarMonitoringFilterNoiseSuppression = 1 << 2,
   /**

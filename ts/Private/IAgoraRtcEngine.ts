@@ -551,7 +551,7 @@ export class RemoteAudioStats {
    */
   rxAudioBytes?: number;
   /**
-   * @ignore
+   * End-to-end audio delay (in milliseconds), which refers to the time from when the audio is captured by the remote user to when it is played by the local user.
    */
   e2eDelay?: number;
 }
@@ -823,11 +823,11 @@ export class PublisherConfiguration {
  */
 export enum CameraDirection {
   /**
-   * The rear camera.
+   * 0: The rear camera.
    */
   CameraRear = 0,
   /**
-   * The front camera.
+   * 1: (Default) The front camera.
    */
   CameraFront = 1,
 }
@@ -863,7 +863,7 @@ export class CameraCapturerConfiguration {
    */
   cameraFocalLengthType?: CameraFocalLengthType;
   /**
-   * This method applies to Windows only. The ID of the camera. The maximum length is MaxDeviceIdLengthType.
+   * The camera ID. The maximum length is MaxDeviceIdLengthType.
    */
   deviceId?: string;
   /**
@@ -871,11 +871,11 @@ export class CameraCapturerConfiguration {
    */
   cameraId?: string;
   /**
-   * Whether to follow the video aspect ratio set in setVideoEncoderConfiguration : true : (Default) Follow the set video aspect ratio. The SDK crops the captured video according to the set video aspect ratio and synchronously changes the local preview screen and the video frame in onCaptureVideoFrame and onPreEncodeVideoFrame. false : Do not follow the system default audio playback device. The SDK does not change the aspect ratio of the captured video frame.
+   * (Optional) Whether to follow the video aspect ratio set in setVideoEncoderConfiguration : true : (Default) Follow the set video aspect ratio. The SDK crops the captured video according to the set video aspect ratio and synchronously changes the local preview screen and the video frame in onCaptureVideoFrame and onPreEncodeVideoFrame. false : Do not follow the system default audio playback device. The SDK does not change the aspect ratio of the captured video frame.
    */
   followEncodeDimensionRatio?: boolean;
   /**
-   * The format of the video frame. See VideoFormat.
+   * (Optional) The format of the video frame. See VideoFormat.
    */
   format?: VideoFormat;
 }
@@ -1171,7 +1171,7 @@ export class ChannelMediaOptions {
    */
   channelProfile?: ChannelProfileType;
   /**
-   * @ignore
+   * Delay (in milliseconds) for sending audio frames. You can use this parameter to set the delay of the audio frames that need to be sent, to ensure audio and video synchronization. To switch off the delay, set the value to 0.
    */
   audioDelayMs?: number;
   /**
@@ -1584,7 +1584,7 @@ export interface IRtcEngineEventHandler {
    * Occurs when the local video stream state changes.
    *
    * When the state of the local video stream changes (including the state of the video capture and encoding), the SDK triggers this callback to report the current state. This callback indicates the state of the local video stream, including camera capturing and video encoding, and allows you to troubleshoot issues when exceptions occur. The SDK triggers the onLocalVideoStateChanged callback with the state code of LocalVideoStreamStateFailed and error code of LocalVideoStreamReasonCaptureFailure in the following situations:
-   *  The app switches to the background, and the system gets the camera resource.
+   *  The app goes to the background and the system revokes the camera permission.
    *  The camera starts normally, but does not output video frames for four consecutive seconds. When the camera outputs the captured video frames, if the video frames are the same for 15 consecutive frames, the SDK triggers the onLocalVideoStateChanged callback with the state code of LocalVideoStreamStateCapturing and error code of LocalVideoStreamReasonCaptureFailure. Note that the video frame duplication detection is only available for video frames with a resolution greater than 200 × 200, a frame rate greater than or equal to 10 fps, and a bitrate less than 20 Kbps. For some device models, the SDK does not trigger this callback when the state of the local video changes while the local video capturing device is in use, so you have to make your own timeout judgment.
    *
    * @param source The type of the video source. See VideoSourceType.
@@ -5176,7 +5176,7 @@ export abstract class IRtcEngine {
    *  You can call this method either before or after joining a channel.
    *
    * @param enabled Enables or disables in-ear monitoring. true : Enables in-ear monitoring. false : (Default) Disables in-ear monitoring.
-   * @param includeAudioFilters The audio filter of in-ear monitoring: See EarMonitoringFilterType.
+   * @param includeAudioFilters The audio filter types of in-ear monitoring. See EarMonitoringFilterType.
    *
    * @returns
    * 0: Success.
@@ -5598,7 +5598,7 @@ export abstract class IRtcEngine {
    * @ignore
    */
   abstract queryCameraFocalLengthCapability(): {
-    focalLengthInfos: FocalLengthInfo;
+    focalLengthInfos: FocalLengthInfo[];
     size: number;
   };
 
@@ -5629,7 +5629,7 @@ export abstract class IRtcEngine {
   /**
    * Retrieves the call ID.
    *
-   * When a user joins a channel on a client, a callId is generated to identify the call from the client. Some methods, such as rate and complain, must be called after the call ends to submit feedback to the SDK. These methods require the callId parameter. Call this method after joining a channel.
+   * When a user joins a channel on a client, a callId is generated to identify the call from the client. You can call this method to get the callId parameter, and pass it in when calling methods such as rate and complain. Call this method after joining a channel.
    *
    * @returns
    * The current call ID, if the method succeeds.
@@ -5932,7 +5932,7 @@ export abstract class IRtcEngine {
    *
    * In scenarios requiring high security, Agora recommends calling this method to enable the built-in encryption before joining a channel. All users in the same channel must use the same encryption mode and encryption key. After the user leaves the channel, the SDK automatically disables the built-in encryption. To enable the built-in encryption, call this method before the user joins the channel again. If you enable the built-in encryption, you cannot use the Media Push function.
    *
-   * @param enabled Whether to enable built-in encryption: true : Enable the built-in encryption. false : Disable the built-in encryption.
+   * @param enabled Whether to enable built-in encryption: true : Enable the built-in encryption. false : (Default) Disable the built-in encryption.
    * @param config Built-in encryption configurations. See EncryptionConfig.
    *
    * @returns
