@@ -131,9 +131,12 @@ export class WebCodecsDecoder {
   }
 
   release() {
-    this.pendingFrame = null;
     try {
+      if (this.pendingFrame) {
+        this.pendingFrame.close();
+      }
       this._decoder.close();
     } catch (e) {}
+    this.pendingFrame = null;
   }
 }

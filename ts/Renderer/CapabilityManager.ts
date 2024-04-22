@@ -10,8 +10,8 @@ import { VideoCodecType } from '../Private/AgoraBase';
 import { IRtcEngineEx } from '../Private/IAgoraRtcEngineEx';
 import { ipcSend } from '../Private/ipc/renderer';
 
-import { IPCMessageType, codecMapping } from '../Types';
-import { AgoraEnv, logDebug, logError } from '../Utils';
+import { IPCMessageType, VideoFallbackStrategy, codecMapping } from '../Types';
+import { AgoraEnv, logError, logInfo } from '../Utils';
 
 /**
  * @ignore
@@ -32,19 +32,34 @@ export class CapabilityManager {
     this._engine = createAgoraRtcEngine();
     if (AgoraEnv.enableWebCodecsDecoder) {
       this.getGpuInfo(() => {
-        if (AgoraEnv.videoFallbackStrategy === 0) {
+        if (
+          AgoraEnv.videoFallbackStrategy ===
+          VideoFallbackStrategy.PerformancePriority
+        ) {
           if (!this.isSupportedH265()) {
             if (this.isSupportedH264()) {
               this._engine.setParameters(
                 JSON.stringify({ 'che.video.h265_dec_enable': false })
               );
-              logDebug('H265 is not supported, fallback to H264');
+              logInfo(
+                'the videoFallbackStrategy is PerformancePriority, H265 is not supported, fallback to H264'
+              );
             } else {
               this.webCodecsDecoderEnabled = false;
-              logDebug(
-                'H264 and H265 are not supported, fallback to native decoder'
+              logInfo(
+                'the videoFallbackStrategy is PerformancePriority, H264 and H265 are not supported, fallback to native decoder'
               );
             }
+          }
+        } else if (
+          AgoraEnv.videoFallbackStrategy ===
+          VideoFallbackStrategy.BandwidthPriority
+        ) {
+          if (!this.isSupportedH265()) {
+            this.webCodecsDecoderEnabled = false;
+            logInfo(
+              'the videoFallbackStrategy is BandwidthPriority, H265 is not supported, fallback to native decoder'
+            );
           }
         }
       });
