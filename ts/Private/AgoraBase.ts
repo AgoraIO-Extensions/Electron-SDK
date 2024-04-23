@@ -327,7 +327,7 @@ export enum ErrorCodeType {
    */
   ErrInvalidUserId = 121,
   /**
-   * @ignore
+   * 122: Data streams decryption fails. The user might use an incorrect password to join the channel. Check the entered password, or tell the user to try rejoining the channel.
    */
   ErrDatastreamDecryptionFailed = 122,
   /**
@@ -2208,7 +2208,7 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonScreenCaptureWindowRecoverFromHidden = 26,
   /**
-   * @ignore
+   * 27: The window for screen capture has been restored from the minimized state.
    */
   LocalVideoStreamReasonScreenCaptureWindowRecoverFromMinimized = 27,
   /**
@@ -3867,7 +3867,7 @@ export enum AudioEffectPreset {
    */
   RoomAcousticsVirtualSurroundSound = 0x02010900,
   /**
-   * @ignore
+   * The audio effect of chorus. Agora recommends using this effect in chorus scenarios to enhance the sense of depth and dimension in the vocals.
    */
   RoomAcousticsChorus = 0x02010d00,
   /**
@@ -4005,9 +4005,13 @@ export enum HeadphoneEqualizerPreset {
  */
 export class ScreenCaptureParameters {
   /**
-   * The video encoding resolution of the shared screen stream. See VideoDimensions. The default value is 1920 × 1080, that is, 2,073,600 pixels. Agora uses the value of this parameter to calculate the charges. If the screen dimensions are different from the value of this parameter, Agora applies the following strategies for encoding. Suppose is set to 1920 × 1080:
+   * The video encoding resolution of the screen sharing stream. See VideoDimensions. The default value is 1920 × 1080, that is, 2,073,600 pixels. Agora uses the value of this parameter to calculate the charges. If the screen dimensions are different from the value of this parameter, Agora applies the following strategies for encoding. Suppose dimensions is set to 1920 × 1080:
    *  If the value of the screen dimensions is lower than that of dimensions, for example, 1000 × 1000 pixels, the SDK uses the screen dimensions, that is, 1000 × 1000 pixels, for encoding.
-   *  If the value of the screen dimensions is higher than that of dimensions, for example, 2000 × 1500, the SDK uses the maximum value under with the aspect ratio of the screen dimension (4:3) for encoding, that is, 1440 × 1080.
+   *  If the value of the screen dimensions is higher than that of dimensions, for example, 2000 × 1500, the SDK uses the maximum value under dimensions with the aspect ratio of the screen dimension (4:3) for encoding, that is, 1440 × 1080. When setting the encoding resolution in the scenario of sharing documents (ScreenScenarioDocument), choose one of the following two methods:
+   *  If you require the best image quality, it is recommended to set the encoding resolution to be the same as the capture resolution.
+   *  If you wish to achieve a relative balance between image quality, bandwidth, and system performance, then:
+   *  When the capture resolution is greater than 1920 × 1080, it is recommended that the encoding resolution is not less than 1920 × 1080.
+   *  When the capture resolution is less than 1920 × 1080, it is recommended that the encoding resolution is not less than 1280 × 720.
    */
   dimensions?: VideoDimensions;
   /**
@@ -4547,11 +4551,11 @@ export enum EncryptionErrorType {
    */
   EncryptionErrorEncryptionFailure = 2,
   /**
-   * @ignore
+   * 3: Data stream decryption error. Ensure that the receiver and the sender use the same encryption mode and key.
    */
   EncryptionErrorDatastreamDecryptionFailure = 3,
   /**
-   * @ignore
+   * 4: Data stream encryption error.
    */
   EncryptionErrorDatastreamEncryptionFailure = 4,
 }
@@ -4711,7 +4715,7 @@ export enum EarMonitoringFilterType {
    */
   EarMonitoringFilterNoiseSuppression = 1 << 2,
   /**
-   * @ignore
+   * 1<<15: Reuse the audio filter that has been processed on the sending end for in-ear monitoring. This enumerator reduces CPU usage while increasing in-ear monitoring latency, which is suitable for latency-tolerant scenarios requiring low CPU consumption.
    */
   EarMonitoringFilterReusePostProcessingFilter = 1 << 15,
 }
