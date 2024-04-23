@@ -2,6 +2,8 @@ import { VideoMirrorModeType } from '../Private/AgoraBase';
 import { RenderModeType, VideoFrame } from '../Private/AgoraMediaBase';
 import { RendererContext, RendererType } from '../Types';
 
+import { frameSize } from './WebCodecsRenderer';
+
 export abstract class IRenderer {
   parentElement?: HTMLElement;
   container?: HTMLElement;
@@ -11,7 +13,7 @@ export abstract class IRenderer {
   private _frameCount = 0;
   private _startTime: number | null = null;
 
-  public bind(element: HTMLElement) {
+  public bind(element: HTMLElement, _frameSize?: frameSize) {
     this.parentElement = element;
     this.container = document.createElement('div');
     Object.assign(this.container.style, {

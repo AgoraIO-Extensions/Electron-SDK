@@ -237,16 +237,17 @@ export class RendererManager {
           renderer = new WebGLRenderer(
             this.handleWebGLFallback(context).bind(this)
           );
+          renderer.bind(context.view);
         }
         break;
       case RendererType.SOFTWARE:
         renderer = new YUVCanvasRenderer();
+        renderer.bind(context.view);
         break;
       default:
         throw new Error('Unknown renderer type');
     }
 
-    renderer.bind(context.view);
     renderer.setContext(context);
     return renderer;
   }

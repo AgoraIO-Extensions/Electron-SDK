@@ -77,7 +77,7 @@ export class WebCodecsDecoder {
       if (renderer.rendererType !== RendererType.WEBCODECSRENDERER) {
         continue;
       }
-      renderer.setFrameSize({
+      renderer.bind(renderer.context.view, {
         width: frameInfo.width!,
         height: frameInfo.height!,
       });

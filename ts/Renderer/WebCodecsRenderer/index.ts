@@ -2,7 +2,7 @@ import { RendererType } from '../../Types';
 import { getContextByCanvas } from '../../Utils';
 import { IRenderer } from '../IRenderer';
 
-type frameSize = {
+export type frameSize = {
   width: number;
   height: number;
 };
@@ -35,9 +35,11 @@ export class WebCodecsRenderer extends IRenderer {
     }
   `;
 
-  bind(element: HTMLElement) {
+  bind(element: HTMLElement, frameSize: frameSize) {
     super.bind(element);
     if (!this.canvas) return;
+    this.canvas.width = frameSize.width;
+    this.canvas.height = frameSize.height;
     this.offscreenCanvas = this.canvas.transferControlToOffscreen();
     this.gl = getContextByCanvas(this.offscreenCanvas);
     if (!this.gl) return;
@@ -103,18 +105,10 @@ export class WebCodecsRenderer extends IRenderer {
     );
   }
 
-  setFrameSize(frameSize: frameSize) {
-    if (!this.offscreenCanvas) return;
-    this.offscreenCanvas.width = frameSize.width;
-    this.offscreenCanvas.height = frameSize.height;
-  }
-
   drawFrame(frame: any) {
     if (!this.offscreenCanvas || !frame) return;
-    this.setFrameSize({
-      width: frame.displayWidth,
-      height: frame.displayHeight,
-    });
+    this.offscreenCanvas.width = frame.displayWidth;
+    this.offscreenCanvas.height = frame.displayHeight;
     this.updateRenderMode();
     if (!this.gl) return;
 
