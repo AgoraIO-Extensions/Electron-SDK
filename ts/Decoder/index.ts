@@ -57,6 +57,16 @@ export class WebCodecsDecoder {
   }
 
   decoderConfigure(frameInfo: EncodedVideoFrameInfo): boolean {
+    for (let renderer of this.renderers) {
+      if (renderer.rendererType !== RendererType.WEBCODECSRENDERER) {
+        continue;
+      }
+      renderer.bind(renderer.context.view, {
+        width: frameInfo.width!,
+        height: frameInfo.height!,
+      });
+      this.pendingFrame = null;
+    }
     // @ts-ignore
     let codec =
       AgoraEnv.CapabilityManager?.frameCodecMapping[frameInfo.codecType!]
@@ -73,16 +83,6 @@ export class WebCodecsDecoder {
     logInfo(
       `configure decoder: codedWidth: ${frameInfo.width}, codedHeight: ${frameInfo.height},codec: ${codec}`
     );
-    for (let renderer of this.renderers) {
-      if (renderer.rendererType !== RendererType.WEBCODECSRENDERER) {
-        continue;
-      }
-      renderer.bind(renderer.context.view, {
-        width: frameInfo.width!,
-        height: frameInfo.height!,
-      });
-      this.pendingFrame = null;
-    }
     return true;
   }
 
