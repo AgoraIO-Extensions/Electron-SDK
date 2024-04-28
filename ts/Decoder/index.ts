@@ -1,7 +1,11 @@
-import { EncodedVideoFrameInfo, VideoFrameType } from '../Private/AgoraBase';
+import {
+  EncodedVideoFrameInfo,
+  VideoCodecType,
+  VideoFrameType,
+} from '../Private/AgoraBase';
 
 import { WebCodecsRenderer } from '../Renderer/WebCodecsRenderer/index';
-import { RendererType } from '../Types';
+import { RendererContext, RendererType } from '../Types';
 import { AgoraEnv, logDebug, logInfo } from '../Utils';
 
 const frameTypeMapping = {
@@ -13,14 +17,21 @@ const frameTypeMapping = {
 export class WebCodecsDecoder {
   private _decoder: VideoDecoder;
   private renderers: WebCodecsRenderer[] = [];
+  private _context: RendererContext;
   private pendingFrame: VideoFrame | null = null;
+  private _currentCodecType: VideoCodecType | undefined;
 
   private _base_ts = 0;
   private _base_ts_ntp = 1;
   private _last_ts_ntp = 1;
 
-  constructor(renders: WebCodecsRenderer[], onError: (e: any) => void) {
+  constructor(
+    renders: WebCodecsRenderer[],
+    onError: (e: any) => void,
+    context: RendererContext
+  ) {
     this.renderers = renders;
+    this._context = context;
     this._decoder = new VideoDecoder({
       // @ts-ignore
       output: this._output.bind(this),
@@ -56,25 +67,19 @@ export class WebCodecsDecoder {
     }
   }
 
-  decoderConfigure(frameInfo: EncodedVideoFrameInfo): boolean {
-    for (let renderer of this.renderers) {
-      if (renderer.rendererType !== RendererType.WEBCODECSRENDERER) {
-        continue;
-      }
-      renderer.bind(renderer.context.view, {
-        width: frameInfo.width!,
-        height: frameInfo.height!,
-      });
-      this.pendingFrame = null;
-    }
+  decoderConfigure(frameInfo: EncodedVideoFrameInfo) {
+    this.pendingFrame = null;
     // @ts-ignore
     let codec =
       AgoraEnv.CapabilityManager?.frameCodecMapping[frameInfo.codecType!]
         ?.codec;
     if (!codec) {
-      logInfo('codec is not in frameCodecMapping, stop decode frame');
-      return false;
+      AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this._context);
+      throw new Error(
+        'codec is not in frameCodecMapping,failed to configure decoder, fallback to native decoder'
+      );
     }
+    this._currentCodecType = frameInfo.codecType;
     this._decoder!.configure({
       codec: codec,
       codedWidth: frameInfo.width,
@@ -83,28 +88,9 @@ export class WebCodecsDecoder {
     logInfo(
       `configure decoder: codedWidth: ${frameInfo.width}, codedHeight: ${frameInfo.height},codec: ${codec}`
     );
-    return true;
   }
 
-  // @ts-ignore
-  decodeFrame(
-    imageBuffer: Uint8Array,
-    frameInfo: EncodedVideoFrameInfo,
-    ts: number
-  ) {
-    if (!imageBuffer) {
-      logDebug('imageBuffer is empty, skip decode frame');
-      return;
-    }
-    let frameType: string | undefined;
-    if (frameInfo.frameType !== undefined) {
-      // @ts-ignore
-      frameType = frameTypeMapping[frameInfo.frameType];
-    }
-    if (!frameType) {
-      logDebug('frameType is not in frameTypeMapping, skip decode frame');
-      return;
-    }
+  updateTimestamps(ts: number) {
     if (this._base_ts !== 0) {
       if (ts > this._base_ts) {
         this._last_ts_ntp =
@@ -118,6 +104,46 @@ export class WebCodecsDecoder {
       this._base_ts = ts;
       this._last_ts_ntp = 1;
     }
+  }
+
+  handleCodecIsChanged(frameInfo: EncodedVideoFrameInfo) {
+    if (this._currentCodecType !== frameInfo.codecType) {
+      logInfo('codecType is changed, reconfigure decoder');
+      this._decoder.reset();
+      this.decoderConfigure(frameInfo);
+    }
+  }
+
+  // @ts-ignore
+  decodeFrame(
+    imageBuffer: Uint8Array,
+    frameInfo: EncodedVideoFrameInfo,
+    ts: number
+  ) {
+    try {
+      this.handleCodecIsChanged(frameInfo);
+    } catch (error: any) {
+      logInfo(error);
+      return;
+    }
+
+    if (!imageBuffer) {
+      logDebug('imageBuffer is empty, skip decode frame');
+      return;
+    }
+
+    let frameType: string | undefined;
+    if (frameInfo.frameType !== undefined) {
+      // @ts-ignore
+      frameType = frameTypeMapping[frameInfo.frameType];
+    }
+    if (!frameType) {
+      logDebug('frameType is not in frameTypeMapping, skip decode frame');
+      return;
+    }
+
+    this.updateTimestamps(ts);
+
     this._decoder.decode(
       new EncodedVideoChunk({
         data: imageBuffer,
@@ -128,6 +154,13 @@ export class WebCodecsDecoder {
         transfer: [imageBuffer.buffer],
       })
     );
+  }
+
+  reset() {
+    this._base_ts = 0;
+    this._base_ts_ntp = 1;
+    this._last_ts_ntp = 1;
+    this._decoder.reset();
   }
 
   release() {

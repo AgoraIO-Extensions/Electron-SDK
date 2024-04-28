@@ -4,7 +4,7 @@ import { EncodedVideoFrameInfo, VideoStreamType } from '../Private/AgoraBase';
 import { IRtcEngineEx } from '../Private/IAgoraRtcEngineEx';
 import { AgoraElectronBridge } from '../Private/internal/IrisApiEngine';
 
-import { RendererContext } from '../Types';
+import { RendererContext, RendererType } from '../Types';
 import { AgoraEnv, logInfo } from '../Utils';
 
 import { IRendererCache } from './IRendererCache';
@@ -20,7 +20,8 @@ export class WebCodecsRendererCache extends IRendererCache {
     this._engine = createAgoraRtcEngine();
     this._decoder = new WebCodecsDecoder(
       this.renderers as WebCodecsRenderer[],
-      this.onDecoderError.bind(this)
+      this.onDecoderError.bind(this),
+      context
     );
     this.draw();
   }
@@ -44,10 +45,20 @@ export class WebCodecsRendererCache extends IRendererCache {
     )
       return;
     if (this._firstFrame) {
-      let result = this._decoder.decoderConfigure(_data.videoEncodedFrameInfo);
-      if (!result) {
-        logInfo('failed to configure decoder, fallback to native decoder');
-        AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this.context);
+      for (let renderer of this.renderers) {
+        if (renderer.rendererType !== RendererType.WEBCODECSRENDERER) {
+          continue;
+        }
+        renderer.bind(renderer.context.view, {
+          width: _data.videoEncodedFrameInfo.width!,
+          height: _data.videoEncodedFrameInfo.height!,
+        });
+      }
+
+      try {
+        this._decoder.decoderConfigure(_data.videoEncodedFrameInfo);
+      } catch (error: any) {
+        logInfo(error);
         return;
       }
       this._firstFrame = false;
