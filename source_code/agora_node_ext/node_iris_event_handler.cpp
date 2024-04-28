@@ -6,7 +6,6 @@
  */
 #include "node_iris_event_handler.h"
 #include "agora_electron_bridge.h"
-#include <iostream>
 #include <memory.h>
 #include <node_api.h>
 
