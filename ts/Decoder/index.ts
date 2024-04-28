@@ -5,7 +5,7 @@ import {
 } from '../Private/AgoraBase';
 
 import { WebCodecsRenderer } from '../Renderer/WebCodecsRenderer/index';
-import { RendererContext, RendererType } from '../Types';
+import { RendererCacheContext, RendererType } from '../Types';
 import { AgoraEnv, logDebug, logInfo } from '../Utils';
 
 const frameTypeMapping = {
@@ -17,7 +17,7 @@ const frameTypeMapping = {
 export class WebCodecsDecoder {
   private _decoder: VideoDecoder;
   private renderers: WebCodecsRenderer[] = [];
-  private _context: RendererContext;
+  private _cacheContext: RendererCacheContext;
   private pendingFrame: VideoFrame | null = null;
   private _currentCodecType: VideoCodecType | undefined;
 
@@ -28,10 +28,10 @@ export class WebCodecsDecoder {
   constructor(
     renders: WebCodecsRenderer[],
     onError: (e: any) => void,
-    context: RendererContext
+    context: RendererCacheContext
   ) {
     this.renderers = renders;
-    this._context = context;
+    this._cacheContext = context;
     this._decoder = new VideoDecoder({
       // @ts-ignore
       output: this._output.bind(this),
@@ -74,7 +74,9 @@ export class WebCodecsDecoder {
       AgoraEnv.CapabilityManager?.frameCodecMapping[frameInfo.codecType!]
         ?.codec;
     if (!codec) {
-      AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this._context);
+      AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(
+        this._cacheContext
+      );
       throw new Error(
         'codec is not in frameCodecMapping,failed to configure decoder, fallback to native decoder'
       );

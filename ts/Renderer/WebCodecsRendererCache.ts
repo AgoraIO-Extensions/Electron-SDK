@@ -28,7 +28,7 @@ export class WebCodecsRendererCache extends IRendererCache {
 
   onDecoderError() {
     logInfo('webCodecsDecoder decode failed, fallback to native decoder');
-    AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this.context);
+    AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this.cacheContext);
   }
 
   onEncodedVideoFrameReceived(...[data, buffer]: any) {
@@ -41,7 +41,7 @@ export class WebCodecsRendererCache extends IRendererCache {
     if (
       Object.keys(_data).length === 0 ||
       !this._decoder ||
-      this.context.uid !== _data.uid
+      this.cacheContext.uid !== _data.uid
     )
       return;
     if (this._firstFrame) {
@@ -64,7 +64,7 @@ export class WebCodecsRendererCache extends IRendererCache {
       this._firstFrame = false;
     }
     if (this.shouldFallback(_data.videoEncodedFrameInfo)) {
-      AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this.context);
+      AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this.cacheContext);
     } else {
       this._decoder.decodeFrame(
         buffer,
@@ -75,7 +75,7 @@ export class WebCodecsRendererCache extends IRendererCache {
   }
 
   public draw() {
-    this._engine?.setRemoteVideoSubscriptionOptions(this.context.uid!, {
+    this._engine?.setRemoteVideoSubscriptionOptions(this.cacheContext.uid!, {
       type: VideoStreamType.VideoStreamHigh,
       encodedFrameOnly: true,
     });

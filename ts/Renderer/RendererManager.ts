@@ -5,7 +5,12 @@ import {
   VideoViewSetupMode,
 } from '../Private/AgoraBase';
 import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
-import { RendererCacheType, RendererContext, RendererType } from '../Types';
+import {
+  RendererCacheContext,
+  RendererCacheType,
+  RendererContext,
+  RendererType,
+} from '../Types';
 import { AgoraEnv, isSupportWebGL, logDebug } from '../Utils';
 
 import { IRenderer } from './IRenderer';
@@ -326,8 +331,7 @@ export class RendererManager {
     };
   }
 
-  public handleWebCodecsFallback(context: RendererContext): void {
-    //todo need add some fallback logic
+  public handleWebCodecsFallback(context: RendererCacheContext): void {
     let engine = createAgoraRtcEngine();
     engine.getMediaEngine().unregisterVideoEncodedFrameObserver({});
     if (context.uid) {
@@ -336,10 +340,15 @@ export class RendererManager {
         encodedFrameOnly: false,
       });
     }
-    context.setupMode = VideoViewSetupMode.VideoViewSetupReplace;
     AgoraEnv.enableWebCodecsDecoder = false;
     AgoraEnv.CapabilityManager?.setWebCodecsDecoderEnabled(false);
-    this.addOrRemoveRenderer(context);
+    let renderers = this.getRenderers(context);
+    for (let renderer of renderers) {
+      this.addOrRemoveRenderer({
+        ...renderer.context,
+        setupMode: VideoViewSetupMode.VideoViewSetupReplace,
+      });
+    }
   }
 
   public stopRendering(): void {

@@ -36,13 +36,13 @@ export class RendererCache extends IRendererCache {
 
   private enable() {
     if (this._enabled) return;
-    AgoraElectronBridge.EnableVideoFrameCache(this.context);
+    AgoraElectronBridge.EnableVideoFrameCache(this.cacheContext);
     this._enabled = true;
   }
 
   private disable() {
     if (!this._enabled) return;
-    AgoraElectronBridge.DisableVideoFrameCache(this.context);
+    AgoraElectronBridge.DisableVideoFrameCache(this.cacheContext);
     this._enabled = false;
   }
 
@@ -56,7 +56,7 @@ export class RendererCache extends IRendererCache {
 
   override draw() {
     let { ret, isNewFrame } = AgoraElectronBridge.GetVideoFrame(
-      this.context,
+      this.cacheContext,
       this.videoFrame
     );
 
@@ -71,7 +71,7 @@ export class RendererCache extends IRendererCache {
         this.videoFrame.vBuffer = Buffer.alloc(vStride! * height!);
 
         const result = AgoraElectronBridge.GetVideoFrame(
-          this.context,
+          this.cacheContext,
           this.videoFrame
         );
         ret = result.ret;
