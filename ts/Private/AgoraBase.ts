@@ -907,7 +907,7 @@ export enum CameraFocalLengthType {
   /**
    * @ignore
    */
-  CameraFocalLengthUrltraWide = 2,
+  CameraFocalLengthUltraWide = 2,
   /**
    * @ignore
    */
