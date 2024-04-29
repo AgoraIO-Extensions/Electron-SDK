@@ -1,5 +1,14 @@
 
 
+## [4.3.1-dev.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.3.0...v4.3.1-dev.1) (2024-04-29)
+
+
+### Features
+
+* allow unregister event handler by specific eventHandler ([87843c0](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/87843c04d0d291a4993539f4c96cb6408cf2ea3a))
+* bump example electron version to 22.0.0 ([a8256c0](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/a8256c0f985431de48b6a2faad6a932b64c34382))
+* support native 4.3.1 ([1526048](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/15260486de4ab4bc959a16071f81df7dcbbae989))
+
 # [4.3.0](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6...v4.3.0) (2024-02-28)
 
 
