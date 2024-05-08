@@ -163,7 +163,14 @@ export default class LocalVideoTranscoder
       this.error('sourceType is invalid');
       return;
     }
-    this.engine?.startCameraCapture(sourceType, { deviceId });
+    this.engine?.startCameraCapture(sourceType, {
+      deviceId,
+      format: {
+        width: 1920,
+        height: 1080,
+        fps: 60,
+      },
+    });
   };
 
   stopCameraCapture = (deviceId: string) => {

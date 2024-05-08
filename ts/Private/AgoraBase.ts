@@ -319,13 +319,17 @@ export enum ErrorCodeType {
    */
   ErrSetClientRoleNotAuthorized = 119,
   /**
-   * 120: Decryption fails. The user might have entered an incorrect password to join the channel. Check the entered password, or tell the user to try rejoining the channel.
+   * 120: Media streams decryption fails. The user might use an incorrect password to join the channel. Check the entered password, or tell the user to try rejoining the channel.
    */
   ErrDecryptionFailed = 120,
   /**
    * 121: The user ID is invalid.
    */
   ErrInvalidUserId = 121,
+  /**
+   * 122: Data streams decryption fails. The user might use an incorrect password to join the channel. Check the entered password, or tell the user to try rejoining the channel.
+   */
+  ErrDatastreamDecryptionFailed = 122,
   /**
    * 123: The user is banned from the server.
    */
@@ -891,6 +895,28 @@ export enum VideoCodecType {
 /**
  * @ignore
  */
+export enum CameraFocalLengthType {
+  /**
+   * @ignore
+   */
+  CameraFocalLengthDefault = 0,
+  /**
+   * @ignore
+   */
+  CameraFocalLengthWideAngle = 1,
+  /**
+   * @ignore
+   */
+  CameraFocalLengthUltraWide = 2,
+  /**
+   * @ignore
+   */
+  CameraFocalLengthTelephoto = 3,
+}
+
+/**
+ * @ignore
+ */
 export enum TCcMode {
   /**
    * @ignore
@@ -1196,6 +1222,10 @@ export class EncodedVideoFrameInfo {
    * The type of video streams. See VideoStreamType.
    */
   streamType?: VideoStreamType;
+  /**
+   * @ignore
+   */
+  presentationMs?: number;
 }
 
 /**
@@ -1323,6 +1353,20 @@ export class CodecCapInfo {
 }
 
 /**
+ * @ignore
+ */
+export class FocalLengthInfo {
+  /**
+   * @ignore
+   */
+  cameraDirection?: number;
+  /**
+   * @ignore
+   */
+  focalLengthType?: CameraFocalLengthType;
+}
+
+/**
  * Video encoder configurations.
  */
 export class VideoEncoderConfiguration {
@@ -1403,11 +1447,11 @@ export enum SimulcastStreamMode {
  */
 export class SimulcastStreamConfig {
   /**
-   * The video dimension. See VideoDimensions. The default value is 160 × 120.
+   * The video dimension. See VideoDimensions. The default value is 50% of the high-quality video stream.
    */
   dimensions?: VideoDimensions;
   /**
-   * Video receive bitrate (Kbps), represented by an instantaneous value. The default value is 65.
+   * Video receive bitrate (Kbps), represented by an instantaneous value. This parameter does not need to be set. The SDK automatically matches the most suitable bitrate based on the video resolution and frame rate you set.
    */
   kBitrate?: number;
   /**
@@ -1465,7 +1509,7 @@ export class WatermarkRatio {
  */
 export class WatermarkOptions {
   /**
-   * Is the watermark visible in the local preview view? true : (Default) The watermark is visible in the local preview view. false : The watermark is not visible in the local preview view.
+   * Whether the watermark is visible in the local preview view: true : (Default) The watermark is visible in the local preview view. false : The watermark is not visible in the local preview view.
    */
   visibleInPreview?: boolean;
   /**
@@ -1816,15 +1860,15 @@ export enum AudioScenarioType {
  */
 export class VideoFormat {
   /**
-   * The width (px) of the video frame.
+   * The width (px) of the video frame. The default value is 960.
    */
   width?: number;
   /**
-   * The height (px) of the video frame.
+   * The height (px) of the video frame. The default value is 540.
    */
   height?: number;
   /**
-   * The video frame rate (fps).
+   * The video frame rate (fps). The default value is 15.
    */
   fps?: number;
 }
@@ -1941,6 +1985,36 @@ export enum CaptureBrightnessLevelType {
 }
 
 /**
+ * @ignore
+ */
+export enum CameraStabilizationMode {
+  /**
+   * @ignore
+   */
+  CameraStabilizationModeOff = -1,
+  /**
+   * @ignore
+   */
+  CameraStabilizationModeAuto = 0,
+  /**
+   * @ignore
+   */
+  CameraStabilizationModeLevel1 = 1,
+  /**
+   * @ignore
+   */
+  CameraStabilizationModeLevel2 = 2,
+  /**
+   * @ignore
+   */
+  CameraStabilizationModeLevel3 = 3,
+  /**
+   * @ignore
+   */
+  CameraStabilizationModeMaxLevel = 3,
+}
+
+/**
  * The state of the local audio.
  */
 export enum LocalAudioStreamState {
@@ -1991,11 +2065,11 @@ export enum LocalAudioStreamReason {
    */
   LocalAudioStreamReasonEncodeFailure = 5,
   /**
-   * 6: No local audio capture device. Remind your users to check whether the microphone is connected to the device properly in the control plane of the device or if the microphone is working properly.
+   * 6: No local audio capture device. Remind your users to check whether the microphone is connected to the device properly in the control panel of the device or if the microphone is working properly.
    */
   LocalAudioStreamReasonNoRecordingDevice = 6,
   /**
-   * 7: No local audio capture device. Remind your users to check whether the speaker is connected to the device properly in the control plane of the device or if the speaker is working properly.
+   * 7: No local audio capture device. Remind your users to check whether the speaker is connected to the device properly in the control panel of the device or if the speaker is working properly.
    */
   LocalAudioStreamReasonNoPlayoutDevice = 7,
   /**
@@ -2003,11 +2077,11 @@ export enum LocalAudioStreamReason {
    */
   LocalAudioStreamReasonInterrupted = 8,
   /**
-   * 9: (Windows only) The ID of the local audio-capture device is invalid. Check the audio capture device ID.
+   * 9: (Windows only) The ID of the local audio-capture device is invalid. Prompt the user to check the audio capture device ID.
    */
   LocalAudioStreamReasonRecordInvalidId = 9,
   /**
-   * 10: (Windows only) The ID of the local audio-playback device is invalid. Check the audio playback device ID.
+   * 10: (Windows only) The ID of the local audio-playback device is invalid. Prompt the user to check the audio playback device ID.
    */
   LocalAudioStreamReasonPlayoutInvalidId = 10,
 }
@@ -2047,15 +2121,15 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonFailure = 1,
   /**
-   * 2: No permission to use the local video capturing device. Remind the user to grant permissions and rejoin the channel. Deprecated: This enumerator is deprecated. Please use CAMERA in the onPermissionError callback instead.
+   * 2: No permission to use the local video capturing device. Prompt the user to grant permissions and rejoin the channel. Deprecated: This enumerator is deprecated. Please use CAMERA in the onPermissionError callback instead.
    */
   LocalVideoStreamReasonDeviceNoPermission = 2,
   /**
-   * 3: The local video capturing device is in use. Remind the user to check whether another application occupies the camera.
+   * 3: The local video capturing device is in use. Prompt the user to check if the camera is being used by another app, or try to rejoin the channel.
    */
   LocalVideoStreamReasonDeviceBusy = 3,
   /**
-   * 4: The local video capture fails. Remind your user to check whether the video capture device is working properly, whether the camera is occupied by another application, or try to rejoin the channel.
+   * 4: The local video capture fails. Prompt the user to check whether the video capture device is working properly, whether the camera is used by another app, or try to rejoin the channel.
    */
   LocalVideoStreamReasonCaptureFailure = 4,
   /**
@@ -2083,16 +2157,24 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonDeviceInvalidId = 10,
   /**
+   * @ignore
+   */
+  LocalVideoStreamReasonDeviceInterrupt = 14,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamReasonDeviceFatalError = 15,
+  /**
    * 101: The current video capture device is unavailable due to excessive system pressure.
    */
   LocalVideoStreamReasonDeviceSystemPressure = 101,
   /**
-   * 11: (macOS and Windows only) The shared windows is minimized when you call the startScreenCaptureByWindowId method to share a window. The SDK cannot share a minimized window. You can cancel the minimization of this window at the application layer, for example by maximizing this window.
+   * 11: (macOS and Windows only) The shared window is minimized when you call the startScreenCaptureByWindowId method to share a window. The SDK cannot share a minimized window. Please prompt the user to unminimize the shared window.
    */
   LocalVideoStreamReasonScreenCaptureWindowMinimized = 11,
   /**
    * 12: (macOS and Windows only) The error code indicates that a window shared by the window ID has been closed or a full-screen window shared by the window ID has exited full-screen mode. After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a black screen, Agora recommends that you immediately stop screen sharing. Common scenarios reporting this error code:
-   *  When the local user closes the shared window, the SDK reports this error code.
+   *  The local user closes the shared window.
    *  The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After the user exits full-screen mode, the SDK reports this error code.
    *  The local user watches a web video or reads a web document in full-screen mode first, and then shares the window of the web video or document. After the user exits full-screen mode, the SDK reports this error code.
    */
@@ -2126,7 +2208,7 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonScreenCaptureWindowRecoverFromHidden = 26,
   /**
-   * @ignore
+   * 27: The window for screen capture has been restored from the minimized state.
    */
   LocalVideoStreamReasonScreenCaptureWindowRecoverFromMinimized = 27,
   /**
@@ -2201,6 +2283,14 @@ export enum RemoteAudioStateReason {
    * 7: The remote user leaves the channel.
    */
   RemoteAudioReasonRemoteOffline = 7,
+  /**
+   * @ignore
+   */
+  RemoteAudioReasonNoPacketReceive = 8,
+  /**
+   * @ignore
+   */
+  RemoteAudioReasonLocalPlayFailed = 9,
 }
 
 /**
@@ -2640,7 +2730,7 @@ export enum RtmpStreamPublishReason {
    */
   RtmpStreamPublishReasonInvalidAppid = 15,
   /**
-   * 16: Your project does not have permission to use streaming services. Refer to Media Push to enable the Media Push permission.
+   * 16: Your project does not have permission to use streaming services.
    */
   RtmpStreamPublishReasonInvalidPrivilege = 16,
   /**
@@ -3349,7 +3439,7 @@ export class VideoCanvas {
    */
   subviewUid?: number;
   /**
-   * The video display window.
+   * The video display window. In one VideoCanvas, you can only choose to set either view or surfaceTexture. If both are set, only the settings in view take effect.
    */
   view?: any;
   /**
@@ -3383,8 +3473,7 @@ export class VideoCanvas {
    */
   cropArea?: Rectangle;
   /**
-   * (Optional) Whether the receiver enables alpha mask rendering: true : The receiver enables alpha mask rendering. false : (default) The receiver disables alpha mask rendering. Alpha mask rendering can create images with transparent effects and extract portraits from videos. When used in combination with other methods, you can implement effects such as portrait-in-picture and watermarking.
-   *  This property applies to macOS only.
+   * (Optional) Whether the receiver enables alpha mask rendering: true : The receiver enables alpha mask rendering. false : (Default) The receiver disables alpha mask rendering. Alpha mask rendering can create images with transparent effects and extract portraits from videos. When used in combination with other methods, you can implement effects such as portrait-in-picture and watermarking.
    *  The receiver can render alpha channel information only when the sender enables alpha transmission.
    *  To enable alpha transmission,.
    */
@@ -3400,7 +3489,7 @@ export class VideoCanvas {
  */
 export enum LighteningContrastLevel {
   /**
-   * @ignore
+   * 0: Low contrast level.
    */
   LighteningContrastLow = 0,
   /**
@@ -3632,7 +3721,7 @@ export class SegmentationProperty {
    */
   modelType?: SegModelType;
   /**
-   * The range of accuracy for identifying green colors (different shades of green) in the view. The value range is [0,1], and the default value is 0.5. The larger the value, the wider the range of identifiable shades of green. When the value of this parameter is too large, the edge of the portrait and the green color in the portrait range are also detected. Agora recommends that you dynamically adjust the value of this parameter according to the actual effect. This parameter only takes effect when modelType is set to SegModelGreen.
+   * The accuracy range for recognizing background colors in the image. The value range is [0,1], and the default value is 0.5. The larger the value, the wider the range of identifiable shades of pure color. When the value of this parameter is too large, the edge of the portrait and the pure color in the portrait range are also detected. Agora recommends that you dynamically adjust the value of this parameter according to the actual effect. This parameter only takes effect when modelType is set to SegModelGreen.
    */
   greenCapacity?: number;
 }
@@ -3778,6 +3867,10 @@ export enum AudioEffectPreset {
    */
   RoomAcousticsVirtualSurroundSound = 0x02010900,
   /**
+   * The audio effect of chorus. Agora recommends using this effect in chorus scenarios to enhance the sense of depth and dimension in the vocals.
+   */
+  RoomAcousticsChorus = 0x02010d00,
+  /**
    * A middle-aged man's voice. Agora recommends using this preset to process a male-sounding voice; otherwise, you may not hear the anticipated voice effect.
    */
   VoiceChangerEffectUncle = 0x02020100,
@@ -3912,9 +4005,13 @@ export enum HeadphoneEqualizerPreset {
  */
 export class ScreenCaptureParameters {
   /**
-   * The video encoding resolution of the shared screen stream. See VideoDimensions. The default value is 1920 × 1080, that is, 2,073,600 pixels. Agora uses the value of this parameter to calculate the charges. If the screen dimensions are different from the value of this parameter, Agora applies the following strategies for encoding. Suppose is set to 1920 × 1080:
+   * The video encoding resolution of the screen sharing stream. See VideoDimensions. The default value is 1920 × 1080, that is, 2,073,600 pixels. Agora uses the value of this parameter to calculate the charges. If the screen dimensions are different from the value of this parameter, Agora applies the following strategies for encoding. Suppose dimensions is set to 1920 × 1080:
    *  If the value of the screen dimensions is lower than that of dimensions, for example, 1000 × 1000 pixels, the SDK uses the screen dimensions, that is, 1000 × 1000 pixels, for encoding.
-   *  If the value of the screen dimensions is higher than that of dimensions, for example, 2000 × 1500, the SDK uses the maximum value under with the aspect ratio of the screen dimension (4:3) for encoding, that is, 1440 × 1080.
+   *  If the value of the screen dimensions is higher than that of dimensions, for example, 2000 × 1500, the SDK uses the maximum value under dimensions with the aspect ratio of the screen dimension (4:3) for encoding, that is, 1440 × 1080. When setting the encoding resolution in the scenario of sharing documents (ScreenScenarioDocument), choose one of the following two methods:
+   *  If you require the best image quality, it is recommended to set the encoding resolution to be the same as the capture resolution.
+   *  If you wish to achieve a relative balance between image quality, bandwidth, and system performance, then:
+   *  When the capture resolution is greater than 1920 × 1080, it is recommended that the encoding resolution is not less than 1920 × 1080.
+   *  When the capture resolution is less than 1920 × 1080, it is recommended that the encoding resolution is not less than 1280 × 720.
    */
   dimensions?: VideoDimensions;
   /**
@@ -4210,7 +4307,7 @@ export enum ChannelMediaRelayError {
    */
   RelayErrorServerErrorResponse = 1,
   /**
-   * 2: No server response. You can call leaveChannel to leave the channel. This error can also occur if your project has not enabled co-host token authentication. You can to enable the service for cohosting across channels before starting a channel media relay.
+   * 2: No server response. This error may be caused by poor network connections. If this error occurs when initiating a channel media relay, you can try again later; if this error occurs during channel media relay, you can call leaveChannel to leave the channel. This error can also occur if the channel media relay service is not enabled in the project. You can contact to enable the service.
    */
   RelayErrorServerNoResponse = 2,
   /**
@@ -4431,6 +4528,10 @@ export class EncryptionConfig {
    * Salt, 32 bytes in length. Agora recommends that you use OpenSSL to generate salt on the server side. See Media Stream Encryption for details. This parameter takes effect only in Aes128Gcm2 or Aes256Gcm2 encrypted mode. In this case, ensure that this parameter is not 0.
    */
   encryptionKdfSalt?: number[];
+  /**
+   * Whether to enable data stream encryption: true : Enable data stream encryption. false : (Default) Disable data stream encryption.
+   */
+  datastreamEncryptionEnabled?: boolean;
 }
 
 /**
@@ -4442,13 +4543,21 @@ export enum EncryptionErrorType {
    */
   EncryptionErrorInternalFailure = 0,
   /**
-   * 1: Decryption errors. Ensure that the receiver and the sender use the same encryption mode and key.
+   * 1: Media stream decryption error. Ensure that the receiver and the sender use the same encryption mode and key.
    */
   EncryptionErrorDecryptionFailure = 1,
   /**
-   * 2: Encryption errors.
+   * 2: Media stream encryption error.
    */
   EncryptionErrorEncryptionFailure = 2,
+  /**
+   * 3: Data stream decryption error. Ensure that the receiver and the sender use the same encryption mode and key.
+   */
+  EncryptionErrorDatastreamDecryptionFailure = 3,
+  /**
+   * 4: Data stream encryption error.
+   */
+  EncryptionErrorDatastreamEncryptionFailure = 4,
 }
 
 /**
@@ -4590,21 +4699,25 @@ export class UserInfo {
 }
 
 /**
- * The audio filter of in-ear monitoring.
+ * The audio filter types of in-ear monitoring.
  */
 export enum EarMonitoringFilterType {
   /**
-   * 1<<0: Do not add an audio filter to the in-ear monitor.
+   * 1<<0: No audio filter added to in-ear monitoring.
    */
   EarMonitoringFilterNone = 1 << 0,
   /**
-   * 1<<1: Add an audio filter to the in-ear monitor. If you implement functions such as voice beautifier and audio effect, users can hear the voice after adding these effects.
+   * 1<<1: Add vocal effects audio filter to in-ear monitoring. If you implement functions such as voice beautifier and audio effect, users can hear the voice after adding these effects.
    */
   EarMonitoringFilterBuiltInAudioFilters = 1 << 1,
   /**
-   * 1<<2: Enable noise suppression to the in-ear monitor.
+   * 1<<2: Add noise suppression audio filter to in-ear monitoring.
    */
   EarMonitoringFilterNoiseSuppression = 1 << 2,
+  /**
+   * 1<<15: Reuse the audio filter that has been processed on the sending end for in-ear monitoring. This enumerator reduces CPU usage while increasing in-ear monitoring latency, which is suitable for latency-tolerant scenarios requiring low CPU consumption.
+   */
+  EarMonitoringFilterReusePostProcessingFilter = 1 << 15,
 }
 
 /**
@@ -4921,7 +5034,7 @@ export class SpatialAudioParams {
   speaker_attenuation?: number;
   /**
    * Whether to enable the Doppler effect: When there is a relative displacement between the sound source and the receiver of the sound source, the tone heard by the receiver changes. true : Enable the Doppler effect. false : (Default) Disable the Doppler effect.
-   *  This parameter is suitable for scenarios where the sound source is moving at high speed (for example, racing games). It is not recommended for common audio and video interactive scenarios (for example, voice chat, cohosting, or online KTV).
+   *  This parameter is suitable for scenarios where the sound source is moving at high speed (for example, racing games). It is not recommended for common audio and video interactive scenarios (for example, voice chat, co-streaming, or online KTV).
    *  When this parameter is enabled, Agora recommends that you set a regular period (such as 30 ms), and then call the updatePlayerPositionInfo, updateSelfPosition, and updateRemotePosition methods to continuously update the relative distance between the sound source and the receiver. The following factors can cause the Doppler effect to be unpredictable or the sound to be jittery: the period of updating the distance is too long, the updating period is irregular, or the distance information is lost due to network packet loss or delay.
    */
   enable_doppler?: boolean;

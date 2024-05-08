@@ -287,20 +287,6 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
     return super.unregisterMediaPlayerAudioSpectrumObserver(observer);
   }
 
-  protected override getApiTypeFromSetPlayerOptionInInt(
-    key: string,
-    value: number
-  ): string {
-    return 'MediaPlayer_setPlayerOption_4d05d29';
-  }
-
-  protected override getApiTypeFromSetPlayerOptionInString(
-    key: string,
-    value: string
-  ): string {
-    return 'MediaPlayer_setPlayerOption_ccad422';
-  }
-
   override setView(view: HTMLElement): number {
     if (!AgoraEnv.AgoraRendererManager) return -ErrorCodeType.ErrNotInitialized;
     const renderer = AgoraEnv.AgoraRendererManager.addOrRemoveRenderer({
