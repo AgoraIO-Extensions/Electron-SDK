@@ -93,7 +93,7 @@ module.exports = async () => {
     },
   });
 
-  if (no_symbol) {
-    await removeFileByFilter();
-  }
+  // if (no_symbol) {
+  //   await removeFileByFilter();
+  // }
 };
