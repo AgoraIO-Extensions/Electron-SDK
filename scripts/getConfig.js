@@ -21,7 +21,7 @@ const getArgvFromPkgJson = () => {
     debug = false,
     silent = false,
     arch = process.arch,
-    no_symbol = true,
+    no_symbol = false,
   } = agora_electron;
 
   return {
