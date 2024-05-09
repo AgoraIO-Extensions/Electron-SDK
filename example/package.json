@@ -15,6 +15,7 @@
   },
   "build": {
     "appId": "agora.io.ElectronApiExample",
+    "includePdb": true,
     "asar": true,
     "asarUnpack": [
       "node_modules/agora-electron-sdk"
