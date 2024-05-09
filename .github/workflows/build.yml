@@ -42,7 +42,7 @@ jobs:
     if: ${{ inputs.type == 'demo' || contains(github.event.pull_request.labels.*.name, 'ci:dep-update') }}
     strategy:
       matrix:
-        arch: [ ia32 ]
+        arch: [ ia32, x64 ]
     runs-on: windows-latest
     env:
       npm_config_arch: ${{ matrix.arch }}
@@ -76,41 +76,41 @@ jobs:
             example/dist/Agora-Electron-API-Example-*-win.zip
           if-no-files-found: error
 
-  # build-mac:
-  #   if: ${{ inputs.type == 'demo' || contains(github.event.pull_request.labels.*.name, 'ci:dep-update') }}
-  #   runs-on: macos-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
+  build-mac:
+    if: ${{ inputs.type == 'demo' || contains(github.event.pull_request.labels.*.name, 'ci:dep-update') }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Setup
-  #       uses: ./.github/actions/setup
+      - name: Setup
+        uses: ./.github/actions/setup
 
-  #     - name: Build SDK
-  #       run: |
-  #         yarn totalBuild
-  #         yarn zipBuild
-  #         yarn link
+      - name: Build SDK
+        run: |
+          yarn totalBuild
+          yarn zipBuild
+          yarn link
 
-  #     - name: Build Example
-  #       run: |
-  #         yarn install
-  #         yarn link agora-electron-sdk
-  #         yarn dist:mac
-  #         yarn unlink agora-electron-sdk
-  #       env:
-  #         USE_HARD_LINKS: false
-  #       working-directory: example
+      - name: Build Example
+        run: |
+          yarn install
+          yarn link agora-electron-sdk
+          yarn dist:mac
+          yarn unlink agora-electron-sdk
+        env:
+          USE_HARD_LINKS: false
+        working-directory: example
 
-  #     - uses: actions/upload-artifact@v3
-  #       with:
-  #         name: AgoraRtcNgExample-mac
-  #         path: |
-  #           example/dist/Agora-Electron-API-Example-*-mac.zip
-  #         if-no-files-found: error
+      - uses: actions/upload-artifact@v3
+        with:
+          name: AgoraRtcNgExample-mac
+          path: |
+            example/dist/Agora-Electron-API-Example-*-mac.zip
+          if-no-files-found: error
 
-  # notification:
-  #   runs-on: ubuntu-latest
-  #   needs: [ build-windows, build-mac ]
-  #   steps:
-  #     - run: |
-  #         curl -X POST "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${{ secrets.WECHAT_KEY }}" -d '{"msgtype":"text","text":{"content":"Electron Example:\n${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\nDownload Link:\nhttps://nightly.link/${{ github.repository }}/actions/runs/${{ github.run_id }}"}}'
+  notification:
+    runs-on: ubuntu-latest
+    needs: [ build-windows, build-mac ]
+    steps:
+      - run: |
+          curl -X POST "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${{ secrets.WECHAT_KEY }}" -d '{"msgtype":"text","text":{"content":"Electron Example:\n${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\nDownload Link:\nhttps://nightly.link/${{ github.repository }}/actions/runs/${{ github.run_id }}"}}'
