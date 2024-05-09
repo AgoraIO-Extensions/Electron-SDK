@@ -63,8 +63,8 @@ jobs:
       - name: Debug Config
         if: ${{ inputs.debug }}
         run: |
-          export npm_config_debug=true
-          export npm_config_no_symbol=false
+          set npm_config_debug=true
+          set npm_config_no_symbol=false
 
       - name: Build SDK
         run: |
@@ -95,6 +95,12 @@ jobs:
 
       - name: Setup
         uses: ./.github/actions/setup
+
+      - name: Debug Config
+        if: ${{ inputs.debug }}
+        run: |
+          export npm_config_debug=true
+          export npm_config_no_symbol=false
 
       - name: Build SDK
         run: |
