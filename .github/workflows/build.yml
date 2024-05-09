@@ -62,11 +62,11 @@ jobs:
 
       - name: Build SDK
         run: |
-          if [[ "${{ inputs.debug }}" == "true" ]]; then
+          if ("${{ inputs.debug }}" -eq "true") {
               yarn totalBuild --debug=true --no_symbol=false
-          else
+          } else {
               yarn totalBuild
-          fi
+          }
           yarn zipBuild
           yarn link
 
