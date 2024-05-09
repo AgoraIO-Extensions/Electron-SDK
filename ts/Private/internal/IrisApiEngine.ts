@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3';
-import JSON from 'json-bigint';
+import JSONBigInt from 'json-bigint';
+const JSON = JSONBigInt({ storeAsString: true });
 
 import { AgoraEnv, logDebug, logError, logInfo, logWarn } from '../../Utils';
 import { IAudioEncodedFrameObserver } from '../AgoraBase';

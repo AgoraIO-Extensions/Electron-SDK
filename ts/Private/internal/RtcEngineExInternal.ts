@@ -1,6 +1,6 @@
 ﻿import { createCheckers } from 'ts-interface-checker';
 
-import { AgoraEnv, logError } from '../../Utils';
+import { AgoraEnv, logError, parseIntPtr2Number } from '../../Utils';
 import {
   AudioEncodedFrameObserverConfig,
   ClientRoleOptions,
@@ -410,6 +410,11 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return this._h265_transcoder;
   }
 
+  override getNativeHandle(): number {
+    let result = super.getNativeHandle();
+    return parseIntPtr2Number(result);
+  }
+
   override registerAudioEncodedFrameObserver(
     config: AudioEncodedFrameObserverConfig,
     observer: IAudioEncodedFrameObserver
@@ -498,6 +503,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
             value.iconImage.length!
           );
         }
+        value.sourceDisplayId = parseIntPtr2Number(value.sourceDisplayId);
         return value;
       }
     );
