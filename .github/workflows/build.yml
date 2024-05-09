@@ -48,7 +48,7 @@ jobs:
     strategy:
       matrix:
         arch: [ia32, x64]
-    runs-on: windows-latest
+    runs-on: windows-2019
     env:
       npm_config_arch: ${{ matrix.arch }}
       npm_config_agora_electron_arch: ${{ matrix.arch }}
