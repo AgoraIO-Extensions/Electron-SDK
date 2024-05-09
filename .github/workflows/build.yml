@@ -60,14 +60,6 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Add VS to PATH
-        if: ${{ inputs.debug }}
-        shell: pwsh
-        run: |
-          $vsPath = & "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -version "16,17" -products * -requires Microsoft.Component.MSBuild -property installationPath
-          $vsPath = Join-Path $vsPath "Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin"
-          echo "$vsPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
       - name: Build SDK
         run: |
           if ("${{ inputs.debug }}" -eq "true") {
