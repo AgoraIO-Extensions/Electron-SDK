@@ -19,7 +19,11 @@ export class WebCodecsDecoder {
   private renderers: WebCodecsRenderer[] = [];
   private _cacheContext: RendererCacheContext;
   private pendingFrame: VideoFrame | null = null;
-  private _currentCodecType: VideoCodecType | undefined;
+  private _currentCodecConfig: {
+    codecType: VideoCodecType | undefined;
+    codedWidth: number | undefined;
+    codedHeight: number | undefined;
+  } | null = null;
 
   private _base_ts = 0;
   private _base_ts_ntp = 1;
@@ -81,7 +85,11 @@ export class WebCodecsDecoder {
         'codec is not in frameCodecMapping,failed to configure decoder, fallback to native decoder'
       );
     }
-    this._currentCodecType = frameInfo.codecType;
+    this._currentCodecConfig = {
+      codecType: frameInfo.codecType,
+      codedWidth: frameInfo.width,
+      codedHeight: frameInfo.height,
+    };
     this._decoder!.configure({
       codec: codec,
       codedWidth: frameInfo.width,
@@ -109,7 +117,11 @@ export class WebCodecsDecoder {
   }
 
   handleCodecIsChanged(frameInfo: EncodedVideoFrameInfo) {
-    if (this._currentCodecType !== frameInfo.codecType) {
+    if (
+      this._currentCodecConfig?.codecType !== frameInfo.codecType ||
+      this._currentCodecConfig?.codedWidth !== frameInfo.width ||
+      this._currentCodecConfig?.codedHeight !== frameInfo.height
+    ) {
       logInfo('codecType is changed, reconfigure decoder');
       this._decoder.reset();
       this.decoderConfigure(frameInfo);
