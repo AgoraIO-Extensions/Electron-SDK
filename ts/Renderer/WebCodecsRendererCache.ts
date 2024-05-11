@@ -79,6 +79,7 @@ export class WebCodecsRendererCache extends IRendererCache {
       type: VideoStreamType.VideoStreamHigh,
       encodedFrameOnly: true,
     });
+    logInfo('register call_back_with_encoded_video_frame');
     AgoraElectronBridge.OnEvent(
       'call_back_with_encoded_video_frame',
       (...params: any) => {
@@ -116,7 +117,7 @@ export class WebCodecsRendererCache extends IRendererCache {
   }
 
   public release(): void {
-    logInfo('call_back_with_encoded_video_frame release');
+    logInfo('unregister call_back_with_encoded_video_frame');
     AgoraElectronBridge.UnEvent('call_back_with_encoded_video_frame');
     this._decoder?.release();
     this._decoder = null;
