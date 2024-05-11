@@ -39,7 +39,9 @@ export class WebCodecsDecoder {
     this._decoder = new VideoDecoder({
       // @ts-ignore
       output: this._output.bind(this),
-      error: onError,
+      error: (e) => {
+        onError(e);
+      },
     });
   }
 
@@ -122,7 +124,7 @@ export class WebCodecsDecoder {
       this._currentCodecConfig?.codedWidth !== frameInfo.width ||
       this._currentCodecConfig?.codedHeight !== frameInfo.height
     ) {
-      logInfo('codecType is changed, reconfigure decoder');
+      logInfo('frameInfo has changed, reconfigure decoder');
       this._decoder.reset();
       this.decoderConfigure(frameInfo);
     }

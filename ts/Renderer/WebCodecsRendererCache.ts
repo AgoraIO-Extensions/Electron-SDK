@@ -26,12 +26,12 @@ export class WebCodecsRendererCache extends IRendererCache {
     this.draw();
   }
 
-  onDecoderError() {
-    logInfo('webCodecsDecoder decode failed, fallback to native decoder');
+  onDecoderError(e: any) {
+    logInfo('webCodecsDecoder decode failed, fallback to native decoder', e);
     AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this.cacheContext);
   }
 
-  onEncodedVideoFrameReceived(...[data, buffer]: any) {
+  onEncodedVideoFrameReceived(...[event, data, buffers]: any) {
     let _data: any;
     try {
       _data = JSON.parse(data) ?? {};
@@ -67,7 +67,7 @@ export class WebCodecsRendererCache extends IRendererCache {
       AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this.cacheContext);
     } else {
       this._decoder.decodeFrame(
-        buffer,
+        buffers[0],
         _data.videoEncodedFrameInfo,
         new Date().getTime()
       );
@@ -116,6 +116,7 @@ export class WebCodecsRendererCache extends IRendererCache {
   }
 
   public release(): void {
+    logInfo('call_back_with_encoded_video_frame release');
     AgoraElectronBridge.UnEvent('call_back_with_encoded_video_frame');
     this._decoder?.release();
     this._decoder = null;
