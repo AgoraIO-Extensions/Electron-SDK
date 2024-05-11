@@ -31,9 +31,6 @@ class NodeIrisEventHandler : public iris::IrisEventHandler {
                  void **buffer, unsigned int *length,
                  unsigned int buffer_count);
 
-  void onEncodedVideoFrameReceived(const char *data, void *buffer,
-                                   unsigned int *length);
-
   void addEvent(const std::string &eventName, napi_env &env,
                 napi_value &call_bcak, napi_value &global);
 

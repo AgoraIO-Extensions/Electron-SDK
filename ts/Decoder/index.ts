@@ -122,7 +122,7 @@ export class WebCodecsDecoder {
       this._currentCodecConfig?.codedWidth !== frameInfo.width ||
       this._currentCodecConfig?.codedHeight !== frameInfo.height
     ) {
-      logInfo('codecType is changed, reconfigure decoder');
+      logInfo('frameInfo has changed, reconfigure decoder');
       this._decoder.reset();
       this.decoderConfigure(frameInfo);
     }

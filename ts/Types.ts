@@ -117,8 +117,6 @@ export interface IAgoraElectronBridge {
     ) => void
   ): void;
 
-  UnEvent(callbackName: string): void;
-
   CallApi(
     funcName: string,
     params: any,

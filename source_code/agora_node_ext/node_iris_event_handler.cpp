@@ -53,14 +53,8 @@ void NodeIrisEventHandler::removeEvent(const std::string &eventName) {
 }
 
 void NodeIrisEventHandler::OnEvent(EventParam *param) {
-  const char *event = "VideoEncodedFrameObserver_onEncodedVideoFrameReceived";
-
-  if (strcmp(event, param->event) == 0) {
-    onEncodedVideoFrameReceived(param->data, param->buffer[0], param->length);
-  } else {
-    fireEvent(_callback_key, param->event, param->data, param->buffer,
-              param->length, param->buffer_count);
-  }
+  fireEvent(_callback_key, param->event, param->data, param->buffer,
+            param->length, param->buffer_count);
 }
 
 void NodeIrisEventHandler::fireEvent(const char *callback_name,
@@ -120,42 +114,6 @@ void NodeIrisEventHandler::fireEvent(const char *callback_name,
       }
 
       status = napi_create_uint32(it->second->env, buffer_count, &args[4]);
-
-      napi_value call_back_value;
-      status = napi_get_reference_value(
-          it->second->env, it->second->call_back_ref, &call_back_value);
-
-      napi_value recv_value;
-      status = napi_get_undefined(it->second->env, &recv_value);
-
-      status = napi_call_function(it->second->env, recv_value, call_back_value,
-                                  argc, args, &result);
-    }
-  });
-}
-
-void NodeIrisEventHandler::onEncodedVideoFrameReceived(const char *data,
-                                                       void *buffer,
-                                                       unsigned int *length) {
-  std::string eventData = "";
-  if (data) { eventData = data; }
-  std::vector<unsigned char> buffer_data(length[0]);
-  memcpy(buffer_data.data(), buffer, length[0]);
-
-  unsigned int buffer_length = length[0];
-
-  node_async_call::async_call([this, eventData, buffer_data, buffer_length] {
-    auto it = _callbacks.find("call_back_with_encoded_video_frame");
-    if (it != _callbacks.end()) {
-      size_t argc = 2;
-      napi_value args[2];
-      napi_value result;
-      napi_status status;
-      status = napi_create_string_utf8(it->second->env, eventData.c_str(),
-                                       eventData.length(), &args[0]);
-
-      napi_create_buffer_copy(it->second->env, buffer_length,
-                              buffer_data.data(), nullptr, &args[1]);
 
       napi_value call_back_value;
       status = napi_get_reference_value(
