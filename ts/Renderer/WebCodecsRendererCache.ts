@@ -76,6 +76,7 @@ export class WebCodecsRendererCache
       type: VideoStreamType.VideoStreamHigh,
       encodedFrameOnly: true,
     });
+    this._engine?.getMediaEngine().registerVideoEncodedFrameObserver(this);
   }
 
   public shouldFallback(frameInfo: EncodedVideoFrameInfo): boolean {
@@ -104,6 +105,7 @@ export class WebCodecsRendererCache
 
   public release(): void {
     logInfo('call_back_with_encoded_video_frame release');
+    this._engine?.getMediaEngine().unregisterVideoEncodedFrameObserver(this);
     this._decoder?.release();
     this._decoder = null;
     super.release();
