@@ -502,14 +502,10 @@ export function callIrisApi(funcName: string, params: any): any {
     if (funcName.indexOf('joinChannel') != -1) {
       if (AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
         rtcEngine.getMediaEngine().registerVideoEncodedFrameObserver({});
-        //need registerVideoFrameObserver here to cover the case that the webCodecsDecoder is error
-        //when the webCodecsDecoder is error, the video stream will be decoded by native
-        // rtcEngine.getMediaEngine().registerVideoFrameObserver({});
       }
     } else if (funcName.indexOf('leaveChannel') != -1) {
       if (AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
         rtcEngine.getMediaEngine().unregisterVideoEncodedFrameObserver({});
-        // rtcEngine.getMediaEngine().unregisterVideoFrameObserver({});
       }
     }
 

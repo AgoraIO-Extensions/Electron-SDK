@@ -31,7 +31,7 @@ export class WebCodecsRendererCache extends IRendererCache {
     AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this.cacheContext);
   }
 
-  onEncodedVideoFrameReceived(...[event, data, buffers]: any) {
+  onEncodedVideoFrameReceived(...[data, buffer]: any) {
     let _data: any;
     try {
       _data = JSON.parse(data) ?? {};
@@ -67,7 +67,7 @@ export class WebCodecsRendererCache extends IRendererCache {
       AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this.cacheContext);
     } else {
       this._decoder.decodeFrame(
-        buffers[0],
+        buffer,
         _data.videoEncodedFrameInfo,
         new Date().getTime()
       );
