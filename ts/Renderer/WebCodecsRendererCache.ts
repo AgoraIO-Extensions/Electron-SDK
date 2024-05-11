@@ -1,8 +1,8 @@
 import createAgoraRtcEngine from '../AgoraSdk';
 import { WebCodecsDecoder } from '../Decoder/index';
 import { EncodedVideoFrameInfo, VideoStreamType } from '../Private/AgoraBase';
-import { IVideoEncodedFrameObserver } from '../Private/AgoraMediaBase';
 import { IRtcEngineEx } from '../Private/IAgoraRtcEngineEx';
+import { AgoraElectronBridge } from '../Private/internal/IrisApiEngine';
 
 import { RendererContext, RendererType } from '../Types';
 import { AgoraEnv, logInfo } from '../Utils';
@@ -10,10 +10,7 @@ import { AgoraEnv, logInfo } from '../Utils';
 import { IRendererCache } from './IRendererCache';
 import { WebCodecsRenderer } from './WebCodecsRenderer/index';
 
-export class WebCodecsRendererCache
-  extends IRendererCache
-  implements IVideoEncodedFrameObserver
-{
+export class WebCodecsRendererCache extends IRendererCache {
   private _decoder?: WebCodecsDecoder | null;
   private _engine?: IRtcEngineEx;
   private _firstFrame = true;
@@ -34,38 +31,44 @@ export class WebCodecsRendererCache
     AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this.cacheContext);
   }
 
-  onEncodedVideoFrameReceived(
-    uid: number,
-    imageBuffer: Uint8Array,
-    length: number,
-    videoEncodedFrameInfo: EncodedVideoFrameInfo
-  ) {
-    if (!this._decoder || this.cacheContext.uid !== uid) return;
+  onEncodedVideoFrameReceived(...[data, buffer]: any) {
+    let _data: any;
+    try {
+      _data = JSON.parse(data) ?? {};
+    } catch (e) {
+      _data = {};
+    }
+    if (
+      Object.keys(_data).length === 0 ||
+      !this._decoder ||
+      this.cacheContext.uid !== _data.uid
+    )
+      return;
     if (this._firstFrame) {
       for (let renderer of this.renderers) {
         if (renderer.rendererType !== RendererType.WEBCODECSRENDERER) {
           continue;
         }
         renderer.bind(renderer.context.view, {
-          width: videoEncodedFrameInfo.width!,
-          height: videoEncodedFrameInfo.height!,
+          width: _data.videoEncodedFrameInfo.width!,
+          height: _data.videoEncodedFrameInfo.height!,
         });
       }
 
       try {
-        this._decoder.decoderConfigure(videoEncodedFrameInfo);
+        this._decoder.decoderConfigure(_data.videoEncodedFrameInfo);
       } catch (error: any) {
         logInfo(error);
         return;
       }
       this._firstFrame = false;
     }
-    if (this.shouldFallback(videoEncodedFrameInfo)) {
+    if (this.shouldFallback(_data.videoEncodedFrameInfo)) {
       AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(this.cacheContext);
     } else {
       this._decoder.decodeFrame(
-        imageBuffer,
-        videoEncodedFrameInfo,
+        buffer,
+        _data.videoEncodedFrameInfo,
         new Date().getTime()
       );
     }
@@ -76,6 +79,16 @@ export class WebCodecsRendererCache
       type: VideoStreamType.VideoStreamHigh,
       encodedFrameOnly: true,
     });
+    AgoraElectronBridge.OnEvent(
+      'call_back_with_encoded_video_frame',
+      (...params: any) => {
+        try {
+          this.onEncodedVideoFrameReceived(...params);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    );
   }
 
   public shouldFallback(frameInfo: EncodedVideoFrameInfo): boolean {
@@ -103,7 +116,7 @@ export class WebCodecsRendererCache
   }
 
   public release(): void {
-    logInfo('call_back_with_encoded_video_frame release');
+    AgoraElectronBridge.UnEvent('call_back_with_encoded_video_frame');
     this._decoder?.release();
     this._decoder = null;
     super.release();
