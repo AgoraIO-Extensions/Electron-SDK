@@ -182,6 +182,7 @@ export default class JoinChannelVideo
           ? remoteUsers.map((item) =>
               this.renderUser({
                 uid: item,
+                enableFps: true,
                 sourceType: VideoSourceType.VideoSourceRemote,
               })
             )

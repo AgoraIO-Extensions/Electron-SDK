@@ -56,7 +56,7 @@ export class RendererManager {
   private rendererType: RendererType;
 
   constructor() {
-    this.renderingFps = 60;
+    this.renderingFps = 15;
     this._currentFrameCount = 0;
     this._previousFirstFrameTime = 0;
     this._rendererCaches = [];
