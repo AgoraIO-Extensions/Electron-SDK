@@ -252,6 +252,7 @@ export class WebGLRenderer extends IRenderer {
     );
 
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+    super.drawFrame();
     this.getFps();
   }
 

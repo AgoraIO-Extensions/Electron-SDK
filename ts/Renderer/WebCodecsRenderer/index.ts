@@ -135,6 +135,7 @@ export class WebCodecsRenderer extends IRenderer {
       // Draw the frame.
       this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, 4);
     }
+    super.drawFrame();
     this.getFps();
   }
 }

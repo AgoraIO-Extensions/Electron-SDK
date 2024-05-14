@@ -53,6 +53,7 @@ export class YUVCanvasRenderer extends IRenderer {
         }
       )
     );
+    super.drawFrame();
   }
 
   protected override rotateCanvas({ width, height, rotation }: VideoFrame) {
