@@ -23,6 +23,7 @@ export abstract class IRenderer {
     });
     this.parentElement.appendChild(this.container);
     this.canvas = document.createElement('canvas');
+    this.canvas.style.display = 'none';
     this.container.appendChild(this.canvas);
   }
 
@@ -42,7 +43,13 @@ export abstract class IRenderer {
     this.parentElement = undefined;
   }
 
-  public abstract drawFrame(videoFrame: VideoFrame): void;
+  public drawFrame(_videoFrame?: VideoFrame): void {
+    if (!this.canvas) return;
+    //@ts-ignore
+    if (!this.canvas.checkVisibility()) {
+      this.canvas.style.display = '';
+    }
+  }
 
   public set context({ renderMode, mirrorMode }: Context) {
     if (this.context.renderMode !== renderMode) {
