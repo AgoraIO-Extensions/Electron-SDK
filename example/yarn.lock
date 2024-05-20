@@ -1777,10 +1777,10 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-agora-electron-sdk@4.2.2-build.142-rc.1:
-  version "4.2.2-build.142-rc.1"
-  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.2.2-build.142-rc.1.tgz#f8087c597a9e139f90b8f2dc80386f2037725b8b"
-  integrity sha512-CD+973GkThf+KhSwnzidh0J/3ssbmlOuA+C6HkoVHZSQLG+188T/gEwpcDoBAJndEUfBMILbcuksvkPnM7KIfA==
+agora-electron-sdk@4.2.2-build.143-rc.1:
+  version "4.2.2-build.143-rc.1"
+  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.2.2-build.143-rc.1.tgz#f0c8517adfafe1d7901ccab1cd94b39e5bd50590"
+  integrity sha512-JCkxT+jSilICXWl2HjRWFDMaJsPJeWaj2GsBUjfC5hbIhWmf02+ITHryvVe8N6I3AkyfxSOJCDlFJtJH8/hzYw==
   dependencies:
     buffer "^6.0.3"
     cross-env "^7.0.3"
@@ -1792,6 +1792,7 @@ agora-electron-sdk@4.2.2-build.142-rc.1:
     jsonfile "^6.1.0"
     lodash.isequal "^4.5.0"
     minimist "^1.2.5"
+    semver "^7.6.0"
     shelljs "^0.8.4"
     ts-interface-checker "^1.0.2"
     winston "^3.3.3"
@@ -9080,6 +9081,11 @@ semver@^7.1.3, semver@^7.3.2, semver@^7.3.4, semver@^7.3.5, semver@^7.3.7:
   integrity sha512-+XC0AD/R7Q2mPSRuy2Id0+CGTZ98+8f+KvwirxOKIEyid+XSx6HbC63p+O4IndTHuX5Z+JxQ0TghCkO5Cg/2HA==
   dependencies:
     lru-cache "^6.0.0"
+
+semver@^7.6.0:
+  version "7.6.2"
+  resolved "https://registry.npmjs.org/semver/-/semver-7.6.2.tgz#1e3b34759f896e8f14d6134732ce798aeb0c6e13"
+  integrity sha512-FNAIBWCx9qcRhoHcgcJ0gvU7SN1lYU2ZXuSfl04bSC5OpvDHFyJCjdNHomPXxjQlCBU67YW64PzY7/VIEH7F2w==
 
 semver@~7.0.0:
   version "7.0.0"
