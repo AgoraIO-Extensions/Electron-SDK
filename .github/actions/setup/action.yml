@@ -9,11 +9,6 @@ runs:
       with:
         node-version: 14.17.3
 
-    - name: Setup Yarn
-      run:
-        npm i -g yarn@1.22.19
-      shell: bash
-
     - name: Remove .npmrc
       run: |
         rm -f .npmrc
@@ -24,17 +19,7 @@ runs:
       with:
         python-version: 3.11.5
 
-    - name: Cache dependencies
-      id: yarn-cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          **/node_modules
-        key: ${{ runner.os }}-yarn-ng-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-ng
-
     - name: Install dependencies
       run: |
-        yarn install --frozen-lockfile
+        npm install
       shell: bash
