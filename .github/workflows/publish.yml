@@ -19,8 +19,25 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
 
-      - name: Setup
-        uses: ./.github/actions/setup
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14.17.3
+
+      - name: Remove .npmrc
+        run: |
+          rm -f .npmrc
+        shell: bash
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11.5
+
+      - name: Install dependencies
+        run: |
+          npm install --agora_electron_publish_to_npm
+        shell: bash
 
       - name: Setup NPM auth token
         run: |

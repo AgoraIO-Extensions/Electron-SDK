@@ -44,7 +44,7 @@ task('sync:lib', () => {
   });
 })
 
-// npm run build:electron -- 
+// npm run build:electron --
 task("build:electron", async () => {
   await cleanup(path.join(__dirname, "./build"));
   const electronVersion = argv().electron_version;
@@ -104,11 +104,11 @@ const buildMacArm64 = async electronVersion => {
 // npm run build:node --
 task('build:node', () => {
   build({
-    electronVersion: argv().electron_version, 
+    electronVersion: argv().electron_version,
     runtime: 'node',
     packageVersion,
     platform: argv().platform,
-    debug: argv().debug, 
+    debug: argv().debug,
     silent: argv().silent,
     msvsVersion: argv().msvs_version
   })
@@ -120,8 +120,8 @@ task('download', () => {
   cleanup(path.join(__dirname, "./build")).then(_ => {
     cleanup(path.join(__dirname, './js')).then(_ => {
       download({
-        electronVersion: argv().electron_version, 
-        platform: argv().platform, 
+        electronVersion: argv().electron_version,
+        platform: argv().platform,
         packageVersion: addonVersion,
         arch: argv().arch
       })
@@ -135,13 +135,17 @@ task('install', () => {
     ...getArgvFromPkgJson(),
     arch:getArgvFromNpmEnv().arch || getArgvFromPkgJson().arch || process.arch,
   }
-  
+
+  if(config.publishToNpm) {
+    return;
+  }
+
   // work-around
   const addonVersion = packageVersion;
   if (config.prebuilt) {
     download({
-      electronVersion: config.electronVersion, 
-      platform: config.platform, 
+      electronVersion: config.electronVersion,
+      platform: config.platform,
       packageVersion: addonVersion,
       arch: config.arch,
       no_symbol: config.no_symbol,
