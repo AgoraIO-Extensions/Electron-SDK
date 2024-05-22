@@ -1777,10 +1777,10 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-agora-electron-sdk@4.2.2-build.143-rc.1:
-  version "4.2.2-build.143-rc.1"
-  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.2.2-build.143-rc.1.tgz#f0c8517adfafe1d7901ccab1cd94b39e5bd50590"
-  integrity sha512-JCkxT+jSilICXWl2HjRWFDMaJsPJeWaj2GsBUjfC5hbIhWmf02+ITHryvVe8N6I3AkyfxSOJCDlFJtJH8/hzYw==
+agora-electron-sdk@4.2.2-build.143-rc.2:
+  version "4.2.2-build.143-rc.2"
+  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.2.2-build.143-rc.2.tgz#6bbcf4fc086bc3ee08e58a9789b978a76aa50450"
+  integrity sha512-mBXt7+4Kuz4xzFgxdPzZAgcmpNVnIFsmc8XIoh21WfeExIjgJrB7+8+KPp8/v0ojQIfuXCrgvlOU7iDKXeUIIA==
   dependencies:
     buffer "^6.0.3"
     cross-env "^7.0.3"
