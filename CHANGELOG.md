@@ -1,5 +1,20 @@
 
 
+## [4.2.2-build.143-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.2-build.143-rc.1...v4.2.2-build.143-rc.2) (2024-05-22)
+
+## [4.2.2-build.143-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.2-build.141-rc.2...v4.2.2-build.143-rc.1) (2024-05-20)
+
+
+### Features
+
+* support native 4.2.2.142 ([#1178](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1178)) ([473815e](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/473815eb05fc08845e394b4daf9a59c0d5096d6d))
+
+
+### Reverts
+
+* Revert "chore: optimize" ([c844528](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/c844528de5cb301091d9bd39c270db86bd21fa57))
+* Revert "chore: optimize" ([3240684](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/3240684eb9e47e464cd321b657797139918653e2))
+
 ## [4.2.2-build.142-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.2-build.141-rc.2...v4.2.2-build.142-rc.1) (2024-03-29)
 
 ## [4.2.2-build.141-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.2-build.141-rc.1...v4.2.2-build.141-rc.2) (2023-12-15)

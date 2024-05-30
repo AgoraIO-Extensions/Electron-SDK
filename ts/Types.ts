@@ -1,5 +1,21 @@
-import { RenderModeType, VideoSourceType } from './Private/AgoraMediaBase';
-import { IRenderer, IRendererManager } from './Renderer';
+import { VideoCanvas, VideoCodecType } from './Private/AgoraBase';
+import { VideoFrame } from './Private/AgoraMediaBase';
+import { RtcConnection } from './Private/IAgoraRtcEngineEx';
+import { CapabilityManager } from './Renderer/CapabilityManager';
+import { RendererCache } from './Renderer/RendererCache';
+import { RendererManager } from './Renderer/RendererManager';
+import { WebCodecsRendererCache } from './Renderer/WebCodecsRendererCache';
+
+export enum VideoFallbackStrategy {
+  /**
+   * @ignore
+   */
+  PerformancePriority = 0,
+  /**
+   * @ignore
+   */
+  BandwidthPriority = 1,
+}
 
 /**
  * @ignore
@@ -17,6 +33,14 @@ export interface AgoraEnvOptions {
    * @ignore
    */
   webEnvReady?: boolean;
+  /**
+   * @ignore
+   */
+  enableWebCodecsDecoder: boolean;
+  /**
+   * @ignore
+   */
+  videoFallbackStrategy: VideoFallbackStrategy;
 }
 
 /**
@@ -26,61 +50,17 @@ export interface AgoraEnvType extends AgoraEnvOptions {
   /**
    * @ignore
    */
-  AgoraElectronBridge: AgoraElectronBridge;
+  AgoraRendererManager?: RendererManager;
   /**
    * @ignore
    */
-  AgoraRendererManager?: IRendererManager;
+  CapabilityManager?: CapabilityManager;
 }
 
 /**
  * @ignore
  */
-export interface CanvasOptions {
-  /**
-   * @ignore
-   */
-  frameWidth: number;
-  /**
-   * @ignore
-   */
-  frameHeight: number;
-  /**
-   * @ignore
-   */
-  rotation: number;
-  /**
-   * @ignore
-   */
-  contentMode: RenderModeType;
-  /**
-   * @ignore
-   */
-  clientWidth: number;
-  /**
-   * @ignore
-   */
-  clientHeight: number;
-}
-
-/**
- * @ignore
- */
-export interface RendererOptions {
-  /**
-   * @ignore
-   */
-  contentMode?: RenderModeType;
-  /**
-   * @ignore
-   */
-  mirror?: boolean;
-}
-
-/**
- * @ignore
- */
-export enum RENDER_MODE {
+export enum RendererType {
   /**
    * @ignore
    */
@@ -89,131 +69,21 @@ export enum RENDER_MODE {
    * @ignore
    */
   SOFTWARE = 2,
+  /**
+   * @ignore
+   */
+  WEBCODECSRENDERER = 3,
 }
 
-export type User = 'local' | 'videoSource' | number | string;
+export type RENDER_MODE = RendererType;
 
-export type Channel = '' | string;
+export type RendererContext = VideoCanvas & RtcConnection;
+export type RendererCacheType = RendererCache | WebCodecsRendererCache;
 
-/**
- * @ignore
- */
-export interface RendererVideoConfig {
-  /**
-   * @ignore
-   */
-  videoSourceType?: VideoSourceType;
-  /**
-   * @ignore
-   */
-  channelId?: Channel;
-  /**
-   * @ignore
-   */
-  uid?: number;
-  /**
-   * @ignore
-   */
-  view?: HTMLElement;
-  /**
-   * @ignore
-   */
-  rendererOptions?: RendererOptions;
-}
-
-/**
- * @ignore
- */
-export interface FormatRendererVideoConfig {
-  /**
-   * @ignore
-   */
-  videoSourceType: VideoSourceType;
-  /**
-   * @ignore
-   */
-  channelId: Channel;
-  /**
-   * @ignore
-   */
-  uid: number;
-  /**
-   * @ignore
-   */
-  view?: HTMLElement;
-  /**
-   * @ignore
-   */
-  rendererOptions: RendererOptions;
-}
-
-/**
- * @ignore
- */
-export interface VideoFrameCacheConfig {
-  /**
-   * @ignore
-   */
-  uid: number;
-  /**
-   * @ignore
-   */
-  channelId: string;
-  /**
-   * @ignore
-   */
-  videoSourceType: VideoSourceType;
-}
-
-/**
- * @ignore
- */
-export interface ShareVideoFrame {
-  /**
-   * @ignore
-   */
-  width: number;
-  /**
-   * @ignore
-   */
-  height: number;
-  /**
-   * @ignore
-   */
-  yStride: number;
-  /**
-   * @ignore
-   */
-  yBuffer: Buffer | Uint8Array;
-  /**
-   * @ignore
-   */
-  uBuffer: Buffer | Uint8Array;
-  /**
-   * @ignore
-   */
-  vBuffer: Buffer | Uint8Array;
-  /**
-   * @ignore
-   */
-  mirror?: boolean;
-  /**
-   * @ignore
-   */
-  rotation?: number;
-  /**
-   * @ignore
-   */
-  uid?: number;
-  /**
-   * @ignore
-   */
-  channelId?: string;
-  /**
-   * @ignore
-   */
-  videoSourceType: VideoSourceType;
-}
+export type RendererCacheContext = Pick<
+  RendererContext,
+  'channelId' | 'uid' | 'sourceType' | 'useWebCodecsDecoder' | 'enableFps'
+>;
 
 /**
  * @ignore
@@ -232,7 +102,7 @@ export interface Result {
 /**
  * @ignore
  */
-export interface AgoraElectronBridge {
+export interface IAgoraElectronBridge {
   /**
    * @ignore
    */
@@ -247,6 +117,8 @@ export interface AgoraElectronBridge {
     ) => void
   ): void;
 
+  UnEvent(callbackName: string): void;
+
   CallApi(
     funcName: string,
     params: any,
@@ -260,20 +132,18 @@ export interface AgoraElectronBridge {
 
   ReleaseRenderer(): void;
 
-  EnableVideoFrameCache(config: VideoFrameCacheConfig): void;
+  EnableVideoFrameCache(context: RendererCacheContext): void;
 
-  DisableVideoFrameCache(config: VideoFrameCacheConfig): void;
+  DisableVideoFrameCache(context: RendererCacheContext): void;
 
   GetBuffer(ptr: number, length: number): Buffer;
 
-  GetVideoFrame(streamInfo: ShareVideoFrame): {
+  GetVideoFrame(
+    context: RendererCacheContext,
+    videoFrame: VideoFrame
+  ): {
     ret: number;
     isNewFrame: boolean;
-    yStride: number;
-    width: number;
-    height: number;
-    rotation: number;
-    timestamp: number;
   };
 
   sendMsg: (
@@ -287,17 +157,30 @@ export interface AgoraElectronBridge {
 /**
  * @ignore
  */
-export interface RenderConfig {
-  /**
-   * @ignore
-   */
-  renders: IRenderer[];
-  /**
-   * @ignore
-   */
-  shareVideoFrame: ShareVideoFrame;
+export enum IPCMessageType {
+  AGORA_IPC_GET_GPU_INFO = 'AGORA_IPC_GET_GPU_INFO',
 }
 
-export type UidMap = Map<number, RenderConfig>;
-export type ChannelIdMap = Map<Channel, UidMap>;
-export type RenderMap = Map<VideoSourceType, ChannelIdMap>;
+interface CodecMappingItem {
+  codec: string;
+  type: VideoCodecType;
+  profile: string;
+}
+
+/**
+ * @ignore
+ */
+export const codecMapping: CodecMappingItem[] = [
+  {
+    codec: 'avc1.64e01f',
+    type: VideoCodecType.VideoCodecH264,
+    profile: 'h264',
+  },
+  {
+    codec: 'hvc1.1.6.L5.90',
+    type: VideoCodecType.VideoCodecH265,
+    profile: 'hevc',
+  },
+  { codec: 'vp8', type: VideoCodecType.VideoCodecVp8, profile: 'vp8' },
+  { codec: 'vp9', type: VideoCodecType.VideoCodecVp9, profile: 'vp9' },
+];

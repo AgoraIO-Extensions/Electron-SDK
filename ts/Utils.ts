@@ -1,9 +1,4 @@
-import { VideoSourceType } from './Private/AgoraMediaBase';
-import {
-  AgoraEnvType,
-  FormatRendererVideoConfig,
-  RendererVideoConfig,
-} from './Types';
+import { AgoraEnvType } from './Types';
 
 /**
  * @ignore
@@ -13,15 +8,6 @@ export const TAG = '[Agora]: ';
  * @ignore
  */
 export const DEBUG_TAG = '[Agora Debug]: ';
-
-/**
- * @ignore
- */
-export const deprecate = (originApi?: string, replaceApi?: string) =>
-  logError(
-    `${TAG} This method ${originApi} will be deprecated soon. `,
-    replaceApi ? `Please use ${replaceApi} instead` : ''
-  );
 
 /**
  * @ignore
@@ -43,6 +29,21 @@ export const logError = (msg: string, ...optParams: any[]) => {
   console.error(`${TAG} ${msg}`, ...optParams);
 };
 
+const getCurrentTime = () => {
+  const date = new Date();
+
+  const year = date.getFullYear().toString().slice(-2);
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const seconds = date.getSeconds().toString().padStart(2, '0');
+  const milliseconds = date.getMilliseconds().toString().padStart(3, '0');
+
+  return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}:${milliseconds}`;
+};
+
 /**
  * @ignore
  */
@@ -50,7 +51,7 @@ export const logInfo = (msg: string, ...optParams: any[]) => {
   if (!AgoraEnv.enableLogging) {
     return;
   }
-  console.log(`${TAG} ${msg}`, ...optParams);
+  console.info(`[${getCurrentTime()}]${TAG} ${msg}`, ...optParams);
 };
 
 /**
@@ -60,23 +61,7 @@ export const logDebug = (msg: string, ...optParams: any[]) => {
   if (!AgoraEnv.enableLogging || !AgoraEnv.enableDebugLogging) {
     return;
   }
-  console.warn(`${DEBUG_TAG} ${msg}`, ...optParams);
-};
-
-/**
- * @ignore
- */
-export const parseJSON = (jsonString: string) => {
-  if (jsonString === '') {
-    return jsonString;
-  }
-  let obj;
-  try {
-    obj = JSON.parse(jsonString);
-  } catch (error) {
-    logError('parseJSON', error);
-  }
-  return obj || jsonString;
+  console.debug(`${DEBUG_TAG} ${msg}`, ...optParams);
 };
 
 /**
@@ -91,71 +76,6 @@ export const objsKeysToLowerCase = (array: Array<any>) => {
       }
     }
   });
-};
-
-/**
- * @ignore
- */
-export const formatConfigByVideoSourceType = (
-  videoSourceType?: VideoSourceType,
-  originChannelId = '',
-  originUid = 0
-): {
-  uid: number;
-  channelId: string;
-  videoSourceType: VideoSourceType;
-} => {
-  if (videoSourceType === undefined || videoSourceType === null) {
-    throw new Error(`must set videoSourceType:${videoSourceType}`);
-  }
-  let uid = originUid;
-  let channelId = originChannelId;
-
-  switch (videoSourceType) {
-    case VideoSourceType.VideoSourceCamera:
-    case VideoSourceType.VideoSourceCameraPrimary:
-    case VideoSourceType.VideoSourceScreen:
-    case VideoSourceType.VideoSourceScreenSecondary:
-    case VideoSourceType.VideoSourceTranscoded:
-      channelId = '';
-      uid = 0;
-      break;
-    case VideoSourceType.VideoSourceRemote:
-      if (!uid || !channelId) {
-        throw new Error(`must set uid:${uid} and channelId:${channelId}`);
-      }
-      break;
-    case VideoSourceType.VideoSourceMediaPlayer:
-      channelId = '';
-      if (!uid) {
-        throw new Error(`must set mediaPlayerId:${uid}`);
-      }
-      break;
-    default:
-      break;
-  }
-  return { uid, channelId, videoSourceType };
-};
-
-/**
- * @ignore
- */
-export const getDefaultRendererVideoConfig = (
-  config: RendererVideoConfig
-): FormatRendererVideoConfig => {
-  const rendererOptions = Object.assign(
-    {},
-    AgoraEnv.AgoraRendererManager?.defaultRenderConfig?.rendererOptions,
-    config.rendererOptions
-  );
-
-  const { uid, channelId, videoSourceType } = formatConfigByVideoSourceType(
-    config.videoSourceType,
-    config.channelId,
-    config.uid
-  );
-
-  return { ...config, uid, channelId, videoSourceType, rendererOptions };
 };
 
 /**
@@ -187,7 +107,66 @@ function copyProperties<T>(target: T, source: any) {
   }
 }
 
-const agora = require('../build/Release/agora_node_ext');
+/**
+ * @ignore
+ */
+export function isSupportWebGL(): boolean {
+  let flag = false;
+  const canvas: HTMLCanvasElement = document.createElement('canvas');
+  try {
+    const getContext = (
+      contextNames = ['webgl2', 'webgl', 'experimental-webgl']
+    ): WebGLRenderingContext | WebGLRenderingContext | null => {
+      for (let i = 0; i < contextNames.length; i++) {
+        const contextName = contextNames[i]!;
+        const context = canvas?.getContext(contextName);
+        if (context) {
+          return context as WebGLRenderingContext | WebGLRenderingContext;
+        }
+      }
+      return null;
+    };
+    let gl = getContext();
+    flag = !!gl;
+    gl?.getExtension('WEBGL_lose_context')?.loseContext();
+    gl = null;
+    logInfo('Your browser support webGL');
+  } catch (e) {
+    logWarn('Your browser may not support webGL');
+    flag = false;
+  }
+  return flag;
+}
+
+/**
+ * @ignore
+ */
+export function getContextByCanvas(
+  // eslint-disable-next-line auto-import/auto-import
+  canvas: OffscreenCanvas
+): WebGLRenderingContext | WebGL2RenderingContext | null {
+  const contextNames = ['webgl2', 'webgl', 'experimental-webgl'];
+
+  for (const contextName of contextNames) {
+    //@ts-ignore
+    const context = canvas.getContext(contextName, {
+      depth: true,
+      stencil: true,
+      alpha: false,
+      antialias: false,
+      premultipliedAlpha: true,
+      preserveDrawingBuffer: true,
+      powerPreference: 'default',
+      failIfMajorPerformanceCaveat: false,
+    }) as WebGLRenderingContext | WebGL2RenderingContext | null;
+
+    if (context) {
+      return context;
+    }
+  }
+
+  return null;
+}
 
 /**
  * @ignore
@@ -196,5 +175,6 @@ export const AgoraEnv: AgoraEnvType = {
   enableLogging: true,
   enableDebugLogging: false,
   webEnvReady: true,
-  AgoraElectronBridge: new agora.AgoraElectronBridge(),
+  enableWebCodecsDecoder: false,
+  videoFallbackStrategy: 0,
 };

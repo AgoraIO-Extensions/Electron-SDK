@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "4.2.2-build.142-rc.1",
+  "version": "4.2.2-build.143-rc.2",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk",
   "types": "types/AgoraSdk.d.ts",
@@ -61,6 +61,7 @@
     "@commitlint/config-conventional": "^17.0.2",
     "@evilmartians/lefthook": "^1.2.2",
     "@release-it/conventional-changelog": "^5.0.0",
+    "@types/dom-webcodecs": "^0.1.11",
     "@types/jest": "^28.1.2",
     "@types/json-bigint": "^1.0.1",
     "@types/lodash.isequal": "^4.5.6",
@@ -129,6 +130,7 @@
     "jsonfile": "^6.1.0",
     "lodash.isequal": "^4.5.0",
     "minimist": "^1.2.5",
+    "semver": "^7.6.0",
     "shelljs": "^0.8.4",
     "ts-interface-checker": "^1.0.2",
     "winston": "^3.3.3",
@@ -136,7 +138,7 @@
     "yuv-canvas": "1.2.6"
   },
   "agora_electron": {
-    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.2.2.142-build.1_DCG_Windows_Video_20240329_1152.zip",
+    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.2.2.143-build.1_DCG_Windows_Video_20240521_0544.zip",
     "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.2.2.136-build.1_DCG_Mac_Video_20230922_0351.zip"
   }
 }

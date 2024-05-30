@@ -1,5 +1,6 @@
 import { createCheckers } from 'ts-interface-checker';
 
+import { AgoraEnv } from '../../Utils';
 import {
   IAudioFrameObserver,
   IVideoEncodedFrameObserver,
@@ -83,6 +84,14 @@ export class MediaEngineInternal extends IMediaEngineImpl {
   }
 
   override release() {
+    if (AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
+      if (MediaEngineInternal._video_frame_observers.length > 0) {
+        this.unregisterVideoFrameObserver({});
+      }
+      if (MediaEngineInternal._video_encoded_frame_observers.length > 0) {
+        this.unregisterVideoEncodedFrameObserver({});
+      }
+    }
     MediaEngineInternal._audio_frame_observers = [];
     MediaEngineInternal._video_frame_observers = [];
     MediaEngineInternal._video_encoded_frame_observers = [];

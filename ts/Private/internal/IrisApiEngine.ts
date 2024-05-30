@@ -1,7 +1,9 @@
 import EventEmitter from 'eventemitter3';
 import JSON from 'json-bigint';
 
-import { AgoraEnv } from '../../Utils';
+import createAgoraRtcEngine from '../../AgoraSdk';
+import { IAgoraElectronBridge } from '../../Types';
+import { AgoraEnv, logDebug, logError, logInfo, logWarn } from '../../Utils';
 import { IAudioEncodedFrameObserver } from '../AgoraBase';
 import {
   AudioFrame,
@@ -60,8 +62,11 @@ import { RtcEngineExInternal } from './RtcEngineExInternal';
 // @ts-ignore
 export const DeviceEventEmitter: EventEmitter = new EventEmitter();
 
-const AgoraRtcNg = AgoraEnv.AgoraElectronBridge;
-AgoraRtcNg.OnEvent('call_back_with_buffer', (...params: any) => {
+const AgoraNode = require('../../../build/Release/agora_node_ext');
+export const AgoraElectronBridge: IAgoraElectronBridge =
+  new AgoraNode.AgoraElectronBridge();
+
+AgoraElectronBridge.OnEvent('call_back_with_buffer', (...params: any) => {
   try {
     handleEvent(...params);
   } catch (e) {
@@ -355,7 +360,7 @@ export const EVENT_PROCESSORS: EventProcessors = {
 
 function handleEvent(...[event, data, buffers]: any) {
   if (isDebuggable()) {
-    console.info('onEvent', event, data, buffers);
+    logInfo('onEvent', event, data, buffers);
   }
 
   let _event: string = event;
@@ -414,7 +419,7 @@ function handleEvent(...[event, data, buffers]: any) {
 export function callIrisApi(funcName: string, params: any): any {
   try {
     const buffers: Uint8Array[] = [];
-
+    const rtcEngine = createAgoraRtcEngine();
     if (funcName.startsWith('MediaEngine_')) {
       switch (funcName) {
         case 'MediaEngine_pushAudioFrame':
@@ -459,16 +464,16 @@ export function callIrisApi(funcName: string, params: any): any {
     } else if (funcName.startsWith('RtcEngine_')) {
       switch (funcName) {
         case 'RtcEngine_initialize':
-          AgoraRtcNg.InitializeEnv();
+          AgoraElectronBridge.InitializeEnv();
           break;
         case 'RtcEngine_release':
-          AgoraRtcNg.CallApi(
+          AgoraElectronBridge.CallApi(
             funcName,
             JSON.stringify(params),
             buffers,
             buffers.length
           );
-          AgoraRtcNg.ReleaseEnv();
+          AgoraElectronBridge.ReleaseEnv();
           return;
         case 'RtcEngine_sendMetaData':
           // metadata.buffer
@@ -494,8 +499,17 @@ export function callIrisApi(funcName: string, params: any): any {
           break;
       }
     }
+    if (funcName.indexOf('joinChannel') != -1) {
+      if (AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
+        rtcEngine.getMediaEngine().registerVideoEncodedFrameObserver({});
+      }
+    } else if (funcName.indexOf('leaveChannel') != -1) {
+      if (AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
+        rtcEngine.getMediaEngine().unregisterVideoEncodedFrameObserver({});
+      }
+    }
 
-    let { callApiReturnCode, callApiResult } = AgoraRtcNg.CallApi(
+    let { callApiReturnCode, callApiResult } = AgoraElectronBridge.CallApi(
       funcName,
       JSON.stringify(params),
       buffers,
@@ -506,35 +520,30 @@ export function callIrisApi(funcName: string, params: any): any {
       const retObj = JSON.parse(ret);
       if (isDebuggable()) {
         if (typeof retObj.result === 'number' && retObj.result < 0) {
-          console.error('callApi', funcName, JSON.stringify(params), ret);
+          logError('callApi', funcName, JSON.stringify(params), ret);
         } else {
-          console.debug('callApi', funcName, JSON.stringify(params), ret);
+          logDebug('callApi', funcName, JSON.stringify(params), ret);
         }
       }
       return retObj;
     } else {
       if (isDebuggable()) {
-        console.error(
+        logError(
           'callApi',
           funcName,
           JSON.stringify(params),
           callApiReturnCode
         );
       } else {
-        console.warn(
-          'callApi',
-          funcName,
-          JSON.stringify(params),
-          callApiReturnCode
-        );
+        logWarn('callApi', funcName, JSON.stringify(params), callApiReturnCode);
       }
       return { result: callApiReturnCode };
     }
   } catch (e) {
     if (isDebuggable()) {
-      console.error('callApi', funcName, JSON.stringify(params), e);
+      logError('callApi', funcName, JSON.stringify(params), e);
     } else {
-      console.warn('callApi', funcName, JSON.stringify(params), e);
+      logWarn('callApi', funcName, JSON.stringify(params), e);
     }
   }
   return {};

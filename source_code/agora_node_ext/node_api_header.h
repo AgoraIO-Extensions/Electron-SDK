@@ -69,6 +69,9 @@ napi_status napi_obj_get_property(napi_env &env, napi_value &object,
                                   const char *utf8name, int &result);
 
 napi_status napi_obj_get_property(napi_env &env, napi_value &object,
+                                  const char *utf8name, bool &result);
+
+napi_status napi_obj_get_property(napi_env &env, napi_value &object,
                                   const char *utf8name, uint32_t &result);
 
 napi_status napi_obj_get_property(napi_env &env, napi_value &object,

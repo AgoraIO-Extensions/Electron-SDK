@@ -97,17 +97,17 @@ jobs:
           yarn link agora-electron-sdk
           yarn dist:mac
           yarn unlink agora-electron-sdk
-        env: 
+        env:
           USE_HARD_LINKS: false
         working-directory: example
-      
+
       - uses: actions/upload-artifact@v3
         with:
           name: AgoraRtcNgExample-mac
           path: |
             example/dist/Agora-Electron-API-Example-*-mac.zip
           if-no-files-found: error
-  
+
   notification:
     runs-on: ubuntu-latest
     needs: [ build-windows, build-mac ]

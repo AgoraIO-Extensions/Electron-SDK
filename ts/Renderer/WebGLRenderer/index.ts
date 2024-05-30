@@ -1,10 +1,9 @@
-import { EventEmitter } from 'events';
+import { VideoFrame } from '../../Private/AgoraMediaBase';
+import { RendererType } from '../../Types';
+import { logWarn } from '../../Utils';
+import { IRenderer } from '../IRenderer';
 
-import { RenderModeType } from '../../Private/AgoraMediaBase';
-
-import { ShareVideoFrame } from '../../Types';
-import { logError, logWarn } from '../../Utils';
-import { IRenderer, RenderFailCallback } from '../IRenderer';
+export type WebGLFallback = (renderer: WebGLRenderer, error: Error) => void;
 
 const createProgramFromSources =
   require('./webgl-utils').createProgramFromSources;
@@ -44,181 +43,246 @@ const yuvShaderSource =
   '  gl_FragColor=vec4(r,g,b,1.0);' +
   '}';
 
-export class GlRenderer extends IRenderer {
-  gl: WebGL2RenderingContext | undefined | null;
-  program: any;
-  positionLocation: any;
-  texCoordLocation: any;
-  yTexture: WebGLTexture | undefined | null;
-  uTexture: WebGLTexture | undefined | null;
-  vTexture: WebGLTexture | undefined | null;
-  texCoordBuffer: any;
-  surfaceBuffer: any;
+export class WebGLRenderer extends IRenderer {
+  gl?: WebGLRenderingContext | WebGL2RenderingContext | null;
+  program?: WebGLProgram;
+  positionLocation?: number;
+  texCoordLocation?: number;
+  yTexture: WebGLTexture | null;
+  uTexture: WebGLTexture | null;
+  vTexture: WebGLTexture | null;
+  texCoordBuffer: WebGLBuffer | null;
+  surfaceBuffer: WebGLBuffer | null;
+  fallback?: WebGLFallback;
 
-  // @ts-ignore
-  parentElement: HTMLElement | undefined;
-  container: HTMLElement | undefined;
-  // @ts-ignore
-  canvas: HTMLCanvasElement | undefined;
-  renderImageCount = 0;
-  initWidth = 0;
-  initHeight = 0;
-  initRotation = 0;
-  clientWidth = 0;
-  clientHeight = 0;
-  contentMode = 0;
-  event = new EventEmitter();
-  firstFrameRender = false;
-  lastImageWidth = 0;
-  lastImageHeight = 0;
-  lastImageRotation = 0;
-  videoBuffer = {};
-
-  observer?: ResizeObserver;
-
-  failInitRenderCB: RenderFailCallback;
-
-  constructor(failCallback: RenderFailCallback) {
+  constructor(fallback?: WebGLFallback) {
     super();
-    this.failInitRenderCB = failCallback;
+    this.gl = undefined;
+    this.rendererType = RendererType.WEBGL;
+    this.yTexture = null;
+    this.uTexture = null;
+    this.vTexture = null;
+    this.texCoordBuffer = null;
+    this.surfaceBuffer = null;
+    this.fallback = fallback;
   }
 
-  public bind(view: HTMLElement) {
+  public override bind(view: HTMLElement) {
     super.bind(view);
+
+    this.canvas?.addEventListener(
+      'webglcontextlost',
+      this.handleContextLost,
+      false
+    );
+    this.canvas?.addEventListener(
+      'webglcontextrestored',
+      this.handleContextRestored,
+      false
+    );
+
+    const getContext = (
+      contextNames = ['webgl2', 'webgl', 'experimental-webgl']
+    ): WebGLRenderingContext | WebGLRenderingContext | null => {
+      for (let i = 0; i < contextNames.length; i++) {
+        const contextName = contextNames[i]!;
+        const context = this.canvas?.getContext(contextName, {
+          depth: true,
+          stencil: true,
+          alpha: false,
+          antialias: false,
+          premultipliedAlpha: true,
+          preserveDrawingBuffer: true,
+          powerPreference: 'default',
+          failIfMajorPerformanceCaveat: false,
+        });
+        if (context) {
+          return context as WebGLRenderingContext | WebGLRenderingContext;
+        }
+      }
+      return null;
+    };
+    this.gl ??= getContext();
+
+    if (!this.gl) {
+      this.fallback?.call(
+        null,
+        this,
+        new Error('Browser not support! No WebGL detected.')
+      );
+      return;
+    }
+
+    // Set clear color to black, fully opaque
+    this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    // Enable depth testing
+    this.gl.enable(this.gl.DEPTH_TEST);
+    // Near things obscure far things
+    this.gl.depthFunc(this.gl.LEQUAL);
+    // Clear the color as well as the depth buffer.
+    this.gl.clear(
+      this.gl.COLOR_BUFFER_BIT |
+        this.gl.DEPTH_BUFFER_BIT |
+        this.gl.STENCIL_BUFFER_BIT
+    );
+
+    // Setup GLSL program
+    this.program = createProgramFromSources(this.gl, [
+      vertexShaderSource,
+      yuvShaderSource,
+    ]) as WebGLProgram;
+    this.gl.useProgram(this.program);
+
+    this.initTextures();
   }
 
-  public unbind() {
-    this.observer?.unobserve && this.observer.disconnect();
-    this.program = undefined;
-    this.positionLocation = undefined;
-    this.texCoordLocation = undefined;
+  public override unbind() {
+    this.canvas?.removeEventListener(
+      'webglcontextlost',
+      this.handleContextLost,
+      false
+    );
+    this.canvas?.removeEventListener(
+      'webglcontextrestored',
+      this.handleContextRestored,
+      false
+    );
 
-    this.deleteTexture(this.yTexture);
-    this.deleteTexture(this.uTexture);
-    this.deleteTexture(this.vTexture);
-    this.yTexture = undefined;
-    this.uTexture = undefined;
-    this.vTexture = undefined;
-
-    this.deleteBuffer(this.texCoordBuffer);
-    this.deleteBuffer(this.surfaceBuffer);
-    this.texCoordBuffer = undefined;
-    this.surfaceBuffer = undefined;
-
+    this.releaseTextures();
     this.gl = undefined;
 
-    try {
-      if (
-        this.container &&
-        this.canvas &&
-        this.canvas.parentNode === this.container
-      ) {
-        this.container.removeChild(this.canvas);
-      }
-      if (
-        this.parentElement &&
-        this.container &&
-        this.container.parentNode === this.parentElement
-      ) {
-        this.parentElement.removeChild(this.container);
-      }
-    } catch (e) {
-      logWarn('webgl renderer unbind happen some error', e);
-    }
-
-    this.canvas &&
-      this.canvas.removeEventListener(
-        'webglcontextlost',
-        this.handleContextLost,
-        false
-      );
-    this.canvas = undefined;
-    this.container = undefined;
-    this.parentElement = undefined;
+    super.unbind();
   }
 
-  private updateViewZoomLevel(rotation: number, width: number, height: number) {
-    if (!this.parentElement || !this.canvas) {
-      return;
-    }
-    this.clientWidth = this.parentElement.clientWidth;
-    this.clientHeight = this.parentElement.clientHeight;
+  public override drawFrame({
+    width,
+    height,
+    yStride,
+    uStride,
+    vStride,
+    yBuffer,
+    uBuffer,
+    vBuffer,
+    rotation,
+  }: VideoFrame) {
+    this.rotateCanvas({ width, height, rotation });
+    this.updateRenderMode();
 
-    try {
-      if (this.contentMode === RenderModeType.RenderModeHidden) {
-        // Cover
-        if (rotation === 0 || rotation === 180) {
-          if (this.clientWidth / this.clientHeight > width / height) {
-            this.canvas.style.transform = `scale(${this.clientWidth / width})`;
-          } else {
-            this.canvas.style.transform = `scale(${
-              this.clientHeight / height
-            })`;
-          }
-        } else {
-          // 90, 270
-          if (this.clientHeight / this.clientWidth > width / height) {
-            this.canvas.style.transform = `scale(${this.clientHeight / width})`;
-          } else {
-            this.canvas.style.transform = `scale(${this.clientWidth / height})`;
-          }
-        }
-        // Contain
-      } else if (rotation === 0 || rotation === 180) {
-        if (this.clientWidth / this.clientHeight > width / height) {
-          this.canvas.style.transform = `scale(${this.clientHeight / height})`;
-        } else {
-          this.canvas.style.transform = `scale(${this.clientWidth / width})`;
-        }
-      } else {
-        // 90, 270
-        if (this.clientHeight / this.clientWidth > width / height) {
-          this.canvas.style.transform = `scale(${this.clientWidth / height})`;
-        } else {
-          this.canvas.style.transform = `scale(${this.clientHeight / width})`;
-        }
-      }
-    } catch (e) {
-      logError('webgl updateViewZoomLevel', e);
-      return false;
-    }
+    if (!this.gl || !this.program) return;
 
-    return true;
+    const left = 0,
+      top = 0,
+      right = yStride! - width!,
+      bottom = 0;
+
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texCoordBuffer);
+    const xWidth = width! + left + right;
+    const xHeight = height! + top + bottom;
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      new Float32Array([
+        left / xWidth,
+        bottom / xHeight,
+        1 - right / xWidth,
+        bottom / xHeight,
+        left / xWidth,
+        1 - top / xHeight,
+        left / xWidth,
+        1 - top / xHeight,
+        1 - right / xWidth,
+        bottom / xHeight,
+        1 - right / xWidth,
+        1 - top / xHeight,
+      ]),
+      this.gl.STATIC_DRAW
+    );
+    this.gl.enableVertexAttribArray(this.texCoordLocation!);
+    this.gl.vertexAttribPointer(
+      this.texCoordLocation!,
+      2,
+      this.gl.FLOAT,
+      false,
+      0,
+      0
+    );
+
+    this.gl.pixelStorei(this.gl.UNPACK_ALIGNMENT, 1);
+
+    this.gl.activeTexture(this.gl.TEXTURE0);
+    this.gl.bindTexture(this.gl.TEXTURE_2D, this.yTexture);
+    this.gl.texImage2D(
+      this.gl.TEXTURE_2D,
+      0,
+      this.gl.LUMINANCE,
+      // Should use xWidth instead of width here (yStide)
+      xWidth,
+      height!,
+      0,
+      this.gl.LUMINANCE,
+      this.gl.UNSIGNED_BYTE,
+      yBuffer!
+    );
+
+    this.gl.activeTexture(this.gl.TEXTURE1);
+    this.gl.bindTexture(this.gl.TEXTURE_2D, this.uTexture);
+    this.gl.texImage2D(
+      this.gl.TEXTURE_2D,
+      0,
+      this.gl.LUMINANCE,
+      uStride!,
+      height! / 2,
+      0,
+      this.gl.LUMINANCE,
+      this.gl.UNSIGNED_BYTE,
+      uBuffer!
+    );
+
+    this.gl.activeTexture(this.gl.TEXTURE2);
+    this.gl.bindTexture(this.gl.TEXTURE_2D, this.vTexture);
+    this.gl.texImage2D(
+      this.gl.TEXTURE_2D,
+      0,
+      this.gl.LUMINANCE,
+      vStride!,
+      height! / 2,
+      0,
+      this.gl.LUMINANCE,
+      this.gl.UNSIGNED_BYTE,
+      vBuffer!
+    );
+
+    this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+    super.drawFrame();
+    this.getFps();
   }
 
-  private updateCanvas(rotation: number, width: number, height: number) {
-    // if (this.canvasUpdated) {
-    //   return;
-    // }
-    if (width || height) {
-      this.lastImageWidth = width;
-      this.lastImageHeight = height;
-      this.lastImageRotation = rotation;
-    } else {
-      width = this.lastImageWidth;
-      height = this.lastImageHeight;
-      rotation = this.lastImageRotation;
-    }
-    if (!this.updateViewZoomLevel(rotation, width, height)) {
-      return;
-    }
-    let gl = this.gl;
-    if (!gl) {
-      return;
-    }
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.surfaceBuffer);
-    gl.enableVertexAttribArray(this.positionLocation);
-    gl.vertexAttribPointer(this.positionLocation, 2, gl.FLOAT, false, 0, 0);
+  protected override rotateCanvas({ width, height, rotation }: VideoFrame) {
+    super.rotateCanvas({ width, height, rotation });
+
+    if (!this.gl) return;
+
+    this.gl.viewport(0, 0, width!, height!);
+
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.surfaceBuffer);
+    this.gl.enableVertexAttribArray(this.positionLocation!);
+    this.gl.vertexAttribPointer(
+      this.positionLocation!,
+      2,
+      this.gl.FLOAT,
+      false,
+      0,
+      0
+    );
 
     // 4 vertex, 1(x1,y1), 2(x2,y1), 3(x2,y2), 4(x1,y2)
-    //  0: 1,2,4/4,2,3
+    // 0: 1,2,4/4,2,3
     // 90: 2,3,1/1,3,4
     // 180: 3,4,2/2,4,1
     // 270: 4,1,3/3,1,2
     const p1 = { x: 0, y: 0 };
-    const p2 = { x: width, y: 0 };
-    const p3 = { x: width, y: height };
-    const p4 = { x: 0, y: height };
+    const p2 = { x: width!, y: 0 };
+    const p3 = { x: width!, y: height! };
+    const p4 = { x: 0, y: height! };
     let pp1 = p1,
       pp2 = p2,
       pp3 = p3,
@@ -247,8 +311,8 @@ export class GlRenderer extends IRenderer {
         break;
       default:
     }
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
       new Float32Array([
         pp1.x,
         pp1.y,
@@ -263,341 +327,120 @@ export class GlRenderer extends IRenderer {
         pp3.x,
         pp3.y,
       ]),
-      gl.STATIC_DRAW
+      this.gl.STATIC_DRAW
     );
 
-    const resolutionLocation = gl.getUniformLocation(
-      this.program,
+    const resolutionLocation = this.gl.getUniformLocation(
+      this.program!,
       'u_resolution'
     );
-    gl.uniform2f(resolutionLocation, width, height);
-  }
-
-  public drawFrame(videoFrame: ShareVideoFrame) {
-    let error;
-    try {
-      this.renderImage({
-        width: videoFrame.width,
-        height: videoFrame.height,
-        left: 0,
-        top: 0,
-        right: videoFrame.yStride - videoFrame.width,
-        bottom: 0,
-        rotation: videoFrame.rotation || 0,
-        yplane: videoFrame.yBuffer,
-        uplane: videoFrame.uBuffer,
-        vplane: videoFrame.vBuffer,
-      });
-    } catch (err) {
-      error = err;
-    }
-    if (!this.gl || error) {
-      this.failInitRenderCB &&
-        this.failInitRenderCB({
-          error: 'webgl lost or webgl initialize failed',
-        });
-      this.failInitRenderCB = null;
-      return;
-    }
-  }
-
-  public refreshCanvas() {
-    if (this.lastImageWidth) {
-      this.updateViewZoomLevel(
-        this.lastImageRotation,
-        this.lastImageWidth,
-        this.lastImageHeight
-      );
-    }
-  }
-
-  private renderImage(image: {
-    width: number;
-    height: number;
-    left: number;
-    top: number;
-    right: number;
-    bottom: number;
-    rotation: number;
-    yplane: Uint8Array;
-    uplane: Uint8Array;
-    vplane: Uint8Array;
-  }) {
-    // Rotation, width, height, left, top, right, bottom, yplane, uplane, vplane
-
-    if (
-      image.width != this.initWidth ||
-      image.height != this.initHeight ||
-      image.rotation != this.initRotation
-    ) {
-      const view = this.parentElement!;
-      this.unbind();
-
-      this.initCanvas(view, image.width, image.height, image.rotation);
-      const ResizeObserver = window.ResizeObserver;
-      if (ResizeObserver) {
-        this.observer = new ResizeObserver(() => {
-          this.refreshCanvas && this.refreshCanvas();
-        });
-        this.observer.observe(view);
-      }
-    }
-    let gl = this.gl;
-    if (!gl) {
-      return;
-    }
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer);
-    const xWidth = image.width + image.left + image.right;
-    const xHeight = image.height + image.top + image.bottom;
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array([
-        image.left / xWidth,
-        image.bottom / xHeight,
-        1 - image.right / xWidth,
-        image.bottom / xHeight,
-        image.left / xWidth,
-        1 - image.top / xHeight,
-        image.left / xWidth,
-        1 - image.top / xHeight,
-        1 - image.right / xWidth,
-        image.bottom / xHeight,
-        1 - image.right / xWidth,
-        1 - image.top / xHeight,
-      ]),
-      gl.STATIC_DRAW
-    );
-    gl.enableVertexAttribArray(this.texCoordLocation);
-    gl.vertexAttribPointer(this.texCoordLocation, 2, gl.FLOAT, false, 0, 0);
-
-    this.uploadYuv(xWidth, xHeight, image.yplane, image.uplane, image.vplane);
-
-    this.updateCanvas(image.rotation, image.width, image.height);
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
-    this.renderImageCount += 1;
-
-    if (!this.firstFrameRender) {
-      this.firstFrameRender = true;
-      this.event.emit('ready');
-    }
-  }
-
-  private uploadYuv(
-    width: number,
-    height: number,
-    yplane: Uint8Array,
-    uplane: Uint8Array,
-    vplane: Uint8Array
-  ) {
-    let gl = this.gl;
-    if (!gl || !this.yTexture || !this.uTexture || !this.vTexture) {
-      return;
-    }
-
-    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, this.yTexture);
-
-    gl.texImage2D(
-      gl.TEXTURE_2D,
-      0,
-      gl.LUMINANCE,
-      width,
-      height,
-      0,
-      gl.LUMINANCE,
-      gl.UNSIGNED_BYTE,
-      yplane
-    );
-
-    gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_2D, this.uTexture);
-    gl.texImage2D(
-      gl.TEXTURE_2D,
-      0,
-      gl.LUMINANCE,
-      width / 2,
-      height / 2,
-      0,
-      gl.LUMINANCE,
-      gl.UNSIGNED_BYTE,
-      uplane
-    );
-
-    gl.activeTexture(gl.TEXTURE2);
-    gl.bindTexture(gl.TEXTURE_2D, this.vTexture);
-    ('');
-    gl.texImage2D(
-      gl.TEXTURE_2D,
-      0,
-      gl.LUMINANCE,
-      width / 2,
-      height / 2,
-      0,
-      gl.LUMINANCE,
-      gl.UNSIGNED_BYTE,
-      vplane
-    );
-  }
-
-  private deleteBuffer(buffer: any) {
-    if (buffer && this.gl) {
-      this.gl.deleteBuffer(buffer);
-    }
-  }
-
-  private deleteTexture(texture: any) {
-    if (texture && this.gl) {
-      this.gl.deleteTexture(texture);
-    }
-  }
-
-  private handleContextLost = (event: Event) => {
-    console.warn('webglcontextlost', event);
-    try {
-      this.canvas &&
-        this.canvas.removeEventListener(
-          'webglcontextlost',
-          this.handleContextLost,
-          false
-        );
-    } catch (error) {
-      logWarn('webglcontextlost error', error);
-    } finally {
-      this.gl = undefined;
-      this.failInitRenderCB &&
-        this.failInitRenderCB({
-          error: 'Browser not support! No WebGL detected.',
-        });
-    }
-  };
-
-  private initCanvas(
-    view: HTMLElement,
-    width: number,
-    height: number,
-    rotation: number
-  ) {
-    this.clientWidth = view.clientWidth;
-    this.clientHeight = view.clientHeight;
-
-    this.parentElement = view;
-
-    this.container = document.createElement('div');
-    this.container.style.width = '100%';
-    this.container.style.height = '100%';
-    this.container.style.display = 'flex';
-    this.container.style.justifyContent = 'center';
-    this.container.style.alignItems = 'center';
-    this.container.style.overflow = 'hidden';
-    this.parentElement.appendChild(this.container);
-
-    this.canvas = document.createElement('canvas');
-    if (rotation == 0 || rotation == 180) {
-      this.canvas.width = width;
-      this.canvas.height = height;
-    } else {
-      this.canvas.width = height;
-      this.canvas.height = width;
-    }
-    this.initWidth = width;
-    this.initHeight = height;
-    this.initRotation = rotation;
-
-    this.container.appendChild(this.canvas);
-    try {
-      // Try to grab the standard context. If it fails, fallback to experimental.
-      this.gl = this.canvas.getContext('webgl2', {
-        preserveDrawingBuffer: true,
-      });
-      // context list after toggle resolution on electron 12.0.6
-      this.canvas.addEventListener(
-        'webglcontextlost',
-        this.handleContextLost,
-        false
-      );
-    } catch (e) {
-      logWarn('webgl create happen some warming', this.gl, this.canvas);
-    }
-    if (!this.gl) {
-      this.failInitRenderCB &&
-        this.failInitRenderCB({
-          error: 'Browser not support! No WebGL detected.',
-        });
-      return;
-    }
-    const gl = this.gl as WebGL2RenderingContext;
-
-    // Set clear color to black, fully opaque
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    // Enable depth testing
-    gl.enable(gl.DEPTH_TEST);
-    // Near things obscure far things
-    gl.depthFunc(gl.LEQUAL);
-    // Clear the color as well as the depth buffer.
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-    // Setup GLSL program
-    this.program = createProgramFromSources(gl, [
-      vertexShaderSource,
-      yuvShaderSource,
-    ]);
-    this.gl.useProgram(this.program);
-
-    this.initTextures();
+    this.gl.uniform2f(resolutionLocation, width!, height!);
   }
 
   private initTextures() {
-    let gl = this.gl;
-    if (!gl) {
-      return;
-    }
-    let program = this.program;
+    if (!this.gl) return;
 
-    this.positionLocation = gl.getAttribLocation(program, 'a_position');
-    this.texCoordLocation = gl.getAttribLocation(program, 'a_texCoord');
+    this.positionLocation = this.gl.getAttribLocation(
+      this.program!,
+      'a_position'
+    );
+    this.texCoordLocation = this.gl.getAttribLocation(
+      this.program!,
+      'a_texCoord'
+    );
 
-    this.surfaceBuffer = gl.createBuffer();
-    this.texCoordBuffer = gl.createBuffer();
+    this.surfaceBuffer = this.gl.createBuffer();
+    this.texCoordBuffer = this.gl.createBuffer();
 
-    // Create a texture.
-    gl.activeTexture(gl.TEXTURE0);
-    this.yTexture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, this.yTexture);
-    // Set the parameters so we can render any size image.
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    const createTexture = (textureIndex: number) => {
+      if (!this.gl) return null;
 
-    gl.activeTexture(gl.TEXTURE1);
-    this.uTexture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, this.uTexture);
-    // Set the parameters so we can render any size image.
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+      // Create a texture.
+      this.gl.activeTexture(textureIndex);
+      const texture = this.gl.createTexture();
+      this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+      // Set the parameters so we can render any size
+      this.gl.texParameteri(
+        this.gl.TEXTURE_2D,
+        this.gl.TEXTURE_WRAP_S,
+        this.gl.CLAMP_TO_EDGE
+      );
+      this.gl.texParameteri(
+        this.gl.TEXTURE_2D,
+        this.gl.TEXTURE_WRAP_T,
+        this.gl.CLAMP_TO_EDGE
+      );
+      this.gl.texParameteri(
+        this.gl.TEXTURE_2D,
+        this.gl.TEXTURE_MIN_FILTER,
+        this.gl.NEAREST
+      );
+      this.gl.texParameteri(
+        this.gl.TEXTURE_2D,
+        this.gl.TEXTURE_MAG_FILTER,
+        this.gl.NEAREST
+      );
+      return texture;
+    };
 
-    gl.activeTexture(gl.TEXTURE2);
-    this.vTexture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, this.vTexture);
-    // Set the parameters so we can render any size image.
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    this.yTexture = createTexture(this.gl.TEXTURE0);
+    this.uTexture = createTexture(this.gl.TEXTURE1);
+    this.vTexture = createTexture(this.gl.TEXTURE2);
 
-    const y = gl.getUniformLocation(program, 'Ytex');
-    gl.uniform1i(y, 0); /* Bind Ytex to texture unit 0 */
+    const y = this.gl.getUniformLocation(this.program!, 'Ytex');
+    this.gl.uniform1i(y, 0); /* Bind Ytex to texture unit 0 */
 
-    const u = gl.getUniformLocation(program, 'Utex');
-    gl.uniform1i(u, 1); /* Bind Utex to texture unit 1 */
+    const u = this.gl.getUniformLocation(this.program!, 'Utex');
+    this.gl.uniform1i(u, 1); /* Bind Utex to texture unit 1 */
 
-    const v = gl.getUniformLocation(program, 'Vtex');
-    gl.uniform1i(v, 2); /* Bind Vtex to texture unit 2 */
+    const v = this.gl.getUniformLocation(this.program!, 'Vtex');
+    this.gl.uniform1i(v, 2); /* Bind Vtex to texture unit 2 */
   }
-}
 
-export default GlRenderer;
+  private releaseTextures() {
+    this.gl?.deleteProgram(this.program!);
+    this.program = undefined;
+
+    this.positionLocation = undefined;
+    this.texCoordLocation = undefined;
+
+    this.gl?.deleteTexture(this.yTexture);
+    this.gl?.deleteTexture(this.uTexture);
+    this.gl?.deleteTexture(this.vTexture);
+    this.yTexture = null;
+    this.uTexture = null;
+    this.vTexture = null;
+
+    this.gl?.deleteBuffer(this.texCoordBuffer);
+    this.gl?.deleteBuffer(this.surfaceBuffer);
+    this.texCoordBuffer = null;
+    this.surfaceBuffer = null;
+  }
+
+  private handleContextLost = (event: Event) => {
+    event.preventDefault();
+    logWarn('webglcontextlost', event);
+
+    this.releaseTextures();
+
+    this.fallback?.call(
+      null,
+      this,
+      new Error('Browser not support! No WebGL detected.')
+    );
+  };
+
+  private handleContextRestored = (event: Event) => {
+    event.preventDefault();
+    logWarn('webglcontextrestored', event);
+
+    // Setup GLSL program
+    this.program = createProgramFromSources(this.gl, [
+      vertexShaderSource,
+      yuvShaderSource,
+    ]) as WebGLProgram;
+    this.gl?.useProgram(this.program);
+
+    this.initTextures();
+  };
+}

@@ -1,42 +1,44 @@
 import {
+  AgoraEnv,
   ChannelProfileType,
   ClientRoleType,
-  ErrorCodeType,
   IRtcEngineEventHandler,
-  LocalVideoStreamError,
-  LocalVideoStreamState,
-  RtcConnection,
-  RtcStats,
-  UserOfflineReasonType,
-  VideoCanvas,
+  IRtcEngineEx,
+  LogFilterType,
   VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
 import React, { ReactElement } from 'react';
 
 import {
+  BaseAudioComponentState,
   BaseComponent,
-  BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import { AgoraDropdown } from '../../../components/ui';
+import { AgoraTextInput } from '../../../components/ui';
 import Config from '../../../config/agora.config';
-import { arrayToItems } from '../../../utils';
 import { askMediaAccess } from '../../../utils/permissions';
 
-interface State extends BaseVideoComponentState {}
+interface State extends BaseAudioComponentState {
+  fps: number;
+  decodeRemoteUserUid: number;
+}
 
-export default class JoinChannelVideo
+export default class VideoDecoder
   extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler
 {
+  protected engine?: IRtcEngineEx;
+
   protected createState(): State {
     return {
       appId: Config.appId,
+      fps: 0,
       enableVideo: true,
       channelId: Config.channelId,
       token: Config.token,
       uid: Config.uid,
       joinChannelSuccess: false,
+      decodeRemoteUserUid: 7,
       remoteUsers: [],
       startPreview: false,
     };
@@ -50,25 +52,29 @@ export default class JoinChannelVideo
     if (!appId) {
       this.error(`appId is invalid`);
     }
-
-    this.engine = createAgoraRtcEngine();
+    this.engine = createAgoraRtcEngine() as IRtcEngineEx;
+    // need to enable WebCodecsDecoder before call engine.initialize
+    // if enableWebCodecsDecoder is true, the video stream will be decoded by WebCodecs
+    // will automatically register videoEncodedFrameObserver
+    // videoEncodedFrameObserver will be released when engine.release
+    AgoraEnv.enableWebCodecsDecoder = true;
     this.engine.initialize({
       appId,
       logConfig: { filePath: Config.logFilePath },
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
+    this.engine.setLogFilter(LogFilterType.LogFilterDebug);
     this.engine.registerEventHandler(this);
 
     // Need granted the microphone and camera permission
-    await askMediaAccess(['microphone', 'camera']);
+    await askMediaAccess(['microphone', 'camera', 'screen']);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();
-
     // Start preview before joinChannel
-    this.engine.startPreview();
+    this.engine?.startPreview();
     this.setState({ startPreview: true });
   }
 
@@ -99,78 +105,23 @@ export default class JoinChannelVideo
   }
 
   /**
-   * Step 3: leaveChannel
+   * Step 4: leaveChannel
    */
   protected leaveChannel() {
     this.engine?.leaveChannel();
   }
 
   /**
-   * Step 4: releaseRtcEngine
+   * Step 5: releaseRtcEngine
    */
   protected releaseRtcEngine() {
     this.engine?.unregisterEventHandler(this);
     this.engine?.release();
   }
 
-  onError(err: ErrorCodeType, msg: string) {
-    super.onError(err, msg);
-  }
-
-  onJoinChannelSuccess(connection: RtcConnection, elapsed: number) {
-    super.onJoinChannelSuccess(connection, elapsed);
-  }
-
-  onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
-    super.onLeaveChannel(connection, stats);
-  }
-
-  onUserJoined(connection: RtcConnection, remoteUid: number, elapsed: number) {
-    super.onUserJoined(connection, remoteUid, elapsed);
-  }
-
-  onUserOffline(
-    connection: RtcConnection,
-    remoteUid: number,
-    reason: UserOfflineReasonType
-  ) {
-    super.onUserOffline(connection, remoteUid, reason);
-  }
-
-  onVideoDeviceStateChanged(
-    deviceId: string,
-    deviceType: number,
-    deviceState: number
-  ) {
-    this.info(
-      'onVideoDeviceStateChanged',
-      'deviceId',
-      deviceId,
-      'deviceType',
-      deviceType,
-      'deviceState',
-      deviceState
-    );
-  }
-
-  onLocalVideoStateChanged(
-    source: VideoSourceType,
-    state: LocalVideoStreamState,
-    error: LocalVideoStreamError
-  ) {
-    this.info(
-      'onLocalVideoStateChanged',
-      'source',
-      source,
-      'state',
-      state,
-      'error',
-      error
-    );
-  }
-
   protected renderUsers(): ReactElement | undefined {
-    const { startPreview, joinChannelSuccess, remoteUsers } = this.state;
+    let { decodeRemoteUserUid, startPreview, remoteUsers, joinChannelSuccess } =
+      this.state;
     return (
       <>
         {!!startPreview || joinChannelSuccess
@@ -182,7 +133,10 @@ export default class JoinChannelVideo
           ? remoteUsers.map((item) =>
               this.renderUser({
                 uid: item,
-                enableFps: true,
+                // Use WebCodecs to decode video stream
+                // only support one remote stream to decode at the same time for now
+                useWebCodecsDecoder: item === decodeRemoteUserUid,
+                enableFps: item === decodeRemoteUserUid,
                 sourceType: VideoSourceType.VideoSourceRemote,
               })
             )
@@ -191,27 +145,23 @@ export default class JoinChannelVideo
     );
   }
 
-  protected renderVideo(user: VideoCanvas): ReactElement | undefined {
-    return super.renderVideo(user);
-  }
-
   protected renderConfiguration(): ReactElement | undefined {
-    const { joinChannelSuccess, remoteUsers } = this.state;
     return (
       <>
-        {joinChannelSuccess ? (
-          <AgoraDropdown
-            title={'Append renderer to remote users'}
-            items={arrayToItems(remoteUsers)}
-            onValueChange={(value) => {
-              this.setState((prev) => {
-                return {
-                  remoteUsers: [...prev.remoteUsers, value],
-                };
-              });
-            }}
-          />
-        ) : undefined}
+        <AgoraTextInput
+          disabled={this.state.joinChannelSuccess}
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              decodeRemoteUserUid:
+                text === '' ? this.createState().decodeRemoteUserUid : +text,
+            });
+          }}
+          numberKeyboard={true}
+          placeholder={`useWebCodecsDecoder Uid (defaults: ${
+            this.createState().decodeRemoteUserUid
+          })`}
+        />
       </>
     );
   }

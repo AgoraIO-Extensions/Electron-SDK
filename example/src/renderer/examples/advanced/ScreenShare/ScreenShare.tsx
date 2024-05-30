@@ -10,6 +10,7 @@ import {
   RtcStats,
   ScreenCaptureSourceInfo,
   ScreenCaptureSourceType,
+  ScreenScenarioType,
   UserOfflineReasonType,
   VideoSourceType,
   createAgoraRtcEngine,
@@ -51,6 +52,8 @@ interface State extends BaseVideoComponentState {
   highLightWidth: number;
   highLightColor: number;
   enableHighLight: boolean;
+  videoCodec: number;
+  videoCodecList: { key: string; value: number }[];
   startScreenCapture: boolean;
   publishScreenCapture: boolean;
 }
@@ -73,19 +76,30 @@ export default class ScreenShare
       remoteUsers: [],
       startPreview: false,
       token2: '',
-      uid2: 0,
+      uid2: 7,
       sources: [],
       targetSource: undefined,
-      width: 1920,
-      height: 1080,
-      frameRate: 15,
-      bitrate: 0,
+      width: 3840,
+      height: 2160,
+      frameRate: 60,
+      bitrate: 20000,
       captureMouseCursor: true,
       windowFocus: false,
       excludeWindowList: [],
       highLightWidth: 0,
       highLightColor: 0xff8cbf26,
       enableHighLight: false,
+      videoCodec: 2,
+      videoCodecList: [
+        {
+          key: 'h264',
+          value: 1,
+        },
+        {
+          key: 'h265',
+          value: 2,
+        },
+      ],
       startScreenCapture: false,
       publishScreenCapture: false,
     };
@@ -108,6 +122,21 @@ export default class ScreenShare
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+    this.engine.setScreenCaptureScenario(
+      ScreenScenarioType.ScreenScenarioGaming
+    );
+    this.engine.setParameters(
+      JSON.stringify({ 'engine.video.enable_hw_encoder': true })
+    );
+    this.engine.setParameters(
+      JSON.stringify({ 'che.video.show_wgc_border': 1 })
+    );
+    this.engine.setParameters(
+      JSON.stringify({ 'rtc.win_allow_directx': false })
+    );
+    this.engine.setParameters(
+      JSON.stringify({ 'che.video.enable_promote_gpu_priority': true })
+    );
 
     // Need granted the microphone and camera permission
     await askMediaAccess(['microphone', 'camera', 'screen']);
@@ -180,12 +209,17 @@ export default class ScreenShare
       highLightWidth,
       highLightColor,
       enableHighLight,
+      videoCodec,
     } = this.state;
 
     if (!targetSource) {
       this.error('targetSource is invalid');
       return;
     }
+
+    this.engine?.setParameters(
+      JSON.stringify({ 'che.video.videoCodecIndex': videoCodec })
+    );
 
     if (
       targetSource.type ===
@@ -399,7 +433,6 @@ export default class ScreenShare
         {startScreenCapture ? (
           <RtcSurfaceView
             canvas={{
-              uid: 0,
               sourceType: VideoSourceType.VideoSourceScreen,
               renderMode: RenderModeType.RenderModeFit,
             }}
@@ -421,6 +454,8 @@ export default class ScreenShare
       highLightColor,
       enableHighLight,
       publishScreenCapture,
+      videoCodecList,
+      videoCodec,
     } = this.state;
     return (
       <>
@@ -568,6 +603,21 @@ export default class ScreenShare
           value={enableHighLight}
           onValueChange={(value) => {
             this.setState({ enableHighLight: value });
+          }}
+        />
+        <AgoraDropdown
+          title={'videoCodec'}
+          items={videoCodecList?.map((value) => {
+            return {
+              value: value.value!,
+              label: value.key!,
+            };
+          })}
+          value={videoCodec}
+          onValueChange={(value, index) => {
+            this.setState((preState) => {
+              return { videoCodec: preState.videoCodecList?.at(index)?.value! };
+            });
           }}
         />
         {enableHighLight ? (

@@ -456,7 +456,6 @@ export default class LocalVideoTranscoder
         {startLocalVideoTranscoder
           ? this.renderUser({
               renderMode: RenderModeType.RenderModeFit,
-              uid: 0,
               sourceType: VideoSourceType.VideoSourceTranscoded,
             })
           : undefined}
@@ -576,6 +575,7 @@ export default class LocalVideoTranscoder
             canvas={{
               mediaPlayerId: this.player?.getMediaPlayerId(),
               sourceType: VideoSourceType.VideoSourceMediaPlayer,
+              renderMode: RenderModeType.RenderModeFit,
             }}
           />
         ) : undefined}
