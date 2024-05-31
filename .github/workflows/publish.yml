@@ -12,9 +12,14 @@ on:
         description: 'Do not touch or write anything, but show the commands'
         default: true
         type: boolean
+      publish-npm:
+        description: 'publish npm'
+        default: true
+        type: boolean
 
 jobs:
   release-it:
+    if: ${{ inputs.publish-npm }}
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -43,6 +48,9 @@ jobs:
           git config --global user.name "${{ secrets.GIT_USERNAME }}"
           yarn release ${{ inputs.increment }} --ci --no-git.tag --no-github.release --npm.allowSameVersion
 
+  update-example:
+    runs-on: ubuntu-latest
+    steps:
       - name: Get Package Info
         if: ${{ !inputs.dry-run }}
         id: package-info
