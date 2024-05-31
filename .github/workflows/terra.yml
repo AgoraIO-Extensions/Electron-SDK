@@ -23,6 +23,9 @@ jobs:
           generate-code: true
           generate-comment: true
           generate-code-command: |
+            sh generate-prepare.sh
+            yarn config set npmAuthToken ${{ secrets.GH_TOKEN }}
+            yarn config set npmAlwaysAuth true
             sh generate-code.sh
           generate-comment-command: |
             sh generate-comment.sh
