@@ -55,7 +55,7 @@ export abstract class IAudioDeviceManager {
   abstract getPlaybackDevice(): string;
 
   /**
-   * Retrieves the audio playback device associated with the device ID.
+   * Retrieves the information of the audio playback device.
    *
    * @returns
    * An AudioDeviceInfo object, which contains the ID and device name of the audio devices.
@@ -105,7 +105,7 @@ export abstract class IAudioDeviceManager {
   abstract getRecordingDevice(): string;
 
   /**
-   * Retrieves the volume of the audio recording device.
+   * Retrieves the information of the audio recording device.
    *
    * @returns
    * An AudioDeviceInfo object, which includes the device ID and device name.

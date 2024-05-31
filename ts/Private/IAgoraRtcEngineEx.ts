@@ -28,13 +28,7 @@ import {
  * Contains connection information.
  */
 export class RtcConnection {
-  /**
-   * The channel name.
-   */
   channelId?: string;
-  /**
-   * The ID of the local user.
-   */
   localUid?: number;
 }
 
@@ -51,6 +45,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    *  If you are already in a channel, you cannot rejoin it with the same user ID.
    *  If you want to join the same channel from different devices, ensure that the user IDs are different for all devices.
    *  Ensure that the App ID you use to generate the token is the same as the App ID used when creating the IRtcEngine instance.
+   *  If you choose the Testing Mode (using an App ID for authentication) for your project and call this method to join a channel, you will automatically exit the channel after 24 hours.
    *
    * @param token The token generated on your server for authentication. If you need to join different channels at the same time or switch between channels, Agora recommends using a wildcard token so that you don't need to apply for a new token every time joining a channel.
    * @param connection The connection information. See RtcConnection.
@@ -113,7 +108,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * Sets the video encoder configuration.
    *
-   * Sets the encoder configuration for the local video. Each configuration profile corresponds to a set of video parameters, including the resolution, frame rate, and bitrate. The config specified in this method is the maximum value under ideal network conditions. If the video engine cannot render the video using the specified config due to unreliable network conditions, the parameters further down the list are considered until a successful configuration is found.
+   * Sets the encoder configuration for the local video. Each configuration profile corresponds to a set of video parameters, including the resolution, frame rate, and bitrate.
    *
    * @param config Video profile. See VideoEncoderConfiguration.
    * @param connection The connection information. See RtcConnection.
@@ -487,7 +482,10 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    *  The playback volume here refers to the mixed volume of a specified remote user.
    *
    * @param uid The user ID of the remote user.
-   * @param volume Audio mixing volume. The value ranges between 0 and 100. The default value is 100, which means the original volume.
+   * @param volume The volume of the user. The value range is [0,400].
+   *  0: Mute.
+   *  100: (Default) The original volume.
+   *  400: Four times the original volume (amplifying the audio signals by four times).
    * @param connection The connection information. See RtcConnection.
    *
    * @returns
@@ -513,7 +511,17 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   abstract getConnectionStateEx(connection: RtcConnection): ConnectionStateType;
 
   /**
-   * @ignore
+   * Enables or disables the built-in encryption.
+   *
+   * All users in the same channel must use the same encryption mode and encryption key. After the user leaves the channel, the SDK automatically disables the built-in encryption. To enable the built-in encryption, call this method before the user joins the channel again. In scenarios requiring high security, Agora recommends calling this method to enable the built-in encryption before joining a channel.
+   *
+   * @param connection The connection information. See RtcConnection.
+   * @param enabled Whether to enable built-in encryption: true : Enable the built-in encryption. false : (Default) Disable the built-in encryption.
+   * @param config Built-in encryption configurations. See EncryptionConfig.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract enableEncryptionEx(
     connection: RtcConnection,
@@ -925,7 +933,15 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   abstract startMediaRenderingTracingEx(connection: RtcConnection): number;
 
   /**
-   * @ignore
+   * Gets the call ID with the connection ID.
+   *
+   * Call this method after joining a channel. When a user joins a channel on a client, a callId is generated to identify the call from the client. You can call this method to get the callId parameter, and pass it in when calling methods such as rate and complain.
+   *
+   * @param connection The connection information. See RtcConnection.
+   *
+   * @returns
+   * The current call ID, if the method succeeds.
+   *  An empty string, if the method call fails.
    */
   abstract getCallIdEx(connection: RtcConnection): string;
 }

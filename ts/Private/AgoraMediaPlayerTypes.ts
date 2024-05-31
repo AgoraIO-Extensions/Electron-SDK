@@ -265,57 +265,18 @@ export enum PlayerPreloadEvent {
  * The detailed information of the media stream.
  */
 export class PlayerStreamInfo {
-  /**
-   * The index of the media stream.
-   */
   streamIndex?: number;
-  /**
-   * The type of the media stream. See MediaStreamType.
-   */
   streamType?: MediaStreamType;
-  /**
-   * The codec of the media stream.
-   */
   codecName?: string;
-  /**
-   * The language of the media stream.
-   */
   language?: string;
-  /**
-   * This parameter only takes effect for video streams, and indicates the video frame rate (fps).
-   */
   videoFrameRate?: number;
-  /**
-   * This parameter only takes effect for video streams, and indicates the video bitrate (bps).
-   */
   videoBitRate?: number;
-  /**
-   * This parameter only takes effect for video streams, and indicates the video width (pixel).
-   */
   videoWidth?: number;
-  /**
-   * This parameter only takes effect for video streams, and indicates the video height (pixel).
-   */
   videoHeight?: number;
-  /**
-   * This parameter only takes effect for video streams, and indicates the video rotation angle.
-   */
   videoRotation?: number;
-  /**
-   * This parameter only takes effect for audio streams, and indicates the audio sample rate (Hz).
-   */
   audioSampleRate?: number;
-  /**
-   * This parameter only takes effect for audio streams, and indicates the audio channel number.
-   */
   audioChannels?: number;
-  /**
-   * This parameter only takes effect for audio streams, and indicates the bit number of each audio sample.
-   */
   audioBitsPerSample?: number;
-  /**
-   * The total duration (ms) of the media stream.
-   */
   duration?: number;
 }
 
@@ -323,13 +284,7 @@ export class PlayerStreamInfo {
  * Information about the video bitrate of the media resource being played.
  */
 export class SrcInfo {
-  /**
-   * The video bitrate (Kbps) of the media resource being played.
-   */
   bitrateInKbps?: number;
-  /**
-   * The name of the media resource.
-   */
   name?: string;
 }
 
@@ -351,17 +306,8 @@ export enum MediaPlayerMetadataType {
  * Statistics about the media files being cached.
  */
 export class CacheStatistics {
-  /**
-   * The size (bytes) of the media file being played.
-   */
   fileSize?: number;
-  /**
-   * The size (bytes) of the media file that you want to cache.
-   */
   cacheSize?: number;
-  /**
-   * The size (bytes) of the media file that has been downloaded.
-   */
   downloadSize?: number;
 }
 
@@ -369,17 +315,8 @@ export class CacheStatistics {
  * Information related to the media player.
  */
 export class PlayerUpdatedInfo {
-  /**
-   * @ignore
-   */
   playerId?: string;
-  /**
-   * The ID of a deivce.
-   */
   deviceId?: string;
-  /**
-   * @ignore
-   */
   cacheStatistics?: CacheStatistics;
 }
 
@@ -387,39 +324,12 @@ export class PlayerUpdatedInfo {
  * Information related to the media file to be played and the playback scenario configurations.
  */
 export class MediaSource {
-  /**
-   * The URL of the media file to be played.
-   */
   url?: string;
-  /**
-   * The URI (Uniform Resource Identifier) of the media file.
-   */
   uri?: string;
-  /**
-   * The starting position (ms) for playback. The default value is 0.
-   */
   startPos?: number;
-  /**
-   * Whether to enable autoplay once the media file is opened: true : (Default) Enables autoplay. false : Disables autoplay. If autoplay is disabled, you need to call the play method to play a media file after it is opened.
-   */
   autoPlay?: boolean;
-  /**
-   * Whether to cache the media file when it is being played: true :Enables caching. false : (Default) Disables caching.
-   *  Agora only supports caching on-demand audio and video streams that are not transmitted in HLS protocol.
-   *  If you need to enable caching, pass in a value to uri; otherwise, caching is based on the url of the media file.
-   *  If you enable this function, the Media Player caches part of the media file being played on your local device, and you can play the cached media file without internet connection. The statistics about the media file being cached are updated every second after the media file is played. See CacheStatistics.
-   */
   enableCache?: boolean;
-  /**
-   * Whether to allow the selection of different audio tracks when playing this media file: true : Allow to select different audio tracks. false : (Default) Do not allow to select different audio tracks. If you need to set different audio tracks for local playback and publishing to the channel, you need to set this parameter to true, and then call the selectMultiAudioTrack method to select the audio track.
-   */
   enableMultiAudioTrack?: boolean;
-  /**
-   * Whether the media resource to be opened is a live stream or on-demand video distributed through Media Broadcast service: true : The media resource to be played is a live or on-demand video distributed through Media Broadcast service. false : (Default) The media resource is not a live stream or on-demand video distributed through Media Broadcast service. If you need to open a live stream or on-demand video distributed through Broadcast Streaming service, pass in the URL of the media resource to url, and set isAgoraSource as true; otherwise, you don't need to set the isAgoraSource parameter.
-   */
   isAgoraSource?: boolean;
-  /**
-   * Whether the media resource to be opened is a live stream: true : The media resource is a live stream. false : (Default) The media resource is not a live stream. If the media resource you want to open is a live stream, Agora recommends that you set this parameter as true so that the live stream can be loaded more quickly. If the media resource you open is not a live stream, but you set isLiveSource as true, the media resource is not to be loaded more quickly.
-   */
   isLiveSource?: boolean;
 }

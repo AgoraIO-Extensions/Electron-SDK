@@ -100,12 +100,26 @@ export abstract class IMediaEngine {
   ): number;
 
   /**
-   * @ignore
+   * Registers a facial information observer.
+   *
+   * You can call this method to register the onFaceInfo callback to receive the facial information processed by Agora speech driven extension. When calling this method to register a facial information observer, you can register callbacks in the IFaceInfoObserver class as needed. After successfully registering the facial information observer, the SDK triggers the callback you have registered when it captures the facial information converted by the speech driven extension.
+   *  Ensure that you call this method before joining a channel.
+   *  Before calling this method, you need to make sure that the speech driven extension has been enabled by calling enableExtension.
+   *
+   * @param observer Facial information observer, see IFaceInfoObserver.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract registerFaceInfoObserver(observer: IFaceInfoObserver): number;
 
   /**
    * Pushes the external audio frame.
+   *
+   * Before calling this method to push external audio data, perform the following steps:
+   *  Call createCustomAudioTrack to create a custom audio track and get the audio track ID.
+   *  Call joinChannel to join the channel. In ChannelMediaOptions, set publishCustomAduioTrackId to the audio track ID that you want to publish, and set publishCustomAudioTrack to true.
    *
    * @param frame The external audio frame. See AudioFrame.
    * @param trackId The audio track ID. If you want to publish a custom external audio source, set this parameter to the ID of the corresponding custom audio track you want to publish.
@@ -307,4 +321,15 @@ export abstract class IMediaEngine {
   abstract unregisterVideoEncodedFrameObserver(
     observer: IVideoEncodedFrameObserver
   ): number;
+
+  /**
+   * Unregisters a facial information observer.
+   *
+   * @param observer Facial information observer, see IFaceInfoObserver.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
+   */
+  abstract unregisterFaceInfoObserver(observer: IFaceInfoObserver): number;
 }

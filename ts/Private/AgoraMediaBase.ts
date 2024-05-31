@@ -116,11 +116,11 @@ export enum AudioRoute {
    */
   RouteHeadsetbluetooth = 5,
   /**
-   * 7: The audio route is a USB peripheral device. (For macOS only)
+   * 6: The audio route is a USB peripheral device. (For macOS only)
    */
   RouteUsb = 6,
   /**
-   * 6: The audio route is an HDMI peripheral device. (For macOS only)
+   * 7: The audio route is an HDMI peripheral device. (For macOS only)
    */
   RouteHdmi = 7,
   /**
@@ -155,17 +155,8 @@ export enum BytesPerSample {
  * @ignore
  */
 export class AudioParameters {
-  /**
-   * @ignore
-   */
   sample_rate?: number;
-  /**
-   * @ignore
-   */
   channels?: number;
-  /**
-   * @ignore
-   */
   frames_per_buffer?: number;
 }
 
@@ -198,28 +189,13 @@ export enum TrackAudioMixedPolicyType {
 }
 
 /**
- * The AudioDeviceInfo class that contains the ID and device name of the audio devices.
+ * The AudioDeviceInfo class that contains the ID, name and type of the audio devices.
  */
 export class AudioDeviceInfo {
-  /**
-   * The device name.
-   */
   deviceName?: string;
-  /**
-   * The device ID.
-   */
   deviceId?: string;
-  /**
-   * @ignore
-   */
   isCurrentSelected?: boolean;
-  /**
-   * @ignore
-   */
   isPlayoutDevice?: boolean;
-  /**
-   * @ignore
-   */
   routing?: AudioRoute;
 }
 
@@ -252,7 +228,7 @@ export enum MediaSourceType {
    */
   SecondaryScreenSource = 5,
   /**
-   * 6. Custom video source.
+   * 6: Custom video source.
    */
   CustomVideoSource = 6,
   /**
@@ -333,13 +309,7 @@ export enum ContentInspectType {
  * A ContentInspectModule structure used to configure the frequency of video screenshot and upload.
  */
 export class ContentInspectModule {
-  /**
-   * Types of functional module. See ContentInspectType.
-   */
   type?: ContentInspectType;
-  /**
-   * The frequency (s) of video screenshot and upload. The value should be set as larger than 0. The default value is 0, the SDK does not take screenshots. Agora recommends that you set the value as 10; you can also adjust it according to your business needs.
-   */
   interval?: number;
 }
 
@@ -347,21 +317,9 @@ export class ContentInspectModule {
  * Configuration of video screenshot and upload.
  */
 export class ContentInspectConfig {
-  /**
-   * Additional information on the video content (maximum length: 1024 Bytes). The SDK sends the screenshots and additional information on the video content to the Agora server. Once the video screenshot and upload process is completed, the Agora server sends the additional information and the callback notification to your server.
-   */
   extraInfo?: string;
-  /**
-   * @ignore
-   */
   serverConfig?: string;
-  /**
-   * Functional module. See ContentInspectModule. A maximum of 32 ContentInspectModule instances can be configured, and the value range of MAX_CONTENT_INSPECT_MODULE_COUNT is an integer in [1,32]. A function module can only be configured with one instance at most. Currently only the video screenshot and upload function is supported.
-   */
   modules?: ContentInspectModule[];
-  /**
-   * The number of functional modules, that is,the number of configured ContentInspectModule instances, must be the same as the number of instances configured in modules. The maximum number is 32.
-   */
   moduleCount?: number;
 }
 
@@ -369,13 +327,7 @@ export class ContentInspectConfig {
  * @ignore
  */
 export class PacketOptions {
-  /**
-   * @ignore
-   */
   timestamp?: number;
-  /**
-   * @ignore
-   */
   audioLevelIndication?: number;
 }
 
@@ -383,13 +335,7 @@ export class PacketOptions {
  * @ignore
  */
 export class AudioEncodedFrameInfo {
-  /**
-   * @ignore
-   */
   sendTs?: number;
-  /**
-   * @ignore
-   */
   codec?: number;
 }
 
@@ -397,29 +343,11 @@ export class AudioEncodedFrameInfo {
  * The parameters of the audio frame in PCM format.
  */
 export class AudioPcmFrame {
-  /**
-   * The timestamp (ms) of the audio frame.
-   */
   capture_timestamp?: number;
-  /**
-   * The number of samples per channel in the audio frame.
-   */
   samples_per_channel_?: number;
-  /**
-   * Audio sample rate (Hz).
-   */
   sample_rate_hz_?: number;
-  /**
-   * The number of audio channels.
-   */
   num_channels_?: number;
-  /**
-   * The number of bytes per sample.
-   */
   bytes_per_sample?: BytesPerSample;
-  /**
-   * The audio frame.
-   */
   data_?: number[];
 }
 
@@ -599,81 +527,24 @@ export enum VideoBufferType {
  * The external video frame.
  */
 export class ExternalVideoFrame {
-  /**
-   * The video type. See VideoBufferType.
-   */
   type?: VideoBufferType;
-  /**
-   * The pixel format. See VideoPixelFormat.
-   */
   format?: VideoPixelFormat;
-  /**
-   * Video frame buffer.
-   */
   buffer?: Uint8Array;
-  /**
-   * Line spacing of the incoming video frame, which must be in pixels instead of bytes. For textures, it is the width of the texture.
-   */
   stride?: number;
-  /**
-   * Height of the incoming video frame.
-   */
   height?: number;
-  /**
-   * Raw data related parameter. The number of pixels trimmed from the left. The default value is 0.
-   */
   cropLeft?: number;
-  /**
-   * Raw data related parameter. The number of pixels trimmed from the top. The default value is 0.
-   */
   cropTop?: number;
-  /**
-   * Raw data related parameter. The number of pixels trimmed from the right. The default value is 0.
-   */
   cropRight?: number;
-  /**
-   * Raw data related parameter. The number of pixels trimmed from the bottom. The default value is 0.
-   */
   cropBottom?: number;
-  /**
-   * Raw data related parameter. The clockwise rotation of the video frame. You can set the rotation angle as 0, 90, 180, or 270. The default value is 0.
-   */
   rotation?: number;
-  /**
-   * Timestamp (ms) of the incoming video frame. An incorrect timestamp results in frame loss or unsynchronized audio and video.
-   */
   timestamp?: number;
-  /**
-   * This parameter only applies to video data in Texture format. Texture ID of the video frame.
-   */
   eglType?: EglContextType;
-  /**
-   * This parameter only applies to video data in Texture format. Incoming 4 × 4 transformational matrix. The typical value is a unit matrix.
-   */
   textureId?: number;
-  /**
-   * This parameter only applies to video data in Texture format. Incoming 4 × 4 transformational matrix. The typical value is a unit matrix.
-   */
   matrix?: number[];
-  /**
-   * This parameter only applies to video data in Texture format. The MetaData buffer. The default value is NULL.
-   */
   metadata_buffer?: Uint8Array;
-  /**
-   * This parameter only applies to video data in Texture format. The MetaData size. The default value is 0.
-   */
   metadata_size?: number;
-  /**
-   * @ignore
-   */
   alphaBuffer?: Uint8Array;
-  /**
-   * @ignore
-   */
   fillAlphaBuffer?: boolean;
-  /**
-   * This parameter only applies to video data in Windows Texture format. It represents an index of an ID3D11Texture2D texture object used by the video frame in the ID3D11Texture2D array.
-   */
   texture_slice_index?: number;
 }
 
@@ -683,81 +554,24 @@ export class ExternalVideoFrame {
  * Note that the buffer provides a pointer to a pointer. This interface cannot modify the pointer of the buffer, but it can modify the content of the buffer.
  */
 export class VideoFrame {
-  /**
-   * The pixel format. See VideoPixelFormat.
-   */
   type?: VideoPixelFormat;
-  /**
-   * The width of the video, in pixels.
-   */
   width?: number;
-  /**
-   * The height of the video, in pixels.
-   */
   height?: number;
-  /**
-   * For YUV data, the line span of the Y buffer; for RGBA data, the total data length.
-   */
   yStride?: number;
-  /**
-   * For YUV data, the line span of the U buffer; for RGBA data, the value is 0.
-   */
   uStride?: number;
-  /**
-   * For YUV data, the line span of the V buffer; for RGBA data, the value is 0.
-   */
   vStride?: number;
-  /**
-   * For YUV data, the pointer to the Y buffer; for RGBA data, the data buffer.
-   */
   yBuffer?: Uint8Array;
-  /**
-   * For YUV data, the pointer to the U buffer; for RGBA data, the value is 0.
-   */
   uBuffer?: Uint8Array;
-  /**
-   * For YUV data, the pointer to the V buffer; for RGBA data, the value is 0.
-   */
   vBuffer?: Uint8Array;
-  /**
-   * The clockwise rotation of the video frame before rendering. Supported values include 0, 90, 180, and 270 degrees.
-   */
   rotation?: number;
-  /**
-   * The Unix timestamp (ms) when the video frame is rendered. This timestamp can be used to guide the rendering of the video frame. It is required.
-   */
   renderTimeMs?: number;
-  /**
-   * Reserved for future use.
-   */
   avsync_type?: number;
-  /**
-   * This parameter only applies to video data in Texture format. The MetaData buffer. The default value is NULL.
-   */
   metadata_buffer?: Uint8Array;
-  /**
-   * This parameter only applies to video data in Texture format. The MetaData size. The default value is 0.
-   */
   metadata_size?: number;
-  /**
-   * This parameter only applies to video data in Texture format. Texture ID.
-   */
   textureId?: number;
-  /**
-   * This parameter only applies to video data in Texture format. Incoming 4 × 4 transformational matrix. The typical value is a unit matrix.
-   */
   matrix?: number[];
-  /**
-   * @ignore
-   */
   alphaBuffer?: Uint8Array;
-  /**
-   * @ignore
-   */
   pixelBuffer?: Uint8Array;
-  /**
-   * The meta information in the video frame. To use this parameter, please.
-   */
   metaInfo?: IVideoFrameMetaInfo;
 }
 
@@ -829,51 +643,16 @@ export enum AudioFrameType {
  * Raw audio data.
  */
 export class AudioFrame {
-  /**
-   * The type of the audio frame. See AudioFrameType.
-   */
   type?: AudioFrameType;
-  /**
-   * The number of samples per channel in the audio frame.
-   */
   samplesPerChannel?: number;
-  /**
-   * The number of bytes per sample. The number of bytes per audio sample, which is usually 16-bit (2-byte).
-   */
   bytesPerSample?: BytesPerSample;
-  /**
-   * The number of audio channels (the data are interleaved if it is stereo).
-   *  1: Mono.
-   *  2: Stereo.
-   */
   channels?: number;
-  /**
-   * The number of samples per channel in the audio frame.
-   */
   samplesPerSec?: number;
-  /**
-   * The data buffer of the audio frame. When the audio frame uses a stereo channel, the data buffer is interleaved. The size of the data buffer is as follows: buffer = samples × channels × bytesPerSample.
-   */
   buffer?: Uint8Array;
-  /**
-   * The timestamp (ms) of the external audio frame. You can use this timestamp to restore the order of the captured audio frame, and synchronize audio and video frames in video scenarios, including scenarios where external video sources are used.
-   */
   renderTimeMs?: number;
-  /**
-   * Reserved for future use.
-   */
   avsync_type?: number;
-  /**
-   * @ignore
-   */
   presentationMs?: number;
-  /**
-   * @ignore
-   */
   audioTrackNumber?: number;
-  /**
-   * @ignore
-   */
   rtpTimestamp?: number;
 }
 
@@ -915,28 +694,9 @@ export enum AudioFramePosition {
  *  Ensure that the sample interval ≥ 0.01 (s).
  */
 export class AudioParams {
-  /**
-   * The audio sample rate (Hz), which can be set as one of the following values:
-   *  8000.
-   *  (Default) 16000.
-   *  32000.
-   *  44100
-   *  48000
-   */
   sample_rate?: number;
-  /**
-   * The number of audio channels, which can be set as either of the following values:
-   *  1: (Default) Mono.
-   *  2: Stereo.
-   */
   channels?: number;
-  /**
-   * The use mode of the audio data. See RawAudioFrameOpModeType.
-   */
   mode?: RawAudioFrameOpModeType;
-  /**
-   * The number of samples, such as 1024 for the media push.
-   */
   samples_per_call?: number;
 }
 
@@ -951,9 +711,6 @@ export interface IAudioFrameObserverBase {
    *
    * @param channelId The channel ID.
    * @param audioFrame The raw audio data. See AudioFrame.
-   *
-   * @returns
-   * Without practical meaning.
    */
   onRecordAudioFrame?(channelId: string, audioFrame: AudioFrame): void;
 
@@ -964,9 +721,6 @@ export interface IAudioFrameObserverBase {
    *
    * @param channelId The channel ID.
    * @param audioFrame The raw audio data. See AudioFrame.
-   *
-   * @returns
-   * Without practical meaning.
    */
   onPlaybackAudioFrame?(channelId: string, audioFrame: AudioFrame): void;
 
@@ -977,9 +731,6 @@ export interface IAudioFrameObserverBase {
    *
    * @param channelId The channel ID.
    * @param audioFrame The raw audio data. See AudioFrame.
-   *
-   * @returns
-   * Without practical meaning.
    */
   onMixedAudioFrame?(channelId: string, audioFrame: AudioFrame): void;
 
@@ -989,9 +740,6 @@ export interface IAudioFrameObserverBase {
    * In order to ensure that the obtained in-ear audio data meets the expectations, Agora recommends that you set the in-ear monitoring-ear audio data format as follows: After calling setEarMonitoringAudioFrameParameters to set the audio data format and registerAudioFrameObserver to register the audio frame observer object, the SDK calculates the sampling interval according to the parameters set in the methods, and triggers the onEarMonitoringAudioFrame callback according to the sampling interval.
    *
    * @param audioFrame The raw audio data. See AudioFrame.
-   *
-   * @returns
-   * Without practical meaning.
    */
   onEarMonitoringAudioFrame?(audioFrame: AudioFrame): void;
 }
@@ -1001,14 +749,13 @@ export interface IAudioFrameObserverBase {
  */
 export interface IAudioFrameObserver extends IAudioFrameObserverBase {
   /**
-   * Retrieves the audio frame of a specified user before mixing.
+   * Retrieves the audio frame before mixing of subscribed remote users.
+   *
+   * Due to framework limitations, this callback does not support sending processed audio data back to the SDK.
    *
    * @param channelId The channel ID.
-   * @param uid The user ID of the specified user.
+   * @param uid The ID of subscribed remote users.
    * @param audioFrame The raw audio data. See AudioFrame.
-   *
-   * @returns
-   * Without practical meaning.
    */
   onPlaybackAudioFrameBeforeMixing?(
     channelId: string,
@@ -1021,13 +768,7 @@ export interface IAudioFrameObserver extends IAudioFrameObserverBase {
  * The audio spectrum data.
  */
 export class AudioSpectrumData {
-  /**
-   * The audio spectrum data. Agora divides the audio frequency into 256 frequency domains, and reports the energy value of each frequency domain through this parameter. The value range of each energy type is [-300, 1] and the unit is dBFS.
-   */
   audioSpectrumData?: number[];
-  /**
-   * The audio spectrum data length is 256.
-   */
   dataLength?: number;
 }
 
@@ -1035,13 +776,7 @@ export class AudioSpectrumData {
  * Audio spectrum information of the remote user.
  */
 export class UserAudioSpectrumInfo {
-  /**
-   * The user ID of the remote user.
-   */
   uid?: number;
-  /**
-   * Audio spectrum information of the remote user. See AudioSpectrumData.
-   */
   spectrumData?: AudioSpectrumData;
 }
 
@@ -1055,9 +790,6 @@ export interface IAudioSpectrumObserver {
    * After successfully calling registerAudioSpectrumObserver to implement the onLocalAudioSpectrum callback in IAudioSpectrumObserver and calling enableAudioSpectrumMonitor to enable audio spectrum monitoring, the SDK will trigger the callback as the time interval you set to report the received remote audio data spectrum.
    *
    * @param data The audio spectrum data of the local user. See AudioSpectrumData.
-   *
-   * @returns
-   * Whether the spectrum data is received: true : Spectrum data is received. false : No spectrum data is received.
    */
   onLocalAudioSpectrum?(data: AudioSpectrumData): void;
 
@@ -1068,9 +800,6 @@ export interface IAudioSpectrumObserver {
    *
    * @param spectrums The audio spectrum information of the remote user, see UserAudioSpectrumInfo. The number of arrays is the number of remote users monitored by the SDK. If the array is null, it means that no audio spectrum of remote users is detected.
    * @param spectrumNumber The number of remote users.
-   *
-   * @returns
-   * Whether the spectrum data is received: true : Spectrum data is received. false : No spectrum data is received.
    */
   onRemoteAudioSpectrum?(
     spectrums: UserAudioSpectrumInfo[],
@@ -1091,9 +820,6 @@ export interface IVideoEncodedFrameObserver {
    * @param imageBuffer The encoded video image buffer.
    * @param length The data length of the video image.
    * @param videoEncodedFrameInfo For the information of the encoded video frame, see EncodedVideoFrameInfo.
-   *
-   * @returns
-   * Without practical meaning.
    */
   onEncodedVideoFrameReceived?(
     uid: number,
@@ -1124,18 +850,12 @@ export interface IVideoFrameObserver {
   /**
    * Occurs each time the SDK receives a video frame captured by local devices.
    *
-   * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data captured by local devices. You can then pre-process the data according to your scenarios. Once the pre-processing is complete, you can directly modify videoFrame in this callback, and set the return value to true to send the modified video data to the SDK.
-   *  The video data that this callback gets has not been pre-processed such as watermarking, cropping, and rotating.
-   *  If the video data type you get is RGBA, the SDK does not support processing the data of the alpha channel.
+   * You can get raw video data collected by the local device through this callback.
    *
    * @param sourceType Video source types, including cameras, screens, or media player. See VideoSourceType.
    * @param videoFrame The video frame. See VideoFrame. The default value of the video frame data format obtained through this callback is as follows:
-   *  macOS: I420 or CVPixelBufferRef
+   *  macOS: I420
    *  Windows: YUV420
-   *
-   * @returns
-   * When the video processing mode is ProcessModeReadOnly : true : Reserved for future use. false : Reserved for future use.
-   *  When the video processing mode is ProcessModeReadWrite : true : Sets the SDK to receive the video frame. false : Sets the SDK to discard the video frame.
    */
   onCaptureVideoFrame?(
     sourceType: VideoSourceType,
@@ -1146,16 +866,14 @@ export interface IVideoFrameObserver {
    * Occurs each time the SDK receives a video frame before encoding.
    *
    * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data before encoding and then process the data according to your particular scenarios. After processing, you can send the processed video data back to the SDK in this callback.
+   *  It's recommended that you implement this callback through the C++ API.
+   *  Due to framework limitations, this callback does not support sending processed video data back to the SDK.
    *  The video data that this callback gets has been preprocessed, with its content cropped and rotated, and the image enhanced.
    *
    * @param sourceType The type of the video source. See VideoSourceType.
    * @param videoFrame The video frame. See VideoFrame. The default value of the video frame data format obtained through this callback is as follows:
-   *  macOS: I420 or CVPixelBufferRef
+   *  macOS: I420
    *  Windows: YUV420
-   *
-   * @returns
-   * When the video processing mode is ProcessModeReadOnly : true : Reserved for future use. false : Reserved for future use.
-   *  When the video processing mode is ProcessModeReadWrite : true : Sets the SDK to receive the video frame. false : Sets the SDK to discard the video frame.
    */
   onPreEncodeVideoFrame?(
     sourceType: VideoSourceType,
@@ -1172,16 +890,14 @@ export interface IVideoFrameObserver {
    *
    * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data sent from the remote end before rendering, and then process it according to the particular scenarios.
    *  If the video data type you get is RGBA, the SDK does not support processing the data of the alpha channel.
+   *  It's recommended that you implement this callback through the C++ API.
+   *  Due to framework limitations, this callback does not support sending processed video data back to the SDK.
    *
    * @param channelId The channel ID.
    * @param remoteUid The user ID of the remote user who sends the current video frame.
    * @param videoFrame The video frame. See VideoFrame. The default value of the video frame data format obtained through this callback is as follows:
-   *  macOS: I420 or CVPixelBufferRef
+   *  macOS: I420
    *  Windows: YUV420
-   *
-   * @returns
-   * When the video processing mode is ProcessModeReadOnly : true : Reserved for future use. false : Reserved for future use.
-   *  When the video processing mode is ProcessModeReadWrite : true : Sets the SDK to receive the video frame. false : Sets the SDK to discard the video frame.
    */
   onRenderVideoFrame?(
     channelId: string,
@@ -1285,34 +1001,53 @@ export enum RecorderErrorCode {
  * @ignore
  */
 export class MediaRecorderConfiguration {
-  /**
-   * @ignore
-   */
   storagePath?: string;
-  /**
-   * @ignore
-   */
   containerFormat?: MediaRecorderContainerFormat;
-  /**
-   * @ignore
-   */
   streamType?: MediaRecorderStreamType;
-  /**
-   * @ignore
-   */
   maxDurationMs?: number;
-  /**
-   * @ignore
-   */
   recorderInfoUpdateInterval?: number;
 }
 
 /**
- * @ignore
+ * Facial information observer.
+ *
+ * You can call registerFaceInfoObserver to register one IFaceInfoObserver observer.
  */
 export interface IFaceInfoObserver {
   /**
-   * @ignore
+   * Occurs when the facial information processed by speech driven extension is received.
+   *
+   * @param outFaceInfo Output parameter, the JSON string of the facial information processed by the voice driver plugin, including the following fields:
+   *  faces: Object sequence. The collection of facial information, with each face corresponding to an object.
+   *  blendshapes: Object. The collection of face capture coefficients, named according to ARkit standards, with each key-value pair representing a blendshape coefficient. The blendshape coefficient is a floating point number with a range of [0.0, 1.0].
+   *  rotation: Object sequence. The rotation of the head, which includes the following three key-value pairs, with values as floating point numbers ranging from -180.0 to 180.0:
+   *  pitch: Head pitch angle. A positve value means looking down, while a negative value means looking up.
+   *  yaw: Head yaw angle. A positve value means turning left, while a negative value means turning right.
+   *  roll: Head roll angle. A positve value means tilting to the right, while a negative value means tilting to the left.
+   *  timestamp: String. The timestamp of the output result, in milliseconds. Here is an example of JSON:
+   * {
+   *  "faces":[{
+   *  "blendshapes":{
+   *  "eyeBlinkLeft":0.9, "eyeLookDownLeft":0.0, "eyeLookInLeft":0.0, "eyeLookOutLeft":0.0, "eyeLookUpLeft":0.0,
+   *  "eyeSquintLeft":0.0, "eyeWideLeft":0.0, "eyeBlinkRight":0.0, "eyeLookDownRight":0.0, "eyeLookInRight":0.0,
+   *  "eyeLookOutRight":0.0, "eyeLookUpRight":0.0, "eyeSquintRight":0.0, "eyeWideRight":0.0, "jawForward":0.0,
+   *  "jawLeft":0.0, "jawRight":0.0, "jawOpen":0.0, "mouthClose":0.0, "mouthFunnel":0.0, "mouthPucker":0.0,
+   *  "mouthLeft":0.0, "mouthRight":0.0, "mouthSmileLeft":0.0, "mouthSmileRight":0.0, "mouthFrownLeft":0.0,
+   *  "mouthFrownRight":0.0, "mouthDimpleLeft":0.0, "mouthDimpleRight":0.0, "mouthStretchLeft":0.0, "mouthStretchRight":0.0,
+   *  "mouthRollLower":0.0, "mouthRollUpper":0.0, "mouthShrugLower":0.0, "mouthShrugUpper":0.0, "mouthPressLeft":0.0,
+   *  "mouthPressRight":0.0, "mouthLowerDownLeft":0.0, "mouthLowerDownRight":0.0, "mouthUpperUpLeft":0.0, "mouthUpperUpRight":0.0,
+   *  "browDownLeft":0.0, "browDownRight":0.0, "browInnerUp":0.0, "browOuterUpLeft":0.0, "browOuterUpRight":0.0,
+   *  "cheekPuff":0.0, "cheekSquintLeft":0.0, "cheekSquintRight":0.0, "noseSneerLeft":0.0, "noseSneerRight":0.0,
+   *  "tongueOut":0.0
+   *  },
+   *  "rotation":{"pitch":30.0, "yaw":25.5, "roll":-15.5},
+   *
+   *  }],
+   *  "timestamp":"654879876546"
+   * }
+   *
+   * @returns
+   * true : Facial information JSON parsing successful. false : Facial information JSON parsing failed.
    */
   onFaceInfo?(outFaceInfo: string): boolean;
 }
@@ -1321,17 +1056,8 @@ export interface IFaceInfoObserver {
  * @ignore
  */
 export class RecorderInfo {
-  /**
-   * @ignore
-   */
   fileName?: string;
-  /**
-   * @ignore
-   */
   durationMs?: number;
-  /**
-   * @ignore
-   */
   fileSize?: number;
 }
 

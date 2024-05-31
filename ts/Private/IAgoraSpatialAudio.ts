@@ -5,13 +5,7 @@ import { RtcConnection } from './IAgoraRtcEngineEx';
  * The spatial position of the remote user or the media player.
  */
 export class RemoteVoicePositionInfo {
-  /**
-   * The coordinates in the world coordinate system. This parameter is an array of length 3, and the three values represent the front, right, and top coordinates in turn.
-   */
   position?: number[];
-  /**
-   * The unit vector of the x axis in the coordinate system. This parameter is an array of length 3, and the three values represent the front, right, and top coordinates in turn.
-   */
   forward?: number[];
 }
 
@@ -19,45 +13,14 @@ export class RemoteVoicePositionInfo {
  * Sound insulation area settings.
  */
 export class SpatialAudioZone {
-  /**
-   * The ID of the sound insulation area.
-   */
   zoneSetId?: number;
-  /**
-   * The spatial center point of the sound insulation area. This parameter is an array of length 3, and the three values represent the front, right, and top coordinates in turn.
-   */
   position?: number[];
-  /**
-   * Starting at position, the forward unit vector. This parameter is an array of length 3, and the three values represent the front, right, and top coordinates in turn.
-   */
   forward?: number[];
-  /**
-   * Starting at position, the right unit vector. This parameter is an array of length 3, and the three values represent the front, right, and top coordinates in turn.
-   */
   right?: number[];
-  /**
-   * Starting at position, the up unit vector. This parameter is an array of length 3, and the three values represent the front, right, and top coordinates in turn.
-   */
   up?: number[];
-  /**
-   * The entire sound insulation area is regarded as a cube; this represents the length of the forward side in the unit length of the game engine.
-   */
   forwardLength?: number;
-  /**
-   * The entire sound insulation area is regarded as a cube; this represents the length of the right side in the unit length of the game engine.
-   */
   rightLength?: number;
-  /**
-   * The entire sound insulation area is regarded as a cube; this represents the length of the up side in the unit length of the game engine.
-   */
   upLength?: number;
-  /**
-   * The sound attenuation coefficient when users within the sound insulation area communicate with external users. The value range is [0,1]. The values are as follows:
-   *  0: Broadcast mode, where the volume and timbre are not attenuated with distance, and the volume and timbre heard by local users do not change regardless of distance.
-   *  (0,0.5): Weak attenuation mode, that is, the volume and timbre are only weakly attenuated during the propagation process, and the sound can travel farther than the real environment.
-   *  0.5: (Default) simulates the attenuation of the volume in the real environment; the effect is equivalent to not setting the audioAttenuation parameter.
-   *  (0.5,1]: Strong attenuation mode (default value is 1), that is, the volume and timbre attenuate rapidly during propagation.
-   */
   audioAttenuation?: number;
 }
 
@@ -171,7 +134,7 @@ export abstract class IBaseSpatialAudioEngine {
    * Stops or resumes publishing the local audio stream.
    *
    * This method does not affect any ongoing audio recording, because it does not disable the audio capture device.
-   *  Call this method after joinChannel.
+   *  Call this method after the or joinChannel method.
    *  When using the spatial audio effect, if you need to set whether to stop subscribing to the audio stream of a specified user, Agora recommends calling this method instead of the muteLocalAudioStream method in IRtcEngine.
    *  A successful call of this method triggers the onUserMuteAudio and onRemoteAudioStateChanged callbacks on the remote client.
    *
@@ -187,7 +150,7 @@ export abstract class IBaseSpatialAudioEngine {
    * Stops or resumes subscribing to the audio streams of all remote users.
    *
    * After successfully calling this method, the local user stops or resumes subscribing to the audio streams of all remote users, including all subsequent users.
-   *  Call this method after joinChannel.
+   *  Call this method after the or joinChannel method.
    *  When using the spatial audio effect, if you need to set whether to stop subscribing to the audio streams of all remote users, Agora recommends calling this method instead of the muteAllRemoteAudioStreams method in IRtcEngine.
    *  After calling this method, you need to call updateSelfPosition and updateRemotePosition to update the spatial location of the local user and the remote user; otherwise, the settings in this method do not take effect.
    *
@@ -242,7 +205,7 @@ export abstract class IBaseSpatialAudioEngine {
   /**
    * Stops or resumes subscribing to the audio stream of a specified user.
    *
-   * Call this method after joinChannel.
+   * Call this method after the or joinChannel method.
    *  When using the spatial audio effect, if you need to set whether to stop subscribing to the audio stream of a specified user, Agora recommends calling this method instead of the muteRemoteAudioStream method in IRtcEngine.
    *
    * @param uid The user ID. This parameter must be the same as the user ID passed in when the user joined the channel.
@@ -276,7 +239,7 @@ export abstract class ILocalSpatialAudioEngine extends IBaseSpatialAudioEngine {
   /**
    * Updates the spatial position of the specified remote user.
    *
-   * After successfully calling this method, the SDK calculates the spatial audio parameters based on the relative position of the local and remote user. Call this method after joinChannel.
+   * After successfully calling this method, the SDK calculates the spatial audio parameters based on the relative position of the local and remote user. Call this method after the or joinChannel method.
    *
    * @param uid The user ID. This parameter must be the same as the user ID passed in when the user joined the channel.
    * @param posInfo The spatial position of the remote user. See RemoteVoicePositionInfo.
@@ -302,7 +265,7 @@ export abstract class ILocalSpatialAudioEngine extends IBaseSpatialAudioEngine {
   /**
    * Removes the spatial position of the specified remote user.
    *
-   * After successfully calling this method, the local user no longer hears the specified remote user. After leaving the channel, to avoid wasting resources, you can also call this method to delete the spatial position of the specified remote user.
+   * After successfully calling this method, the local user no longer hears the specified remote user. After leaving the channel, to avoid wasting computing resources, call this method to delete the spatial position information of the specified remote user. Otherwise, the user's spatial position information will be saved continuously. When the number of remote users exceeds the number of audio streams that can be received as set in setMaxAudioRecvCount, the system automatically unsubscribes from the audio stream of the user who is furthest away based on relative distance.
    *
    * @param uid The user ID. This parameter must be the same as the user ID passed in when the user joined the channel.
    *

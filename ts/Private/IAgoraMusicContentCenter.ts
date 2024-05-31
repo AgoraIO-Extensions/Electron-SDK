@@ -4,6 +4,24 @@ import { IMediaPlayer } from './IAgoraMediaPlayer';
 /**
  * @ignore
  */
+export enum MusicPlayMode {
+  /**
+   * @ignore
+   */
+  KMusicPlayModeOriginal = 0,
+  /**
+   * @ignore
+   */
+  KMusicPlayModeAccompany = 1,
+  /**
+   * @ignore
+   */
+  KMusicPlayModeLeadSing = 2,
+}
+
+/**
+ * @ignore
+ */
 export enum PreloadStatusCode {
   /**
    * @ignore
@@ -65,13 +83,7 @@ export enum MusicContentCenterStatusCode {
  * @ignore
  */
 export class MusicChartInfo {
-  /**
-   * @ignore
-   */
   chartName?: string;
-  /**
-   * @ignore
-   */
   id?: number;
 }
 
@@ -93,13 +105,7 @@ export enum MusicCacheStatusType {
  * @ignore
  */
 export class MusicCacheInfo {
-  /**
-   * @ignore
-   */
   songCode?: number;
-  /**
-   * @ignore
-   */
   status?: MusicCacheStatusType;
 }
 
@@ -122,13 +128,7 @@ export abstract class MusicChartCollection {
  * @ignore
  */
 export class MvProperty {
-  /**
-   * @ignore
-   */
   resolution?: string;
-  /**
-   * @ignore
-   */
   bandwidth?: string;
 }
 
@@ -136,13 +136,7 @@ export class MvProperty {
  * The climax parts of the music.
  */
 export class ClimaxSegment {
-  /**
-   * The time (ms) when the climax part begins.
-   */
   startTimeMs?: number;
-  /**
-   * The time (ms) when the climax part ends.
-   */
   endTimeMs?: number;
 }
 
@@ -150,61 +144,19 @@ export class ClimaxSegment {
  * @ignore
  */
 export class Music {
-  /**
-   * @ignore
-   */
   songCode?: number;
-  /**
-   * @ignore
-   */
   name?: string;
-  /**
-   * @ignore
-   */
   singer?: string;
-  /**
-   * @ignore
-   */
   poster?: string;
-  /**
-   * @ignore
-   */
   releaseTime?: string;
-  /**
-   * @ignore
-   */
   durationS?: number;
-  /**
-   * @ignore
-   */
   type?: number;
-  /**
-   * @ignore
-   */
   pitchType?: number;
-  /**
-   * @ignore
-   */
   lyricCount?: number;
-  /**
-   * @ignore
-   */
   lyricList?: number[];
-  /**
-   * @ignore
-   */
   climaxSegmentCount?: number;
-  /**
-   * @ignore
-   */
   climaxSegmentList?: ClimaxSegment[];
-  /**
-   * @ignore
-   */
   mvPropertyCount?: number;
-  /**
-   * @ignore
-   */
   mvPropertyList?: MvProperty[];
 }
 
@@ -297,25 +249,10 @@ export interface IMusicContentCenterEventHandler {
  * @ignore
  */
 export class MusicContentCenterConfiguration {
-  /**
-   * @ignore
-   */
   appId?: string;
-  /**
-   * @ignore
-   */
   token?: string;
-  /**
-   * @ignore
-   */
   mccUid?: number;
-  /**
-   * @ignore
-   */
   maxCacheSize?: number;
-  /**
-   * @ignore
-   */
   mccDomain?: string;
 }
 
@@ -323,6 +260,11 @@ export class MusicContentCenterConfiguration {
  * @ignore
  */
 export abstract class IMusicPlayer extends IMediaPlayer {
+  /**
+   * @ignore
+   */
+  abstract setPlayMode(mode: MusicPlayMode): number;
+
   /**
    * @ignore
    */
@@ -364,6 +306,11 @@ export abstract class IMusicContentCenter {
    * @ignore
    */
   abstract createMusicPlayer(): IMusicPlayer;
+
+  /**
+   * @ignore
+   */
+  abstract destroyMusicPlayer(musicPlayer: IMusicPlayer): number;
 
   /**
    * @ignore
