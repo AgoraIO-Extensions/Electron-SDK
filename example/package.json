@@ -33,7 +33,13 @@
       "hardenedRuntime": true,
       "identity": null,
       "target": [
-        "zip"
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
       ],
       "type": "distribution"
     },
