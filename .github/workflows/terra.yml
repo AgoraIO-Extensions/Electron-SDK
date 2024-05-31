@@ -24,8 +24,8 @@ jobs:
           generate-comment: true
           generate-code-command: |
             sh generate-prepare.sh
-            yarn config set npmAuthToken ${{ secrets.GH_TOKEN }}
-            yarn config set npmAlwaysAuth true
+            yarn config set npmScopes.agoraio-extensions.npmAlwaysAuth true
+            yarn config set npmScopes.agoraio-extensions.npmAuthToken ${{ secrets.GH_TOKEN }}
             sh generate-code.sh
           generate-comment-command: |
             sh generate-comment.sh
