@@ -18,11 +18,8 @@ on:
         type: boolean
 
 jobs:
-  release-it:
-    if: ${{ inputs.publish-npm }}
+  setup:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,6 +29,12 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+  release-it:
+    if: ${{ inputs.publish-npm }}
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+    steps:
       - name: Setup NPM auth token
         run: |
           npm set "//registry.npmjs.org/:_authToken" ${{ secrets.NPM_TOKEN }}
@@ -70,7 +73,7 @@ jobs:
         run: |
           git add example
           git commit -m "chore(example): update example to install ${{steps.package-info.outputs.name}}@${{steps.package-info.outputs.version}}"
-      
+
       - name: Release
         if: ${{ !inputs.dry-run }}
         run: |
