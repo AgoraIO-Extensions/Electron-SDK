@@ -345,6 +345,15 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       : 'RtcEngine_leaveChannel_2c0e3aa';
   }
 
+  protected override getApiTypeFromLeaveChannelEx(
+    connection: RtcConnection,
+    options?: LeaveChannelOptions
+  ): string {
+    return options === undefined
+      ? 'RtcEngineEx_leaveChannelEx_c81e1a4'
+      : 'RtcEngineEx_leaveChannelEx_b03ee9a';
+  }
+
   protected override getApiTypeFromSetClientRole(
     role: ClientRoleType,
     options?: ClientRoleOptions
