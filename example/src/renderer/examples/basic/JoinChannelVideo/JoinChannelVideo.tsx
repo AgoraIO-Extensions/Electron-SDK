@@ -3,8 +3,13 @@ import {
   ClientRoleType,
   ErrorCodeType,
   IRtcEngineEventHandler,
+  LocalAudioStats,
+  LocalVideoStats,
   LocalVideoStreamReason,
   LocalVideoStreamState,
+  QualityType,
+  RemoteAudioStats,
+  RemoteVideoStats,
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
@@ -18,13 +23,31 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import { AgoraButton, AgoraDropdown, AgoraView } from '../../../components/ui';
+import {
+  AgoraButton,
+  AgoraDropdown,
+  AgoraView,
+  RtcSurfaceView,
+} from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { arrayToItems } from '../../../utils';
 import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   selectedUser?: number;
+  lastmileDelay?: number;
+  videoSentBitrate?: number;
+  encodedFrameWidth?: number;
+  encodedFrameHeight?: number;
+  encoderOutputFrameRate?: number;
+  audioSentBitrate?: number;
+  cpuAppUsage?: number;
+  cpuTotalUsage?: number;
+  txPacketLossRate?: number;
+  remoteUserStatsList: Map<
+    number,
+    { remoteVideoStats: RemoteVideoStats; remoteAudioStats: RemoteAudioStats }
+  >;
 }
 
 export default class JoinChannelVideo
@@ -40,6 +63,16 @@ export default class JoinChannelVideo
       uid: Config.uid,
       joinChannelSuccess: false,
       remoteUsers: [],
+      remoteUserStatsList: new Map(),
+      encodedFrameWidth: 0,
+      encodedFrameHeight: 0,
+      encoderOutputFrameRate: 0,
+      lastmileDelay: 0,
+      videoSentBitrate: 0,
+      audioSentBitrate: 0,
+      cpuAppUsage: 0,
+      cpuTotalUsage: 0,
+      txPacketLossRate: 0,
       startPreview: false,
     };
   }
@@ -171,12 +204,135 @@ export default class JoinChannelVideo
     );
   }
 
+  onRtcStats(connection: RtcConnection, stats: RtcStats): void {
+    this.setState({
+      lastmileDelay: stats.lastmileDelay,
+      cpuAppUsage: stats.cpuAppUsage,
+      cpuTotalUsage: stats.cpuTotalUsage,
+      txPacketLossRate: stats.txPacketLossRate,
+    });
+  }
+
+  onLocalVideoStats(source: VideoSourceType, stats: LocalVideoStats): void {
+    console.log(stats);
+    this.setState({
+      videoSentBitrate: stats.sentBitrate,
+      encodedFrameWidth: stats.encodedFrameWidth,
+      encodedFrameHeight: stats.encodedFrameHeight,
+      encoderOutputFrameRate: stats.encoderOutputFrameRate,
+    });
+  }
+
+  onLocalAudioStats(connection: RtcConnection, stats: LocalAudioStats): void {
+    this.setState({
+      audioSentBitrate: stats.sentBitrate,
+    });
+  }
+
+  onRemoteVideoStats(connection: RtcConnection, stats: RemoteVideoStats): void {
+    const { remoteUserStatsList } = this.state;
+    if (stats.uid) {
+      remoteUserStatsList.set(stats.uid, {
+        remoteVideoStats: stats,
+        remoteAudioStats:
+          remoteUserStatsList.get(stats.uid)?.remoteAudioStats || {},
+      });
+    }
+  }
+
+  onRemoteAudioStats(connection: RtcConnection, stats: RemoteAudioStats): void {
+    const { remoteUserStatsList } = this.state;
+    if (stats.uid) {
+      remoteUserStatsList.set(stats.uid, {
+        remoteVideoStats:
+          remoteUserStatsList.get(stats.uid)?.remoteVideoStats || {},
+        remoteAudioStats: stats,
+      });
+    }
+  }
+
   protected renderUsers(): ReactElement | undefined {
     return super.renderUsers();
   }
 
   protected renderVideo(user: VideoCanvas): ReactElement | undefined {
-    return super.renderVideo(user);
+    const {
+      joinChannelSuccess,
+      encodedFrameWidth,
+      encodedFrameHeight,
+      encoderOutputFrameRate,
+      remoteUserStatsList,
+      lastmileDelay,
+      videoSentBitrate,
+      audioSentBitrate,
+      cpuAppUsage,
+      cpuTotalUsage,
+      txPacketLossRate,
+    } = this.state;
+    return (
+      <div className="video-view-container">
+        <RtcSurfaceView canvas={user} />
+        {joinChannelSuccess && user.sourceType === 0 && (
+          <div className="status-bar">
+            <p>
+              {encodedFrameWidth}x{encodedFrameHeight},{encoderOutputFrameRate}
+              fps
+            </p>
+            <p>LM Delay: {lastmileDelay}ms</p>
+            <p>VSend: {videoSentBitrate}kbps</p>
+            <p>ASend: {audioSentBitrate}kbps</p>
+            <p>
+              CPU: {cpuAppUsage}%/{cpuTotalUsage}%
+            </p>
+            <p>Send Loss: {txPacketLossRate}%</p>
+          </div>
+        )}
+        {joinChannelSuccess && user.sourceType != 0 && user.uid && (
+          <div className="status-bar">
+            <p>
+              VRecv:{' '}
+              {
+                remoteUserStatsList.get(user.uid)?.remoteVideoStats
+                  .receivedBitrate
+              }
+              kbps
+            </p>
+            <p>
+              ARecv:{' '}
+              {
+                remoteUserStatsList.get(user.uid)?.remoteAudioStats
+                  .receivedBitrate
+              }
+              kbps
+            </p>
+            <p>
+              VLoss:{' '}
+              {
+                remoteUserStatsList.get(user.uid)?.remoteVideoStats
+                  .packetLossRate
+              }
+              %
+            </p>
+            <p>
+              ALoss:{' '}
+              {
+                remoteUserStatsList.get(user.uid)?.remoteAudioStats
+                  .audioLossRate
+              }
+              %
+            </p>
+            <p>
+              AQuality:{' '}
+              {
+                QualityType[
+                  remoteUserStatsList.get(user.uid)?.remoteAudioStats.quality!
+                ]
+              }
+            </p>
+          </div>
+        )}
+      </div>
+    );
   }
 
   protected renderConfiguration(): ReactElement | undefined {
