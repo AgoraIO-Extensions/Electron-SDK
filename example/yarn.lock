@@ -1761,10 +1761,10 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-agora-electron-sdk@4.3.1:
-  version "4.3.1"
-  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.3.1.tgz#e086829ddcd16d37bacc9e7479467230aa8f2993"
-  integrity sha512-ntfVZNcgukcYsE38Wl2HQDqWku14NuIg9iH2qoRRWavwtn+xj2k54WZFifUPJG7ezGCnh1oFkGny/OVeJ774+g==
+agora-electron-sdk@4.3.2:
+  version "4.3.2"
+  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.3.2.tgz#943b50078e75f0275f89d5d4615bfb23f6b053a0"
+  integrity sha512-DKB/VuGT0e/IEkHeWC5mfEE+FbN6vOsyDDMMErukLuka8zgVrZE/qDwXK9+YZOzA9+jqKkDHuB/YzmfG5bnR6Q==
   dependencies:
     buffer "^6.0.3"
     cross-env "^7.0.3"
@@ -3972,9 +3972,9 @@ ee-first@1.1.1:
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
 ejs@^3.1.7:
-  version "3.1.9"
-  resolved "https://registry.npmjs.org/ejs/-/ejs-3.1.9.tgz#03c9e8777fe12686a9effcef22303ca3d8eeb361"
-  integrity sha512-rC+QVNMJWv+MtPgkt0y+0rVEIdbtxVADApW9JXrUVlzHetgcyczP/E7DJmWJ4fJCZF2cPcBk0laWO9ZHMG3DmQ==
+  version "3.1.10"
+  resolved "https://registry.npmmirror.com/ejs/-/ejs-3.1.10.tgz#69ab8358b14e896f80cc39e62087b88500c3ac3b"
+  integrity sha512-UeJmFfOrAQS8OJWPZ4qtgHyWExa088/MtK5UEyoJGFH67cDEXkZSviOiKRCZ4Xij0zxI3JECgYs3oKx+AizQBA==
   dependencies:
     jake "^10.8.5"
 

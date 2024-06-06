@@ -1,5 +1,17 @@
 
 
+## [4.3.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.3.1...v4.3.2) (2024-06-06)
+
+
+### Bug Fixes
+
+* setup renderer may show rotate frame ([#1190](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1190)) ([ad6400c](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/ad6400c18f08f316984e75eb49a48c0795951f2e))
+
+
+### Features
+
+* support native 4.3.2 ([#1194](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1194)) ([d7a83e6](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/d7a83e6bc72651ababe01e448b662a6c39c154c5))
+
 ## [4.3.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.3.0...v4.3.1) (2024-05-09)
 
 
