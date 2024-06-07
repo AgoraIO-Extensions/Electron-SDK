@@ -63,7 +63,7 @@ jobs:
 
       - name: Build Example
         run: |
-          rd /s /q .npmrc
+          del /f /q .npmrc
           yarn install
           yarn link agora-electron-sdk
           yarn dist:win --${{ matrix.arch }}
