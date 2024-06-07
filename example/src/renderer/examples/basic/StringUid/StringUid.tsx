@@ -120,6 +120,7 @@ export default class StringUid
   }
 
   onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
+    this.releaseRtcEngine();
     super.onLeaveChannel(connection, stats);
   }
 
