@@ -5,6 +5,7 @@ import {
   DataStreamConfig,
   EncryptionConfig,
   LiveTranscoding,
+  SimulcastConfig,
   SimulcastStreamConfig,
   SimulcastStreamMode,
   SpatialAudioParams,
@@ -852,6 +853,14 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   abstract setDualStreamModeEx(
     mode: SimulcastStreamMode,
     streamConfig: SimulcastStreamConfig,
+    connection: RtcConnection
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract setSimulcastConfigEx(
+    simulcastConfig: SimulcastConfig,
     connection: RtcConnection
   ): number;
 
