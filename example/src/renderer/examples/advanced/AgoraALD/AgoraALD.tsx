@@ -15,9 +15,7 @@ import { AgoraButton } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { askMediaAccess } from '../../../utils/permissions';
 
-interface State extends BaseAudioComponentState {
-  AgoraALDInstalled: boolean;
-}
+interface State extends BaseAudioComponentState {}
 
 export default class AgoraALD
   extends BaseComponent<{}, State>
@@ -32,7 +30,6 @@ export default class AgoraALD
       uid: Config.uid,
       joinChannelSuccess: false,
       remoteUsers: [],
-      AgoraALDInstalled: false,
     };
   }
 
@@ -102,23 +99,16 @@ export default class AgoraALD
     this.engine?.release();
   }
 
-  _setupAgoraALD() {
-    this.engine?.enableLoopbackRecording(true);
-    // this.engine?.enableLoopbackRecording(true);
-    this.setState({
-      AgoraALDInstalled: true,
-    });
-  }
+  _setupAgoraALD = () => {
+    // to enable AgoraALD, you need to enable loopback recording first and then disable it immediately.
+    this.engine?.enableLoopbackRecording(true, 'AGORA_ALD');
+    this.engine?.enableLoopbackRecording(false, 'AGORA_ALD');
+  };
 
   protected renderAction(): ReactElement | undefined {
-    const { AgoraALDInstalled } = this.state;
     return (
       <>
-        <AgoraButton
-          title={`setup AgoraALD`}
-          disabled={AgoraALDInstalled}
-          onPress={this._setupAgoraALD}
-        />
+        <AgoraButton title={`setup AgoraALD`} onPress={this._setupAgoraALD} />
       </>
     );
   }
