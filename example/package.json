@@ -72,6 +72,7 @@
       "buildResources": "assets"
     },
     "extraResources": [
+      "./AgoraALD.driver/**",
       "./extraResources/**"
     ]
   },

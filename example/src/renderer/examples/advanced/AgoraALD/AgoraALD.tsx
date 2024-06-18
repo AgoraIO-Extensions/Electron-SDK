@@ -101,8 +101,8 @@ export default class AgoraALD
 
   _setupAgoraALD = () => {
     // to enable AgoraALD, you need to enable loopback recording first and then disable it immediately.
-    this.engine?.enableLoopbackRecording(true, 'AGORA_ALD');
-    this.engine?.enableLoopbackRecording(false, 'AGORA_ALD');
+    this.engine?.enableLoopbackRecording(true, 'AgoraALD');
+    this.engine?.enableLoopbackRecording(false, 'AgoraALD');
   };
 
   protected renderAction(): ReactElement | undefined {
