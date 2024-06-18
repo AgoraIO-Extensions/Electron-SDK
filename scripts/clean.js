@@ -4,30 +4,13 @@ const fs = require('fs-extra');
 
 const logger = require('./logger');
 
-const destIrisSDKDir = path.join(__dirname, `../iris`);
-const buildDir = path.resolve(__dirname, '../build');
+exports.destIrisSDKDir = path.join(__dirname, `../iris`);
+exports.destNativeSDKDir = path.join(__dirname, `../native`);
+exports.buildDir = path.resolve(__dirname, '../build');
+exports.jsDir = path.resolve(__dirname, '../js');
+exports.typesDir = path.resolve(__dirname, '../types');
 
-exports.destIrisSDKDir = destIrisSDKDir;
-exports.buildDir = buildDir;
-
-exports.cleanIrisDir = async () => {
-  await fs.remove(destIrisSDKDir);
-  logger.info(`clean:${destIrisSDKDir}`);
-};
-
-exports.cleanBuildDir = async () => {
-  await fs.remove(buildDir);
-  logger.info(`clean:${buildDir}`);
-};
-
-exports.cleanJSDir = async () => {
-  const dir = path.resolve(__dirname, '../js');
-  await fs.remove(dir);
-  logger.info(`clean:${dir}`);
-};
-
-exports.cleanTypesDir = async () => {
-  const dir = path.resolve(__dirname, '../types');
+exports.cleanDir = async (dir) => {
   await fs.remove(dir);
   logger.info(`clean:${dir}`);
 };
