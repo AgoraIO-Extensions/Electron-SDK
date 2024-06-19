@@ -13,6 +13,7 @@ import {
 } from '../../../components/BaseComponent';
 import { AgoraButton } from '../../../components/ui';
 import Config from '../../../config/agora.config';
+import { getResourcePath } from '../../../utils';
 import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseAudioComponentState {}
@@ -100,6 +101,18 @@ export default class AgoraALD
   }
 
   _setupAgoraALD = () => {
+    this.engine?.setParameters(
+      JSON.stringify({
+        'che.audio.mac.loopback.custom_install_path':
+          getResourcePath('AgoraALD.driver'),
+      })
+    );
+    console.log(
+      JSON.stringify({
+        'che.audio.mac.loopback.custom_install_path':
+          getResourcePath('AgoraALD.driver'),
+      })
+    );
     // to enable AgoraALD, you need to enable loopback recording first and then disable it immediately.
     this.engine?.enableLoopbackRecording(true, 'AgoraALD');
     this.engine?.enableLoopbackRecording(false, 'AgoraALD');
