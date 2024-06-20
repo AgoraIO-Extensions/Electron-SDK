@@ -2,6 +2,10 @@ name: Generate codes
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'version of the native sdk'
+        required: true
 
 jobs:
   generate-codes:
