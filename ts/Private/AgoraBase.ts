@@ -617,7 +617,7 @@ export enum QualityType {
    */
   QualityDown = 6,
   /**
-   * 7: Users cannot detect the network quality (not in use).
+   * @ignore
    */
   QualityUnsupported = 7,
   /**
@@ -3333,7 +3333,6 @@ export enum ConnectionChangedReasonType {
    *  All lowercase English letters: a to z.
    *  All uppercase English letters: A to Z.
    *  All numeric characters: 0 to 9.
-   *  Space
    *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
    */
   ConnectionChangedInvalidChannelName = 7,
@@ -3552,7 +3551,7 @@ export enum VideoViewSetupMode {
  */
 export class VideoCanvas {
   /**
-   * The user ID.
+   * User ID that publishes the video source.
    */
   uid?: number;
   /**
@@ -3560,7 +3559,7 @@ export class VideoCanvas {
    */
   subviewUid?: number;
   /**
-   * The video display window. In one VideoCanvas, you can only choose to set either view or surfaceTexture. If both are set, only the settings in view take effect.
+   * The video display window.
    */
   view?: any;
   /**
