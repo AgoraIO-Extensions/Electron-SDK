@@ -107,12 +107,6 @@ export default class AgoraALD
           getResourcePath('AgoraALD.driver'),
       })
     );
-    console.log(
-      JSON.stringify({
-        'che.audio.mac.loopback.custom_install_path':
-          getResourcePath('AgoraALD.driver'),
-      })
-    );
     // to enable AgoraALD, you need to enable loopback recording first and then disable it immediately.
     this.engine?.enableLoopbackRecording(true, 'AgoraALD');
     this.engine?.enableLoopbackRecording(false, 'AgoraALD');
