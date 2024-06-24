@@ -33,6 +33,7 @@ import {
   EncryptionConfig,
   EncryptionErrorType,
   ErrorCodeType,
+  FaceShapeArea,
   FaceShapeAreaOptions,
   FaceShapeBeautyOptions,
   FocalLengthInfo,
@@ -3314,6 +3315,7 @@ export abstract class IRtcEngine {
    * @ignore
    */
   abstract getFaceShapeAreaOptions(
+    shapeArea: FaceShapeArea,
     type?: MediaSourceType
   ): FaceShapeAreaOptions;
 
