@@ -11,12 +11,14 @@ import {
   BaseAudioComponentState,
   BaseComponent,
 } from '../../../components/BaseComponent';
-import { AgoraButton } from '../../../components/ui';
+import { AgoraButton, AgoraDivider, AgoraSwitch } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { getResourcePath } from '../../../utils';
 import { askMediaAccess } from '../../../utils/permissions';
 
-interface State extends BaseAudioComponentState {}
+interface State extends BaseAudioComponentState {
+  loopbackRecording: boolean;
+}
 
 export default class AgoraALD
   extends BaseComponent<{}, State>
@@ -30,6 +32,7 @@ export default class AgoraALD
       token: Config.token,
       uid: Config.uid,
       joinChannelSuccess: false,
+      loopbackRecording: false,
       remoteUsers: [],
     };
   }
@@ -111,6 +114,27 @@ export default class AgoraALD
     this.engine?.enableLoopbackRecording(true, 'AgoraALD');
     this.engine?.enableLoopbackRecording(false, 'AgoraALD');
   };
+
+  _enableLoopbackRecording = (enabled: boolean) => {
+    this.engine?.enableLoopbackRecording(enabled);
+  };
+
+  protected renderConfiguration(): ReactElement | undefined {
+    const { loopbackRecording } = this.state;
+    return (
+      <>
+        <AgoraSwitch
+          title={'loopbackRecording'}
+          value={loopbackRecording}
+          onValueChange={(value) => {
+            this.setState({ loopbackRecording: value });
+            this.engine?.enableLoopbackRecording(value);
+          }}
+        />
+        <AgoraDivider />
+      </>
+    );
+  }
 
   protected renderAction(): ReactElement | undefined {
     return (
