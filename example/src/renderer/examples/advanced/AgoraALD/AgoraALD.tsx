@@ -1,9 +1,14 @@
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+
 import {
   ChannelProfileType,
   ClientRoleType,
   IRtcEngineEventHandler,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
+import download from 'download';
 
 import React, { ReactElement } from 'react';
 
@@ -60,6 +65,14 @@ export default class AgoraALD
 
     // Only need to enable audio on this case
     this.engine.enableAudio();
+
+    const url = `https://github.com/AgoraIO-Extensions/Electron-SDK/releases/download/v4.2.6-build.9-rc.1/AgoraALD.zip`;
+    const dllPath = path.resolve(os.tmpdir(), 'AgoraALD.driver');
+    if (!fs.existsSync(dllPath)) {
+      console.log(`start downloading plugin ${url} to ${dllPath}`);
+      await download(encodeURI(url), os.tmpdir(), { extract: true });
+      console.log(`download success`);
+    }
   }
 
   /**
@@ -106,8 +119,10 @@ export default class AgoraALD
   _setupAgoraALD = () => {
     this.engine?.setParameters(
       JSON.stringify({
-        'che.audio.mac.loopback.custom_install_path':
-          getResourcePath('AgoraALD.driver'),
+        'che.audio.mac.loopback.custom_install_path': path.resolve(
+          os.tmpdir(),
+          'AgoraALD.driver'
+        ),
       })
     );
     // to enable AgoraALD, you need to enable loopback recording first and then disable it immediately.
