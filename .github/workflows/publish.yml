@@ -59,27 +59,18 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Get Package Info
-        if: ${{ !inputs.dry-run }}
-        id: package-info
-        run: |
-          name=$(node -p "require('./package.json').name")
-          version=$(node -p "require('./package.json').version")
-          echo "name=${name}" >> "$GITHUB_OUTPUT"
-          echo "version=${version}" >> "$GITHUB_OUTPUT"
-
       - name: Update Example
         if: ${{ !inputs.dry-run }}
         run: |
           git config --global user.email "${{ secrets.GIT_EMAIL }}"
           git config --global user.name "${{ secrets.GIT_USERNAME }}"
-          yarn example add ${{steps.package-info.outputs.name}}@${{steps.package-info.outputs.version}}
+          yarn example add ${{steps.package-info.outputs.name}}@${{ inputs.increment }}
 
       - name: Commit Example
         if: ${{ !inputs.dry-run }}
         run: |
           git add example
-          git commit -m "chore(example): update example to install ${{steps.package-info.outputs.name}}@${{steps.package-info.outputs.version}}"
+          git commit -m "chore(example): update example to install agora-electron-sdk@${{ inputs.increment }}"
 
       - name: Release
         if: ${{ !inputs.dry-run }}
