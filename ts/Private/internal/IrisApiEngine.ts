@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3';
-import JSON from 'json-bigint';
+import JSONBigInt from 'json-bigint';
+const JSON = JSONBigInt({ storeAsString: true });
 
 import { AgoraEnv, logDebug, logError, logInfo, logWarn } from '../../Utils';
 import { IAudioEncodedFrameObserver } from '../AgoraBase';
@@ -339,12 +340,7 @@ export const EVENT_PROCESSORS: EventProcessors = {
           break;
       }
     },
-    handlers: (event: string, data: any) => {
-      if (event === 'onLocalVideoStats' && 'connection' in data) {
-        return undefined;
-      }
-      return RtcEngineExInternal._event_handlers;
-    },
+    handlers: (event: string, data: any) => RtcEngineExInternal._event_handlers,
   },
   IMusicContentCenterEventHandler: {
     suffix: 'MusicContentCenterEventHandler_',

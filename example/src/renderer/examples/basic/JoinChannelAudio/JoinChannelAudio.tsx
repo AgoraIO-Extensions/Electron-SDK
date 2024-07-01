@@ -1,14 +1,19 @@
 import {
+  AudioVolumeInfo,
   ChannelProfileType,
   ClientRoleType,
   ErrorCodeType,
   IRtcEngineEventHandler,
+  LocalAudioStats,
   LocalAudioStreamReason,
   LocalAudioStreamState,
   MediaDeviceType,
+  QualityType,
+  RemoteAudioStats,
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
+  VideoCanvas,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
 import React, { ReactElement } from 'react';
@@ -17,7 +22,12 @@ import {
   BaseAudioComponentState,
   BaseComponent,
 } from '../../../components/BaseComponent';
-import { AgoraButton, AgoraDivider, AgoraSlider } from '../../../components/ui';
+import {
+  AgoraButton,
+  AgoraCard,
+  AgoraDivider,
+  AgoraSlider,
+} from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { askMediaAccess } from '../../../utils/permissions';
 
@@ -26,6 +36,16 @@ interface State extends BaseAudioComponentState {
   muteLocalAudioStream: boolean;
   recordingSignalVolume: number;
   playbackSignalVolume: number;
+  localVolume?: number;
+  lastmileDelay?: number;
+  audioSentBitrate?: number;
+  cpuAppUsage?: number;
+  cpuTotalUsage?: number;
+  txPacketLossRate?: number;
+  remoteUserStatsList: Map<
+    number,
+    { volume: number; remoteAudioStats: RemoteAudioStats }
+  >;
 }
 
 export default class JoinChannelAudio
@@ -45,6 +65,13 @@ export default class JoinChannelAudio
       muteLocalAudioStream: false,
       recordingSignalVolume: 100,
       playbackSignalVolume: 100,
+      remoteUserStatsList: new Map(),
+      localVolume: 0,
+      lastmileDelay: 0,
+      audioSentBitrate: 0,
+      cpuAppUsage: 0,
+      cpuTotalUsage: 0,
+      txPacketLossRate: 0,
     };
   }
 
@@ -71,6 +98,7 @@ export default class JoinChannelAudio
 
     // Only need to enable audio on this case
     this.engine.enableAudio();
+    this.engine.enableAudioVolumeIndication(200, 3, true);
   }
 
   /**
@@ -236,6 +264,120 @@ export default class JoinChannelAudio
 
   onAudioRoutingChanged(routing: number) {
     this.info('onAudioRoutingChanged', 'routing', routing);
+  }
+
+  onAudioVolumeIndication(
+    connection: RtcConnection,
+    speakers: AudioVolumeInfo[],
+    speakerNumber: number,
+    totalVolume: number
+  ): void {
+    speakers.map((speaker) => {
+      if (speaker.uid === 0) {
+        this.setState({ localVolume: speaker.volume });
+      } else {
+        if (!speaker.uid) return;
+        const { remoteUserStatsList } = this.state;
+        remoteUserStatsList.set(speaker.uid, {
+          volume: speaker.volume!,
+          remoteAudioStats:
+            remoteUserStatsList.get(speaker.uid)?.remoteAudioStats || {},
+        });
+      }
+    });
+  }
+
+  onRtcStats(connection: RtcConnection, stats: RtcStats): void {
+    this.setState({
+      lastmileDelay: stats.lastmileDelay,
+      cpuAppUsage: stats.cpuAppUsage,
+      cpuTotalUsage: stats.cpuTotalUsage,
+      txPacketLossRate: stats.txPacketLossRate,
+    });
+  }
+
+  onLocalAudioStats(connection: RtcConnection, stats: LocalAudioStats): void {
+    this.setState({
+      audioSentBitrate: stats.sentBitrate,
+    });
+  }
+
+  onRemoteAudioStats(connection: RtcConnection, stats: RemoteAudioStats): void {
+    const { remoteUserStatsList } = this.state;
+    if (stats.uid) {
+      remoteUserStatsList.set(stats.uid, {
+        volume: remoteUserStatsList.get(stats.uid)?.volume || 0,
+        remoteAudioStats: stats,
+      });
+    }
+  }
+
+  protected renderUser(user: VideoCanvas): ReactElement | undefined {
+    return (
+      <AgoraCard
+        key={`${user.uid} - ${user.sourceType}`}
+        title={`${user.uid} - ${user.sourceType}`}
+      >
+        {this.renderVideo(user)}
+      </AgoraCard>
+    );
+  }
+
+  protected renderVideo(user: VideoCanvas): ReactElement | undefined {
+    const {
+      joinChannelSuccess,
+      localVolume,
+      lastmileDelay,
+      audioSentBitrate,
+      cpuAppUsage,
+      cpuTotalUsage,
+      txPacketLossRate,
+      remoteUserStatsList,
+    } = this.state;
+    return (
+      <>
+        {joinChannelSuccess && user.sourceType === 0 && (
+          <div className="status-bar">
+            <p>Volume: {localVolume}</p>
+            <p>LM Delay: {lastmileDelay}ms</p>
+            <p>ASend: {audioSentBitrate}kbps</p>
+            <p>
+              CPU: {cpuAppUsage}%/{cpuTotalUsage}%
+            </p>
+            <p>Send Loss: {txPacketLossRate}%</p>
+          </div>
+        )}
+        {joinChannelSuccess && user.sourceType != 0 && user.uid && (
+          <div className="status-bar">
+            <p>Volume: {remoteUserStatsList.get(user.uid)?.volume}</p>
+            <p>
+              ARecv:{' '}
+              {
+                remoteUserStatsList.get(user.uid)?.remoteAudioStats
+                  .receivedBitrate
+              }
+              kbps
+            </p>
+            <p>
+              ALoss:{' '}
+              {
+                remoteUserStatsList.get(user.uid)?.remoteAudioStats
+                  .audioLossRate
+              }
+              %
+            </p>
+            <p>
+              AQuality:{' '}
+              {
+                QualityType[
+                  remoteUserStatsList.get(user.uid)?.remoteAudioStats.quality!
+                ]
+              }
+            </p>
+          </div>
+        )}
+      </>
+    );
   }
 
   protected renderConfiguration(): ReactElement | undefined {

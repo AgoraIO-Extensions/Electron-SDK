@@ -45,8 +45,7 @@ export abstract class IRenderer {
 
   public drawFrame(_videoFrame?: VideoFrame): void {
     if (!this.canvas) return;
-    //@ts-ignore
-    if (!this.canvas.checkVisibility()) {
+    if (this.canvas.style.display !== '') {
       this.canvas.style.display = '';
     }
   }

@@ -160,19 +160,28 @@ export abstract class IRendererManager {
     const checkedContext = this.precheckRendererContext(context);
 
     const rendererCache = this.getRendererCache(checkedContext);
-    if (!rendererCache) return;
-    if (checkedContext.view) {
-      const renderer = rendererCache.findRenderer(checkedContext.view);
-      if (!renderer) return;
-      rendererCache.removeRenderer(renderer);
+    if (rendererCache) {
+      if (checkedContext.view) {
+        const renderer = rendererCache.findRenderer(checkedContext.view);
+        if (!renderer) return;
+        rendererCache.removeRenderer(renderer);
+      } else {
+        rendererCache.removeRenderer();
+      }
+      if (rendererCache.renderers.length === 0) {
+        this._rendererCaches.splice(
+          this._rendererCaches.indexOf(rendererCache),
+          1
+        );
+      }
     } else {
-      rendererCache.removeRenderer();
-    }
-    if (rendererCache.renderers.length === 0) {
-      this._rendererCaches.splice(
-        this._rendererCaches.indexOf(rendererCache),
-        1
-      );
+      this._rendererCaches = this._rendererCaches.filter((_rendererCache) => {
+        const renderer = _rendererCache.findRenderer(checkedContext.view);
+        if (renderer) {
+          _rendererCache.removeRenderer(renderer);
+        }
+        return _rendererCache.renderers.length > 0;
+      });
     }
   }
 

@@ -16,3 +16,24 @@ body {
   overflow: hidden;
   max-height: 100%;
 }
+
+.status-bar {
+  padding: 4px;
+  min-width: 120px;
+  p {
+    margin: 0;
+  }
+}
+
+.video-view-container {
+  position: relative;
+  .status-bar {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    p {
+      color: #ffffff;
+    }
+  }
+}
