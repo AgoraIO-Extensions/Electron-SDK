@@ -18,7 +18,6 @@ import {
 } from '../../../components/BaseComponent';
 import { AgoraButton, AgoraDivider, AgoraSwitch } from '../../../components/ui';
 import Config from '../../../config/agora.config';
-import { getResourcePath } from '../../../utils';
 import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseAudioComponentState {
