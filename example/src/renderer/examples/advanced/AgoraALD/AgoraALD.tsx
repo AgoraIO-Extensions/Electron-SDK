@@ -68,11 +68,12 @@ export default class AgoraALD
 
     const url = `https://github.com/AgoraIO-Extensions/Electron-SDK/releases/download/v4.2.6-build.9-rc.1/AgoraALD.zip`;
     const dllPath = path.resolve(os.tmpdir(), 'AgoraALD.driver');
-    if (!fs.existsSync(dllPath)) {
-      console.log(`start downloading plugin ${url} to ${dllPath}`);
-      await download(encodeURI(url), os.tmpdir(), { extract: true });
-      console.log(`download success`);
+    if (fs.existsSync(dllPath)) {
+      fs.rmSync(dllPath, { recursive: true, force: true });
     }
+    console.log(`start downloading plugin ${url} to ${dllPath}`);
+    await download(encodeURI(url), os.tmpdir(), { extract: true });
+    console.log(`download success`);
   }
 
   /**
