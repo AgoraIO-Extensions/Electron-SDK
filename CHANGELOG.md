@@ -1,5 +1,18 @@
 
 
+## [4.2.6-build.14-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.11-rc.1...v4.2.6-build.14-rc.1) (2024-07-01)
+
+
+### Features
+
+* support 4.2.6.140, use standalone iris ([#1199](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1199)) ([0df25b6](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/0df25b6a77478eab911faee7fe2023da8a48faef))
+* support AgoraALD ([60a216b](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/60a216bc49026f0cb7240c50267cd29ec948cc84))
+
+
+### Reverts
+
+* Revert "chore: optimize" ([ec68585](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/ec68585c0198bb93b42643d68f08d59ec6816951))
+
 ## [4.2.6-build.140-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.11-rc.1...v4.2.6-build.140-rc.1) (2024-06-18)
 
 ## [4.2.6-build.11-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.9-rc.1...v4.2.6-build.11-rc.1) (2024-05-31)

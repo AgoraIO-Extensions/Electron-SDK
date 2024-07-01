@@ -621,7 +621,7 @@ export enum QualityType {
    */
   QualityDown = 6,
   /**
-   * 7: Users cannot detect the network quality (not in use).
+   * @ignore
    */
   QualityUnsupported = 7,
   /**
@@ -2556,7 +2556,6 @@ export enum ConnectionChangedReasonType {
    *  All lowercase English letters: a to z.
    *  All uppercase English letters: A to Z.
    *  All numeric characters: 0 to 9.
-   *  Space
    *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
    */
   ConnectionChangedInvalidChannelName = 7,
@@ -3444,6 +3443,10 @@ export enum AreaCodeEx {
    * @ignore
    */
   AreaCodeUs = 0x00000800,
+  /**
+   * @ignore
+   */
+  AreaCodeRu = 0x00001000,
   /**
    * @ignore
    */

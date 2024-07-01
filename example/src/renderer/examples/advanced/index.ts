@@ -1,3 +1,4 @@
+import AgoraALD from './AgoraALD/AgoraALD';
 import AudioMixing from './AudioMixing/AudioMixing';
 import AudioSpectrum from './AudioSpectrum/AudioSpectrum';
 import BeautyEffect from './BeautyEffect/BeautyEffect';
@@ -32,6 +33,10 @@ import VoiceChanger from './VoiceChanger/VoiceChanger';
 const Advanced = {
   title: 'Advanced',
   data: [
+    {
+      name: 'AgoraALD',
+      component: AgoraALD,
+    },
     {
       name: 'AudioMixing',
       component: AudioMixing,

@@ -109,8 +109,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     AgoraEnv.AgoraElectronBridge.ReleaseRenderer();
     AgoraEnv.AgoraRendererManager?.clear();
     AgoraEnv.AgoraRendererManager = undefined;
-    this._audio_device_manager.release();
-    this._video_device_manager.release();
     this._media_engine.release();
     this._local_spatial_audio_engine.release();
     RtcEngineExInternal._event_handlers = [];
