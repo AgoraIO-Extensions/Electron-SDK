@@ -14,7 +14,7 @@ import {
 import { AgoraEnv, isSupportWebGL, logDebug } from '../Utils';
 
 import { IRenderer } from './IRenderer';
-import { generateRendererCacheKey } from './IRendererCache';
+import { generateRendererCacheKey, isUseConnection } from './IRendererCache';
 import { RendererCache } from './RendererCache';
 import { WebCodecsRenderer } from './WebCodecsRenderer';
 import { WebCodecsRendererCache } from './WebCodecsRendererCache';
@@ -335,10 +335,24 @@ export class RendererManager {
     let engine = createAgoraRtcEngine();
     engine.getMediaEngine().unregisterVideoEncodedFrameObserver({});
     if (context.uid) {
-      engine.setRemoteVideoSubscriptionOptions(context.uid, {
-        type: VideoStreamType.VideoStreamHigh,
-        encodedFrameOnly: false,
-      });
+      if (isUseConnection(context)) {
+        engine.setRemoteVideoSubscriptionOptionsEx(
+          context.uid,
+          {
+            type: VideoStreamType.VideoStreamHigh,
+            encodedFrameOnly: false,
+          },
+          {
+            channelId: context.channelId,
+            localUid: context.localUid,
+          }
+        );
+      } else {
+        engine.setRemoteVideoSubscriptionOptions(context.uid, {
+          type: VideoStreamType.VideoStreamHigh,
+          encodedFrameOnly: false,
+        });
+      }
     }
     AgoraEnv.enableWebCodecsDecoder = false;
     AgoraEnv.CapabilityManager?.setWebCodecsDecoderEnabled(false);
