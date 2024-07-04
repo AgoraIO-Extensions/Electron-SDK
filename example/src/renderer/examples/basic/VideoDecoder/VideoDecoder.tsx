@@ -96,7 +96,6 @@ export default class VideoDecoder
       this.error('uid is invalid');
       return;
     }
-    this.setState({ useEx: false });
 
     // start joining channel
     // 1. Users can only see each other after they join the
@@ -123,7 +122,6 @@ export default class VideoDecoder
       this.error('uid2 is invalid');
       return;
     }
-    this.setState({ useEx: true });
     // publish screen share stream
     this.engine?.joinChannelEx(
       token2,
