@@ -44,9 +44,9 @@ export default class VideoDecoder
       token: Config.token,
       uid: Config.uid,
       joinChannelSuccess: false,
-      decodeRemoteUserUid: 7,
+      decodeRemoteUserUid: 0,
       token2: '',
-      uid2: 123456,
+      uid2: 0,
       remoteUsers: [],
       joinChannelExSuccess: false,
     };
@@ -165,7 +165,7 @@ export default class VideoDecoder
     const { uid2 } = this.state;
     if (connection.localUid === uid2) {
       this.setState({ joinChannelExSuccess: true });
-    }else{
+    } else {
       this.setState({ joinChannelSuccess: true });
     }
     this.info(
@@ -181,32 +181,12 @@ export default class VideoDecoder
     const { uid2 } = this.state;
     if (connection.localUid === uid2) {
       this.setState({ joinChannelExSuccess: false });
-    }else{
+    } else {
       this.setState({ joinChannelSuccess: false });
     }
     this.info('onLeaveChannel', 'connection', connection, 'stats', stats);
     this.setState(this.createState());
   }
-
-  // onUserJoined(connection: RtcConnection, remoteUid: number, elapsed: number) {
-  //   const { uid2 } = this.state;
-  //   if (connection.localUid === uid2 || remoteUid === uid2) {
-  //     this.engine?.muteRemoteAudioStream(uid2, true);
-  //     this.engine?.muteRemoteVideoStream(uid2, true);
-  //     return;
-  //   }
-  //   super.onUserJoined(connection, remoteUid, elapsed);
-  // }
-
-  // onUserOffline(
-  //   connection: RtcConnection,
-  //   remoteUid: number,
-  //   reason: UserOfflineReasonType
-  // ) {
-  //   const { uid2 } = this.state;
-  //   if (connection.localUid === uid2 || remoteUid === uid2) return;
-  //   super.onUserOffline(connection, remoteUid, reason);
-  // }
 
   protected renderUsers(): ReactElement | undefined {
     let {
@@ -268,7 +248,12 @@ export default class VideoDecoder
   }
 
   protected renderConfiguration(): ReactElement | undefined {
-    let { joinChannelExSuccess, uid2, joinChannelSuccess } = this.state;
+    let {
+      joinChannelExSuccess,
+      uid2,
+      joinChannelSuccess,
+      decodeRemoteUserUid,
+    } = this.state;
     return (
       <>
         <AgoraTextInput
@@ -284,6 +269,7 @@ export default class VideoDecoder
           placeholder={`useWebCodecsDecoder Uid (defaults: ${
             this.createState().decodeRemoteUserUid
           })`}
+          value={decodeRemoteUserUid > 0 ? decodeRemoteUserUid.toString() : ''}
         />
         <AgoraTextInput
           editable={!joinChannelExSuccess && !joinChannelSuccess}
