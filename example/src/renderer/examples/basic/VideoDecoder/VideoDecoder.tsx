@@ -7,7 +7,6 @@ import {
   LogFilterType,
   RtcConnection,
   RtcStats,
-  UserOfflineReasonType,
   VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
@@ -26,7 +25,6 @@ interface State extends BaseAudioComponentState {
   uid2: number;
   fps: number;
   joinChannelExSuccess: boolean;
-  decodeRemoteUserUid: number;
 }
 
 export default class VideoDecoder
@@ -44,7 +42,6 @@ export default class VideoDecoder
       token: Config.token,
       uid: Config.uid,
       joinChannelSuccess: false,
-      decodeRemoteUserUid: 0,
       token2: '',
       uid2: 0,
       remoteUsers: [],
@@ -187,12 +184,7 @@ export default class VideoDecoder
   }
 
   protected renderUsers(): ReactElement | undefined {
-    let {
-      decodeRemoteUserUid,
-      remoteUsers,
-      joinChannelSuccess,
-      joinChannelExSuccess,
-    } = this.state;
+    let { remoteUsers, joinChannelSuccess, joinChannelExSuccess } = this.state;
     return (
       <>
         {joinChannelSuccess
@@ -200,9 +192,8 @@ export default class VideoDecoder
               this.renderUser({
                 uid: item,
                 // Use WebCodecs to decode video stream
-                // only support one remote stream to decode at the same time for now
-                useWebCodecsDecoder: item === decodeRemoteUserUid,
-                enableFps: item === decodeRemoteUserUid,
+                useWebCodecsDecoder: true,
+                enableFps: true,
                 sourceType: VideoSourceType.VideoSourceRemote,
               })
             )
@@ -212,9 +203,8 @@ export default class VideoDecoder
               this.renderUser({
                 uid: item,
                 // Use WebCodecs to decode video stream
-                // only support one remote stream to decode at the same time for now
-                useWebCodecsDecoder: item === decodeRemoteUserUid,
-                enableFps: item === decodeRemoteUserUid,
+                useWebCodecsDecoder: true,
+                enableFps: true,
                 sourceType: VideoSourceType.VideoSourceRemote,
               })
             )
@@ -246,29 +236,9 @@ export default class VideoDecoder
   }
 
   protected renderConfiguration(): ReactElement | undefined {
-    let {
-      joinChannelExSuccess,
-      uid2,
-      joinChannelSuccess,
-      decodeRemoteUserUid,
-    } = this.state;
+    let { joinChannelExSuccess, uid2, joinChannelSuccess } = this.state;
     return (
       <>
-        <AgoraTextInput
-          disabled={this.state.joinChannelSuccess}
-          onChangeText={(text) => {
-            if (isNaN(+text)) return;
-            this.setState({
-              decodeRemoteUserUid:
-                text === '' ? this.createState().decodeRemoteUserUid : +text,
-            });
-          }}
-          numberKeyboard={true}
-          placeholder={`useWebCodecsDecoder Uid (defaults: ${
-            this.createState().decodeRemoteUserUid
-          })`}
-          value={decodeRemoteUserUid > 0 ? decodeRemoteUserUid.toString() : ''}
-        />
         <AgoraTextInput
           editable={!joinChannelExSuccess && !joinChannelSuccess}
           onChangeText={(text) => {
