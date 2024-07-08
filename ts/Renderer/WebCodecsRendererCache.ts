@@ -7,7 +7,7 @@ import { AgoraElectronBridge } from '../Private/internal/IrisApiEngine';
 import { RendererContext, RendererType } from '../Types';
 import { AgoraEnv, logInfo } from '../Utils';
 
-import { IRendererCache } from './IRendererCache';
+import { IRendererCache, isUseConnection } from './IRendererCache';
 import { WebCodecsRenderer } from './WebCodecsRenderer/index';
 
 export class WebCodecsRendererCache extends IRendererCache {
@@ -75,12 +75,26 @@ export class WebCodecsRendererCache extends IRendererCache {
   }
 
   public draw() {
-    this._engine?.setRemoteVideoSubscriptionOptions(this.cacheContext.uid!, {
-      type: VideoStreamType.VideoStreamHigh,
-      encodedFrameOnly: true,
-    });
+    if (isUseConnection(this.cacheContext)) {
+      this._engine?.setRemoteVideoSubscriptionOptionsEx(
+        this.cacheContext.uid!,
+        {
+          type: VideoStreamType.VideoStreamHigh,
+          encodedFrameOnly: true,
+        },
+        {
+          channelId: this.cacheContext.channelId,
+          localUid: this.cacheContext.localUid,
+        }
+      );
+    } else {
+      this._engine?.setRemoteVideoSubscriptionOptions(this.cacheContext.uid!, {
+        type: VideoStreamType.VideoStreamHigh,
+        encodedFrameOnly: true,
+      });
+    }
     AgoraElectronBridge.OnEvent(
-      'call_back_with_encoded_video_frame',
+      `call_back_with_encoded_video_frame_${this.cacheContext.uid}`,
       (...params: any) => {
         try {
           this.onEncodedVideoFrameReceived(...params);
@@ -116,7 +130,9 @@ export class WebCodecsRendererCache extends IRendererCache {
   }
 
   public release(): void {
-    AgoraElectronBridge.UnEvent('call_back_with_encoded_video_frame');
+    AgoraElectronBridge.UnEvent(
+      `call_back_with_encoded_video_frame_${this.cacheContext.uid}`
+    );
     this._decoder?.release();
     this._decoder = null;
     super.release();

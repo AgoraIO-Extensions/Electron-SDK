@@ -2,12 +2,23 @@ import { RendererCacheContext, RendererContext } from '../Types';
 
 import { IRenderer } from './IRenderer';
 
+/**
+ * @ignore
+ */
 export function generateRendererCacheKey({
   channelId,
   uid,
   sourceType,
 }: RendererContext): string {
   return `${channelId}_${uid}_${sourceType}`;
+}
+
+/**
+ * @ignore
+ */
+export function isUseConnection(context: RendererCacheContext): boolean {
+  // if RtcConnection is not undefined, then use connection
+  return !!context.channelId && context.localUid !== undefined;
 }
 
 export abstract class IRendererCache {
@@ -20,6 +31,7 @@ export abstract class IRendererCache {
     useWebCodecsDecoder,
     enableFps,
     sourceType,
+    localUid,
   }: RendererContext) {
     this.renderers = [];
     this.cacheContext = {
@@ -28,6 +40,7 @@ export abstract class IRendererCache {
       useWebCodecsDecoder,
       enableFps,
       sourceType,
+      localUid,
     };
   }
 

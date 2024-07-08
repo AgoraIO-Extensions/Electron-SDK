@@ -76,7 +76,7 @@ export default class ScreenShare
       remoteUsers: [],
       startPreview: false,
       token2: '',
-      uid2: 7,
+      uid2: 0,
       sources: [],
       targetSource: undefined,
       width: 3840,
