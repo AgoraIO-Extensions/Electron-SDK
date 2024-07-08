@@ -126,8 +126,8 @@ export default class VideoDecoder
       {
         autoSubscribeAudio: true,
         autoSubscribeVideo: true,
-        publishMicrophoneTrack: false,
-        publishCameraTrack: false,
+        publishMicrophoneTrack: true,
+        publishCameraTrack: true,
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       }
     );
