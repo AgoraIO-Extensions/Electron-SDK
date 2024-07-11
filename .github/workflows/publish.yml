@@ -64,7 +64,7 @@ jobs:
         run: |
           git config --global user.email "${{ secrets.GIT_EMAIL }}"
           git config --global user.name "${{ secrets.GIT_USERNAME }}"
-          yarn example add ${{steps.package-info.outputs.name}}@${{ inputs.increment }}
+          yarn example add agora-electron-sdk@${{ inputs.increment }}
 
       - name: Commit Example
         if: ${{ !inputs.dry-run }}
