@@ -8,12 +8,16 @@ const getConfig = require('./getConfig');
 const logger = require('./logger');
 const { getOS } = require('./util');
 
-const { platform, arch, no_symbol, native_sdk_mac, native_sdk_win } =
-  getConfig();
+const {
+  platform,
+  packageVersion,
+  arch,
+  no_symbol,
+  native_sdk_mac,
+  native_sdk_win,
+} = getConfig();
 
 const workspaceDir = `${path.join(__dirname, '..')}`;
-
-let packageVersion = '4.3.2';
 
 const normalizePath = (filePath) => filePath.split(path.sep).join('/');
 
