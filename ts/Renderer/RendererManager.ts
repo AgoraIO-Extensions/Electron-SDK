@@ -60,7 +60,7 @@ export class RendererManager extends IRendererManager {
 
   constructor() {
     super();
-    this.renderFps = 15;
+    this.renderFps = 30;
     this.renderers = new Map();
     this.setRenderMode();
     this.msgBridge = AgoraEnv.AgoraElectronBridge;

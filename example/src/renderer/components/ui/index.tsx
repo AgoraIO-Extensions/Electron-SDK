@@ -198,7 +198,7 @@ export const AgoraImage = (
 };
 
 export const AgoraListItem = (props: ListItemProps) => {
-  return <List.Item {...props} />;
+  return <List.Item style={{ width: '100%' }} {...props} />;
 };
 
 export function AgoraList<T>(
@@ -208,7 +208,6 @@ export function AgoraList<T>(
   return (
     <List
       style={{ width: '100%' }}
-      grid={{ column: 2 }}
       {...others}
       dataSource={data}
       renderItem={(item: T, index: number) => {

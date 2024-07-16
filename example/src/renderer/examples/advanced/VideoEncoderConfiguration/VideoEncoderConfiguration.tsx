@@ -58,10 +58,10 @@ export default class VideoEncoderConfiguration
       remoteUsers: [],
       startPreview: false,
       codecType: VideoCodecType.VideoCodecH264,
-      width: 640,
-      height: 360,
-      frameRate: 15,
-      bitrate: 0,
+      width: 1920,
+      height: 1080,
+      frameRate: 30,
+      bitrate: 3000,
       minBitrate: -1,
       orientationMode: OrientationMode.OrientationModeAdaptive,
       renderMode: RENDER_MODE.WEBGL,
@@ -95,7 +95,12 @@ export default class VideoEncoderConfiguration
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();
-
+    this.engine.setParameters(JSON.stringify({ 'che.video.vpr.init_size': 5 }));
+    this.engine.setParameters(JSON.stringify({ 'che.video.vpr.max_size': 5 }));
+    this.engine.setParameters(
+      JSON.stringify({ 'che.video.vpr.frozen_ms_thres': 30 })
+    );
+    this.engine.setParameters(JSON.stringify({ 'che.video.vpr.method': 1 }));
     // This case works if startPreview without joinChannel
     this.engine.startPreview();
     this.setState({ startPreview: true });

@@ -31,6 +31,7 @@ export interface BaseComponentState {
   joinChannelSuccess?: boolean;
   remoteUsers?: number[];
   startPreview?: boolean;
+  hideRightBar?: boolean;
 }
 
 export interface BaseAudioComponentState extends BaseComponentState {
@@ -138,15 +139,50 @@ export abstract class BaseComponent<
     });
   }
 
+  clickRightBar = () => {
+    this.setState({
+      hideRightBar: !this.state.hideRightBar,
+    });
+    if (this.state.hideRightBar) {
+      //@ts-ignore
+      document.querySelector('.ant-layout-sider')!.style.display = '';
+      //@ts-ignore
+      document.querySelector('.site-layout')!.style.marginLeft = '200px';
+    } else {
+      //@ts-ignore
+      document.querySelector('.ant-layout-sider')!.style.display = 'none';
+      //@ts-ignore
+      document.querySelector('.site-layout')!.style.marginLeft = '0';
+    }
+  };
+
   render() {
     const users = this.renderUsers();
     const configuration = this.renderConfiguration();
     return (
       <AgoraView className={AgoraStyle.screen}>
+        <p
+          style={{
+            cursor: 'pointer',
+            position: 'absolute',
+            left: 0,
+            bottom: 0,
+            margin: 0,
+            zIndex: 9,
+            color: '#ffffff',
+            background: '#000000',
+          }}
+          onClick={this.clickRightBar}
+        >
+          {this.state.hideRightBar ? 'Show side bar' : 'Hide side bar'}
+        </p>
         <AgoraView className={AgoraStyle.content}>
           {users ? this.renderUsers() : undefined}
         </AgoraView>
-        <AgoraView className={AgoraStyle.rightBar}>
+        <AgoraView
+          className={AgoraStyle.rightBar}
+          style={{ display: this.state.hideRightBar ? 'none' : 'flex' }}
+        >
           {this.renderChannel()}
           {configuration ? (
             <>

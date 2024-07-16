@@ -1,4 +1,5 @@
 import {
+  AudioProfileType,
   ChannelProfileType,
   ClientRoleType,
   ErrorCodeType,
@@ -18,13 +19,19 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import { AgoraButton, AgoraDropdown, AgoraView } from '../../../components/ui';
+import {
+  AgoraButton,
+  AgoraDivider,
+  AgoraDropdown,
+  AgoraView,
+} from '../../../components/ui';
 import Config from '../../../config/agora.config';
-import { arrayToItems } from '../../../utils';
+import { arrayToItems, enumToItems } from '../../../utils';
 import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   selectedUser?: number;
+  clientRoleType?: number;
 }
 
 export default class JoinChannelVideo
@@ -39,6 +46,7 @@ export default class JoinChannelVideo
       token: Config.token,
       uid: Config.uid,
       joinChannelSuccess: false,
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       remoteUsers: [],
       startPreview: false,
     };
@@ -78,7 +86,7 @@ export default class JoinChannelVideo
    * Step 2: joinChannel
    */
   protected joinChannel() {
-    const { channelId, token, uid } = this.state;
+    const { channelId, token, uid, clientRoleType } = this.state;
     if (!channelId) {
       this.error('channelId is invalid');
       return;
@@ -96,7 +104,7 @@ export default class JoinChannelVideo
     // the token has to match the ones used for channel join
     this.engine?.joinChannel(token, channelId, uid, {
       // Make myself as the broadcaster to send stream to remote
-      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+      clientRoleType: clientRoleType,
     });
   }
 
@@ -172,7 +180,17 @@ export default class JoinChannelVideo
   }
 
   protected renderUsers(): ReactElement | undefined {
-    return super.renderUsers();
+    const { joinChannelSuccess, remoteUsers } = this.state;
+    return (
+      <div>
+        {joinChannelSuccess && remoteUsers.length > 0
+          ? this.renderVideo({
+              uid: remoteUsers[0],
+              sourceType: VideoSourceType.VideoSourceRemote,
+            })
+          : undefined}
+      </div>
+    );
   }
 
   protected renderVideo(user: VideoCanvas): ReactElement | undefined {
@@ -180,9 +198,18 @@ export default class JoinChannelVideo
   }
 
   protected renderConfiguration(): ReactElement | undefined {
-    const { joinChannelSuccess, remoteUsers, selectedUser } = this.state;
+    const { joinChannelSuccess, remoteUsers, selectedUser, clientRoleType } =
+      this.state;
     return (
       <>
+        <AgoraDropdown
+          title={'clientRoleType'}
+          items={enumToItems(ClientRoleType)}
+          value={clientRoleType}
+          onValueChange={(value) => {
+            this.setState({ clientRoleType: value });
+          }}
+        />
         {joinChannelSuccess ? (
           <>
             <AgoraDropdown
