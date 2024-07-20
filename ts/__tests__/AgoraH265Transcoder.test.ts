@@ -1,21 +1,5 @@
 import createAgoraRtcEngine from '../AgoraSdk';
 
-jest.mock('../../build/Release/agora_node_ext', () => {
-  return {
-    AgoraElectronBridge: function () {
-      return {
-        CallApi: () => {
-          return {
-            callApiReturnCode: 0,
-            callApiResult: JSON.stringify({ result: 0 }),
-          };
-        },
-        OnEvent: () => {},
-      };
-    },
-  };
-});
-
 test('addListener', () => {
   const transcoder = createAgoraRtcEngine().getH265Transcoder();
   const callback = jest.fn();
