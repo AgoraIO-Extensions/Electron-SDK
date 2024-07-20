@@ -1,6 +1,21 @@
 import createAgoraRtcEngine from '../AgoraSdk';
 
 const nativeHandle = 1;
+jest.mock('../../build/Release/agora_node_ext', () => {
+  return {
+    AgoraElectronBridge: function () {
+      return {
+        CallApi: () => {
+          return {
+            callApiReturnCode: 0,
+            callApiResult: JSON.stringify({ result: nativeHandle }),
+          };
+        },
+        OnEvent: () => {},
+      };
+    },
+  };
+});
 
 test('addListener', () => {
   const engine = createAgoraRtcEngine().createMediaRecorder({});
