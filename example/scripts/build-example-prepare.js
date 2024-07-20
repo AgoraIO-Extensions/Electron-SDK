@@ -16,26 +16,24 @@ const arch = process.env.npm_config_agora_electron_sdk_arch;
 if (process.platform !== 'darwin') {
   return;
 }
-(async () => {
-  if (electron_version) {
-    console.log('electron_version is set in agora_electron:', electron_version);
-    const version = electron_version.match(/^([^-]+)/)[1];
-    const version_suffix = electron_version.match(/-(.+)/)[1];
-    console.log('version_suffix is:', version_suffix);
-    pkg.devDependencies.electron = version;
-    console.log('change example electron version to:', version);
-    let electron_dist_path = path.join(require.resolve('electron'), `../dist`);
-    pkg.build.electronDist = electron_dist_path;
-    console.log('change electronDist to:', pkg.build.electronDist);
+if (electron_version) {
+  console.log('electron_version is set in agora_electron:', electron_version);
+  const version = electron_version.match(/^([^-]+)/)[1];
+  const version_suffix = electron_version.match(/-(.+)/)[1];
+  console.log('version_suffix is:', version_suffix);
+  pkg.devDependencies.electron = version;
+  console.log('change example electron version to:', version);
+  let electron_dist_path = path.join(require.resolve('electron'), `../dist`);
+  pkg.build.electronDist = electron_dist_path;
+  console.log('change electronDist to:', pkg.build.electronDist);
 
-    console.log('change arch to:', arch);
-    pkg.build.mac.target = [
-      {
-        target: 'zip',
-        arch: [arch],
-      },
-    ];
-  }
+  console.log('change arch to:', arch);
+  pkg.build.mac.target = [
+    {
+      target: 'zip',
+      arch: [arch],
+    },
+  ];
+}
 
-  fs.writeFileSync(packageJsonPath, JSON.stringify(pkg, null, 2) + '\n');
-})();
+fs.writeFileSync(packageJsonPath, JSON.stringify(pkg, null, 2) + '\n');
