@@ -89,7 +89,11 @@
   },
   "packageManager": "^yarn@1.22.15",
   "jest": {
+    "setupFilesAfterEnv": [
+      "<rootDir>/ts/__tests__/setup.ts"
+    ],
     "modulePathIgnorePatterns": [
+      "<rootDir>/ts/__tests__/setup.ts",
       "<rootDir>/example/node_modules",
       "<rootDir>/js/",
       "<rootDir>/types/"
