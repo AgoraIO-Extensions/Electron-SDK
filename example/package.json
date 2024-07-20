@@ -90,7 +90,7 @@
   },
   "devDependencies": {
     "@babel/preset-react": "^7.16.7",
-    "@electron/rebuild": "^3.2.10",
+    "@electron/rebuild": "^3.6.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.6",
     "@teamsupercell/typings-for-css-modules-loader": "^2.5.1",
     "@types/download": "^8.0.2",

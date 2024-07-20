@@ -52,26 +52,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: remove example/.npmrc
-        run: |
-          del /f /q .npmrc
-        shell: cmd
-
       - name: Setup
         uses: ./.github/actions/setup
+        with:
+          skip_install: true
 
-      - name: Build SDK
+      - name: Prepare Build Example
         run: |
-          yarn totalBuild
-          yarn zipBuild
-          yarn link
+          yarn --network-timeout 1000000
 
       - name: Build Example
         run: |
-          yarn install
-          yarn link agora-electron-sdk
           yarn dist:win --${{ matrix.arch }}
-          yarn unlink agora-electron-sdk
         working-directory: example
 
       - uses: actions/upload-artifact@v3
@@ -83,33 +75,37 @@ jobs:
 
   build-mac:
     if: ${{ inputs.type == 'demo' || contains(github.event.pull_request.labels.*.name, 'ci:dep-update') }}
+    strategy:
+      matrix:
+        arch: [arm64, x64]
     runs-on: macos-latest
+    env:
+      npm_config_arch: ${{ matrix.arch }}
+      npm_config_agora_electron_arch: ${{ matrix.arch }}
+      npm_config_agora_electron_sdk_arch: ${{ matrix.arch }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup
         uses: ./.github/actions/setup
+        with:
+          skip_install: true
 
-      - name: Build SDK
+      - name: Prepare Build Example
         run: |
-          yarn totalBuild
-          yarn zipBuild
-          yarn link
+          yarn --network-timeout 1000000
+        env:
+          USE_HARD_LINKS: false
 
       - name: Build Example
         run: |
-          rm -rf .npmrc
-          yarn install
-          yarn link agora-electron-sdk
+          node scripts/build-example-prepare.js
           yarn dist:mac
-          yarn unlink agora-electron-sdk
-        env:
-          USE_HARD_LINKS: false
         working-directory: example
 
       - uses: actions/upload-artifact@v3
         with:
-          name: AgoraRtcNgExample-mac
+          name: AgoraRtcNgExample-mac-${{ matrix.arch }}
           path: |
             example/dist/Agora-Electron-API-Example-*-mac.zip
           if-no-files-found: error

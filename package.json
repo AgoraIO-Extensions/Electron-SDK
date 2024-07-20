@@ -16,9 +16,11 @@
     "!**/__tests__"
   ],
   "scripts": {
+    "postinstall": "yarn checkElectron",
     "totalBuild": "cross-env-shell gulp totalBuild \\\"--INIT_CWD=$INIT_CWD\\\"",
     "build": "cross-env-shell gulp build \\\"--INIT_CWD=$INIT_CWD\\\"",
     "clean": "cross-env-shell gulp clean \\\"--INIT_CWD=$INIT_CWD\\\"",
+    "checkElectron": "cross-env-shell gulp checkElectron \\\"--INIT_CWD=$INIT_CWD\\\"",
     "syncLib": "cross-env-shell gulp syncLib \\\"--INIT_CWD=$INIT_CWD\\\"",
     "buildJS": "cross-env-shell gulp buildJS \\\"--INIT_CWD=$INIT_CWD\\\"",
     "zipBuild": "cross-env-shell gulp zipBuild \\\"--INIT_CWD=$INIT_CWD\\\"",
@@ -37,7 +39,8 @@
     "install": "cross-env-shell gulp NPM_Install \\\"--INIT_CWD=$INIT_CWD\\\"",
     "release": "release-it",
     "example": "yarn --cwd example",
-    "bootstrap": "yarn config set agora-electron-sdk-pre-built 0 && yarn example && yarn install && yarn patch-package && yarn build:ts-interface && yarn totalBuild && yarn link && yarn example link agora-electron-sdk && yarn config delete agora-electron-sdk-pre-built",
+    "example:prepare": "yarn example && cross-env-shell gulp checkElectron \\\"--INIT_CWD=$INIT_CWD/example\\\" \"--electron_path=$INIT_CWD/example/node_modules/electron/dist\"",
+    "bootstrap": "yarn config set agora-electron-sdk-pre-built 0 && yarn example && yarn install && yarn patch-package && yarn build:ts-interface && yarn totalBuild && yarn link && yarn example link agora-electron-sdk && yarn config delete agora-electron-sdk-pre-built && yarn example:prepare",
     "build:ts-interface": "ts-interface-builder ts/Private/*.ts -o ts/Private/ti/"
   },
   "keywords": [
@@ -87,7 +90,6 @@
   "engines": {
     "node": ">= 14.0.0"
   },
-  "packageManager": "^yarn@1.22.15",
   "jest": {
     "modulePathIgnorePatterns": [
       "<rootDir>/example/node_modules",
