@@ -314,6 +314,8 @@ export abstract class IMediaPlayer {
   /**
    * Sets the view.
    *
+   * @param view The render view. On Windows, this parameter sets the window handle (HWND).
+   *
    * @returns
    * 0: Success.
    *  < 0: Failure.
