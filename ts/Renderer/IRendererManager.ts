@@ -1,5 +1,9 @@
 import { VideoMirrorModeType, VideoViewSetupMode } from '../Private/AgoraBase';
-import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
+import {
+  RenderModeType,
+  VideoModulePosition,
+  VideoSourceType,
+} from '../Private/AgoraMediaBase';
 import { RendererContext, RendererType } from '../Types';
 import { logDebug } from '../Utils';
 
@@ -86,6 +90,7 @@ export abstract class IRendererManager {
       sourceType,
       uid,
       channelId,
+      position,
       mediaPlayerId,
       renderMode = this.defaultRenderMode,
       mirrorMode = this.defaultMirrorMode,
@@ -113,6 +118,11 @@ export abstract class IRendererManager {
         channelId = '';
         uid = 0;
         break;
+    }
+    if (!position) {
+      position =
+        VideoModulePosition.PositionPreEncoder |
+        VideoModulePosition.PositionPreRenderer;
     }
     return { ...context, sourceType, uid, channelId, renderMode, mirrorMode };
   }

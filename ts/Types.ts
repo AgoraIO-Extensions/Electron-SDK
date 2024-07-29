@@ -55,7 +55,7 @@ export type RendererContext = VideoCanvas & RtcConnection;
 
 export type RendererCacheContext = Pick<
   RendererContext,
-  'channelId' | 'uid' | 'sourceType'
+  'channelId' | 'uid' | 'sourceType' | 'position'
 >;
 
 /**

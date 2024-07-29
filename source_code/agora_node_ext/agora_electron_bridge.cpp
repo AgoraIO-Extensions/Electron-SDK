@@ -7,6 +7,7 @@
 #include "agora_electron_bridge.h"
 #include "iris_base.h"
 #include "node_iris_event_handler.h"
+#include <iostream>
 #include <memory>
 #include <regex>
 
@@ -302,10 +303,13 @@ napi_value AgoraElectronBridge::EnableVideoFrameCache(napi_env env,
   strcpy(config.channelId, channelId.c_str());
   napi_obj_get_property(env, obj, "width", width);
   napi_obj_get_property(env, obj, "height", height);
+  napi_obj_get_property(env, obj, "position", config.observed_frame_position);
 
   char result[kBasicStringLength];
   memset(result, '\0', kBasicStringLength);
   int ret = ERR_FAILED;
+  //添加log
+  std::cout << "[LOG]config" << config.observed_frame_position << std::endl;
 
   if (!agoraElectronBridge->_iris_rendering) {
     ret = ERR_NOT_INITIALIZED;

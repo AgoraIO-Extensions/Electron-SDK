@@ -4,8 +4,12 @@ import {
   ChannelProfileType,
   ClientRoleType,
   IRtcEngineEventHandler,
+  VideoModulePosition,
+  VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
+import { Checkbox, List } from 'antd';
+import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import React, { ReactElement } from 'react';
 import { SketchPicker } from 'react-color';
 
@@ -16,6 +20,7 @@ import {
 import {
   AgoraButton,
   AgoraDropdown,
+  AgoraList,
   AgoraTextInput,
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
@@ -24,6 +29,8 @@ import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   background_source_type: BackgroundSourceType;
+  video_module_position: VideoModulePosition;
+  checked_video_module_position_list: CheckboxValueType[];
   color: number;
   source: string;
   blur_degree: BackgroundBlurDegree;
@@ -43,6 +50,13 @@ export default class VirtualBackground
       uid: Config.uid,
       joinChannelSuccess: false,
       remoteUsers: [],
+      video_module_position:
+        VideoModulePosition.PositionPreEncoder |
+        VideoModulePosition.PositionPreRenderer,
+      checked_video_module_position_list: [
+        VideoModulePosition.PositionPreRenderer,
+        VideoModulePosition.PositionPreEncoder,
+      ],
       startPreview: false,
       background_source_type: BackgroundSourceType.BackgroundColor,
       color: 0xffffff,
@@ -83,8 +97,8 @@ export default class VirtualBackground
     this.engine.enableVideo();
 
     // This case works if startPreview without joinChannel
-    this.engine.startPreview();
-    this.setState({ startPreview: true });
+    // this.engine.startPreview();
+    // this.setState({ startPreview: true });
   }
 
   /**
@@ -147,6 +161,19 @@ export default class VirtualBackground
     this.setState({ enableVirtualBackground: false });
   };
 
+  handleStartPreview = () => {
+    this.engine?.startPreview();
+    this.setState({ startPreview: true });
+    console.log(
+      `startPreview with position:${this.state.video_module_position}`
+    );
+  };
+
+  handleStopPreview = () => {
+    this.engine?.stopPreview();
+    this.setState({ startPreview: false });
+  };
+
   /**
    * Step 4: leaveChannel
    */
@@ -162,10 +189,78 @@ export default class VirtualBackground
     this.engine?.release();
   }
 
-  protected renderConfiguration(): ReactElement | undefined {
-    const { background_source_type, color, source, blur_degree } = this.state;
+  protected renderUsers(): ReactElement | undefined {
+    const {
+      startPreview,
+      joinChannelSuccess,
+      remoteUsers,
+      video_module_position,
+    } = this.state;
     return (
       <>
+        {!!startPreview || joinChannelSuccess
+          ? this.renderUser({
+              position: video_module_position,
+              sourceType: VideoSourceType.VideoSourceCamera,
+            })
+          : undefined}
+        {!!startPreview || joinChannelSuccess ? (
+          <AgoraList
+            data={remoteUsers ?? []}
+            renderItem={(item) =>
+              this.renderUser({
+                uid: item,
+                sourceType: VideoSourceType.VideoSourceRemote,
+              })
+            }
+          />
+        ) : undefined}
+      </>
+    );
+  }
+
+  protected renderConfiguration(): ReactElement | undefined {
+    const {
+      checked_video_module_position_list,
+      background_source_type,
+      color,
+      source,
+      blur_degree,
+    } = this.state;
+    return (
+      <>
+        <>
+          <p>local video module position</p>
+          <Checkbox.Group
+            style={{ width: '100%' }}
+            value={checked_video_module_position_list}
+            onChange={(checkedValues) => {
+              let result = 0;
+              checkedValues.forEach((value: CheckboxValueType) => {
+                result |= value as number;
+              });
+              this.setState({
+                checked_video_module_position_list: checkedValues,
+                video_module_position: result,
+              });
+            }}
+          >
+            <List
+              itemLayout="horizontal"
+              dataSource={enumToItems(VideoModulePosition)}
+              renderItem={(item) =>
+                1 == 1 ? (
+                  <List.Item>
+                    <List.Item.Meta
+                      avatar={<Checkbox value={item.value} />}
+                      title={item.label}
+                    />
+                  </List.Item>
+                ) : undefined
+              }
+            />
+          </Checkbox.Group>
+        </>
         <AgoraDropdown
           title={'backgroundSourceType'}
           items={enumToItems(BackgroundSourceType)}
@@ -216,6 +311,13 @@ export default class VirtualBackground
       this.state;
     return (
       <>
+        <AgoraButton
+          disabled={joinChannelSuccess}
+          title={`${startPreview ? 'stop' : 'start'}preview`}
+          onPress={
+            startPreview ? this.handleStopPreview : this.handleStartPreview
+          }
+        />
         <AgoraButton
           disabled={!(startPreview || joinChannelSuccess)}
           title={`${
