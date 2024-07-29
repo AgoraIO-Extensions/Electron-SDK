@@ -124,7 +124,15 @@ export abstract class IRendererManager {
         VideoModulePosition.PositionPreEncoder |
         VideoModulePosition.PositionPreRenderer;
     }
-    return { ...context, sourceType, uid, channelId, renderMode, mirrorMode };
+    return {
+      ...context,
+      position,
+      sourceType,
+      uid,
+      channelId,
+      renderMode,
+      mirrorMode,
+    };
   }
 
   public addOrRemoveRenderer(

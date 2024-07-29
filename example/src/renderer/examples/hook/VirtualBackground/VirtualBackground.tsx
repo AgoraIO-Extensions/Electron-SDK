@@ -3,7 +3,7 @@ import {
   BackgroundSourceType,
   ClientRoleType,
 } from 'agora-electron-sdk';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { SketchPicker } from 'react-color';
 
 import {
@@ -44,14 +44,6 @@ export default function VirtualBackground() {
     BackgroundBlurDegree.BlurDegreeMedium
   );
   const [enableVirtualBackground, setEnableVirtualBackground] = useState(false);
-
-  useEffect(() => {
-    engine.current.enableExtension(
-      'agora_video_filters_segmentation',
-      'portrait_segmentation',
-      true
-    );
-  }, [engine]);
 
   /**
    * Step 2: joinChannel
