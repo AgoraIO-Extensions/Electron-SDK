@@ -26,14 +26,14 @@ if (electron_version) {
   let electron_dist_path = path.join(require.resolve('electron'), `../dist`);
   pkg.build.electronDist = electron_dist_path;
   console.log('change electronDist to:', pkg.build.electronDist);
-
-  console.log('change arch to:', arch);
-  pkg.build.mac.target = [
-    {
-      target: 'zip',
-      arch: [arch],
-    },
-  ];
 }
+
+console.log('change arch to:', arch);
+pkg.build.mac.target = [
+  {
+    target: 'zip',
+    arch: [arch],
+  },
+];
 
 fs.writeFileSync(packageJsonPath, JSON.stringify(pkg, null, 2) + '\n');
