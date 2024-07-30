@@ -389,6 +389,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_obj_get_property(env, obj0, "uid", config.uid);
   napi_obj_get_property(env, obj0, "sourceType", config.video_source_type);
   napi_obj_get_property(env, obj0, "channelId", channel_id);
+  napi_obj_get_property(env, obj0, "position", config.observed_frame_position);
   strcpy(config.channelId, channel_id.c_str());
 
   napi_value obj1 = args[1];
