@@ -308,8 +308,6 @@ napi_value AgoraElectronBridge::EnableVideoFrameCache(napi_env env,
   char result[kBasicStringLength];
   memset(result, '\0', kBasicStringLength);
   int ret = ERR_FAILED;
-  //添加log
-  std::cout << "[LOG]config" << config.observed_frame_position << std::endl;
 
   if (!agoraElectronBridge->_iris_rendering) {
     ret = ERR_NOT_INITIALIZED;
