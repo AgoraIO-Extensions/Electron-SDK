@@ -20,7 +20,7 @@ import { AgoraButton } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { askMediaAccess } from '../../../utils/permissions';
 
-const pluginVersion = 'v4.2.0-dev.8';
+const pluginVersion = 'v4.4.0';
 let pluginName = 'VideoObserverPlugin';
 let postfix = `_${process.arch}`;
 if (process.platform === 'darwin') {
