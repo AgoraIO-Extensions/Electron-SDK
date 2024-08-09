@@ -178,10 +178,10 @@
                 ],
                 'defines!': [
                 '_HAS_EXCEPTIONS=0',
-                '-std=gnu++14'
+                '-std=gnu++17'
                 ],
                 'OTHER_CFLAGS' : [
-                    '-std=c++11',
+                    '-std=c++17',
                     '-stdlib=libc++',
                     '-fexceptions'
                 ],
@@ -419,10 +419,10 @@
                 ],
                 'defines!': [
                     '_NOEXCEPT',
-                    '-std=c++11'
+                    '-std=c++17'
                 ],
                 'OTHER_CFLAGS' : [
-                    '-std=c++11',
+                    '-std=c++17',
                     '-stdlib=libc++',
                     '-fexceptions'
                 ],
