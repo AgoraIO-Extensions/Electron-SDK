@@ -1,10 +1,4 @@
-let localAppId = '';
-try {
-  localAppId = require('./appID').default;
-  console.log('appID', localAppId);
-} catch (error) {
-  console.warn(error);
-}
+let localAppId = window.localStorage.getItem('appId') || '';
 
 const config = {
   enableSDKLogging: true,
