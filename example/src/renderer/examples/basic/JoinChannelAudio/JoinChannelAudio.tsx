@@ -234,8 +234,14 @@ export default class JoinChannelAudio
     );
   }
 
-  onAudioRoutingChanged(routing: number) {
-    this.info('onAudioRoutingChanged', 'routing', routing);
+  onAudioRoutingChanged(deviceType: number, routing: number) {
+    this.info(
+      'onAudioRoutingChanged',
+      'deviceType',
+      deviceType,
+      'routing',
+      routing
+    );
   }
 
   protected renderConfiguration(): ReactElement | undefined {

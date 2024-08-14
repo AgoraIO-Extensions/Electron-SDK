@@ -146,9 +146,18 @@ export default function AudioMixing() {
     log.info('AudioMixingFinished');
   }, []);
 
-  const onAudioRoutingChanged = useCallback((routing: number) => {
-    log.info('onAudioRoutingChanged', 'routing', routing);
-  }, []);
+  const onAudioRoutingChanged = useCallback(
+    (deviceType: number, routing: number) => {
+      log.info(
+        'onAudioRoutingChanged',
+        'deviceType',
+        deviceType,
+        'routing',
+        routing
+      );
+    },
+    []
+  );
 
   useEffect(() => {
     engine.current.addListener(
