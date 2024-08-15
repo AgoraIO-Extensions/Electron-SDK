@@ -1,7 +1,8 @@
 set -e
 set -x
 
-npm config set ELECTRON_MIRROR http://npm.taobao.org/mirrors/electron/
+npm config set registry https://registry.npmmirror.com/
+npm config set ELECTRON_MIRROR https://npmmirror.com/mirrors/electron/
 # Example 1
 # npm config set AGORA_ELECTRON_SDK_PRE_BUILT false
 
