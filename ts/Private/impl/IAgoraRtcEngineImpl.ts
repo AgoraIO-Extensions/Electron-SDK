@@ -795,6 +795,12 @@ export function processIRtcEngineEventHandler(
       }
       break;
 
+    case 'onPermissionGranted':
+      if (handler.onPermissionGranted !== undefined) {
+        handler.onPermissionGranted(jsonParams.permissionType);
+      }
+      break;
+
     case 'onLocalUserRegistered':
       if (handler.onLocalUserRegistered !== undefined) {
         handler.onLocalUserRegistered(jsonParams.uid, jsonParams.userAccount);
@@ -5079,6 +5085,29 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromGetAudioDeviceInfo(): string {
     return 'RtcEngine_getAudioDeviceInfo';
+  }
+
+  setRemoteRenderRotation(uid: number, rotation: VideoOrientation): number {
+    const apiType = this.getApiTypeFromSetRemoteRenderRotation(uid, rotation);
+    const jsonParams = {
+      uid: uid,
+      rotation: rotation,
+      toJSON: () => {
+        return {
+          uid: uid,
+          rotation: rotation,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSetRemoteRenderRotation(
+    uid: number,
+    rotation: VideoOrientation
+  ): string {
+    return 'RtcEngine_setRemoteRenderRotation';
   }
 
   startScreenCaptureByWindowId(

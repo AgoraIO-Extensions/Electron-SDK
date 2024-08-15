@@ -23,12 +23,12 @@ const downloadSDK = async ({
   await download(sdkURL, destDir, {
     strip: strip,
     extract: true,
-    filter: (file) => {
-      return (
-        file.type !== 'directory' &&
-        !file.path.endsWith(path.sep) &&
-        file.data.length !== 0
-      );
+    //https://github.com/kevva/decompress/issues/68
+    map: (file) => {
+      if (file.type === 'file' && file.path.endsWith('/')) {
+        file.type = 'directory';
+      }
+      return file;
     },
   });
   logger.info(`Finish download:${sdkURL}`);

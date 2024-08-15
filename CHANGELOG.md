@@ -1,5 +1,14 @@
 
 
+## [4.2.6-build.16-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.11-rc.1...v4.2.6-build.16-rc.1) (2024-08-15)
+
+
+### Features
+
+* download electron special build ([5b6e022](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/5b6e022a7d11dde6b8eadcdc1bf5253401a323a3))
+* support 4.2.6.14 ([#1207](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1207)) ([c6da39e](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/c6da39ee30e3b179696964c15630904540b7c479)), closes [#1208](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1208)
+* support 4.2.6.140, use standalone iris ([#1199](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1199)) ([0df25b6](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/0df25b6a77478eab911faee7fe2023da8a48faef))
+
 ## [4.2.6-build.14-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.11-rc.1...v4.2.6-build.14-rc.1) (2024-07-01)
 
 

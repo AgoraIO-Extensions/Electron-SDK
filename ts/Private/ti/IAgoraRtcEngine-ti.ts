@@ -84,6 +84,7 @@ export const IRtcEngineEventHandler = t.iface([], {
   "onNetworkTypeChanged": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("type", "NetworkType"))),
   "onEncryptionError": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("errorType", "EncryptionErrorType"))),
   "onPermissionError": t.opt(t.func("void", t.param("permissionType", "PermissionType"))),
+  "onPermissionGranted": t.opt(t.func("void", t.param("permissionType", "PermissionType"))),
   "onLocalUserRegistered": t.opt(t.func("void", t.param("uid", "number"), t.param("userAccount", "string"))),
   "onUserInfoUpdated": t.opt(t.func("void", t.param("uid", "number"), t.param("info", "UserInfo"))),
   "onUploadLogResult": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("requestId", "string"), t.param("success", "boolean"), t.param("reason", "UploadErrorReason"))),

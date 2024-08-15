@@ -11,6 +11,7 @@ import {
   VideoCanvas,
   VideoEncoderConfiguration,
   VideoMirrorModeType,
+  VideoOrientation,
   VideoStreamType,
   VideoSubscriptionOptions,
   WatermarkOptions,
@@ -654,6 +655,40 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     connection: RtcConnection
   ): string {
     return 'RtcEngineEx_setRemoteRenderModeEx';
+  }
+
+  setRemoteRenderRotationEx(
+    uid: number,
+    rotation: VideoOrientation,
+    connection: RtcConnection
+  ): number {
+    const apiType = this.getApiTypeFromSetRemoteRenderRotationEx(
+      uid,
+      rotation,
+      connection
+    );
+    const jsonParams = {
+      uid: uid,
+      rotation: rotation,
+      connection: connection,
+      toJSON: () => {
+        return {
+          uid: uid,
+          rotation: rotation,
+          connection: connection,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSetRemoteRenderRotationEx(
+    uid: number,
+    rotation: VideoOrientation,
+    connection: RtcConnection
+  ): string {
+    return 'RtcEngineEx_setRemoteRenderRotationEx';
   }
 
   enableLoopbackRecordingEx(
