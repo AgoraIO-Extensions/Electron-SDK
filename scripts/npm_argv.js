@@ -3,6 +3,7 @@ const path = require('path')
 module.exports.getArgvFromNpmEnv = () => {
   return {
     electronVersion: process.env.npm_config_agora_electron_dependent,
+    publishToNpm: process.env.npm_config_agora_electron_publish_to_npm,
     prebuilt: process.env.npm_config_agora_electron_prebuilt === 'false' ? false : true ,
     platform: process.env.npm_config_agora_electron_platform,
     msvsVersion: process.env.npm_config_agora_electron_msvs_version,

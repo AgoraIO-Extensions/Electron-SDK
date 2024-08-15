@@ -1,11 +1,4 @@
-const {
-  lipoCreate,
-  createTmpProduct,
-  createTmpVideoSourceProduct,
-  lipoCreateVideoSource,
-  backupSymbol,
-  restoreSymbols
-} = require("./scripts/lipo");
+const { lipoCreate, createTmpProduct,createTmpVideoSourceProduct,lipoCreateVideoSource } = require("./scripts/lipo");
 const { task, option, logger, argv, series, condition } = require('just-task');
 const path = require('path')
 const semver = require("semver");
@@ -76,8 +69,7 @@ task("build:electron", async () => {
         return;
       }
       if (argv().platform === "darwin" && isOver11) {
-        await backupSymbol("x86_64");
-        await buildMacArm64(electronVersion);
+        buildMacArm64(electronVersion);
       }
     }
   });
@@ -105,9 +97,6 @@ const buildMacArm64 = async electronVersion => {
       const arm64VDProConfig = await createTmpVideoSourceProduct();
       lipoCreate(x86ProConfig, arm64ProConfig);
       lipoCreateVideoSource(x86VDProConfig,arm64VDProConfig);
-
-      await backupSymbol("arm64");
-      await restoreSymbols();
     }
   });
 };
@@ -145,6 +134,10 @@ task('install', () => {
     ...getArgvFromNpmEnv(),
     ...getArgvFromPkgJson(),
     arch:getArgvFromNpmEnv().arch || getArgvFromPkgJson().arch || process.arch,
+  }
+
+  if(config.publishToNpm) {
+    return;
   }
 
   // work-around
