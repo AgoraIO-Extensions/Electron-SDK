@@ -3,6 +3,8 @@ dir
 call npm -v
 call node -v
 call npm config list
+call npm config set registry https://registry.npmmirror.com/
+call npm config set ELECTRON_MIRROR https://npmmirror.com/mirrors/electron/
 call npm config set agora_electron_sdk_pre_built false
 if %1 == ia32 (
     echo sdk_ia32
