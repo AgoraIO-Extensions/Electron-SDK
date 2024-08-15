@@ -424,7 +424,7 @@ export class RendererManager extends IRendererManager {
   public stopRender(): void {
     this.isRendering = false;
     if (this.videoFrameUpdateInterval) {
-      clearTimeout(this.videoFrameUpdateInterval);
+      clearTimeout(this.videoFrameUpdateInterval!);
       this.videoFrameUpdateInterval = undefined;
     }
   }
