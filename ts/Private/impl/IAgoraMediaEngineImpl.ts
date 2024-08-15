@@ -450,24 +450,6 @@ export class IMediaEngineImpl implements IMediaEngine {
   ): string {
     return 'MediaEngine_unregisterVideoEncodedFrameObserver';
   }
-
-  unregisterFaceInfoObserver(observer: IFaceInfoObserver): number {
-    const apiType = this.getApiTypeFromUnregisterFaceInfoObserver(observer);
-    const jsonParams = {
-      observer: observer,
-      toJSON: () => {
-        return {};
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromUnregisterFaceInfoObserver(
-    observer: IFaceInfoObserver
-  ): string {
-    return 'MediaEngine_unregisterFaceInfoObserver';
-  }
 }
 
 import { callIrisApi } from '../internal/IrisApiEngine';
