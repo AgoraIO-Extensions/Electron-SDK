@@ -28,6 +28,7 @@ import { askMediaAccess } from '../../../utils/permissions';
 interface State extends BaseVideoComponentState {
   checkedSimulcastConfigList: CheckboxValueType[];
   clientRoleType: ClientRoleType;
+  isSetSimulcastConfig: boolean;
 }
 
 let presetSimulcastConfigList = [
@@ -38,8 +39,8 @@ let presetSimulcastConfigList = [
         width: 1920,
         height: 1080,
       },
-      frameRate: 30,
-      enable: true,
+      framerate: 30,
+      enable: false,
     },
   },
   {
@@ -49,8 +50,8 @@ let presetSimulcastConfigList = [
         width: 1280,
         height: 720,
       },
-      frameRate: 30,
-      enable: true,
+      framerate: 30,
+      enable: false,
     },
   },
   {
@@ -60,8 +61,8 @@ let presetSimulcastConfigList = [
         width: 640,
         height: 360,
       },
-      frameRate: 15,
-      enable: true,
+      framerate: 15,
+      enable: false,
     },
   },
   {
@@ -71,8 +72,8 @@ let presetSimulcastConfigList = [
         width: 360,
         height: 270,
       },
-      frameRate: 15,
-      enable: true,
+      framerate: 15,
+      enable: false,
     },
   },
   {
@@ -82,8 +83,8 @@ let presetSimulcastConfigList = [
         width: 270,
         height: 150,
       },
-      frameRate: 5,
-      enable: true,
+      framerate: 5,
+      enable: false,
     },
   },
   {
@@ -93,8 +94,8 @@ let presetSimulcastConfigList = [
         width: 150,
         height: 150,
       },
-      frameRate: 5,
-      enable: true,
+      framerate: 5,
+      enable: false,
     },
   },
 ];
@@ -115,6 +116,7 @@ export default class Simulcast
       remoteUsers: [],
       checkedSimulcastConfigList: [],
       startPreview: false,
+      isSetSimulcastConfig: false,
     };
   }
 
@@ -185,8 +187,11 @@ export default class Simulcast
     }
 
     let configs: SimulcastConfig = {
-      configs: checkedSimulcastConfigList.map((item) => {
-        return item as StreamLayerConfig;
+      configs: presetSimulcastConfigList.map((item) => {
+        item.value.enable = checkedSimulcastConfigList.includes(
+          item.value as any
+        );
+        return item.value;
       }),
     };
 
@@ -251,7 +256,6 @@ export default class Simulcast
             style={{ width: '100%' }}
             value={checkedSimulcastConfigList}
             onChange={(checkedValues) => {
-              console.log(checkedValues);
               this.setState({
                 checkedSimulcastConfigList: checkedValues,
               });
