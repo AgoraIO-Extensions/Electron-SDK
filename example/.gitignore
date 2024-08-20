@@ -35,4 +35,3 @@ dist/
 node_modules/
 thumbs.db
 .idea/
-appId.*

@@ -26,6 +26,7 @@ const onFinish = (values: any) => {
   console.log('Success:', values);
 
   config.appId = values.appId;
+  window.localStorage.setItem('appId', config.appId!);
   config.channelId = values.channelId;
   config.token = values.token;
   config.uid = +values.uid;
