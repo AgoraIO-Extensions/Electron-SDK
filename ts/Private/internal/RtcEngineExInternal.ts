@@ -1,6 +1,11 @@
 ﻿import { createCheckers } from 'ts-interface-checker';
 
-import { RendererManager } from '../../Renderer/RendererManager';
+let RendererManager: any;
+if (typeof window !== 'undefined') {
+  RendererManager = require('../../Renderer/RendererManager').RendererManager;
+} else {
+  RendererManager = undefined;
+}
 import { Channel } from '../../Types';
 import { AgoraEnv } from '../../Utils';
 import {
@@ -93,7 +98,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     if (AgoraEnv.webEnvReady) {
       // @ts-ignore
       window.AgoraEnv = AgoraEnv;
-      if (AgoraEnv.AgoraRendererManager === undefined) {
+      if (AgoraEnv.AgoraRendererManager === undefined && RendererManager) {
         AgoraEnv.AgoraRendererManager = new RendererManager();
       }
     }
