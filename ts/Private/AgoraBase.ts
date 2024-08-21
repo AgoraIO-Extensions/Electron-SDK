@@ -2034,7 +2034,7 @@ export enum VideoApplicationScenarioType {
    */
   ApplicationScenarioGeneral = 0,
   /**
-   * ApplicationScenarioMeeting (1) is suitable for meeting scenarios. If set to ApplicationScenarioMeeting (1), the SDK automatically enables the following strategies:
+   * ApplicationScenarioMeeting (1) is suitable for meeting scenarios. The SDK automatically enables the following strategies:
    *  In meeting scenarios where low-quality video streams are required to have a high bitrate, the SDK automatically enables multiple technologies used to deal with network congestions, to enhance the performance of the low-quality streams and to ensure the smooth reception by subscribers.
    *  The SDK monitors the number of subscribers to the high-quality video stream in real time and dynamically adjusts its configuration based on the number of subscribers.
    *  If nobody subscribers to the high-quality stream, the SDK automatically reduces its bitrate and frame rate to save upstream bandwidth.
@@ -2051,7 +2051,7 @@ export enum VideoApplicationScenarioType {
    */
   ApplicationScenarioMeeting = 1,
   /**
-   * @ignore
+   * ApplicationScenario1v1 (2) is suitable for 1v1 video call scenarios. To meet the requirements for low latency and high-quality video in this scenario, the SDK optimizes its strategies, improving performance in terms of video quality, first frame rendering, latency on mid-to-low-end devices, and smoothness under weak network conditions. 2: 1v1 video call scenario.
    */
   ApplicationScenario1v1 = 2,
 }
@@ -2304,23 +2304,23 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonScreenCaptureWindowNotSupported = 20,
   /**
-   * @ignore
+   * 21: (Windows only) The screen has not captured any data available for window sharing.
    */
   LocalVideoStreamReasonScreenCaptureFailure = 21,
   /**
-   * @ignore
+   * 22: No permission for screen capture.
    */
   LocalVideoStreamReasonScreenCaptureNoPermission = 22,
   /**
-   * @ignore
+   * 24: (Windows only) An unexpected error occurred during screen sharing (possibly due to window blocking failure), resulting in decreased performance, but the screen sharing process itself was not affected.
    */
   LocalVideoStreamReasonScreenCaptureAutoFallback = 24,
   /**
-   * @ignore
+   * 25: (Windows only) The window for the current screen capture is hidden and not visible on the current screen.
    */
   LocalVideoStreamReasonScreenCaptureWindowHidden = 25,
   /**
-   * @ignore
+   * 26: (Windows only) The window for screen capture has been restored from hidden state.
    */
   LocalVideoStreamReasonScreenCaptureWindowRecoverFromHidden = 26,
   /**
@@ -2328,15 +2328,15 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonScreenCaptureWindowRecoverFromMinimized = 27,
   /**
-   * @ignore
+   * 28: (Windows only) Screen capture has been paused. Common scenarios reporting this error code: The current screen may have been switched to a secure desktop, such as a UAC dialog box or Winlogon desktop.
    */
   LocalVideoStreamReasonScreenCapturePaused = 28,
   /**
-   * @ignore
+   * 29: (Windows only) Screen capture has resumed from paused state.
    */
   LocalVideoStreamReasonScreenCaptureResumed = 29,
   /**
-   * @ignore
+   * 30: The displayer used for screen capture is disconnected.
    */
   LocalVideoStreamReasonScreenCaptureDisplayDisconnected = 30,
 }
@@ -3537,7 +3537,7 @@ export enum NetworkType {
  */
 export enum VideoViewSetupMode {
   /**
-   * 0: (Default) Replaces a view.
+   * 0: (Default) Clear all added views and replace with a new view.
    */
   VideoViewSetupReplace = 0,
   /**
@@ -4225,47 +4225,47 @@ export enum HeadphoneEqualizerPreset {
 }
 
 /**
- * @ignore
+ * Voice AI tuner sound types.
  */
 export enum VoiceAiTunerType {
   /**
-   * @ignore
+   * 0: Mature male voice. A deep and magnetic male voice.
    */
   VoiceAiTunerMatureMale = 0,
   /**
-   * @ignore
+   * 1: Fresh male voice. A fresh and slightly sweet male voice.
    */
   VoiceAiTunerFreshMale = 1,
   /**
-   * @ignore
+   * 2: Elegant female voice. A deep and charming female voice.
    */
   VoiceAiTunerElegantFemale = 2,
   /**
-   * @ignore
+   * 3: Sweet female voice. A high-pitched and cute female voice.
    */
   VoiceAiTunerSweetFemale = 3,
   /**
-   * @ignore
+   * 4: Warm male singing. A warm and melodious male voice.
    */
   VoiceAiTunerWarmMaleSinging = 4,
   /**
-   * @ignore
+   * 5: Gentle female singing. A soft and delicate female voice.
    */
   VoiceAiTunerGentleFemaleSinging = 5,
   /**
-   * @ignore
+   * 6: Husky male singing. A unique husky male voice.
    */
   VoiceAiTunerHuskyMaleSinging = 6,
   /**
-   * @ignore
+   * 7: Warm elegant female singing. A warm and mature female voice.
    */
   VoiceAiTunerWarmElegantFemaleSinging = 7,
   /**
-   * @ignore
+   * 8: Powerful male singing. A strong and powerful male voice.
    */
   VoiceAiTunerPowerfulMaleSinging = 8,
   /**
-   * @ignore
+   * 9: Dreamy female singing. A dreamy and soft female voice.
    */
   VoiceAiTunerDreamyFemaleSinging = 9,
 }
@@ -4406,7 +4406,7 @@ export class AudioRecordingConfiguration {
    */
   fileRecordingType?: AudioFileRecordingType;
   /**
-   * Recording quality. See AudioRecordingQualityType. Note: This parameter applies to AAC files only.
+   * Recording quality. See AudioRecordingQualityType. This parameter applies to AAC files only.
    */
   quality?: AudioRecordingQualityType;
   /**
