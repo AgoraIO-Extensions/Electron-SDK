@@ -92,6 +92,17 @@ let presetSimulcastConfigList = [
     },
   },
   {
+    label: '960x540-15fps',
+    value: {
+      dimensions: {
+        width: 960,
+        height: 540,
+      },
+      framerate: 15,
+      enable: false,
+    },
+  },
+  {
     label: '640x360-15fps',
     value: {
       dimensions: {
@@ -537,6 +548,21 @@ export default class Simulcast
   }
 
   /**
+   * Step 3-2: setVideoEncoderConfiguration
+   */
+  setVideoEncoderConfiguration = () => {
+    const { width, height, frameRate, bitrate } = this.state;
+    this.engine?.setVideoEncoderConfiguration({
+      dimensions: {
+        width: width,
+        height: height,
+      },
+      frameRate,
+      bitrate,
+    });
+  };
+
+  /**
    * Step 4: leaveChannel
    */
   protected leaveChannel() {
@@ -882,6 +908,10 @@ export default class Simulcast
       <>
         {clientRoleType === ClientRoleType.ClientRoleBroadcaster ? (
           <>
+            <AgoraButton
+              title={`set Video Encoder Configuration`}
+              onPress={this.setVideoEncoderConfiguration}
+            />
             <AgoraButton
               title={'setSimulcastConfig'}
               onPress={this.setSimulcastConfig}
