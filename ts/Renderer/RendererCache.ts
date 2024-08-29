@@ -18,7 +18,7 @@ export class RendererCache {
   private _context: RendererCacheContext;
   private _enabled: boolean;
 
-  constructor({ channelId, uid, sourceType }: RendererContext) {
+  constructor({ channelId, uid, sourceType, position }: RendererContext) {
     this._renderers = [];
     this._videoFrame = {
       yBuffer: Buffer.alloc(0),
@@ -31,7 +31,7 @@ export class RendererCache {
       vStride: 0,
       rotation: 0,
     };
-    this._context = { channelId, uid, sourceType };
+    this._context = { channelId, uid, sourceType, position };
     this._enabled = false;
   }
 

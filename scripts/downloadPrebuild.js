@@ -19,6 +19,8 @@ const {
 
 const workspaceDir = `${path.join(__dirname, '..')}`;
 
+const normalizePath = (filePath) => filePath.split(path.sep).join('/');
+
 const getDownloadURL = () => {
   let downloadUrl = `https://download.agora.io/sdk/release/Electron-${getOS()}-${packageVersion}-napi.zip`;
   if (platform === 'win32' && arch === 'x64') {
@@ -29,7 +31,7 @@ const getDownloadURL = () => {
 
 const getNativeDownloadURL = () => {
   let downloadUrl = '';
-  if (platform === 'win32' && arch === 'x64') {
+  if (platform === 'win32') {
     downloadUrl = native_sdk_win;
   } else if (platform === 'darwin') {
     downloadUrl = native_sdk_mac;
@@ -38,15 +40,25 @@ const getNativeDownloadURL = () => {
 };
 
 const matchNativeFile = (path) => {
-  if (platform === 'win32' && arch === 'ia32') {
-    return /^sdk\/x86\/.*\.dll$/.test(path);
-  } else if (platform === 'win32' && arch === 'x64') {
-    return /^sdk\/x86_64\/.*\.dll$/.test(path);
-  } else if (platform === 'darwin') {
-    return /^libs\/.*\.xcframework\/macos-arm64_x86_64\/.*\.framework$/.test(
-      path
-    );
+  let result = false;
+  switch (platform) {
+    case 'win32':
+      switch (arch) {
+        case 'ia32':
+          result = path.startsWith('sdk/x86/') && path.endsWith('.dll');
+          break;
+        case 'x64':
+          result = path.startsWith('sdk/x86_64/') && path.endsWith('.dll');
+          break;
+      }
+      break;
+    case 'darwin':
+      result =
+        path.startsWith('libs') &&
+        /^libs\/.*\.xcframework\/macos-arm64_x86_64\//.test(path);
+      break;
   }
+  return result;
 };
 
 const macNoSymbolList = [
@@ -126,16 +138,42 @@ module.exports = async () => {
   if (nativeDownloadURL) {
     logger.info('Native SDK URL  %s ', nativeDownloadURL);
     logger.info('Downloading native SDK for Agora Electron SDK...');
-    await download(nativeDownloadURL, `${buildDir}/Release`, {
+    const nativeLibDir = path.resolve(__dirname, `${buildDir}/Release`);
+    await download(nativeDownloadURL, nativeLibDir, {
       strip: 1,
       extract: true,
       filter: (file) => {
-        return (
-          file.type !== 'directory' &&
-          matchNativeFile(file.path) &&
-          !file.path.endsWith(path.sep) &&
-          file.data.length !== 0
-        );
+        file.path = normalizePath(file.path);
+        if (matchNativeFile(file.path)) {
+          if (file.type === 'file' && file.path.endsWith('/')) {
+            file.type = 'directory';
+          }
+          switch (platform) {
+            case 'win32':
+              switch (arch) {
+                case 'ia32':
+                  file.path = file.path.replace(/^sdk\/x86\//, '');
+                  break;
+                case 'x64':
+                  file.path = file.path.replace(/^sdk\/x86_64\//, '');
+                  break;
+              }
+              break;
+            case 'darwin':
+              file.path = file.path.replace(
+                /^libs\/.*\.xcframework\/macos-arm64_x86_64\//,
+                ''
+              );
+              if (fs.exists(`${nativeLibDir}/${file.path}`)) {
+                fs.remove(`${nativeLibDir}/${file.path}`);
+              }
+              break;
+          }
+          logger.info(`move native file: ${file.path} → ${nativeLibDir}`);
+          return true;
+        } else {
+          return false;
+        }
       },
     });
   }

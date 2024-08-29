@@ -1,10 +1,15 @@
 import { VideoMirrorModeType, VideoViewSetupMode } from '../Private/AgoraBase';
-import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
+import {
+  RenderModeType,
+  VideoModulePosition,
+  VideoSourceType,
+} from '../Private/AgoraMediaBase';
 import { AgoraEnv } from '../Utils';
 
 const VIDEO_SOURCE_TYPE_STRING = 'video-source-type';
 const UID_STRING = 'uid';
 const CHANNEL_ID_STRING = 'channel-id';
+const POSITION_STRING = 'position';
 const RENDERER_CONTENT_MODE_STRING = 'renderer-content-mode';
 const RENDERER_MIRROR_STRING = 'renderer-mirror';
 
@@ -12,6 +17,7 @@ const observedAttributes = [
   VIDEO_SOURCE_TYPE_STRING,
   UID_STRING,
   CHANNEL_ID_STRING,
+  POSITION_STRING,
   RENDERER_CONTENT_MODE_STRING,
   RENDERER_MIRROR_STRING,
 ];
@@ -19,7 +25,7 @@ const observedAttributes = [
 declare global {
   /**
    * Attributes of the Agora custom element.
-   * You can use this custom element as follows:<agora-view video-source-type="{VideoSourceType.VideoSourceCamera}" channel-id="" uid="{0}"></agora-view>
+   * You can use this custom element as follows:<agora-view video-source-type="{VideoSourceType.VideoSourceCamera}" channel-id="" uid="{0}" position="{VideoModulePosition.PositionPreRenderer}"></agora-view>
    */
   interface AgoraView {
     /**
@@ -39,6 +45,10 @@ declare global {
      * "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "= ", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
      */
     'channel-id': string;
+    /**
+     * The frame position of the video observer.
+     */
+    'position': VideoModulePosition;
     /**
      * The video display mode.
      */
@@ -109,6 +119,22 @@ export default class AgoraView extends HTMLElement {
     }
   }
 
+  get position(): VideoModulePosition {
+    const number = Number(this.getAttribute(POSITION_STRING));
+    return isNaN(number)
+      ? VideoModulePosition.PositionPreEncoder |
+          VideoModulePosition.PositionPreRenderer
+      : number;
+  }
+
+  set position(val) {
+    if (val) {
+      this.setAttribute(POSITION_STRING, String(val));
+    } else {
+      this.removeAttribute(POSITION_STRING);
+    }
+  }
+
   get renderMode(): RenderModeType {
     const number = Number(
       this.getAttribute(RENDERER_CONTENT_MODE_STRING) ||
@@ -142,12 +168,14 @@ export default class AgoraView extends HTMLElement {
   }
 
   initializeRender = () => {
-    const { channelId, uid, sourceType, renderMode, renderMirror } = this;
+    const { channelId, uid, sourceType, position, renderMode, renderMirror } =
+      this;
     AgoraEnv.AgoraRendererManager?.addOrRemoveRenderer({
       sourceType,
       view: this,
       uid,
       channelId,
+      position,
       renderMode,
       mirrorMode: renderMirror
         ? VideoMirrorModeType.VideoMirrorModeEnabled
@@ -157,9 +185,10 @@ export default class AgoraView extends HTMLElement {
   };
 
   destroyRender = () => {
-    const { channelId, uid, sourceType } = this;
+    const { channelId, uid, sourceType, position } = this;
     AgoraEnv.AgoraRendererManager?.removeRendererFromCache({
       channelId,
+      position,
       uid,
       sourceType,
       view: this,

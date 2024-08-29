@@ -1,6 +1,12 @@
 ﻿import { createCheckers } from 'ts-interface-checker';
 
-import { AgoraEnv, logError } from '../../Utils';
+import { AgoraEnv, logError, parseIntPtr2Number } from '../../Utils';
+let RendererManager: any;
+if (typeof window !== 'undefined') {
+  RendererManager = require('../../Renderer/RendererManager').RendererManager;
+} else {
+  RendererManager = undefined;
+}
 import {
   AudioEncodedFrameObserverConfig,
   ClientRoleOptions,
@@ -89,8 +95,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     if (AgoraEnv.webEnvReady) {
       // @ts-ignore
       window.AgoraEnv = AgoraEnv;
-      if (AgoraEnv.AgoraRendererManager === undefined) {
-        const { RendererManager } = require('../../Renderer/RendererManager');
+      if (AgoraEnv.AgoraRendererManager === undefined && RendererManager) {
         AgoraEnv.AgoraRendererManager = new RendererManager();
       }
     }
@@ -105,8 +110,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     AgoraEnv.AgoraElectronBridge.ReleaseRenderer();
     AgoraEnv.AgoraRendererManager?.release();
     AgoraEnv.AgoraRendererManager = undefined;
-    this._audio_device_manager.release();
-    this._video_device_manager.release();
     this._media_engine.release();
     this._local_spatial_audio_engine.release();
     RtcEngineExInternal._event_handlers = [];
@@ -419,6 +422,11 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return this._h265_transcoder;
   }
 
+  override getNativeHandle(): number {
+    let result = super.getNativeHandle();
+    return parseIntPtr2Number(result);
+  }
+
   override registerAudioEncodedFrameObserver(
     config: AudioEncodedFrameObserverConfig,
     observer: IAudioEncodedFrameObserver
@@ -507,6 +515,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
             value.iconImage.length!
           );
         }
+        value.sourceDisplayId = parseIntPtr2Number(value.sourceDisplayId);
         return value;
       }
     );

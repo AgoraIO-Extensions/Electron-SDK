@@ -7,6 +7,7 @@
 #include "agora_electron_bridge.h"
 #include "iris_base.h"
 #include "node_iris_event_handler.h"
+#include <iostream>
 #include <memory>
 #include <regex>
 
@@ -302,6 +303,7 @@ napi_value AgoraElectronBridge::EnableVideoFrameCache(napi_env env,
   strcpy(config.channelId, channelId.c_str());
   napi_obj_get_property(env, obj, "width", width);
   napi_obj_get_property(env, obj, "height", height);
+  napi_obj_get_property(env, obj, "position", config.observed_frame_position);
 
   char result[kBasicStringLength];
   memset(result, '\0', kBasicStringLength);
@@ -385,6 +387,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_obj_get_property(env, obj0, "uid", config.uid);
   napi_obj_get_property(env, obj0, "sourceType", config.video_source_type);
   napi_obj_get_property(env, obj0, "channelId", channel_id);
+  napi_obj_get_property(env, obj0, "position", config.observed_frame_position);
   strcpy(config.channelId, channel_id.c_str());
 
   napi_value obj1 = args[1];

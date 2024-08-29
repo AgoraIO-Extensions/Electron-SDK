@@ -2,6 +2,7 @@ const gulp = require('gulp');
 
 const build = require('./scripts/build');
 const buildJS = require('./scripts/buildJS');
+const checkElectron = require('./scripts/checkElectron');
 const {
   buildDir,
   jsDir,
@@ -26,7 +27,7 @@ const clean = async (cb) => {
   cb();
 };
 
-const totalBuild = gulp.series(clean, syncLib, build, buildJS);
+const totalBuild = gulp.series(clean, syncLib, checkElectron, build, buildJS);
 
 const wrapDownloadPreBuild = async (cb) => {
   await downloadPrebuild(cb);
@@ -43,6 +44,7 @@ exports.clean = clean;
 exports.build = build;
 exports.buildJS = buildJS;
 exports.zipBuild = zipBuild;
+exports.checkElectron = checkElectron;
 exports.totalBuild = totalBuild;
 exports.NPM_Install = NPM_Install;
 

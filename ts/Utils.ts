@@ -12,6 +12,21 @@ export const DEBUG_TAG = '[Agora Debug]: ';
 /**
  * @ignore
  */
+export function parseIntPtr2Number(value: number | string): number {
+  try {
+    let bigIntVal = BigInt(value);
+    if (bigIntVal > 2n ** 63n - 1n) {
+      bigIntVal -= 2n ** 64n;
+    }
+    return Number(bigIntVal);
+  } catch (e) {
+    return value as number;
+  }
+}
+
+/**
+ * @ignore
+ */
 export const logWarn = (msg: string, ...optParams: any[]) => {
   if (!AgoraEnv.enableLogging) {
     return;

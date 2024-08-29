@@ -72,12 +72,6 @@ export default class VirtualBackground
     // Need granted the microphone and camera permission
     await askMediaAccess(['microphone', 'camera']);
 
-    this.engine?.enableExtension(
-      'agora_video_filters_segmentation',
-      'portrait_segmentation',
-      true
-    );
-
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();

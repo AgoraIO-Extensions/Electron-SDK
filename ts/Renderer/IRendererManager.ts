@@ -1,5 +1,9 @@
 import { VideoMirrorModeType, VideoViewSetupMode } from '../Private/AgoraBase';
-import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
+import {
+  RenderModeType,
+  VideoModulePosition,
+  VideoSourceType,
+} from '../Private/AgoraMediaBase';
 import { RendererContext, RendererType } from '../Types';
 import { logDebug } from '../Utils';
 
@@ -86,6 +90,7 @@ export abstract class IRendererManager {
       sourceType,
       uid,
       channelId,
+      position,
       mediaPlayerId,
       renderMode = this.defaultRenderMode,
       mirrorMode = this.defaultMirrorMode,
@@ -114,7 +119,20 @@ export abstract class IRendererManager {
         uid = 0;
         break;
     }
-    return { ...context, sourceType, uid, channelId, renderMode, mirrorMode };
+    if (!position) {
+      position =
+        VideoModulePosition.PositionPreEncoder |
+        VideoModulePosition.PositionPreRenderer;
+    }
+    return {
+      ...context,
+      position,
+      sourceType,
+      uid,
+      channelId,
+      renderMode,
+      mirrorMode,
+    };
   }
 
   public addOrRemoveRenderer(
@@ -160,19 +178,28 @@ export abstract class IRendererManager {
     const checkedContext = this.precheckRendererContext(context);
 
     const rendererCache = this.getRendererCache(checkedContext);
-    if (!rendererCache) return;
-    if (checkedContext.view) {
-      const renderer = rendererCache.findRenderer(checkedContext.view);
-      if (!renderer) return;
-      rendererCache.removeRenderer(renderer);
+    if (rendererCache) {
+      if (checkedContext.view) {
+        const renderer = rendererCache.findRenderer(checkedContext.view);
+        if (!renderer) return;
+        rendererCache.removeRenderer(renderer);
+      } else {
+        rendererCache.removeRenderer();
+      }
+      if (rendererCache.renderers.length === 0) {
+        this._rendererCaches.splice(
+          this._rendererCaches.indexOf(rendererCache),
+          1
+        );
+      }
     } else {
-      rendererCache.removeRenderer();
-    }
-    if (rendererCache.renderers.length === 0) {
-      this._rendererCaches.splice(
-        this._rendererCaches.indexOf(rendererCache),
-        1
-      );
+      this._rendererCaches = this._rendererCaches.filter((_rendererCache) => {
+        const renderer = _rendererCache.findRenderer(checkedContext.view);
+        if (renderer) {
+          _rendererCache.removeRenderer(renderer);
+        }
+        return _rendererCache.renderers.length > 0;
+      });
     }
   }
 

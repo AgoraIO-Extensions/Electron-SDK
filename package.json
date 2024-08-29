@@ -16,9 +16,11 @@
     "!**/__tests__"
   ],
   "scripts": {
+    "postinstall": "yarn checkElectron",
     "totalBuild": "cross-env-shell gulp totalBuild \\\"--INIT_CWD=$INIT_CWD\\\"",
     "build": "cross-env-shell gulp build \\\"--INIT_CWD=$INIT_CWD\\\"",
     "clean": "cross-env-shell gulp clean \\\"--INIT_CWD=$INIT_CWD\\\"",
+    "checkElectron": "cross-env-shell gulp checkElectron \\\"--INIT_CWD=$INIT_CWD\\\"",
     "syncLib": "cross-env-shell gulp syncLib \\\"--INIT_CWD=$INIT_CWD\\\"",
     "buildJS": "cross-env-shell gulp buildJS \\\"--INIT_CWD=$INIT_CWD\\\"",
     "zipBuild": "cross-env-shell gulp zipBuild \\\"--INIT_CWD=$INIT_CWD\\\"",
@@ -37,7 +39,8 @@
     "install": "cross-env-shell gulp NPM_Install \\\"--INIT_CWD=$INIT_CWD\\\"",
     "release": "release-it",
     "example": "yarn --cwd example",
-    "bootstrap": "yarn config set agora-electron-sdk-pre-built 0 && yarn example && yarn install && yarn patch-package && yarn build:ts-interface && yarn totalBuild && yarn link && yarn example link agora-electron-sdk && yarn config delete agora-electron-sdk-pre-built",
+    "example:prepare": "yarn example && cross-env-shell gulp checkElectron \\\"--INIT_CWD=$INIT_CWD/example\\\" \"--electron_path=$INIT_CWD/example/node_modules/electron/dist\"",
+    "bootstrap": "yarn config set agora-electron-sdk-pre-built 0 && yarn example && yarn install && yarn patch-package && yarn build:ts-interface && yarn totalBuild && yarn link && yarn example link agora-electron-sdk && yarn config delete agora-electron-sdk-pre-built && yarn example:prepare",
     "build:ts-interface": "ts-interface-builder ts/Private/*.ts -o ts/Private/ti/"
   },
   "keywords": [
@@ -87,9 +90,12 @@
   "engines": {
     "node": ">= 14.0.0"
   },
-  "packageManager": "^yarn@1.22.15",
   "jest": {
+    "setupFilesAfterEnv": [
+      "<rootDir>/ts/__tests__/setup.ts"
+    ],
     "modulePathIgnorePatterns": [
+      "<rootDir>/ts/__tests__/setup.ts",
       "<rootDir>/example/node_modules",
       "<rootDir>/js/",
       "<rootDir>/types/"
@@ -136,9 +142,9 @@
     "yuv-canvas": "1.2.6"
   },
   "agora_electron": {
-    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.3.2-build.1_DCG_Windows_Video_Standalone_20240604_0456_441.zip",
-    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.3.2-build.1_DCG_Mac_Video_Standalone_20240604_0500_404.zip",
-    "native_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_v4.3.2_FULL.zip",
-    "native_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v4.3.2_FULL.zip"
+    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.4.0-build.6_DCG_Windows_Video_Standalone_20240823_1146_504.zip",
+    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.4.0-build.6_DCG_Mac_Video_Standalone_20240823_1146_468.zip",
+    "native_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_v4.4.0_FULL.zip",
+    "native_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v4.4.0_FULL.zip"
   }
 }

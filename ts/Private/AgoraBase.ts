@@ -238,7 +238,7 @@ export enum ErrorCodeType {
   ErrNetDown = 14,
   /**
    * 17: The request to join the channel is rejected. Possible reasons include the following:
-   *  The user is already in the channel. Agora recommends that you use the onConnectionStateChanged callback to determine whether the user exists in the channel. Do not call this method to join the channel unless you receive the ConnectionStateDisconnected (1) state.
+   *  The user is already in the channel. Agora recommends that you use the onConnectionStateChanged callback to see whether the user is in the channel. Do not call this method to join the channel unless you receive the ConnectionStateDisconnected (1) state.
    *  After calling startEchoTest for the call test, the user tries to join the channel without calling stopEchoTest to end the current test. To join a channel, the call test must be ended by calling stopEchoTest.
    */
   ErrJoinChannelRejected = 17,
@@ -617,7 +617,7 @@ export enum QualityType {
    */
   QualityDown = 6,
   /**
-   * 7: Users cannot detect the network quality (not in use).
+   * @ignore
    */
   QualityUnsupported = 7,
   /**
@@ -986,6 +986,10 @@ export enum AudioCodecType {
    * @ignore
    */
   AudioCodecLpcnet = 12,
+  /**
+   * @ignore
+   */
+  AudioCodecOpusmc = 13,
 }
 
 /**
@@ -1148,6 +1152,30 @@ export enum VideoStreamType {
    * 1: Low-quality video stream.
    */
   VideoStreamLow = 1,
+  /**
+   * @ignore
+   */
+  VideoStreamLayer1 = 4,
+  /**
+   * @ignore
+   */
+  VideoStreamLayer2 = 5,
+  /**
+   * @ignore
+   */
+  VideoStreamLayer3 = 6,
+  /**
+   * @ignore
+   */
+  VideoStreamLayer4 = 7,
+  /**
+   * @ignore
+   */
+  VideoStreamLayer5 = 8,
+  /**
+   * @ignore
+   */
+  VideoStreamLayer6 = 9,
 }
 
 /**
@@ -1272,6 +1300,10 @@ export class AdvanceOptions {
    * Compression preference for video encoding. See CompressionPreference.
    */
   compressionPreference?: CompressionPreference;
+  /**
+   * Whether to encode and send the Alpha data present in the video frame to the remote end: true : Encode and send Alpha data. false : (Default) Do not encode and send Alpha data.
+   */
+  encodeAlpha?: boolean;
 }
 
 /**
@@ -1292,6 +1324,20 @@ export enum VideoMirrorModeType {
    * 2: Disable mirror mode.
    */
   VideoMirrorModeDisabled = 2,
+}
+
+/**
+ * @ignore
+ */
+export enum CameraFormatType {
+  /**
+   * @ignore
+   */
+  CameraFormatNv12 = 0,
+  /**
+   * @ignore
+   */
+  CameraFormatBgra = 1,
 }
 
 /**
@@ -1395,7 +1441,7 @@ export class VideoEncoderConfiguration {
    */
   orientationMode?: OrientationMode;
   /**
-   * Video degradation preference under limited bandwidth. See DegradationPreference.
+   * Video degradation preference under limited bandwidth. See DegradationPreference. When this parameter is set to MaintainFramerate (1) or MaintainBalanced (2), orientationMode needs to be set to OrientationModeAdaptive (0) at the same time, otherwise the setting will not take effect.
    */
   degradationPreference?: DegradationPreference;
   /**
@@ -1458,6 +1504,72 @@ export class SimulcastStreamConfig {
    * The frame rate (fps) of the local video. The default value is 5.
    */
   framerate?: number;
+}
+
+/**
+ * @ignore
+ */
+export enum StreamLayerIndex {
+  /**
+   * @ignore
+   */
+  StreamLayer1 = 0,
+  /**
+   * @ignore
+   */
+  StreamLayer2 = 1,
+  /**
+   * @ignore
+   */
+  StreamLayer3 = 2,
+  /**
+   * @ignore
+   */
+  StreamLayer4 = 3,
+  /**
+   * @ignore
+   */
+  StreamLayer5 = 4,
+  /**
+   * @ignore
+   */
+  StreamLayer6 = 5,
+  /**
+   * @ignore
+   */
+  StreamLow = 6,
+  /**
+   * @ignore
+   */
+  StreamLayerCountMax = 7,
+}
+
+/**
+ * @ignore
+ */
+export class StreamLayerConfig {
+  /**
+   * @ignore
+   */
+  dimensions?: VideoDimensions;
+  /**
+   * @ignore
+   */
+  framerate?: number;
+  /**
+   * @ignore
+   */
+  enable?: boolean;
+}
+
+/**
+ * @ignore
+ */
+export class SimulcastConfig {
+  /**
+   * @ignore
+   */
+  configs?: StreamLayerConfig[];
 }
 
 /**
@@ -1838,7 +1950,7 @@ export enum AudioScenarioType {
    */
   AudioScenarioGameStreaming = 3,
   /**
-   * 5: Chatroom scenario, where users need to frequently switch the user role or mute and unmute the microphone. For example, education scenarios. In this scenario, audience members receive a pop-up window to request permission of using microphones.
+   * 5: Chatroom scenario, where users need to frequently switch the user role or mute and unmute the microphone. For example, education scenarios.
    */
   AudioScenarioChatroom = 5,
   /**
@@ -1922,7 +2034,7 @@ export enum VideoApplicationScenarioType {
    */
   ApplicationScenarioGeneral = 0,
   /**
-   * If set to ApplicationScenarioMeeting (1), the SDK automatically enables the following strategies:
+   * ApplicationScenarioMeeting (1) is suitable for meeting scenarios. The SDK automatically enables the following strategies:
    *  In meeting scenarios where low-quality video streams are required to have a high bitrate, the SDK automatically enables multiple technologies used to deal with network congestions, to enhance the performance of the low-quality streams and to ensure the smooth reception by subscribers.
    *  The SDK monitors the number of subscribers to the high-quality video stream in real time and dynamically adjusts its configuration based on the number of subscribers.
    *  If nobody subscribers to the high-quality stream, the SDK automatically reduces its bitrate and frame rate to save upstream bandwidth.
@@ -1938,6 +2050,10 @@ export enum VideoApplicationScenarioType {
    *  Bitrate: 500 Kbps 1: The meeting scenario.
    */
   ApplicationScenarioMeeting = 1,
+  /**
+   * ApplicationScenario1v1 (2) is suitable for 1v1 video call scenarios. To meet the requirements for low latency and high-quality video in this scenario, the SDK optimizes its strategies, improving performance in terms of video quality, first frame rendering, latency on mid-to-low-end devices, and smoothness under weak network conditions. 2: 1v1 video call scenario.
+   */
+  ApplicationScenario1v1 = 2,
 }
 
 /**
@@ -2188,23 +2304,23 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonScreenCaptureWindowNotSupported = 20,
   /**
-   * @ignore
+   * 21: (Windows only) The screen has not captured any data available for window sharing.
    */
   LocalVideoStreamReasonScreenCaptureFailure = 21,
   /**
-   * @ignore
+   * 22: No permission for screen capture.
    */
   LocalVideoStreamReasonScreenCaptureNoPermission = 22,
   /**
-   * @ignore
+   * 24: (Windows only) An unexpected error occurred during screen sharing (possibly due to window blocking failure), resulting in decreased performance, but the screen sharing process itself was not affected.
    */
   LocalVideoStreamReasonScreenCaptureAutoFallback = 24,
   /**
-   * @ignore
+   * 25: (Windows only) The window for the current screen capture is hidden and not visible on the current screen.
    */
   LocalVideoStreamReasonScreenCaptureWindowHidden = 25,
   /**
-   * @ignore
+   * 26: (Windows only) The window for screen capture has been restored from hidden state.
    */
   LocalVideoStreamReasonScreenCaptureWindowRecoverFromHidden = 26,
   /**
@@ -2212,13 +2328,17 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonScreenCaptureWindowRecoverFromMinimized = 27,
   /**
-   * @ignore
+   * 28: (Windows only) Screen capture has been paused. Common scenarios reporting this error code: The current screen may have been switched to a secure desktop, such as a UAC dialog box or Winlogon desktop.
    */
   LocalVideoStreamReasonScreenCapturePaused = 28,
   /**
-   * @ignore
+   * 29: (Windows only) Screen capture has resumed from paused state.
    */
   LocalVideoStreamReasonScreenCaptureResumed = 29,
+  /**
+   * 30: The displayer used for screen capture is disconnected.
+   */
+  LocalVideoStreamReasonScreenCaptureDisplayDisconnected = 30,
 }
 
 /**
@@ -3217,7 +3337,6 @@ export enum ConnectionChangedReasonType {
    *  All lowercase English letters: a to z.
    *  All uppercase English letters: A to Z.
    *  All numeric characters: 0 to 9.
-   *  Space
    *  "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
    */
   ConnectionChangedInvalidChannelName = 7,
@@ -3304,7 +3423,7 @@ export enum ConnectionChangedReasonType {
  */
 export enum ClientRoleChangeFailedReason {
   /**
-   * 1: The number of hosts in the channel is already at the upper limit. This enumerator is reported only when the support for 128 users is enabled. The maximum number of hosts is based on the actual number of hosts configured when you enable the 128-user feature.
+   * 1: The number of hosts in the channel exceeds the limit. This enumerator is reported only when the support for 128 users is enabled. The maximum number of hosts is based on the actual number of hosts configured when you enable the 128-user feature.
    */
   ClientRoleChangeFailedTooManyBroadcasters = 1,
   /**
@@ -3312,11 +3431,11 @@ export enum ClientRoleChangeFailedReason {
    */
   ClientRoleChangeFailedNotAuthorized = 2,
   /**
-   * 3: The request is timed out. Agora recommends you prompt the user to check the network connection and try to switch their user role again.
+   * 3: The request is timed out. Agora recommends you prompt the user to check the network connection and try to switch their user role again. Deprecated: This enumerator is deprecated since v4.4.0 and is not recommended for use.
    */
   ClientRoleChangeFailedRequestTimeOut = 3,
   /**
-   * 4: The SDK connection fails. You can use reason reported in the onConnectionStateChanged callback to troubleshoot the failure.
+   * 4: The SDK is disconnected from the Agora edge server. You can troubleshoot the failure through the reason reported by onConnectionStateChanged. Deprecated: This enumerator is deprecated since v4.4.0 and is not recommended for use.
    */
   ClientRoleChangeFailedConnectionFailed = 4,
 }
@@ -3418,7 +3537,7 @@ export enum NetworkType {
  */
 export enum VideoViewSetupMode {
   /**
-   * 0: (Default) Replaces a view.
+   * 0: (Default) Clear all added views and replace with a new view.
    */
   VideoViewSetupReplace = 0,
   /**
@@ -3436,7 +3555,7 @@ export enum VideoViewSetupMode {
  */
 export class VideoCanvas {
   /**
-   * The user ID.
+   * User ID that publishes the video source.
    */
   uid?: number;
   /**
@@ -3444,7 +3563,7 @@ export class VideoCanvas {
    */
   subviewUid?: number;
   /**
-   * The video display window. In one VideoCanvas, you can only choose to set either view or surfaceTexture. If both are set, only the settings in view take effect.
+   * The video display window.
    */
   view?: any;
   /**
@@ -3478,7 +3597,7 @@ export class VideoCanvas {
    */
   cropArea?: Rectangle;
   /**
-   * (Optional) Whether the receiver enables alpha mask rendering: true : The receiver enables alpha mask rendering. false : (Default) The receiver disables alpha mask rendering. Alpha mask rendering can create images with transparent effects and extract portraits from videos. When used in combination with other methods, you can implement effects such as portrait-in-picture and watermarking.
+   * (Optional) Whether to enable alpha mask rendering: true : Enable alpha mask rendering. false : (Default) Disable alpha mask rendering. Alpha mask rendering can create images with transparent effects and extract portraits from videos. When used in combination with other methods, you can implement effects such as portrait-in-picture and watermarking.
    *  The receiver can render alpha channel information only when the sender enables alpha transmission.
    *  To enable alpha transmission,.
    */
@@ -3531,6 +3650,106 @@ export class BeautyOptions {
    * The sharpness level, in the range [0.0,1.0], where 0.0 means the original sharpness. The default value is 0.0. The larger the value, the greater the sharpness level.
    */
   sharpnessLevel?: number;
+}
+
+/**
+ * @ignore
+ */
+export enum FaceShapeArea {
+  /**
+   * @ignore
+   */
+  FaceShapeAreaNone = -1,
+  /**
+   * @ignore
+   */
+  FaceShapeAreaHeadscale = 0,
+  /**
+   * @ignore
+   */
+  FaceShapeAreaForehead = 1,
+  /**
+   * @ignore
+   */
+  FaceShapeAreaFacecontour = 2,
+  /**
+   * @ignore
+   */
+  FaceShapeAreaFacelength = 3,
+  /**
+   * @ignore
+   */
+  FaceShapeAreaFacewidth = 4,
+  /**
+   * @ignore
+   */
+  FaceShapeAreaCheekbone = 5,
+  /**
+   * @ignore
+   */
+  FaceShapeAreaCheek = 6,
+  /**
+   * @ignore
+   */
+  FaceShapeAreaChin = 7,
+  /**
+   * @ignore
+   */
+  FaceShapeAreaEyescale = 8,
+  /**
+   * @ignore
+   */
+  FaceShapeAreaNoselength = 9,
+  /**
+   * @ignore
+   */
+  FaceShapeAreaNosewidth = 10,
+  /**
+   * @ignore
+   */
+  FaceShapeAreaMouthscale = 11,
+}
+
+/**
+ * @ignore
+ */
+export class FaceShapeAreaOptions {
+  /**
+   * @ignore
+   */
+  shapeArea?: FaceShapeArea;
+  /**
+   * @ignore
+   */
+  shapeIntensity?: number;
+}
+
+/**
+ * @ignore
+ */
+export enum FaceShapeBeautyStyle {
+  /**
+   * @ignore
+   */
+  FaceShapeBeautyStyleFemale = 0,
+  /**
+   * @ignore
+   */
+  FaceShapeBeautyStyleMale = 1,
+}
+
+/**
+ * @ignore
+ */
+export class FaceShapeBeautyOptions {
+  /**
+   * @ignore
+   */
+  shapeStyle?: FaceShapeBeautyStyle;
+  /**
+   * @ignore
+   */
+  styleIntensity?: number;
 }
 
 /**
@@ -3642,7 +3861,7 @@ export class ColorEnhanceOptions {
  */
 export enum BackgroundSourceType {
   /**
-   * 0: Process the background as alpha information without replacement, only separating the portrait and the background. After setting this value, you can call startLocalVideoTranscoder to implement the picture-in-picture effect.
+   * 0: Process the background as alpha data without replacement, only separating the portrait and the background. After setting this value, you can call startLocalVideoTranscoder to implement the picture-in-picture effect.
    */
   BackgroundNone = 0,
   /**
@@ -4006,6 +4225,52 @@ export enum HeadphoneEqualizerPreset {
 }
 
 /**
+ * Voice AI tuner sound types.
+ */
+export enum VoiceAiTunerType {
+  /**
+   * 0: Mature male voice. A deep and magnetic male voice.
+   */
+  VoiceAiTunerMatureMale = 0,
+  /**
+   * 1: Fresh male voice. A fresh and slightly sweet male voice.
+   */
+  VoiceAiTunerFreshMale = 1,
+  /**
+   * 2: Elegant female voice. A deep and charming female voice.
+   */
+  VoiceAiTunerElegantFemale = 2,
+  /**
+   * 3: Sweet female voice. A high-pitched and cute female voice.
+   */
+  VoiceAiTunerSweetFemale = 3,
+  /**
+   * 4: Warm male singing. A warm and melodious male voice.
+   */
+  VoiceAiTunerWarmMaleSinging = 4,
+  /**
+   * 5: Gentle female singing. A soft and delicate female voice.
+   */
+  VoiceAiTunerGentleFemaleSinging = 5,
+  /**
+   * 6: Husky male singing. A unique husky male voice.
+   */
+  VoiceAiTunerHuskyMaleSinging = 6,
+  /**
+   * 7: Warm elegant female singing. A warm and mature female voice.
+   */
+  VoiceAiTunerWarmElegantFemaleSinging = 7,
+  /**
+   * 8: Powerful male singing. A strong and powerful male voice.
+   */
+  VoiceAiTunerPowerfulMaleSinging = 8,
+  /**
+   * 9: Dreamy female singing. A dreamy and soft female voice.
+   */
+  VoiceAiTunerDreamyFemaleSinging = 9,
+}
+
+/**
  * Screen sharing configurations.
  */
 export class ScreenCaptureParameters {
@@ -4141,7 +4406,7 @@ export class AudioRecordingConfiguration {
    */
   fileRecordingType?: AudioFileRecordingType;
   /**
-   * Recording quality. See AudioRecordingQualityType. Note: This parameter applies to AAC files only.
+   * Recording quality. See AudioRecordingQualityType. This parameter applies to AAC files only.
    */
   quality?: AudioRecordingQualityType;
   /**
@@ -4293,6 +4558,10 @@ export enum AreaCodeEx {
    * @ignore
    */
   AreaCodeUs = 0x00000800,
+  /**
+   * @ignore
+   */
+  AreaCodeRu = 0x00001000,
   /**
    * @ignore
    */

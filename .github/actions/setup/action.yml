@@ -1,5 +1,9 @@
 name: Setup
 description: Setup Node.js and install dependencies
+inputs:
+  skip_install:
+    required: false
+    default: 'false'
 
 runs:
   using: composite
@@ -10,8 +14,7 @@ runs:
         node-version-file: .nvmrc
 
     - name: Setup Yarn
-      run:
-        npm i -g yarn@1.22.19
+      run: npm i -g yarn@1.22.19
       shell: bash
 
     - name: Set up Python
@@ -19,17 +22,8 @@ runs:
       with:
         python-version: 3.11.5
 
-    - name: Cache dependencies
-      id: yarn-cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          **/node_modules
-        key: ${{ runner.os }}-yarn-ng-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-ng
-
     - name: Install dependencies
+      if: ${{ inputs.skip_install == 'false' }}
       run: |
         yarn config set agora-electron-sdk-pre-built 0
         yarn install --frozen-lockfile
