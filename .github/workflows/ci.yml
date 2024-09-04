@@ -12,6 +12,7 @@ on:
     branches:
       - main
       - release/*
+      - special/*
 
 jobs:
   lint:
@@ -28,7 +29,7 @@ jobs:
 
       - name: Typecheck files
         run: |
-          yarn example install --frozen-lockfile
+          yarn example install
           yarn typecheck
 
   build:
