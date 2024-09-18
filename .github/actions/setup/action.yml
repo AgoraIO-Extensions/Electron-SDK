@@ -26,6 +26,6 @@ runs:
       if: ${{ inputs.skip_install == 'false' }}
       run: |
         yarn config set agora-electron-sdk-pre-built 0
-        yarn install --frozen-lockfile
+        yarn install
         yarn patch-package
       shell: bash
