@@ -22,6 +22,7 @@ import RhythmPlayer from './RhythmPlayer/RhythmPlayer';
 import ScreenShare from './ScreenShare/ScreenShare';
 import SendMetadata from './SendMetadata/SendMetadata';
 import SendMultiVideoStream from './SendMultiVideoStream/SendMultiVideoStream';
+import Simulcast from './Simulcast/Simulcast';
 import SpatialAudio from './SpatialAudio/SpatialAudio';
 import StreamMessage from './StreamMessage/StreamMessage';
 import TakeSnapshot from './TakeSnapshot/TakeSnapshot';
@@ -135,6 +136,10 @@ const Advanced = {
     {
       name: 'StreamMessage',
       component: StreamMessage,
+    },
+    {
+      name: 'Simulcast',
+      component: Simulcast,
     },
     {
       name: 'TakeSnapshot',
