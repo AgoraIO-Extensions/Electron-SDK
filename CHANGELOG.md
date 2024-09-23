@@ -1,5 +1,18 @@
 
 
+## [4.3.2-build.2-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.3.2...v4.3.2-build.2-rc.1) (2024-09-23)
+
+
+### Bug Fixes
+
+* renderer issue in electron<20 ([5efd77b](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/5efd77b04805b9e6a6a0efcef1b02855b05030ca))
+
+
+### Features
+
+* download electron special build ([afa199f](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/afa199f743895bf8381bcafce57c2832c81e61e5))
+* support 4.3.2.2 and ABR ([#1225](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1225)) ([52f7f3f](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/52f7f3fa26c65f021bbf8e3cac502d036680eaee))
+
 ## [4.3.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.3.1...v4.3.2) (2024-06-06)
 
 
