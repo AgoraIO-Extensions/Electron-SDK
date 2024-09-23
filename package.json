@@ -16,7 +16,7 @@
     "!**/__tests__"
   ],
   "scripts": {
-    "postinstall": "yarn checkElectron",
+    "postinstall": "npm run checkElectron",
     "totalBuild": "cross-env-shell gulp totalBuild \\\"--INIT_CWD=$INIT_CWD\\\"",
     "build": "cross-env-shell gulp build \\\"--INIT_CWD=$INIT_CWD\\\"",
     "clean": "cross-env-shell gulp clean \\\"--INIT_CWD=$INIT_CWD\\\"",
