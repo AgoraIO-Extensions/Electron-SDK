@@ -36,7 +36,9 @@ import {
   FaceShapeArea,
   FaceShapeAreaOptions,
   FaceShapeBeautyOptions,
+  FilterEffectOptions,
   FocalLengthInfo,
+  HdrCapability,
   HeadphoneEqualizerPreset,
   IAudioEncodedFrameObserver,
   LastmileProbeConfig,
@@ -44,6 +46,7 @@ import {
   LicenseErrorType,
   LiveTranscoding,
   LocalAccessPointConfiguration,
+  LocalAudioMixerConfiguration,
   LocalAudioStats,
   LocalAudioStreamReason,
   LocalAudioStreamState,
@@ -93,6 +96,7 @@ import {
   VideoFormat,
   VideoLayout,
   VideoMirrorModeType,
+  VideoModuleType,
   VideoOrientation,
   VideoQoePreferenceType,
   VideoRenderingTracingInfo,
@@ -116,6 +120,7 @@ import {
   MediaSourceType,
   RawAudioFrameOpModeType,
   RenderModeType,
+  SnapshotConfig,
   VideoSourceType,
 } from './AgoraMediaBase';
 import { IH265Transcoder } from './IAgoraH265Transcoder';
@@ -221,6 +226,10 @@ export enum AudioMixingReasonType {
    * 724: Successfully call stopAudioMixing to stop playing the music file.
    */
   AudioMixingReasonStoppedByUser = 724,
+  /**
+   * @ignore
+   */
+  AudioMixingReasonResumedByUser = 726,
   /**
    * 0: The SDK opens music file successfully.
    */
@@ -938,7 +947,7 @@ export class ScreenCaptureConfiguration {
   /**
    * Window ID. This parameter takes effect only when you want to capture the window.
    */
-  windowId?: any;
+  windowId?: number;
   /**
    * The screen capture configuration. See ScreenCaptureParameters.
    */
@@ -1020,7 +1029,7 @@ export class ScreenCaptureSourceInfo {
   /**
    * The window ID for a window or the display ID for a screen.
    */
-  sourceId?: any;
+  sourceId?: number;
   /**
    * The name of the window or screen. UTF-8 encoding.
    */
@@ -1060,7 +1069,7 @@ export class ScreenCaptureSourceInfo {
   /**
    * (For Windows only) Screen ID where the window is located. If the window is displayed across multiple screens, this parameter indicates the ID of the screen with which the window has the largest intersection area. If the window is located outside of the visible screens, the value of this member is -2.
    */
-  sourceDisplayId?: any;
+  sourceDisplayId?: number;
 }
 
 /**
@@ -1572,7 +1581,7 @@ export interface IRtcEngineEventHandler {
    * @param elapsed Time elapsed (ms) from the local user calling joinChannel until this callback is triggered.
    */
   onFirstLocalVideoFramePublished?(
-    source: VideoSourceType,
+    connection: RtcConnection,
     elapsed: number
   ): void;
 
@@ -3358,6 +3367,15 @@ export abstract class IRtcEngine {
   ): FaceShapeAreaOptions;
 
   /**
+   * @ignore
+   */
+  abstract setFilterEffectOptions(
+    enabled: boolean,
+    options: FilterEffectOptions,
+    type?: MediaSourceType
+  ): number;
+
+  /**
    * Sets low-light enhancement.
    *
    * The low-light enhancement feature can adaptively adjust the brightness value of the video captured in situations with low or uneven lighting, such as backlit, cloudy, or dark scenes. It restores or highlights the image details and improves the overall visual effect of the video. You can call this method to enable the color enhancement feature and set the options of the color enhancement effect.
@@ -4783,6 +4801,19 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
+   * @ignore
+   */
+  abstract setLocalRenderTargetFps(
+    sourceType: VideoSourceType,
+    targetFps: number
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract setRemoteRenderTargetFps(targetFps: number): number;
+
+  /**
    * Sets the local video mirror mode.
    *
    * Deprecated: This method is deprecated. Use setupLocalVideo or setLocalRenderMode instead.
@@ -5587,7 +5618,7 @@ export abstract class IRtcEngine {
    *  -8: The screen sharing state is invalid. Probably because you have shared other screens or windows. Try calling stopScreenCapture to stop the current sharing and start sharing the screen again.
    */
   abstract startScreenCaptureByWindowId(
-    windowId: any,
+    windowId: number,
     regionRect: Rectangle,
     captureParams: ScreenCaptureParameters
   ): number;
@@ -5661,6 +5692,11 @@ export abstract class IRtcEngine {
     focalLengthInfos: FocalLengthInfo[];
     size: number;
   };
+
+  /**
+   * @ignore
+   */
+  abstract setExternalMediaProjection(): any;
 
   /**
    * Sets the screen sharing scenario.
@@ -5832,6 +5868,23 @@ export abstract class IRtcEngine {
    *  < 0: Failure.
    */
   abstract stopLocalVideoTranscoder(): number;
+
+  /**
+   * @ignore
+   */
+  abstract startLocalAudioMixer(config: LocalAudioMixerConfiguration): number;
+
+  /**
+   * @ignore
+   */
+  abstract updateLocalAudioMixerConfiguration(
+    config: LocalAudioMixerConfiguration
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract stopLocalAudioMixer(): number;
 
   /**
    * Starts camera capture.
@@ -6429,6 +6482,22 @@ export abstract class IRtcEngine {
   abstract takeSnapshot(uid: number, filePath: string): number;
 
   /**
+   * Takes a snapshot of a video stream.
+   *
+   * This method takes a snapshot of a video stream from the specified user, generates a JPG image, and saves it to the specified path.
+   *
+   * @param uid The user ID. Set uid as 0 if you want to take a snapshot of the local user's video.
+   * @param filePath The local path (including filename extensions) of the snapshot. For example:
+   *  Windows: C:\Users\<user_name>\AppData\Local\Agora\<process_name>\example.jpg
+   *  macOS: ～/Library/Logs/example.jpg Ensure that the path you specify exists and is writable.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
+   */
+  abstract takeSnapshot(uid: number, config: SnapshotConfig): number;
+
+  /**
    * Enables or disables video screenshot and upload.
    *
    * When video screenshot and upload function is enabled, the SDK takes screenshots and uploads videos sent by local users based on the type and frequency of the module you set in ContentInspectConfig. After video screenshot and upload, the Agora server sends the callback notification to your app server in HTTPS requests and sends all screenshots to the third-party cloud storage service.
@@ -6640,6 +6709,11 @@ export abstract class IRtcEngine {
   abstract sendAudioMetadata(metadata: string, length: number): number;
 
   /**
+   * @ignore
+   */
+  abstract queryHDRCapability(videoModule: VideoModuleType): HdrCapability;
+
+  /**
    * Starts screen capture from the specified video source.
    *
    * This method applies to the macOS and Windows only.
@@ -6846,6 +6920,10 @@ export enum MediaDeviceStateType {
    * 2: The device is disabled.
    */
   MediaDeviceStateDisabled = 2,
+  /**
+   * @ignore
+   */
+  MediaDeviceStatePluggedIn = 3,
   /**
    * 4: The device is not found.
    */

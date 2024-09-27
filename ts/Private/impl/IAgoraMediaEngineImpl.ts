@@ -172,6 +172,18 @@ export class IMediaEngineImpl implements IMediaEngine {
     return 'MediaEngine_setExternalVideoSource_fff99b6';
   }
 
+  setExternalRemoteEglContext(): any {
+    const apiType = this.getApiTypeFromSetExternalRemoteEglContext();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    const eglContext = jsonResults.eglContext;
+    return eglContext;
+  }
+
+  protected getApiTypeFromSetExternalRemoteEglContext(): string {
+    return 'MediaEngine_setExternalRemoteEglContext_f337cbf';
+  }
+
   setExternalAudioSource(
     enabled: boolean,
     sampleRate: number,
