@@ -159,7 +159,7 @@ export abstract class IMediaEngine {
   /**
    * @ignore
    */
-  abstract setExternalRemoteEglContext(): any;
+  abstract setExternalRemoteEglContext(eglContext: any): number;
 
   /**
    * Sets the external audio source parameters.

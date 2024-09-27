@@ -6706,29 +6706,6 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_takeSnapshot_1922dd1';
   }
 
-  takeSnapshot(uid: number, config: SnapshotConfig): number {
-    const apiType = this.getApiTypeFromTakeSnapshot(uid, config);
-    const jsonParams = {
-      uid: uid,
-      config: config,
-      toJSON: () => {
-        return {
-          uid: uid,
-          config: config,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromTakeSnapshot(
-    uid: number,
-    config: SnapshotConfig
-  ): string {
-    return 'RtcEngine_takeSnapshot_5669ea6';
-  }
-
   enableContentInspect(enabled: boolean, config: ContentInspectConfig): number {
     const apiType = this.getApiTypeFromEnableContentInspect(enabled, config);
     const jsonParams = {
@@ -7337,6 +7314,29 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromGetNativeHandle(): string {
     return 'RtcEngine_getNativeHandle';
+  }
+
+  takeSnapshotWithConfig(uid: number, config: SnapshotConfig): number {
+    const apiType = this.getApiTypeFromTakeSnapshotWithConfig(uid, config);
+    const jsonParams = {
+      uid: uid,
+      config: config,
+      toJSON: () => {
+        return {
+          uid: uid,
+          config: config,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromTakeSnapshotWithConfig(
+    uid: number,
+    config: SnapshotConfig
+  ): string {
+    return 'RtcEngine_takeSnapshot_5669ea6';
   }
 }
 
