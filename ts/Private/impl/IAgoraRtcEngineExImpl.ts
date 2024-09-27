@@ -16,7 +16,11 @@ import {
   VideoSubscriptionOptions,
   WatermarkOptions,
 } from '../AgoraBase';
-import { ContentInspectConfig, RenderModeType } from '../AgoraMediaBase';
+import {
+  ContentInspectConfig,
+  RenderModeType,
+  SnapshotConfig,
+} from '../AgoraMediaBase';
 import {
   ChannelMediaOptions,
   LeaveChannelOptions,
@@ -86,6 +90,69 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     options?: LeaveChannelOptions
   ): string {
     return 'RtcEngineEx_leaveChannelEx_b03ee9a';
+  }
+
+  leaveChannelWithUserAccountEx(
+    channelId: string,
+    userAccount: string
+  ): number {
+    const apiType = this.getApiTypeFromLeaveChannelWithUserAccountEx(
+      channelId,
+      userAccount
+    );
+    const jsonParams = {
+      channelId: channelId,
+      userAccount: userAccount,
+      toJSON: () => {
+        return {
+          channelId: channelId,
+          userAccount: userAccount,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromLeaveChannelWithUserAccountEx(
+    channelId: string,
+    userAccount: string
+  ): string {
+    return 'RtcEngineEx_leaveChannelWithUserAccountEx_ccad422';
+  }
+
+  leaveChannelWithUserAccountEx(
+    channelId: string,
+    userAccount: string,
+    options: LeaveChannelOptions
+  ): number {
+    const apiType = this.getApiTypeFromLeaveChannelWithUserAccountEx(
+      channelId,
+      userAccount,
+      options
+    );
+    const jsonParams = {
+      channelId: channelId,
+      userAccount: userAccount,
+      options: options,
+      toJSON: () => {
+        return {
+          channelId: channelId,
+          userAccount: userAccount,
+          options: options,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromLeaveChannelWithUserAccountEx(
+    channelId: string,
+    userAccount: string,
+    options: LeaveChannelOptions
+  ): string {
+    return 'RtcEngineEx_leaveChannelWithUserAccountEx_8bbe372';
   }
 
   updateChannelMediaOptionsEx(
@@ -1464,6 +1531,36 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     filePath: string
   ): string {
     return 'RtcEngineEx_takeSnapshotEx_de1c015';
+  }
+
+  takeSnapshotEx(
+    connection: RtcConnection,
+    uid: number,
+    config: SnapshotConfig
+  ): number {
+    const apiType = this.getApiTypeFromTakeSnapshotEx(connection, uid, config);
+    const jsonParams = {
+      connection: connection,
+      uid: uid,
+      config: config,
+      toJSON: () => {
+        return {
+          connection: connection,
+          uid: uid,
+          config: config,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromTakeSnapshotEx(
+    connection: RtcConnection,
+    uid: number,
+    config: SnapshotConfig
+  ): string {
+    return 'RtcEngineEx_takeSnapshotEx_b856417';
   }
 
   enableContentInspectEx(

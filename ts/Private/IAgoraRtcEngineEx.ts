@@ -17,7 +17,11 @@ import {
   VideoSubscriptionOptions,
   WatermarkOptions,
 } from './AgoraBase';
-import { ContentInspectConfig, RenderModeType } from './AgoraMediaBase';
+import {
+  ContentInspectConfig,
+  RenderModeType,
+  SnapshotConfig,
+} from './AgoraMediaBase';
 import {
   ChannelMediaOptions,
   IRtcEngine,
@@ -91,6 +95,23 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   abstract leaveChannelEx(
     connection: RtcConnection,
     options?: LeaveChannelOptions
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract leaveChannelWithUserAccountEx(
+    channelId: string,
+    userAccount: string
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract leaveChannelWithUserAccountEx(
+    channelId: string,
+    userAccount: string,
+    options: LeaveChannelOptions
   ): number;
 
   /**
@@ -893,6 +914,27 @@ export abstract class IRtcEngineEx extends IRtcEngine {
     connection: RtcConnection,
     uid: number,
     filePath: string
+  ): number;
+
+  /**
+   * Takes a snapshot of a video stream using connection ID.
+   *
+   * This method takes a snapshot of a video stream from the specified user, generates a JPG image, and saves it to the specified path.
+   *
+   * @param connection The connection information. See RtcConnection.
+   * @param uid The user ID. Set uid as 0 if you want to take a snapshot of the local user's video.
+   * @param filePath The local path (including filename extensions) of the snapshot. For example:
+   *  Windows: C:\Users\<user_name>\AppData\Local\Agora\<process_name>\example.jpg
+   *  macOS: ～/Library/Logs/example.jpg Ensure that the path you specify exists and is writable.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
+   */
+  abstract takeSnapshotEx(
+    connection: RtcConnection,
+    uid: number,
+    config: SnapshotConfig
   ): number;
 
   /**
