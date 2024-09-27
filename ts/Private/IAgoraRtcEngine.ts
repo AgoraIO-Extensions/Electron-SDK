@@ -6482,22 +6482,6 @@ export abstract class IRtcEngine {
   abstract takeSnapshot(uid: number, filePath: string): number;
 
   /**
-   * Takes a snapshot of a video stream.
-   *
-   * This method takes a snapshot of a video stream from the specified user, generates a JPG image, and saves it to the specified path.
-   *
-   * @param uid The user ID. Set uid as 0 if you want to take a snapshot of the local user's video.
-   * @param filePath The local path (including filename extensions) of the snapshot. For example:
-   *  Windows: C:\Users\<user_name>\AppData\Local\Agora\<process_name>\example.jpg
-   *  macOS: ～/Library/Logs/example.jpg Ensure that the path you specify exists and is writable.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
-   */
-  abstract takeSnapshot(uid: number, config: SnapshotConfig): number;
-
-  /**
    * Enables or disables video screenshot and upload.
    *
    * When video screenshot and upload function is enabled, the SDK takes screenshots and uploads videos sent by local users based on the type and frequency of the module you set in ContentInspectConfig. After video screenshot and upload, the Agora server sends the callback notification to your app server in HTTPS requests and sends all screenshots to the third-party cloud storage service.
@@ -6888,6 +6872,11 @@ export abstract class IRtcEngine {
    * The native handle of the SDK.
    */
   abstract getNativeHandle(): number;
+
+  /**
+   * @ignore
+   */
+  abstract takeSnapshotWithConfig(uid: number, config: SnapshotConfig): number;
 }
 
 /**

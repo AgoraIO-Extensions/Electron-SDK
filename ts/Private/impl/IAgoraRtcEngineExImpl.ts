@@ -94,37 +94,8 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
 
   leaveChannelWithUserAccountEx(
     channelId: string,
-    userAccount: string
-  ): number {
-    const apiType = this.getApiTypeFromLeaveChannelWithUserAccountEx(
-      channelId,
-      userAccount
-    );
-    const jsonParams = {
-      channelId: channelId,
-      userAccount: userAccount,
-      toJSON: () => {
-        return {
-          channelId: channelId,
-          userAccount: userAccount,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromLeaveChannelWithUserAccountEx(
-    channelId: string,
-    userAccount: string
-  ): string {
-    return 'RtcEngineEx_leaveChannelWithUserAccountEx_ccad422';
-  }
-
-  leaveChannelWithUserAccountEx(
-    channelId: string,
     userAccount: string,
-    options: LeaveChannelOptions
+    options?: LeaveChannelOptions
   ): number {
     const apiType = this.getApiTypeFromLeaveChannelWithUserAccountEx(
       channelId,
@@ -150,7 +121,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
   protected getApiTypeFromLeaveChannelWithUserAccountEx(
     channelId: string,
     userAccount: string,
-    options: LeaveChannelOptions
+    options?: LeaveChannelOptions
   ): string {
     return 'RtcEngineEx_leaveChannelWithUserAccountEx_8bbe372';
   }
@@ -1533,36 +1504,6 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     return 'RtcEngineEx_takeSnapshotEx_de1c015';
   }
 
-  takeSnapshotEx(
-    connection: RtcConnection,
-    uid: number,
-    config: SnapshotConfig
-  ): number {
-    const apiType = this.getApiTypeFromTakeSnapshotEx(connection, uid, config);
-    const jsonParams = {
-      connection: connection,
-      uid: uid,
-      config: config,
-      toJSON: () => {
-        return {
-          connection: connection,
-          uid: uid,
-          config: config,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromTakeSnapshotEx(
-    connection: RtcConnection,
-    uid: number,
-    config: SnapshotConfig
-  ): string {
-    return 'RtcEngineEx_takeSnapshotEx_b856417';
-  }
-
   enableContentInspectEx(
     enabled: boolean,
     config: ContentInspectConfig,
@@ -1691,6 +1632,40 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     length: number
   ): string {
     return 'RtcEngineEx_sendAudioMetadataEx_e2bf1c4';
+  }
+
+  takeSnapshotWithConfigEx(
+    connection: RtcConnection,
+    uid: number,
+    config: SnapshotConfig
+  ): number {
+    const apiType = this.getApiTypeFromTakeSnapshotWithConfigEx(
+      connection,
+      uid,
+      config
+    );
+    const jsonParams = {
+      connection: connection,
+      uid: uid,
+      config: config,
+      toJSON: () => {
+        return {
+          connection: connection,
+          uid: uid,
+          config: config,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromTakeSnapshotWithConfigEx(
+    connection: RtcConnection,
+    uid: number,
+    config: SnapshotConfig
+  ): string {
+    return 'RtcEngineEx_takeSnapshotEx_b856417';
   }
 }
 

@@ -172,15 +172,21 @@ export class IMediaEngineImpl implements IMediaEngine {
     return 'MediaEngine_setExternalVideoSource_fff99b6';
   }
 
-  setExternalRemoteEglContext(): any {
-    const apiType = this.getApiTypeFromSetExternalRemoteEglContext();
-    const jsonParams = {};
+  setExternalRemoteEglContext(eglContext: any): number {
+    const apiType = this.getApiTypeFromSetExternalRemoteEglContext(eglContext);
+    const jsonParams = {
+      eglContext: eglContext,
+      toJSON: () => {
+        return {
+          eglContext: eglContext,
+        };
+      },
+    };
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    const eglContext = jsonResults.eglContext;
-    return eglContext;
+    return jsonResults.result;
   }
 
-  protected getApiTypeFromSetExternalRemoteEglContext(): string {
+  protected getApiTypeFromSetExternalRemoteEglContext(eglContext: any): string {
     return 'MediaEngine_setExternalRemoteEglContext_f337cbf';
   }
 

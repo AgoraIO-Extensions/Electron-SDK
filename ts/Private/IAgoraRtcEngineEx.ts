@@ -102,16 +102,8 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    */
   abstract leaveChannelWithUserAccountEx(
     channelId: string,
-    userAccount: string
-  ): number;
-
-  /**
-   * @ignore
-   */
-  abstract leaveChannelWithUserAccountEx(
-    channelId: string,
     userAccount: string,
-    options: LeaveChannelOptions
+    options?: LeaveChannelOptions
   ): number;
 
   /**
@@ -917,27 +909,6 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Takes a snapshot of a video stream using connection ID.
-   *
-   * This method takes a snapshot of a video stream from the specified user, generates a JPG image, and saves it to the specified path.
-   *
-   * @param connection The connection information. See RtcConnection.
-   * @param uid The user ID. Set uid as 0 if you want to take a snapshot of the local user's video.
-   * @param filePath The local path (including filename extensions) of the snapshot. For example:
-   *  Windows: C:\Users\<user_name>\AppData\Local\Agora\<process_name>\example.jpg
-   *  macOS: ～/Library/Logs/example.jpg Ensure that the path you specify exists and is writable.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
-   */
-  abstract takeSnapshotEx(
-    connection: RtcConnection,
-    uid: number,
-    config: SnapshotConfig
-  ): number;
-
-  /**
    * Enables or disables video screenshot and upload.
    *
    * This method can take screenshots for multiple video streams and upload them. When video screenshot and upload function is enabled, the SDK takes screenshots and uploads videos sent by local users based on the type and frequency of the module you set in ContentInspectConfig. After video screenshot and upload, the Agora server sends the callback notification to your app server in HTTPS requests and sends all screenshots to the third-party cloud storage service.
@@ -998,5 +969,14 @@ export abstract class IRtcEngineEx extends IRtcEngine {
     connection: RtcConnection,
     metadata: string,
     length: number
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract takeSnapshotWithConfigEx(
+    connection: RtcConnection,
+    uid: number,
+    config: SnapshotConfig
   ): number;
 }
