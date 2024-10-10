@@ -17,7 +17,11 @@ import {
   VideoSubscriptionOptions,
   WatermarkOptions,
 } from './AgoraBase';
-import { ContentInspectConfig, RenderModeType } from './AgoraMediaBase';
+import {
+  ContentInspectConfig,
+  RenderModeType,
+  SnapshotConfig,
+} from './AgoraMediaBase';
 import {
   ChannelMediaOptions,
   IRtcEngine,
@@ -956,5 +960,23 @@ export abstract class IRtcEngineEx extends IRtcEngine {
     connection: RtcConnection,
     metadata: string,
     length: number
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract leaveChannelWithUserAccountEx(
+    channelId: string,
+    userAccount: string,
+    options?: LeaveChannelOptions
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract takeSnapshotWithConfigEx(
+    connection: RtcConnection,
+    uid: number,
+    config: SnapshotConfig
   ): number;
 }

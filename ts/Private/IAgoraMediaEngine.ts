@@ -321,4 +321,9 @@ export abstract class IMediaEngine {
    *  < 0: Failure.
    */
   abstract unregisterFaceInfoObserver(observer: IFaceInfoObserver): number;
+
+  /**
+   * @ignore
+   */
+  abstract setExternalRemoteEglContext(eglContext: any): number;
 }

@@ -66,6 +66,7 @@ import {
   MediaSourceType,
   RawAudioFrameOpModeType,
   RenderModeType,
+  SnapshotConfig,
   VideoSourceType,
 } from '../AgoraMediaBase';
 import { IH265Transcoder } from '../IAgoraH265Transcoder';
@@ -272,7 +273,7 @@ export function processIRtcEngineEventHandler(
     case 'onFirstLocalVideoFramePublished':
       if (handler.onFirstLocalVideoFramePublished !== undefined) {
         handler.onFirstLocalVideoFramePublished(
-          jsonParams.source,
+          jsonParams.connection,
           jsonParams.elapsed
         );
       }
@@ -5393,6 +5394,27 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_queryCameraFocalLengthCapability_2dee6af';
   }
 
+  setExternalMediaProjection(mediaProjection: any): number {
+    const apiType =
+      this.getApiTypeFromSetExternalMediaProjection(mediaProjection);
+    const jsonParams = {
+      mediaProjection: mediaProjection,
+      toJSON: () => {
+        return {
+          mediaProjection: mediaProjection,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSetExternalMediaProjection(
+    mediaProjection: any
+  ): string {
+    return 'RtcEngine_setExternalMediaProjection_f337cbf';
+  }
+
   setScreenCaptureScenario(screenScenario: ScreenScenarioType): number {
     const apiType = this.getApiTypeFromSetScreenCaptureScenario(screenScenario);
     const jsonParams = {
@@ -7141,6 +7163,29 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromGetNativeHandle(): string {
     return 'RtcEngine_getNativeHandle';
+  }
+
+  takeSnapshotWithConfig(uid: number, config: SnapshotConfig): number {
+    const apiType = this.getApiTypeFromTakeSnapshotWithConfig(uid, config);
+    const jsonParams = {
+      uid: uid,
+      config: config,
+      toJSON: () => {
+        return {
+          uid: uid,
+          config: config,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromTakeSnapshotWithConfig(
+    uid: number,
+    config: SnapshotConfig
+  ): string {
+    return 'RtcEngine_takeSnapshot_5669ea6';
   }
 }
 
