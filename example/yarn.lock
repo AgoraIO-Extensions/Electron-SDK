@@ -6540,10 +6540,10 @@ klona@^2.0.4:
   resolved "https://registry.npmjs.org/klona/-/klona-2.0.6.tgz#85bffbf819c03b2f53270412420a4555ef882e22"
   integrity sha512-dhG34DXATL5hSxJbIexCft8FChFXtmskoZYnoPWjXQuebWYCNkVeV3KkGegCK9CP1oswI/vQibS2GY7Em/sJJA==
 
-koffi@^2.8.0:
-  version "2.9.0"
-  resolved "https://registry.npmjs.org/koffi/-/koffi-2.9.0.tgz#58d30507f22a334921af5bfce1b82a4c0eb9b195"
-  integrity sha512-KCsuJ2gM58n6bNdR2Z7gqsh/3TchxxQFbVgax2/UvAjRTgwNSYAJDx9E3jrkBP4jEDHWRCfE47Y2OG+/fiSvEw==
+koffi@2.8.11:
+  version "2.8.11"
+  resolved "https://registry.npmjs.org/koffi/-/koffi-2.8.11.tgz#38fdf9080c79c2b2e44ec126647d0788e4bb9073"
+  integrity sha512-wrWaW6DJVFis7Qlsh4YDwObrzE/Jynu8pWC3W+0B3d4kv5BFbpPFWEzg4QYGjF+tOA/kpzol8n5o5j4+SGMbQA==
 
 kuler@^2.0.0:
   version "2.0.0"
