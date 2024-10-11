@@ -116,6 +116,7 @@ import {
   MediaSourceType,
   RawAudioFrameOpModeType,
   RenderModeType,
+  SnapshotConfig,
   VideoSourceType,
 } from './AgoraMediaBase';
 import { IH265Transcoder } from './IAgoraH265Transcoder';
@@ -1572,7 +1573,7 @@ export interface IRtcEngineEventHandler {
    * @param elapsed Time elapsed (ms) from the local user calling joinChannel until this callback is triggered.
    */
   onFirstLocalVideoFramePublished?(
-    source: VideoSourceType,
+    connection: RtcConnection,
     elapsed: number
   ): void;
 
@@ -5663,6 +5664,11 @@ export abstract class IRtcEngine {
   };
 
   /**
+   * @ignore
+   */
+  abstract setExternalMediaProjection(mediaProjection: any): number;
+
+  /**
    * Sets the screen sharing scenario.
    *
    * When you start screen sharing or window sharing, you can call this method to set the screen sharing scenario. The SDK adjusts the video quality and experience of the sharing according to the scenario. Agora recommends that you call this method before joining a channel.
@@ -6814,6 +6820,11 @@ export abstract class IRtcEngine {
    * The native handle of the SDK.
    */
   abstract getNativeHandle(): number;
+
+  /**
+   * @ignore
+   */
+  abstract takeSnapshotWithConfig(uid: number, config: SnapshotConfig): number;
 }
 
 /**
