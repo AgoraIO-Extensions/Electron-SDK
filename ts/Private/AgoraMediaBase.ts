@@ -1138,6 +1138,20 @@ export enum VideoModulePosition {
 }
 
 /**
+ * @ignore
+ */
+export class SnapshotConfig {
+  /**
+   * @ignore
+   */
+  filePath?: string;
+  /**
+   * @ignore
+   */
+  position?: VideoModulePosition;
+}
+
+/**
  * This class is used to get raw PCM audio.
  *
  * You can inherit this class and implement the onFrame callback to get raw PCM audio.
