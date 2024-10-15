@@ -79,7 +79,7 @@
     "agora-electron-sdk": "4.4.0",
     "antd": "^4.20.3",
     "download": "^8.0.0",
-    "koffi": "^2.8.0",
+    "koffi": "2.8.11",
     "react": "^18.1.0",
     "react-color": "^2.19.3",
     "react-dom": "^18.1.0",

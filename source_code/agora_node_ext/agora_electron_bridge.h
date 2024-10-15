@@ -54,9 +54,6 @@ class AgoraElectronBridge {
   std::shared_ptr<IApiEngineBase> _iris_api_engine;
   std::shared_ptr<NodeIrisEventHandler> _iris_rtc_event_handler;
   std::shared_ptr<iris::IrisRtcRendering> _iris_rendering;
-
- private:
-  char _result[kBasicResultLength];
 };
 
 }// namespace electron

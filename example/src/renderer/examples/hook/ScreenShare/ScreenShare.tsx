@@ -131,7 +131,7 @@ export default function ScreenShare() {
       ScreenCaptureSourceType.ScreencapturesourcetypeScreen
     ) {
       engine.current.startScreenCaptureByDisplayId(
-        targetSource.sourceId,
+        targetSource.sourceId!,
         {},
         {
           dimensions: { width, height },
@@ -147,7 +147,7 @@ export default function ScreenShare() {
       );
     } else {
       engine.current.startScreenCaptureByWindowId(
-        targetSource.sourceId,
+        targetSource.sourceId!,
         {},
         {
           dimensions: { width, height },
