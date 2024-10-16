@@ -16,7 +16,7 @@ parsers:
           - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.19/include/IAgoraMediaComponentFactory.h'
           - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.19/include/IAgoraParameter.h'
       customHeaders:
-        - '@agoraio-extensions/terra_shared_configs:headers/custom_headers/*.h'
+        - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.19/custom_headers/*.h'
       language: ts
       definesMacros:
         - __ELECTRON__
