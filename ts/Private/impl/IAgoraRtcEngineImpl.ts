@@ -3630,6 +3630,53 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_setRemoteRenderMode';
   }
 
+  setLocalRenderTargetFps(
+    sourceType: VideoSourceType,
+    targetFps: number
+  ): number {
+    const apiType = this.getApiTypeFromSetLocalRenderTargetFps(
+      sourceType,
+      targetFps
+    );
+    const jsonParams = {
+      sourceType: sourceType,
+      targetFps: targetFps,
+      toJSON: () => {
+        return {
+          sourceType: sourceType,
+          targetFps: targetFps,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSetLocalRenderTargetFps(
+    sourceType: VideoSourceType,
+    targetFps: number
+  ): string {
+    return 'RtcEngine_setLocalRenderTargetFps';
+  }
+
+  setRemoteRenderTargetFps(targetFps: number): number {
+    const apiType = this.getApiTypeFromSetRemoteRenderTargetFps(targetFps);
+    const jsonParams = {
+      targetFps: targetFps,
+      toJSON: () => {
+        return {
+          targetFps: targetFps,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSetRemoteRenderTargetFps(targetFps: number): string {
+    return 'RtcEngine_setRemoteRenderTargetFps';
+  }
+
   setLocalVideoMirrorMode(mirrorMode: VideoMirrorModeType): number {
     const apiType = this.getApiTypeFromSetLocalVideoMirrorMode(mirrorMode);
     const jsonParams = {
