@@ -1583,7 +1583,7 @@ export enum VideoApplicationScenarioType {
    */
   ApplicationScenarioGeneral = 0,
   /**
-   * ApplicationScenarioMeeting (1) is suitable for meeting scenarios. If set to ApplicationScenarioMeeting (1), the SDK automatically enables the following strategies:
+   * ApplicationScenarioMeeting (1) is suitable for meeting scenarios. The SDK automatically enables the following strategies:
    *  In meeting scenarios where low-quality video streams are required to have a high bitrate, the SDK automatically enables multiple technologies used to deal with network congestions, to enhance the performance of the low-quality streams and to ensure the smooth reception by subscribers.
    *  The SDK monitors the number of subscribers to the high-quality video stream in real time and dynamically adjusts its configuration based on the number of subscribers.
    *  If nobody subscribers to the high-quality stream, the SDK automatically reduces its bitrate and frame rate to save upstream bandwidth.
@@ -2739,7 +2739,7 @@ export enum NetworkType {
  */
 export enum VideoViewSetupMode {
   /**
-   * 0: (Default) Replaces a view.
+   * 0: (Default) Clear all added views and replace with a new view.
    */
   VideoViewSetupReplace = 0,
   /**
