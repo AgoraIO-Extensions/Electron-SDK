@@ -468,6 +468,24 @@ export class IMediaEngineImpl implements IMediaEngine {
   ): string {
     return 'MediaEngine_unregisterFaceInfoObserver';
   }
+
+  setExternalRemoteEglContext(eglContext: any): number {
+    const apiType = this.getApiTypeFromSetExternalRemoteEglContext(eglContext);
+    const jsonParams = {
+      eglContext: eglContext,
+      toJSON: () => {
+        return {
+          eglContext: eglContext,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSetExternalRemoteEglContext(eglContext: any): string {
+    return 'MediaEngine_setExternalRemoteEglContext_f337cbf';
+  }
 }
 
 import { callIrisApi } from '../internal/IrisApiEngine';
