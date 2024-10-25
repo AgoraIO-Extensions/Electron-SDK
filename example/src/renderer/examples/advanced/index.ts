@@ -5,7 +5,6 @@ import ChannelMediaRelay from './ChannelMediaRelay/ChannelMediaRelay';
 import ContentInspect from './ContentInspect/ContentInspect';
 import DeviceManager from './DeviceManager/DeviceManager';
 import DirectCdnStreaming from './DirectCdnStreaming/DirectCdnStreaming';
-import EncodedVideoFrame from './EncodedVideoFrame/EncodedVideoFrame';
 import Encryption from './Encryption/Encryption';
 import Extension from './Extension/Extension';
 import JoinMultipleChannel from './JoinMultipleChannel/JoinMultipleChannel';
@@ -60,10 +59,6 @@ const Advanced = {
     {
       name: 'DirectCdnStreaming',
       component: DirectCdnStreaming,
-    },
-    {
-      name: 'EncodedVideoFrame',
-      component: EncodedVideoFrame,
     },
     {
       name: 'Encryption',
