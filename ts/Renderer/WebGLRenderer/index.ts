@@ -1,4 +1,5 @@
 import { VideoFrame } from '../../Private/AgoraMediaBase';
+import { RendererType } from '../../Types';
 import { logWarn } from '../../Utils';
 import { IRenderer } from '../IRenderer';
 
@@ -57,6 +58,7 @@ export class WebGLRenderer extends IRenderer {
   constructor(fallback?: WebGLFallback) {
     super();
     this.gl = undefined;
+    this.rendererType = RendererType.WEBGL;
     this.yTexture = null;
     this.uTexture = null;
     this.vTexture = null;
@@ -251,6 +253,7 @@ export class WebGLRenderer extends IRenderer {
 
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
     super.drawFrame();
+    this.getFps();
   }
 
   protected override rotateCanvas({ width, height, rotation }: VideoFrame) {

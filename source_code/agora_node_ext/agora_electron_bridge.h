@@ -18,6 +18,10 @@ namespace electron {
 
 class NodeIrisEventHandler;
 
+struct AgoraEnv {
+  bool enable_web_codecs_decoder = false;
+};
+
 class AgoraElectronBridge {
  public:
   explicit AgoraElectronBridge();
@@ -30,6 +34,7 @@ class AgoraElectronBridge {
   static napi_value CallApi(napi_env env, napi_callback_info info);
   static napi_value GetBuffer(napi_env env, napi_callback_info info);
   static napi_value OnEvent(napi_env env, napi_callback_info info);
+  static napi_value UnEvent(napi_env env, napi_callback_info info);
   static napi_value EnableVideoFrameCache(napi_env env,
                                           napi_callback_info info);
   static napi_value DisableVideoFrameCache(napi_env env,
@@ -43,8 +48,10 @@ class AgoraElectronBridge {
   void OnApiError(const char *errorMessage);
   void Init();
   void Release();
+  void SetAgoraEnv(const AgoraEnv &agoraEnv) { _agoraEnv = agoraEnv; }
 
  private:
+  AgoraEnv _agoraEnv;
   static const char *_class_name;
   static napi_ref *_ref_construcotr_ptr;
   static const char *_ret_code_str;

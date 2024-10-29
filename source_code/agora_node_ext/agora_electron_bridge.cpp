@@ -40,6 +40,7 @@ napi_value AgoraElectronBridge::Init(napi_env env, napi_value exports) {
   napi_property_descriptor properties[] = {
       DECLARE_NAPI_METHOD("CallApi", CallApi),
       DECLARE_NAPI_METHOD("OnEvent", OnEvent),
+      DECLARE_NAPI_METHOD("UnEvent", UnEvent),
       DECLARE_NAPI_METHOD("GetBuffer", GetBuffer),
       DECLARE_NAPI_METHOD("EnableVideoFrameCache", EnableVideoFrameCache),
       DECLARE_NAPI_METHOD("DisableVideoFrameCache", DisableVideoFrameCache),
@@ -250,6 +251,30 @@ napi_value AgoraElectronBridge::OnEvent(napi_env env, napi_callback_info info) {
   ret = ERR_OK;
 
   char result[1];
+  RETURE_NAPI_OBJ();
+}
+
+napi_value AgoraElectronBridge::UnEvent(napi_env env, napi_callback_info info) {
+  napi_status status;
+  size_t argc = 2;
+  napi_value args[2];
+  napi_value jsthis;
+  int ret = ERR_FAILED;
+  status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
+  assert(status == napi_ok);
+
+  AgoraElectronBridge *agoraElectronBridge;
+  status =
+      napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
+  assert(status == napi_ok);
+
+  std::string eventName = "";
+  status = napi_get_value_utf8string(env, args[0], eventName);
+  assert(status == napi_ok);
+
+  agoraElectronBridge->_iris_rtc_event_handler->removeEvent(eventName);
+  ret = ERR_OK;
+
   RETURE_NAPI_OBJ();
 }
 
@@ -479,6 +504,8 @@ napi_value AgoraElectronBridge::InitializeEnv(napi_env env,
   AgoraElectronBridge *agoraElectronBridge;
   status =
       napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
+
+  napi_value obj0 = args[0];
 
   agoraElectronBridge->Init();
   LOG_F(INFO, __FUNCTION__);

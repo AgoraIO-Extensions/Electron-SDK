@@ -1,26 +1,19 @@
 import { VideoFrame } from '../Private/AgoraMediaBase';
-import { RendererCacheContext, RendererContext } from '../Types';
-import { AgoraEnv, logDebug } from '../Utils';
+import { AgoraElectronBridge } from '../Private/internal/IrisApiEngine';
+
+import { RendererContext } from '../Types';
+import { logDebug } from '../Utils';
 
 import { IRenderer } from './IRenderer';
+import { IRendererCache } from './IRendererCache';
 
-export function generateRendererCacheKey({
-  channelId,
-  uid,
-  sourceType,
-}: RendererContext): string {
-  return `${channelId}_${uid}_${sourceType}`;
-}
-
-export class RendererCache {
-  private _renderers: IRenderer[];
-  private _videoFrame: VideoFrame;
-  private _context: RendererCacheContext;
+export class RendererCache extends IRendererCache {
+  private videoFrame: VideoFrame;
   private _enabled: boolean;
 
-  constructor({ channelId, uid, sourceType, position }: RendererContext) {
-    this._renderers = [];
-    this._videoFrame = {
+  constructor(context: RendererContext) {
+    super(context);
+    this.videoFrame = {
       yBuffer: Buffer.alloc(0),
       uBuffer: Buffer.alloc(0),
       vBuffer: Buffer.alloc(0),
@@ -31,31 +24,7 @@ export class RendererCache {
       vStride: 0,
       rotation: 0,
     };
-    this._context = { channelId, uid, sourceType, position };
     this._enabled = false;
-  }
-
-  public get key(): string {
-    return generateRendererCacheKey(this._context);
-  }
-
-  public get renderers(): IRenderer[] {
-    return this._renderers;
-  }
-
-  public get videoFrame(): VideoFrame {
-    return this._videoFrame;
-  }
-
-  public get context(): RendererCacheContext {
-    return this._context;
-  }
-
-  /**
-   * @deprecated Use renderers instead
-   */
-  public get renders(): IRenderer[] {
-    return this.renderers;
   }
 
   /**
@@ -65,19 +34,15 @@ export class RendererCache {
     return this.videoFrame;
   }
 
-  private get bridge() {
-    return AgoraEnv.AgoraElectronBridge;
-  }
-
   private enable() {
     if (this._enabled) return;
-    this.bridge.EnableVideoFrameCache(this._context);
+    AgoraElectronBridge.EnableVideoFrameCache(this.cacheContext);
     this._enabled = true;
   }
 
   private disable() {
     if (!this._enabled) return;
-    this.bridge.DisableVideoFrameCache(this._context);
+    AgoraElectronBridge.DisableVideoFrameCache(this.cacheContext);
     this._enabled = false;
   }
 
@@ -89,9 +54,9 @@ export class RendererCache {
     }
   }
 
-  public draw() {
-    let { ret, isNewFrame } = this.bridge.GetVideoFrame(
-      this.context,
+  override draw() {
+    let { ret, isNewFrame } = AgoraElectronBridge.GetVideoFrame(
+      this.cacheContext,
       this.videoFrame
     );
 
@@ -105,7 +70,10 @@ export class RendererCache {
         this.videoFrame.uBuffer = Buffer.alloc(uStride! * height!);
         this.videoFrame.vBuffer = Buffer.alloc(vStride! * height!);
 
-        const result = this.bridge.GetVideoFrame(this.context, this.videoFrame);
+        const result = AgoraElectronBridge.GetVideoFrame(
+          this.cacheContext,
+          this.videoFrame
+        );
         ret = result.ret;
         isNewFrame = result.isNewFrame;
         break;
@@ -121,47 +89,20 @@ export class RendererCache {
     }
   }
 
-  public findRenderer(view: Element): IRenderer | undefined {
-    return this._renderers.find((renderer) => renderer.parentElement === view);
-  }
-
-  public addRenderer(renderer: IRenderer): void {
-    this._renderers.push(renderer);
+  override addRenderer(renderer: IRenderer): void {
+    super.addRenderer(renderer);
     this.shouldEnable();
   }
 
   /**
    * Remove the specified renderer if it is specified, otherwise remove all renderers
    */
-  public removeRenderer(renderer?: IRenderer): void {
-    let start = 0;
-    let deleteCount = this._renderers.length;
-    if (renderer) {
-      start = this._renderers.indexOf(renderer);
-      if (start < 0) return;
-      deleteCount = 1;
-    }
-    this._renderers.splice(start, deleteCount).forEach((it) => it.unbind());
+  override removeRenderer(renderer?: IRenderer): void {
+    super.removeRenderer(renderer);
     this.shouldEnable();
   }
 
-  public setRendererContext({
-    view,
-    renderMode,
-    mirrorMode,
-  }: RendererContext): boolean {
-    if (view) {
-      const renderer = this.findRenderer(view);
-      if (renderer) {
-        renderer.context = { renderMode, mirrorMode };
-        return true;
-      }
-      return false;
-    } else {
-      this._renderers.forEach((it) => {
-        it.context = { renderMode, mirrorMode };
-      });
-      return this._renderers.length > 0;
-    }
+  public release(): void {
+    super.release();
   }
 }
