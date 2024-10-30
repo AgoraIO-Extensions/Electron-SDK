@@ -30,29 +30,30 @@ export class YUVCanvasRenderer extends IRenderer {
 
     if (!this.frameSink) return;
 
-    this.frameSink.drawFrame(
-      YUVBuffer.frame(
-        YUVBuffer.format({
-          width,
-          height,
-          chromaWidth: width! / 2,
-          chromaHeight: height! / 2,
-          cropLeft: yStride! - width!,
-        }),
-        {
-          bytes: yBuffer,
-          stride: yStride,
-        },
-        {
-          bytes: uBuffer,
-          stride: uStride,
-        },
-        {
-          bytes: vBuffer,
-          stride: vStride,
-        }
-      )
+    const frame = YUVBuffer.frame(
+      YUVBuffer.format({
+        width,
+        height,
+        chromaWidth: width! / 2,
+        chromaHeight: height! / 2,
+        cropLeft: yStride! - width!,
+      }),
+      {
+        bytes: yBuffer,
+        stride: yStride,
+      },
+      {
+        bytes: uBuffer,
+        stride: uStride,
+      },
+      {
+        bytes: vBuffer,
+        stride: vStride,
+      }
     );
+    frame.a = frame.alphaBuffer;
+    this.frameSink.drawFrame(frame);
+
     super.drawFrame();
   }
 

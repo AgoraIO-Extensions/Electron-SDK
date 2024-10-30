@@ -427,6 +427,9 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_value v_buffer_obj;
   void *v_buffer;
   size_t v_length;
+  napi_value alpha_buffer_obj;
+  void *alpha_buffer;
+  size_t alpha_length;
   int width;
   int height;
   int yStride;
@@ -442,6 +445,9 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_obj_get_property(env, obj1, "vBuffer", v_buffer_obj);
   napi_get_buffer_info(env, v_buffer_obj, &v_buffer, &v_length);
 
+  napi_obj_get_property(env, obj1, "alphaBuffer", alpha_buffer_obj);
+  napi_get_buffer_info(env, alpha_buffer_obj, &alpha_buffer, &alpha_length);
+
   napi_obj_get_property(env, obj1, "width", width);
   napi_obj_get_property(env, obj1, "height", height);
   napi_obj_get_property(env, obj1, "yStride", yStride);
@@ -452,6 +458,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   videoFrame.yBuffer = (uint8_t *) y_buffer;
   videoFrame.uBuffer = (uint8_t *) u_buffer;
   videoFrame.vBuffer = (uint8_t *) v_buffer;
+  videoFrame.alphaBuffer = (uint8_t *) alpha_buffer;
   videoFrame.width = width;
   videoFrame.height = height;
   videoFrame.yStride = yStride;
@@ -459,7 +466,6 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   videoFrame.vStride = vStride;
   videoFrame.metadata_buffer = nullptr;
   videoFrame.metadata_size = 0;
-  videoFrame.alphaBuffer = nullptr;
 
   bool isNewFrame = false;
   napi_value retObj;

@@ -17,6 +17,7 @@ export class RendererCache extends IRendererCache {
       yBuffer: Buffer.alloc(0),
       uBuffer: Buffer.alloc(0),
       vBuffer: Buffer.alloc(0),
+      alphaBuffer: Buffer.alloc(0),
       width: 0,
       height: 0,
       yStride: 0,
@@ -69,6 +70,7 @@ export class RendererCache extends IRendererCache {
         this.videoFrame.yBuffer = Buffer.alloc(yStride! * height!);
         this.videoFrame.uBuffer = Buffer.alloc(uStride! * height!);
         this.videoFrame.vBuffer = Buffer.alloc(vStride! * height!);
+        this.videoFrame.alphaBuffer = Buffer.alloc(yStride! * height!);
 
         const result = AgoraElectronBridge.GetVideoFrame(
           this.cacheContext,
