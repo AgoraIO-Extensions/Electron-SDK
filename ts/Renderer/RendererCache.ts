@@ -2,7 +2,7 @@ import { VideoFrame } from '../Private/AgoraMediaBase';
 import { AgoraElectronBridge } from '../Private/internal/IrisApiEngine';
 
 import { RendererContext } from '../Types';
-import { logDebug } from '../Utils';
+import { AgoraEnv, logDebug } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 import { IRendererCache } from './IRendererCache';
@@ -17,7 +17,7 @@ export class RendererCache extends IRendererCache {
       yBuffer: Buffer.alloc(0),
       uBuffer: Buffer.alloc(0),
       vBuffer: Buffer.alloc(0),
-      alphaBuffer: Buffer.alloc(0),
+      alphaBuffer: AgoraEnv.encodeAlpha ? Buffer.alloc(0) : undefined,
       width: 0,
       height: 0,
       yStride: 0,
@@ -58,7 +58,10 @@ export class RendererCache extends IRendererCache {
   override draw() {
     let { ret, isNewFrame } = AgoraElectronBridge.GetVideoFrame(
       this.cacheContext,
-      this.videoFrame
+      this.videoFrame,
+      {
+        encodeAlpha: AgoraEnv.encodeAlpha,
+      }
     );
 
     switch (ret) {
@@ -70,11 +73,18 @@ export class RendererCache extends IRendererCache {
         this.videoFrame.yBuffer = Buffer.alloc(yStride! * height!);
         this.videoFrame.uBuffer = Buffer.alloc(uStride! * height!);
         this.videoFrame.vBuffer = Buffer.alloc(vStride! * height!);
-        this.videoFrame.alphaBuffer = Buffer.alloc(yStride! * height!);
+        if (AgoraEnv.encodeAlpha) {
+          this.videoFrame.alphaBuffer = Buffer.alloc(
+            this.videoFrame.yStride! * this.videoFrame.height!
+          );
+        }
 
         const result = AgoraElectronBridge.GetVideoFrame(
           this.cacheContext,
-          this.videoFrame
+          this.videoFrame,
+          {
+            encodeAlpha: AgoraEnv.encodeAlpha,
+          }
         );
         ret = result.ret;
         isNewFrame = result.isNewFrame;
@@ -82,6 +92,10 @@ export class RendererCache extends IRendererCache {
       case 2: // GET_VIDEO_FRAME_CACHE_RETURN_TYPE::NO_CACHE = 2
         logDebug('No renderer cache, please enable cache first');
         return;
+    }
+
+    if (!AgoraEnv.encodeAlpha) {
+      this.videoFrame.alphaBuffer = undefined;
     }
 
     if (isNewFrame) {

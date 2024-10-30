@@ -2,6 +2,7 @@
 
 import { AgoraElectronBridge } from '../../Private/internal/IrisApiEngine';
 import { AgoraEnv, logError, parseIntPtr2Number } from '../../Utils';
+import { VideoEncoderConfiguration } from '../AgoraBase';
 let RendererManager: any;
 let CapabilityManager: any;
 //@ts-ignore
@@ -335,6 +336,13 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
         (value) => value !== observer
       );
     return super.unregisterMediaMetadataObserver(observer, type);
+  }
+
+  override setVideoEncoderConfiguration(
+    config: VideoEncoderConfiguration
+  ): number {
+    AgoraEnv.encodeAlpha = config?.advanceOptions?.encodeAlpha ?? false;
+    return super.setVideoEncoderConfiguration(config);
   }
 
   protected override getApiTypeFromJoinChannel(

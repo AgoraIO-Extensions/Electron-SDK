@@ -399,8 +399,8 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
                                               napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
-  size_t argc = 2;
-  napi_value args[2];
+  size_t argc = 3;
+  napi_value args[3];
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
 
   AgoraElectronBridge *agoraElectronBridge;
@@ -418,6 +418,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   strcpy(config.channelId, channel_id.c_str());
 
   napi_value obj1 = args[1];
+  napi_value obj2 = args[2];
   napi_value y_buffer_obj;
   void *y_buffer;
   size_t y_length;
@@ -435,6 +436,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   int yStride;
   int uStride;
   int vStride;
+  bool encodeAlpha;
 
   napi_obj_get_property(env, obj1, "yBuffer", y_buffer_obj);
   napi_get_buffer_info(env, y_buffer_obj, &y_buffer, &y_length);
@@ -446,7 +448,6 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_get_buffer_info(env, v_buffer_obj, &v_buffer, &v_length);
 
   napi_obj_get_property(env, obj1, "alphaBuffer", alpha_buffer_obj);
-  napi_get_buffer_info(env, alpha_buffer_obj, &alpha_buffer, &alpha_length);
 
   napi_obj_get_property(env, obj1, "width", width);
   napi_obj_get_property(env, obj1, "height", height);
@@ -454,11 +455,12 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_obj_get_property(env, obj1, "uStride", uStride);
   napi_obj_get_property(env, obj1, "vStride", vStride);
 
+  napi_obj_get_property(env, obj2, "encodeAlpha", encodeAlpha);
+
   IrisCVideoFrame videoFrame;
   videoFrame.yBuffer = (uint8_t *) y_buffer;
   videoFrame.uBuffer = (uint8_t *) u_buffer;
   videoFrame.vBuffer = (uint8_t *) v_buffer;
-  videoFrame.alphaBuffer = (uint8_t *) alpha_buffer;
   videoFrame.width = width;
   videoFrame.height = height;
   videoFrame.yStride = yStride;
@@ -466,6 +468,12 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   videoFrame.vStride = vStride;
   videoFrame.metadata_buffer = nullptr;
   videoFrame.metadata_size = 0;
+  if (encodeAlpha) {
+    napi_get_buffer_info(env, alpha_buffer_obj, &alpha_buffer, &alpha_length);
+    videoFrame.alphaBuffer = (uint8_t *) alpha_buffer;
+  } else {
+    videoFrame.alphaBuffer = nullptr;
+  }
 
   bool isNewFrame = false;
   napi_value retObj;

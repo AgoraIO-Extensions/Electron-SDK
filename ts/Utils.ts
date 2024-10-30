@@ -191,5 +191,6 @@ export const AgoraEnv: AgoraEnvType = {
   enableDebugLogging: false,
   webEnvReady: true,
   enableWebCodecsDecoder: false,
+  encodeAlpha: false,
   videoFallbackStrategy: 0,
 };

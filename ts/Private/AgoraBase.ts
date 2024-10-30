@@ -3702,7 +3702,7 @@ export class VideoCanvas {
    *  The receiver can render alpha channel information only when the sender enables alpha transmission.
    *  To enable alpha transmission,.
    */
-  enableAlphaMask?: boolean;
+  encodeAlphaMask?: boolean;
   /**
    * The observation position of the video frame in the video link. See VideoModulePosition.
    */
