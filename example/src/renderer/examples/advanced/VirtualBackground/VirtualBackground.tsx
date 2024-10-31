@@ -301,6 +301,8 @@ export default class VirtualBackground
         ) : null}
         <AgoraSwitch
           title={'encodeAlpha'}
+          //attention: encodeAlpha can only change before rendering, when rendering, you can't change it, otherwise, it will cause rendering error and crash
+          disabled={startPreview}
           value={encodeAlpha}
           onValueChange={(value) => {
             this.setState({ encodeAlpha: value });
