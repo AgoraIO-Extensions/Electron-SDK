@@ -24,6 +24,7 @@ export class YUVCanvasRenderer extends IRenderer {
     uBuffer,
     vBuffer,
     rotation,
+    alphaBuffer,
   }: VideoFrame) {
     this.rotateCanvas({ width, height, rotation });
     this.updateRenderMode();
@@ -51,7 +52,7 @@ export class YUVCanvasRenderer extends IRenderer {
         stride: vStride,
       }
     );
-    frame.a = frame.alphaBuffer;
+    frame.a = alphaBuffer;
     this.frameSink.drawFrame(frame);
 
     super.drawFrame();
