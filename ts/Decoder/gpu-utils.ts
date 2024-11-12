@@ -25,7 +25,8 @@ export class GpuInfo {
  * @ignore
  */
 export const getGpuInfoInternal = (callback: any): void => {
-  if (typeof window === 'undefined') {
+  //@ts-ignore
+  if (process.type !== 'browser') {
     console.error('getGpuInfoInternal should be called in main process');
     return;
   }
