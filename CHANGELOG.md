@@ -1,5 +1,19 @@
 
 
+## [4.2.2-build.144-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.2-build.141-rc.2...v4.2.2-build.144-rc.1) (2024-11-14)
+
+
+### Features
+
+* support native 4.2.2.142 ([#1178](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1178)) ([473815e](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/473815eb05fc08845e394b4daf9a59c0d5096d6d))
+* support VideoDecoder in Ex channels ([#1211](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1211)) ([072f9f1](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/072f9f1f371143f7f0634590d27d97db51abf877))
+* WebCodecs videoDecoder ([#1186](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1186)) ([73fc6da](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/73fc6da5b1b12d0dcb4caa3c88b33dde8b32ced4))
+
+
+### Reverts
+
+* Revert "chore: optimize" ([e839e8f](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/e839e8f7541bd7720d4679a92e50765451f0c128))
+
 ## [4.2.2-build.143-rc.3](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.2-build.141-rc.2...v4.2.2-build.143-rc.3) (2024-07-08)
 
 
