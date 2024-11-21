@@ -220,6 +220,10 @@ export enum AudioMixingReasonType {
    */
   AudioMixingReasonStoppedByUser = 724,
   /**
+   * @ignore
+   */
+  AudioMixingReasonResumedByUser = 726,
+  /**
    * 0: The SDK opens music file successfully.
    */
   AudioMixingReasonOk = 0,
@@ -496,7 +500,7 @@ export class LocalVideoStats {
    */
   dualStreamEnabled?: boolean;
   /**
-   * The local video encoding acceleration type.
+   * The local video encoding acceleration type..
    *  0: Software encoding is applied without acceleration.
    *  1: Hardware encoding is applied for acceleration.
    */
@@ -563,6 +567,14 @@ export class RemoteAudioStats {
    * @ignore
    */
   plcCount?: number;
+  /**
+   * @ignore
+   */
+  frozenCntByCustom?: number;
+  /**
+   * @ignore
+   */
+  frozenTimeByCustom?: number;
   /**
    * The total active time (ms) between the start of the audio call and the callback of the remote user. The active time refers to the total duration of the remote user without the mute state.
    */
@@ -1048,7 +1060,7 @@ export class ScreenCaptureSourceInfo {
    */
   isOccluded?: boolean;
   /**
-   * The position of a window relative to the entire screen space (including all shareable screens). See Rectangle.
+   * The position of a window relative to the entire screen space (including all shareable screens). See Rectangle..
    */
   position?: Rectangle;
   /**
@@ -1144,7 +1156,7 @@ export class ChannelMediaOptions {
    */
   publishCustomAudioTrack?: boolean;
   /**
-   * The ID of the custom audio source to publish. The default value is 0. If you have set sourceNumber in setExternalAudioSource to a value greater than 1, the SDK creates the corresponding number of custom audio tracks and assigns an ID to each audio track, starting from 0.
+   * The ID of the custom audio track to be published. The default value is 0. You can obtain the custom audio track ID through the createCustomAudioTrack method.
    */
   publishCustomAudioTrackId?: number;
   /**
@@ -1168,7 +1180,7 @@ export class ChannelMediaOptions {
    */
   publishTranscodedVideoTrack?: boolean;
   /**
-   * @ignore
+   * Whether to publish the mixed audio track: true : Publish the mixed audio track. false : Do not publish the mixed audio track.
    */
   publishMixedAudioTrack?: boolean;
   /**
@@ -1542,7 +1554,7 @@ export interface IRtcEngineEventHandler {
    *
    * This callback reports the last-mile network conditions of the local user before the user joins the channel. Last mile refers to the connection between the local device and Agora's edge server. Before the user joins the channel, this callback is triggered by the SDK once startLastmileProbeTest is called and reports the last-mile network conditions of the local user.
    *
-   * @param quality The last-mile network quality. QualityUnknown (0): The quality is unknown. QualityExcellent (1): The quality is excellent. QualityGood (2): The network quality seems excellent, but the bitrate can be slightly lower than excellent. QualityPoor (3): Users can feel the communication is slightly impaired. QualityBad (4): Users cannot communicate smoothly. QualityVbad (5): The quality is so bad that users can barely communicate. QualityDown (6): The network is down, and users cannot communicate at all. See QualityType.
+   * @param quality The last-mile network quality. QualityUnknown (0): The quality is unknown. QualityExcellent (1): The quality is excellent. QualityGood (2): The network quality seems excellent, but the bitrate can be slightly lower than excellent. QualityPoor (3): Users can feel the communication is slightly impaired. QualityBad (4): Users cannot communicate smoothly. QualityVbad (5): The quality is so bad that users can barely communicate. QualityDown (6): The network is down, and users cannot communicate at all. QualityDetecting (8): The last-mile probe test is in progress. See QualityType.
    */
   onLastmileQuality?(quality: QualityType): void;
 
@@ -1946,7 +1958,7 @@ export interface IRtcEngineEventHandler {
    * @param connection The connection information. See RtcConnection.
    * @param uid The ID of the remote user sending the message.
    * @param streamId The stream ID of the received message.
-   * @param code The error code. See ErrorCodeType.
+   * @param code Error code. See ErrorCodeType.
    * @param missed The number of lost messages.
    * @param cached Number of incoming cached messages when the data stream is interrupted.
    */
@@ -2383,7 +2395,7 @@ export interface IRtcEngineEventHandler {
   /**
    * Video frame rendering event callback.
    *
-   * After calling the startMediaRenderingTracing method or joining the channel, the SDK triggers this callback to report the events of video frame rendering and the indicators during the rendering process. Developers can optimize the indicators to improve the efficiency of the first video frame rendering.
+   * After calling the startMediaRenderingTracing method or joining a channel, the SDK triggers this callback to report the events of video frame rendering and the indicators during the rendering process. Developers can optimize the indicators to improve the efficiency of the first video frame rendering.
    *
    * @param connection The connection information. See RtcConnection.
    * @param uid The user ID.
@@ -2949,10 +2961,10 @@ export abstract class IRtcEngine {
   /**
    * Gets the warning or error description.
    *
-   * @param code The error code or warning code reported by the SDK.
+   * @param code The error code reported by the SDK.
    *
    * @returns
-   * The specific error or warning description.
+   * The specific error description.
    */
   abstract getErrorDescription(code: number): string;
 
@@ -3312,7 +3324,9 @@ export abstract class IRtcEngine {
    *
    * @param enabled Whether to enable the image enhancement function: true : Enable the image enhancement function. false : (Default) Disable the image enhancement function.
    * @param options The image enhancement options. See BeautyOptions.
-   * @param type Source type of the extension. See MediaSourceType.
+   * @param type The type of the media source to which the filter effect is applied. See MediaSourceType. In this method, this parameter supports only the following two settings:
+   *  Use the default value PrimaryCameraSource if you use camera to capture local video.
+   *  Set this parameter to CustomVideoSource if you use custom video source.
    *
    * @returns
    * 0: Success.
@@ -3329,17 +3343,13 @@ export abstract class IRtcEngine {
   /**
    * Sets low-light enhancement.
    *
-   * The low-light enhancement feature can adaptively adjust the brightness value of the video captured in situations with low or uneven lighting, such as backlit, cloudy, or dark scenes. It restores or highlights the image details and improves the overall visual effect of the video. You can call this method to enable the color enhancement feature and set the options of the color enhancement effect.
-   *  Call this method after calling enableVideo.
-   *  Dark light enhancement has certain requirements for equipment performance. The low-light enhancement feature has certain performance requirements on devices. If your device overheats after you enable low-light enhancement, Agora recommends modifying the low-light enhancement options to a less performance-consuming level or disabling low-light enhancement entirely.
-   *  Both this method and setExtensionProperty can turn on low-light enhancement:
-   *  When you use the SDK to capture video, Agora recommends this method (this method only works for video captured by the SDK).
-   *  When you use an external video source to implement custom video capture, or send an external video source to the SDK, Agora recommends using setExtensionProperty.
-   *  This method relies on the image enhancement dynamic library libagora_clear_vision_extension.dll. If the dynamic library is deleted, the function cannot be enabled normally.
+   * You can call this method to enable the color enhancement feature and set the options of the color enhancement effect.
    *
    * @param enabled Whether to enable low-light enhancement: true : Enable low-light enhancement. false : (Default) Disable low-light enhancement.
    * @param options The low-light enhancement options. See LowlightEnhanceOptions.
-   * @param type The type of the video source. See MediaSourceType.
+   * @param type The type of the media source to which the filter effect is applied. See MediaSourceType. In this method, this parameter supports only the following two settings:
+   *  Use the default value PrimaryCameraSource if you use camera to capture local video.
+   *  Set this parameter to CustomVideoSource if you use custom video source.
    *
    * @returns
    * 0: Success.
@@ -3354,17 +3364,13 @@ export abstract class IRtcEngine {
   /**
    * Sets video noise reduction.
    *
-   * Underlit environments and low-end video capture devices can cause video images to contain significant noise, which affects video quality. In real-time interactive scenarios, video noise also consumes bitstream resources and reduces encoding efficiency during encoding. You can call this method to enable the video noise reduction feature and set the options of the video noise reduction effect.
-   *  Call this method after calling enableVideo.
-   *  Video noise reduction has certain requirements for equipment performance. If your device overheats after you enable video noise reduction, Agora recommends modifying the video noise reduction options to a less performance-consuming level or disabling video noise reduction entirely.
-   *  Both this method and setExtensionProperty can turn on video noise reduction function:
-   *  When you use the SDK to capture video, Agora recommends this method (this method only works for video captured by the SDK).
-   *  When you use an external video source to implement custom video capture, or send an external video source to the SDK, Agora recommends using setExtensionProperty.
-   *  This method relies on the image enhancement dynamic library libagora_clear_vision_extension.dll. If the dynamic library is deleted, the function cannot be enabled normally.
+   * You can call this method to enable the video noise reduction feature and set the options of the video noise reduction effect. If the noise reduction implemented by this method does not meet your needs, Agora recommends that you call the setBeautyEffectOptions method to enable the beauty and skin smoothing function to achieve better video noise reduction effects. The recommended BeautyOptions settings for intense noise reduction effect are as follows: lighteningContrastLevel LighteningContrastNormal lighteningLevel : 0.0 smoothnessLevel : 0.5 rednessLevel : 0.0 sharpnessLevel : 0.1
    *
    * @param enabled Whether to enable video noise reduction: true : Enable video noise reduction. false : (Default) Disable video noise reduction.
    * @param options The video noise reduction options. See VideoDenoiserOptions.
-   * @param type The type of the video source. See MediaSourceType.
+   * @param type The type of the media source to which the filter effect is applied. See MediaSourceType. In this method, this parameter supports only the following two settings:
+   *  Use the default value PrimaryCameraSource if you use camera to capture local video.
+   *  Set this parameter to CustomVideoSource if you use custom video source.
    *
    * @returns
    * 0: Success.
@@ -3382,14 +3388,13 @@ export abstract class IRtcEngine {
    * The video images captured by the camera can have color distortion. The color enhancement feature intelligently adjusts video characteristics such as saturation and contrast to enhance the video color richness and color reproduction, making the video more vivid. You can call this method to enable the color enhancement feature and set the options of the color enhancement effect.
    *  Call this method after calling enableVideo.
    *  The color enhancement feature has certain performance requirements on devices. With color enhancement turned on, Agora recommends that you change the color enhancement level to one that consumes less performance or turn off color enhancement if your device is experiencing severe heat problems.
-   *  Both this method and setExtensionProperty can enable color enhancement:
-   *  When you use the SDK to capture video, Agora recommends this method (this method only works for video captured by the SDK).
-   *  When you use an external video source to implement custom video capture, or send an external video source to the SDK, Agora recommends using setExtensionProperty.
    *  This method relies on the image enhancement dynamic library libagora_clear_vision_extension.dll. If the dynamic library is deleted, the function cannot be enabled normally.
    *
    * @param enabled Whether to enable color enhancement: true Enable color enhancement. false : (Default) Disable color enhancement.
    * @param options The color enhancement options. See ColorEnhanceOptions.
-   * @param type The type of the video source. See MediaSourceType.
+   * @param type The type of the media source to which the filter effect is applied. See MediaSourceType. In this method, this parameter supports only the following two settings:
+   *  Use the default value PrimaryCameraSource if you use camera to capture local video.
+   *  Set this parameter to CustomVideoSource if you use custom video source.
    *
    * @returns
    * 0: Success.
@@ -3415,9 +3420,9 @@ export abstract class IRtcEngine {
    * @param enabled Whether to enable virtual background: true : Enable virtual background. false : Disable virtual background.
    * @param backgroundSource The custom background. See VirtualBackgroundSource. To adapt the resolution of the custom background image to that of the video captured by the SDK, the SDK scales and crops the custom background image while ensuring that the content of the custom background image is not distorted.
    * @param segproperty Processing properties for background images. See SegmentationProperty.
-   * @param type The type of the video source. See MediaSourceType. In this method, this parameter supports only the following two settings:
-   *  The default value is PrimaryCameraSource.
-   *  If you want to use the second camera to capture video, set this parameter to SecondaryCameraSource.
+   * @param type The type of the media source to which the filter effect is applied. See MediaSourceType. In this method, this parameter supports only the following two settings:
+   *  Use the default value PrimaryCameraSource if you use camera to capture local video.
+   *  Set this parameter to CustomVideoSource if you use custom video source.
    *
    * @returns
    * 0: Success.
@@ -3477,7 +3482,7 @@ export abstract class IRtcEngine {
    *  If someone subscribes to the low-quality stream, the SDK enables the low-quality stream and resets it to the SimulcastStreamConfig configuration used in the most recent calling of setDualStreamMode. If no configuration has been set by the user previously, the following values are used:
    *  Resolution: 480 × 272
    *  Frame rate: 15 fps
-   *  Bitrate: 500 Kbps ApplicationScenario1v1 (2) is suitable for 1v1 video call scenarios. To meet the requirements for low latency and high-quality video in this scenario, the SDK optimizes its strategies, improving performance in terms of video quality, first frame rendering, latency on mid-to-low-end devices, and smoothness under weak network conditions.
+   *  Bitrate: 500 Kbps ApplicationScenario1v1 (2) This is applicable to the scenario. To meet the requirements for low latency and high-quality video in this scenario, the SDK optimizes its strategies, improving performance in terms of video quality, first frame rendering, latency on mid-to-low-end devices, and smoothness under weak network conditions. (3) This is applicable to the scenario. In response to the high demands for first-frame rendering time and image quality, the SDK focuses on reducing first-frame rendering time and enhancing overall image quality, even in poor network conditions or on low-end devices.
    *
    * @returns
    * 0: Success.
@@ -3696,14 +3701,10 @@ export abstract class IRtcEngine {
   /**
    * Options for subscribing to remote video streams.
    *
-   * When a remote user has enabled dual-stream mode, you can call this method to choose the option for subscribing to the video streams sent by the remote user.
-   *  If you only register one IVideoFrameObserver object, the SDK subscribes to the raw video data and encoded video data by default (the effect is equivalent to setting encodedFrameOnly to false).
-   *  If you only register one IVideoEncodedFrameObserver object, the SDK only subscribes to the encoded video data by default (the effect is equivalent to setting encodedFrameOnly to true).
-   *  If you register one IVideoFrameObserver object and one IVideoEncodedFrameObserver object successively, the SDK subscribes to the encoded video data by default (the effect is equivalent to setting encodedFrameOnly to false).
-   *  If you call this method first with the options parameter set, and then register one IVideoFrameObserver or IVideoEncodedFrameObserver object, you need to call this method again and set the options parameter as described in the above two items to get the desired results. Agora recommends the following steps:
-   *  Set autoSubscribeVideo to false when calling joinChannel to join a channel.
-   *  Call this method after receiving the onUserJoined callback to set the subscription options for the specified remote user's video stream.
-   *  Call the muteRemoteVideoStream method to resume subscribing to the video stream of the specified remote user. If you set encodedFrameOnly to true in the previous step, the SDK triggers the onEncodedVideoFrameReceived callback locally to report the received encoded video frame information.
+   * When a remote user has enabled dual-stream mode, you can call this method to choose the option for subscribing to the video streams sent by the remote user. The default subscription behavior of the SDK for remote video streams depends on the type of registered video observer:
+   *  If the IVideoFrameObserver observer is registered, the default is to subscribe to both raw data and encoded data.
+   *  If the IVideoEncodedFrameObserver observer is registered, the default is to subscribe only to the encoded data.
+   *  If both types of observers are registered, the default behavior follows the last registered video observer. For example, if the last registered observer is the IVideoFrameObserver observer, the default is to subscribe to both raw data and encoded data. If you want to modify the default behavior, or set different subscription options for different uids, you can call this method to set it.
    *
    * @param uid The user ID of the remote user.
    * @param options The video subscription options. See VideoSubscriptionOptions.
@@ -3985,7 +3986,7 @@ export abstract class IRtcEngine {
   /**
    * Adjusts the volume during audio mixing.
    *
-   * This method adjusts the audio mixing volume on both the local client and remote clients.
+   * This method adjusts the audio mixing volume on both the local client and remote clients. This method does not affect the volume of the audio file set in the playEffect method.
    *
    * @param volume Audio mixing volume. The value ranges between 0 and 100. The default value is 100, which means the original volume.
    *
@@ -5150,11 +5151,11 @@ export abstract class IRtcEngine {
    * Enables loopback audio capturing.
    *
    * If you enable loopback audio capturing, the output of the sound card is mixed into the audio stream sent to the other end.
-   *  macOS does not support loopback audio capture of the default sound card. If you need to use this function, use a virtual sound card and pass its name to the deviceName parameter. Agora recommends using AgoraALD as the virtual sound card for audio capturing.
+   *  The macOS system's default sound card does not support recording functionality. As of v4.5.0, when you call this method for the first time, the SDK will automatically install the built-in AgoraALD virtual sound card developed by Agora. After successful installation, the audio routing will automatically switch to the virtual sound card and use it for audio capturing.
    *  You can call this method either before or after joining a channel.
    *  If you call the disableAudio method to disable the audio module, audio capturing will be disabled as well. If you need to enable audio capturing, call the enableAudio method to enable the audio module and then call the enableLoopbackRecording method.
    *
-   * @param enabled Sets whether to enable loopback audio capturing. true : Enable loopback audio capturing. false : (Default) Disable loopback audio capturing.
+   * @param enabled Sets whether to enable loopback audio capturing. true : Enable sound card capturing. You can find the name of the virtual sound card in your system's Audio Devices > Output. false : Disable sound card capturing. The name of the virtual sound card will not be shown in your system's Audio Devices > Output.
    * @param deviceName macOS: The device name of the virtual sound card. The default value is set to NULL, which means using AgoraALD for loopback audio capturing.
    *  Windows: The device name of the sound card. The default is set to NULL, which means the SDK uses the sound card of your device for loopback audio capturing.
    *
@@ -5467,8 +5468,8 @@ export abstract class IRtcEngine {
    *
    * You can call this method before sharing a screen or window to get a list of shareable screens and windows, which enables a user to use thumbnails in the list to easily choose a particular screen or window to share. This list also contains important information such as window ID and screen ID, with which you can call startScreenCaptureByWindowId or startScreenCaptureByDisplayId to start the sharing.
    *
-   * @param thumbSize The target size of the screen or window thumbnail (the width and height are in pixels). The SDK scales the original image to make the length of the longest side of the image the same as that of the target size without distorting the original image. For example, if the original image is 400 × 300 and thumbSize is 100 × 100, the actual size of the thumbnail is 100 × 75. If the target size is larger than the original size, the thumbnail is the original image and the SDK does not scale it.
-   * @param iconSize The target size of the icon corresponding to the application program (the width and height are in pixels). The SDK scales the original image to make the length of the longest side of the image the same as that of the target size without distorting the original image. For example, if the original image is 400 × 300 and iconSize is 100 × 100, the actual size of the icon is 100 × 75. If the target size is larger than the original size, the icon is the original image and the SDK does not scale it.
+   * @param thumbSize The target size of the screen or window thumbnail (the width and height are in pixels).. The SDK scales the original image to make the length of the longest side of the image the same as that of the target size without distorting the original image. For example, if the original image is 400 × 300 and thumbSize is 100 × 100, the actual size of the thumbnail is 100 × 75. If the target size is larger than the original size, the thumbnail is the original image and the SDK does not scale it.
+   * @param iconSize The target size of the icon corresponding to the application program (the width and height are in pixels).. The SDK scales the original image to make the length of the longest side of the image the same as that of the target size without distorting the original image. For example, if the original image is 400 × 300 and iconSize is 100 × 100, the actual size of the icon is 100 × 75. If the target size is larger than the original size, the icon is the original image and the SDK does not scale it.
    * @param includeScreen Whether the SDK returns the screen information in addition to the window information: true : The SDK returns screen and window information. false : The SDK returns window information only.
    *
    * @returns
@@ -5493,7 +5494,7 @@ export abstract class IRtcEngine {
    * Captures the video stream of a screen or a part of the screen area.
    *
    * @param displayId The display ID of the screen to be shared. For the Windows platform, if you need to simultaneously share two screens (main screen and secondary screen), you can set displayId to -1 when calling this method.
-   * @param regionRect (Optional) Sets the relative location of the region to the screen. Pass in nil to share the entire screen.
+   * @param regionRect (Optional) Sets the relative location of the region to the screen. Pass in nil to share the entire screen..
    * @param captureParams Screen sharing configurations. The default video dimension is 1920 x 1080, that is, 2,073,600 pixels. Agora uses the value of this parameter to calculate the charges. See ScreenCaptureParameters. The video properties of the screen sharing stream only need to be set through this parameter, and are unrelated to setVideoEncoderConfiguration.
    *
    * @returns
@@ -5592,7 +5593,7 @@ export abstract class IRtcEngine {
    *
    * Call this method after starting screen sharing or window sharing.
    *
-   * @param captureParams The screen sharing encoding parameters. The default video resolution is 1920 × 1080, that is, 2,073,600 pixels. Agora uses the value of this parameter to calculate the charges. See ScreenCaptureParameters. The video properties of the screen sharing stream only need to be set through this parameter, and are unrelated to setVideoEncoderConfiguration.
+   * @param captureParams The screen sharing encoding parameters. See ScreenCaptureParameters. The video properties of the screen sharing stream only need to be set through this parameter, and are unrelated to setVideoEncoderConfiguration.
    *
    * @returns
    * 0: Success.
@@ -5945,9 +5946,8 @@ export abstract class IRtcEngine {
    * Sends data stream messages.
    *
    * After calling createDataStream, you can call this method to send data stream messages to all users in the channel. The SDK has the following restrictions on this method:
-   *  Each user can have up to five data streams simultaneously.
-   *  Up to 60 packets can be sent per second in a data stream with each packet having a maximum size of 1 KB.
-   *  Up to 30 KB of data can be sent per second in a data stream. A successful method call triggers the onStreamMessage callback on the remote client, from which the remote user gets the stream message. A failed method call triggers the onStreamMessageError callback on the remote client.
+   *  Each client within the channel can have up to 5 data channels simultaneously, with a total shared packet bitrate limit of 30 KB/s for all data channels.
+   *  Each data channel can send up to 60 packets per second, with each packet being a maximum of 1 KB. A successful method call triggers the onStreamMessage callback on the remote client, from which the remote user gets the stream message. A failed method call triggers the onStreamMessageError callback on the remote client.
    *  This method needs to be called after createDataStream and joining the channel.
    *  In live streaming scenarios, this method only applies to hosts.
    *
@@ -6414,7 +6414,7 @@ export abstract class IRtcEngine {
    * When video screenshot and upload function is enabled, the SDK takes screenshots and uploads videos sent by local users based on the type and frequency of the module you set in ContentInspectConfig. After video screenshot and upload, the Agora server sends the callback notification to your app server in HTTPS requests and sends all screenshots to the third-party cloud storage service.
    *
    * @param enabled Whether to enalbe video screenshot and upload: true : Enables video screenshot and upload. false : Disables video screenshot and upload.
-   * @param config Screenshot and upload configuration. See ContentInspectConfig. When the video moderation module is set to video moderation via Agora self-developed extension(ContentInspectSupervision), the video screenshot and upload dynamic library libagora_content_inspect_extension.dll is required. Deleting this library disables the screenshot and upload feature.
+   * @param config Screenshot and upload configuration. See ContentInspectConfig.
    *
    * @returns
    * 0: Success.
@@ -6463,7 +6463,7 @@ export abstract class IRtcEngine {
    * Sets up cloud proxy service.
    *
    * When users' network access is restricted by a firewall, configure the firewall to allow specific IP addresses and ports provided by Agora; then, call this method to enable the cloud proxyType and set the cloud proxy type with the proxyType parameter. After successfully connecting to the cloud proxy, the SDK triggers the onConnectionStateChanged (ConnectionStateConnecting, ConnectionChangedSettingProxyServer) callback. To disable the cloud proxy that has been set, call the setCloudProxy (NoneProxy). To change the cloud proxy type that has been set, call the setCloudProxy (NoneProxy) first, and then call the setCloudProxy to set the proxyType you want.
-   *  Agora recommends that you call this method after joining a channel.
+   *  Agora recommends that you call this method before joining a channel.
    *  When a user is behind a firewall and uses the Force UDP cloud proxy, the services for Media Push and cohosting across channels are not available.
    *  When you use the Force TCP cloud proxy, note that an error would occur when calling the startAudioMixing method to play online music files in the HTTP protocol. The services for Media Push and cohosting across channels use the cloud proxy with the TCP protocol.
    *
