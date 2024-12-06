@@ -772,15 +772,17 @@ export class ContentInspectConfig {
 }
 
 /**
- * @ignore
+ * The snapshot configuration.
  */
 export class SnapshotConfig {
   /**
-   * @ignore
+   * The local path (including filename extensions) of the snapshot. For example:
+   *  Windows: C:\Users\<user_name>\AppData\Local\Agora\<process_name>\example.jpg
+   *  macOS: ～/Library/Logs/example.jpg Ensure that the path you specify exists and is writable.
    */
   filePath?: string;
   /**
-   * @ignore
+   * The position of the snapshot video frame in the video pipeline. See VideoModulePosition.
    */
   position?: VideoModulePosition;
 }
@@ -796,7 +798,7 @@ export interface IAudioPcmFrameSink {
    *
    * After registering the audio frame observer, the callback occurs every time the player receives an audio frame, reporting the detailed information of the audio frame.
    *
-   * @param frame The audio frame information.. See AudioPcmFrame.
+   * @param frame The audio frame information. See AudioPcmFrame.
    */
   onFrame?(frame: AudioPcmFrame): void;
 }

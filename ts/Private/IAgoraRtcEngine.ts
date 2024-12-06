@@ -500,7 +500,7 @@ export class LocalVideoStats {
    */
   dualStreamEnabled?: boolean;
   /**
-   * The local video encoding acceleration type..
+   * The local video encoding acceleration type.
    *  0: Software encoding is applied without acceleration.
    *  1: Hardware encoding is applied for acceleration.
    */
@@ -1060,7 +1060,7 @@ export class ScreenCaptureSourceInfo {
    */
   isOccluded?: boolean;
   /**
-   * The position of a window relative to the entire screen space (including all shareable screens). See Rectangle..
+   * The position of a window relative to the entire screen space (including all shareable screens). See Rectangle.
    */
   position?: Rectangle;
   /**
@@ -3482,7 +3482,7 @@ export abstract class IRtcEngine {
    *  If someone subscribes to the low-quality stream, the SDK enables the low-quality stream and resets it to the SimulcastStreamConfig configuration used in the most recent calling of setDualStreamMode. If no configuration has been set by the user previously, the following values are used:
    *  Resolution: 480 × 272
    *  Frame rate: 15 fps
-   *  Bitrate: 500 Kbps ApplicationScenario1v1 (2) This is applicable to the scenario. To meet the requirements for low latency and high-quality video in this scenario, the SDK optimizes its strategies, improving performance in terms of video quality, first frame rendering, latency on mid-to-low-end devices, and smoothness under weak network conditions. (3) This is applicable to the scenario. In response to the high demands for first-frame rendering time and image quality, the SDK focuses on reducing first-frame rendering time and enhancing overall image quality, even in poor network conditions or on low-end devices.
+   *  Bitrate: 500 Kbps ApplicationScenario1v1 (2) This is applicable to the scenario. To meet the requirements for low latency and high-quality video in this scenario, the SDK optimizes its strategies, improving performance in terms of video quality, first frame rendering, latency on mid-to-low-end devices, and smoothness under weak network conditions. ApplicationScenarioLiveshow (3) This is applicable to the scenario. In this scenario, fast video rendering and high image quality are crucial. The SDK implements several performance optimizations, including automatically enabling accelerated audio and video frame rendering to minimize first-frame latency (no need to call enableInstantMediaRendering), and B-frame encoding to achieve better image quality and bandwidth efficiency. The SDK also provides enhanced video quality and smooth playback, even in poor network conditions or on lower-end devices.
    *
    * @returns
    * 0: Success.
@@ -5468,8 +5468,8 @@ export abstract class IRtcEngine {
    *
    * You can call this method before sharing a screen or window to get a list of shareable screens and windows, which enables a user to use thumbnails in the list to easily choose a particular screen or window to share. This list also contains important information such as window ID and screen ID, with which you can call startScreenCaptureByWindowId or startScreenCaptureByDisplayId to start the sharing.
    *
-   * @param thumbSize The target size of the screen or window thumbnail (the width and height are in pixels).. The SDK scales the original image to make the length of the longest side of the image the same as that of the target size without distorting the original image. For example, if the original image is 400 × 300 and thumbSize is 100 × 100, the actual size of the thumbnail is 100 × 75. If the target size is larger than the original size, the thumbnail is the original image and the SDK does not scale it.
-   * @param iconSize The target size of the icon corresponding to the application program (the width and height are in pixels).. The SDK scales the original image to make the length of the longest side of the image the same as that of the target size without distorting the original image. For example, if the original image is 400 × 300 and iconSize is 100 × 100, the actual size of the icon is 100 × 75. If the target size is larger than the original size, the icon is the original image and the SDK does not scale it.
+   * @param thumbSize The target size of the screen or window thumbnail (the width and height are in pixels). The SDK scales the original image to make the length of the longest side of the image the same as that of the target size without distorting the original image. For example, if the original image is 400 × 300 and thumbSize is 100 × 100, the actual size of the thumbnail is 100 × 75. If the target size is larger than the original size, the thumbnail is the original image and the SDK does not scale it.
+   * @param iconSize The target size of the icon corresponding to the application program (the width and height are in pixels). The SDK scales the original image to make the length of the longest side of the image the same as that of the target size without distorting the original image. For example, if the original image is 400 × 300 and iconSize is 100 × 100, the actual size of the icon is 100 × 75. If the target size is larger than the original size, the icon is the original image and the SDK does not scale it.
    * @param includeScreen Whether the SDK returns the screen information in addition to the window information: true : The SDK returns screen and window information. false : The SDK returns window information only.
    *
    * @returns
@@ -5494,7 +5494,7 @@ export abstract class IRtcEngine {
    * Captures the video stream of a screen or a part of the screen area.
    *
    * @param displayId The display ID of the screen to be shared. For the Windows platform, if you need to simultaneously share two screens (main screen and secondary screen), you can set displayId to -1 when calling this method.
-   * @param regionRect (Optional) Sets the relative location of the region to the screen. Pass in nil to share the entire screen..
+   * @param regionRect (Optional) Sets the relative location of the region to the screen. Pass in nil to share the entire screen.
    * @param captureParams Screen sharing configurations. The default video dimension is 1920 x 1080, that is, 2,073,600 pixels. Agora uses the value of this parameter to calculate the charges. See ScreenCaptureParameters. The video properties of the screen sharing stream only need to be set through this parameter, and are unrelated to setVideoEncoderConfiguration.
    *
    * @returns
@@ -6796,7 +6796,16 @@ export abstract class IRtcEngine {
   abstract getNativeHandle(): number;
 
   /**
-   * @ignore
+   * Takes a screenshot of the video at the specified observation point.
+   *
+   * This method takes a snapshot of a video stream from the specified user, generates a JPG image, and saves it to the specified path.
+   *
+   * @param uid The user ID. Set uid as 0 if you want to take a snapshot of the local user's video.
+   * @param config The configuration of the snaptshot. See SnapshotConfig.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract takeSnapshotWithConfig(uid: number, config: SnapshotConfig): number;
 }
