@@ -973,6 +973,41 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * @ignore
    */
+  abstract preloadEffectEx(
+    connection: RtcConnection,
+    soundId: number,
+    filePath: string,
+    startPos?: number
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract playEffectEx(
+    connection: RtcConnection,
+    soundId: number,
+    filePath: string,
+    loopCount: number,
+    pitch: number,
+    pan: number,
+    gain: number,
+    publish?: boolean,
+    startPos?: number
+  ): number;
+
+  /**
+   * Gets a video screenshot of the specified observation point using the connection ID.
+   *
+   * This method takes a snapshot of a video stream from the specified user, generates a JPG image, and saves it to the specified path.
+   *
+   * @param connection The connection information. See RtcConnection.
+   * @param uid The user ID. Set uid as 0 if you want to take a snapshot of the local user's video.
+   * @param config The configuration of the snaptshot. See SnapshotConfig.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
+   */
   abstract takeSnapshotWithConfigEx(
     connection: RtcConnection,
     uid: number,

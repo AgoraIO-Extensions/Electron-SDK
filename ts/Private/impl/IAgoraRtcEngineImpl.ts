@@ -5359,24 +5359,15 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_queryCameraFocalLengthCapability_2dee6af';
   }
 
-  setExternalMediaProjection(mediaProjection: any): number {
-    const apiType =
-      this.getApiTypeFromSetExternalMediaProjection(mediaProjection);
-    const jsonParams = {
-      mediaProjection: mediaProjection,
-      toJSON: () => {
-        return {
-          mediaProjection: mediaProjection,
-        };
-      },
-    };
+  setExternalMediaProjection(): any {
+    const apiType = this.getApiTypeFromSetExternalMediaProjection();
+    const jsonParams = {};
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
+    const mediaProjection = jsonResults.mediaProjection;
+    return mediaProjection;
   }
 
-  protected getApiTypeFromSetExternalMediaProjection(
-    mediaProjection: any
-  ): string {
+  protected getApiTypeFromSetExternalMediaProjection(): string {
     return 'RtcEngine_setExternalMediaProjection_f337cbf';
   }
 

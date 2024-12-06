@@ -1421,7 +1421,7 @@ export class VideoEncoderConfiguration {
    */
   frameRate?: number;
   /**
-   * The encoding bitrate (Kbps) of the video.. This parameter does not need to be set; keeping the default value STANDARD_BITRATE is sufficient. The SDK automatically matches the most suitable bitrate based on the video resolution and frame rate you have set. For the correspondence between video resolution and frame rate, see. STANDARD_BITRATE (0): (Recommended) Standard bitrate mode. COMPATIBLE_BITRATE (-1): Adaptive bitrate mode. In general, Agora suggests that you do not use this value.
+   * The encoding bitrate (Kbps) of the video. This parameter does not need to be set; keeping the default value STANDARD_BITRATE is sufficient. The SDK automatically matches the most suitable bitrate based on the video resolution and frame rate you have set. For the correspondence between video resolution and frame rate, see. STANDARD_BITRATE (0): (Recommended) Standard bitrate mode. COMPATIBLE_BITRATE (-1): Adaptive bitrate mode. In general, Agora suggests that you do not use this value.
    */
   bitrate?: number;
   /**
@@ -3014,7 +3014,7 @@ export class LiveTranscoding {
    */
   height?: number;
   /**
-   * The encoding bitrate (Kbps) of the video.. This parameter does not need to be set; keeping the default value STANDARD_BITRATE is sufficient. The SDK automatically matches the most suitable bitrate based on the video resolution and frame rate you have set. For the correspondence between video resolution and frame rate, see.
+   * The encoding bitrate (Kbps) of the video. This parameter does not need to be set; keeping the default value STANDARD_BITRATE is sufficient. The SDK automatically matches the most suitable bitrate based on the video resolution and frame rate you have set. For the correspondence between video resolution and frame rate, see.
    */
   videoBitrate?: number;
   /**
@@ -3763,11 +3763,11 @@ export enum VideoDenoiserLevel {
  */
 export class VideoDenoiserOptions {
   /**
-   * Video noise reduction mode..
+   * Video noise reduction mode.
    */
   mode?: VideoDenoiserMode;
   /**
-   * Video noise reduction level..
+   * Video noise reduction level.
    */
   level?: VideoDenoiserLevel;
 }
@@ -4939,7 +4939,7 @@ export class ScreenVideoParameters {
    */
   bitrate?: number;
   /**
-   * The content hint for screen sharing..
+   * The content hint for screen sharing.
    */
   contentHint?: VideoContentHint;
 }
