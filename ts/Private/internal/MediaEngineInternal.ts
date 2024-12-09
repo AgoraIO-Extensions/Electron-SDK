@@ -109,7 +109,6 @@ export class MediaEngineInternal extends IMediaEngineImpl {
     MediaEngineInternal._video_encoded_frame_observers = [];
     MediaEngineInternal._face_info_observers = [];
     this.removeAllListeners();
-    super.release();
   }
 
   _addListenerPreCheck<EventType extends keyof IMediaEngineEvent>(

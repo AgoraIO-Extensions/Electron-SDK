@@ -621,7 +621,7 @@ export enum QualityType {
    */
   QualityUnsupported = 7,
   /**
-   * 8: Detecting the network quality.
+   * 8: The last-mile network probe test is in progress.
    */
   QualityDetecting = 8,
 }
@@ -771,7 +771,7 @@ export enum OrientationMode {
  */
 export enum DegradationPreference {
   /**
-   * 0: (Default) Prefers to reduce the video frame rate while maintaining video resolution during video encoding under limited bandwidth. This degradation preference is suitable for scenarios where video quality is prioritized.
+   * 0: Prefers to reduce the video frame rate while maintaining video resolution during video encoding under limited bandwidth. This degradation preference is suitable for scenarios where video quality is prioritized. Deprecated: This enumerator is deprecated. Use other enumerations instead.
    */
   MaintainQuality = 0,
   /**
@@ -1261,7 +1261,7 @@ export enum CompressionPreference {
    */
   PreferLowLatency = 0,
   /**
-   * 1: (Default) High quality preference. The SDK compresses video frames while maintaining video quality. This preference is suitable for scenarios where video quality is prioritized.
+   * 1: High quality preference. The SDK compresses video frames while maintaining video quality. This preference is suitable for scenarios where video quality is prioritized.
    */
   PreferQuality = 1,
 }
@@ -2253,11 +2253,11 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonDeviceNotFound = 8,
   /**
-   * 9: (macOS only) The video capture device currently in use is disconnected (such as being unplugged).
+   * 9: The video capture device currently in use is disconnected (such as being unplugged).
    */
   LocalVideoStreamReasonDeviceDisconnected = 9,
   /**
-   * 10: (macOS and Windows only) The SDK cannot find the video device in the video device list. Check whether the ID of the video device is valid.
+   * 10: The SDK cannot find the video device in the video device list. Check whether the ID of the video device is valid.
    */
   LocalVideoStreamReasonDeviceInvalidId = 10,
   /**
@@ -2273,11 +2273,11 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonDeviceSystemPressure = 101,
   /**
-   * 11: (macOS and Windows only) The shared window is minimized when you call the startScreenCaptureByWindowId method to share a window. The SDK cannot share a minimized window. Please prompt the user to unminimize the shared window.
+   * 11: The shared window is minimized when you call the startScreenCaptureByWindowId method to share a window. The SDK cannot share a minimized window. Please prompt the user to unminimize the shared window.
    */
   LocalVideoStreamReasonScreenCaptureWindowMinimized = 11,
   /**
-   * 12: (macOS and Windows only) The error code indicates that a window shared by the window ID has been closed or a full-screen window shared by the window ID has exited full-screen mode. After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a black screen, Agora recommends that you immediately stop screen sharing. Common scenarios reporting this error code:
+   * 12: The error code indicates that a window shared by the window ID has been closed or a full-screen window shared by the window ID has exited full-screen mode. After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a black screen, Agora recommends that you immediately stop screen sharing. Common scenarios reporting this error code:
    *  The local user closes the shared window.
    *  The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After the user exits full-screen mode, the SDK reports this error code.
    *  The local user watches a web video or reads a web document in full-screen mode first, and then shares the window of the web video or document. After the user exits full-screen mode, the SDK reports this error code.
@@ -2292,7 +2292,7 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonScreenCaptureWindowNotSupported = 20,
   /**
-   * 21: (Windows only) The screen has not captured any data available for window sharing.
+   * 21: (Windows and Android only) The currently captured window has no data.
    */
   LocalVideoStreamReasonScreenCaptureFailure = 21,
   /**
@@ -3741,7 +3741,7 @@ export enum VideoDenoiserMode {
 }
 
 /**
- * The video noise reduction level.
+ * Video noise reduction level.
  */
 export enum VideoDenoiserLevel {
   /**
@@ -3749,11 +3749,11 @@ export enum VideoDenoiserLevel {
    */
   VideoDenoiserLevelHighQuality = 0,
   /**
-   * 1: Promotes reducing performance consumption during video noise reduction. prioritizes reducing performance consumption over video noise reduction quality. The performance consumption is lower, and the video noise reduction speed is faster. To avoid a noticeable shadowing effect (shadows trailing behind moving objects) in the processed video, Agora recommends that you use this settinging when the camera is fixed.
+   * 1: Promotes reducing performance consumption during video noise reduction. It prioritizes reducing performance consumption over video noise reduction quality. The performance consumption is lower, and the video noise reduction speed is faster. To avoid a noticeable shadowing effect (shadows trailing behind moving objects) in the processed video, Agora recommends that you use this setting when the camera is fixed.
    */
   VideoDenoiserLevelFast = 1,
   /**
-   * 2: Enhanced video noise reduction. prioritizes video noise reduction quality over reducing performance consumption. The performance consumption is higher, the video noise reduction speed is slower, and the video noise reduction quality is better. If VideoDenoiserLevelHighQuality is not enough for your video noise reduction needs, you can use this enumerator.
+   * @ignore
    */
   VideoDenoiserLevelStrength = 2,
 }
@@ -3793,7 +3793,7 @@ export class ColorEnhanceOptions {
  */
 export enum BackgroundSourceType {
   /**
-   * 0: Process the background as alpha data without replacement, only separating the portrait and the background. After setting this value, you can call startLocalVideoTranscoder to implement the picture-in-picture effect.
+   * @ignore
    */
   BackgroundNone = 0,
   /**
@@ -3898,6 +3898,10 @@ export enum AudioTrackType {
    * 1: Direct audio tracks. This type of audio track will replace the audio streams captured by the microphone and does not support mixing with other audio streams. The latency of direct audio tracks is lower than that of mixable audio tracks. If AudioTrackDirect is specified for this parameter, you must set publishMicrophoneTrack to false in ChannelMediaOptions when calling joinChannel to join the channel; otherwise, joining the channel fails and returns the error code -2.
    */
   AudioTrackDirect = 1,
+  /**
+   * @ignore
+   */
+  AudioTrackExternalAecReference = 3,
 }
 
 /**
@@ -3908,6 +3912,14 @@ export class AudioTrackConfig {
    * Whether to enable the local audio-playback device: true : (Default) Enable the local audio-playback device. false : Do not enable the local audio-playback device.
    */
   enableLocalPlayback?: boolean;
+  /**
+   * Whether to enable audio processing module: true Enable the audio processing module to apply the Automatic Echo Cancellation (AEC), Automatic Noise Suppression (ANS), and Automatic Gain Control (AGC) effects. false : (Default) Do not enable the audio processing module. This parameter only takes effect on AudioTrackDirect in custom audio capturing.
+   */
+  enableAudioProcessing?: boolean;
+  /**
+   * @ignore
+   */
+  enableDirectPublish?: boolean;
 }
 
 /**
@@ -4561,7 +4573,7 @@ export class ChannelMediaRelayConfiguration {
   /**
    * The information of the target channel ChannelMediaInfo. It contains the following members: channelName : The name of the target channel. token : The token for joining the target channel. It is generated with the channelName and uid you set in destInfos.
    *  If you have not enabled the App Certificate, set this parameter as the default value null, which means the SDK applies the App ID.
-   *  If you have enabled the App Certificate, you must use the token generated with the channelName and uid. If the token of any target channel expires, the whole media relay stops; hence Agora recommends that you specify the same expiration time for the tokens of all the target channels. uid : The unique user ID to identify the relay stream in the target channel. The value ranges from 0 to (2 32 -1). To avoid user ID conflicts, this user ID must be different from any other user ID in the target channel. The default value is 0, which means the SDK generates a random user ID.
+   *  If you have enabled the App Certificate, you must use the token generated with the channelName and uid. If the token of any target channel expires, the whole media relay stops; hence Agora recommends that you specify the same expiration time for the tokens of all the target channels. uid : The unique user ID to identify the relay stream in the target channel. The value ranges from 0 to (2 32 -1). To avoid user ID conflicts, this user ID must be different from any other user ID in the target channel. The default value is 0, which means the SDK generates a random UID.
    */
   destInfos?: ChannelMediaInfo[];
   /**

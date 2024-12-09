@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "4.3.2-build.5-rc.1",
+  "version": "4.3.2-build.11-rc.1",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk",
   "types": "types/AgoraSdk.d.ts",
@@ -142,9 +142,9 @@
     "yuv-canvas": "1.2.6"
   },
   "agora_electron": {
-    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.3.2.5-build.4_DCG_Windows_Video_Standalone_20240914_0239_538.zip",
-    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.3.2.5-build.4_DCG_Mac_Video_Standalone_20240914_0239_499.zip",
-    "native_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_rel.v4.3.2.5_26453_FULL_20240911_1511_334994.zip",
-    "native_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_rel.v4.3.2.5_21916_FULL_20240911_1542_334995.zip"
+    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.3.2.11-build.1_DCG_Windows_Video_Standalone_20241206_1146_579.zip",
+    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.3.2.11-build.1_DCG_Mac_Video_Standalone_20241206_1145_537.zip",
+    "native_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_rel.v4.3.2.11_27381_FULL_20241205_1437_464296.zip",
+    "native_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_rel.v4.3.2.11_22966_FULL_20241205_1513_464338.zip"
   }
 }

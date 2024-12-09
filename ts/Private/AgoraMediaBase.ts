@@ -248,82 +248,6 @@ export enum MediaSourceType {
 /**
  * @ignore
  */
-export enum ContentInspectResult {
-  /**
-   * @ignore
-   */
-  ContentInspectNeutral = 1,
-  /**
-   * @ignore
-   */
-  ContentInspectSexy = 2,
-  /**
-   * @ignore
-   */
-  ContentInspectPorn = 3,
-}
-
-/**
- * The type of video content moderation module.
- */
-export enum ContentInspectType {
-  /**
-   * 0: (Default) This module has no actual function. Do not set type to this value.
-   */
-  ContentInspectInvalid = 0,
-  /**
-   * @ignore
-   */
-  ContentInspectModeration = 1,
-  /**
-   * 2: Video screenshot and upload via Agora self-developed extension. SDK takes screenshots of the video stream in the channel and uploads them.
-   */
-  ContentInspectSupervision = 2,
-  /**
-   * 3: Video screenshot and upload via extensions from Agora Extensions Marketplace. SDK uses video moderation extensions from Agora Extensions Marketplace to take screenshots of the video stream in the channel and uploads them.
-   */
-  ContentInspectImageModeration = 3,
-}
-
-/**
- * ContentInspectModule A structure used to configure the frequency of video screenshot and upload.
- */
-export class ContentInspectModule {
-  /**
-   * Types of functional module. See ContentInspectType.
-   */
-  type?: ContentInspectType;
-  /**
-   * The frequency (s) of video screenshot and upload. The value should be set as larger than 0. The default value is 0, the SDK does not take screenshots. Agora recommends that you set the value as 10; you can also adjust it according to your business needs.
-   */
-  interval?: number;
-}
-
-/**
- * Screenshot and upload configuration.
- */
-export class ContentInspectConfig {
-  /**
-   * Additional information on the video content (maximum length: 1024 Bytes). The SDK sends the screenshots and additional information on the video content to the Agora server. Once the video screenshot and upload process is completed, the Agora server sends the additional information and the callback notification to your server.
-   */
-  extraInfo?: string;
-  /**
-   * @ignore
-   */
-  serverConfig?: string;
-  /**
-   * Functional module. See ContentInspectModule. A maximum of 32 ContentInspectModule instances can be configured, and the value range of MAX_CONTENT_INSPECT_MODULE_COUNT is an integer in [1,32]. A function module can only be configured with one instance at most. Currently only the video screenshot and upload function is supported.
-   */
-  modules?: ContentInspectModule[];
-  /**
-   * The number of functional modules, that is,the number of configured ContentInspectModule instances, must be the same as the number of instances configured in modules. The maximum number is 32.
-   */
-  moduleCount?: number;
-}
-
-/**
- * @ignore
- */
 export class PacketOptions {
   /**
    * @ignore
@@ -472,11 +396,11 @@ export enum VideoPixelFormat {
  */
 export enum RenderModeType {
   /**
-   * 1: Hidden mode. Uniformly scale the video until one of its dimension fits the boundary (zoomed to fit). One dimension of the video may have clipped contents.
+   * 1: Hidden mode. The priority is to fill the window. Any excess video that does not match the window size will be cropped.
    */
   RenderModeHidden = 1,
   /**
-   * 2: Fit mode. Uniformly scale the video until one of its dimension fits the boundary (zoomed to fit). Areas that are not filled due to disparity in the aspect ratio are filled with black.
+   * 2: Fit mode. The priority is to ensure that all video content is displayed. Any areas of the window that are not filled due to the mismatch between video size and window size will be filled with black.
    */
   RenderModeFit = 2,
   /**
@@ -634,7 +558,7 @@ export class ExternalVideoFrame {
    */
   fillAlphaBuffer?: boolean;
   /**
-   * This parameter only applies to video data in Windows Texture format. It represents an index of an ID3D11Texture2D texture object used by the video frame in the ID3D11Texture2D array.
+   * @ignore
    */
   texture_slice_index?: number;
 }
@@ -710,7 +634,9 @@ export class VideoFrame {
    */
   matrix?: number[];
   /**
-   * The alpha channel data output by using portrait segmentation algorithm. This data matches the size of the video frame, with each pixel value ranging from [0,255], where 0 represents the background and 255 represents the foreground (portrait). By setting this parameter, you can render the video background into various effects, such as transparent, solid color, image, video, etc. In custom video rendering scenarios, ensure that both the video frame and alphaBuffer are of the Full Range type; other types may cause abnormal alpha data rendering.
+   * The alpha channel data output by using portrait segmentation algorithm. This data matches the size of the video frame, with each pixel value ranging from [0,255], where 0 represents the background and 255 represents the foreground (portrait). By setting this parameter, you can render the video background into various effects, such as transparent, solid color, image, video, etc.
+   *  In custom video rendering scenarios, ensure that both the video frame and alphaBuffer are of the Full Range type; other types may cause abnormal alpha data rendering.
+   *  Make sure that alphaBuffer is exactly the same size as the video frame (width × height), otherwise it may cause the app to crash.
    */
   alphaBuffer?: Uint8Array;
   /**
@@ -718,7 +644,7 @@ export class VideoFrame {
    */
   pixelBuffer?: Uint8Array;
   /**
-   * The meta information in the video frame. To use this parameter, please contact.
+   * The meta information in the video frame. To use this parameter, contact.
    */
   metaInfo?: IVideoFrameMetaInfo;
 }
@@ -768,13 +694,95 @@ export enum VideoModulePosition {
 /**
  * @ignore
  */
-export class SnapshotConfig {
+export enum ContentInspectResult {
   /**
    * @ignore
    */
-  filePath?: string;
+  ContentInspectNeutral = 1,
   /**
    * @ignore
+   */
+  ContentInspectSexy = 2,
+  /**
+   * @ignore
+   */
+  ContentInspectPorn = 3,
+}
+
+/**
+ * The type of video content moderation module.
+ */
+export enum ContentInspectType {
+  /**
+   * 0: (Default) This module has no actual function. Do not set type to this value.
+   */
+  ContentInspectInvalid = 0,
+  /**
+   * @ignore
+   */
+  ContentInspectModeration = 1,
+  /**
+   * 2: Video screenshot and upload via Agora self-developed extension. SDK takes screenshots of the video stream in the channel and uploads them.
+   */
+  ContentInspectSupervision = 2,
+  /**
+   * 3: Video screenshot and upload via extensions from Agora Extensions Marketplace. SDK uses video moderation extensions from Agora Extensions Marketplace to take screenshots of the video stream in the channel and uploads them.
+   */
+  ContentInspectImageModeration = 3,
+}
+
+/**
+ * ContentInspectModule A structure used to configure the frequency of video screenshot and upload.
+ */
+export class ContentInspectModule {
+  /**
+   * Types of functional module. See ContentInspectType.
+   */
+  type?: ContentInspectType;
+  /**
+   * The frequency (s) of video screenshot and upload. The value should be set as larger than 0. The default value is 0, the SDK does not take screenshots. Agora recommends that you set the value as 10; you can also adjust it according to your business needs.
+   */
+  interval?: number;
+  /**
+   * @ignore
+   */
+  position?: VideoModulePosition;
+}
+
+/**
+ * Screenshot and upload configuration.
+ */
+export class ContentInspectConfig {
+  /**
+   * Additional information on the video content (maximum length: 1024 Bytes). The SDK sends the screenshots and additional information on the video content to the Agora server. Once the video screenshot and upload process is completed, the Agora server sends the additional information and the callback notification to your server.
+   */
+  extraInfo?: string;
+  /**
+   * @ignore
+   */
+  serverConfig?: string;
+  /**
+   * Functional module. See ContentInspectModule. A maximum of 32 ContentInspectModule instances can be configured, and the value range of MAX_CONTENT_INSPECT_MODULE_COUNT is an integer in [1,32]. A function module can only be configured with one instance at most. Currently only the video screenshot and upload function is supported.
+   */
+  modules?: ContentInspectModule[];
+  /**
+   * The number of functional modules, that is,the number of configured ContentInspectModule instances, must be the same as the number of instances configured in modules. The maximum number is 32.
+   */
+  moduleCount?: number;
+}
+
+/**
+ * The snapshot configuration.
+ */
+export class SnapshotConfig {
+  /**
+   * The local path (including filename extensions) of the snapshot. For example:
+   *  Windows: C:\Users\<user_name>\AppData\Local\Agora\<process_name>\example.jpg
+   *  macOS: ～/Library/Logs/example.jpg Ensure that the path you specify exists and is writable.
+   */
+  filePath?: string;
+  /**
+   * The position of the snapshot video frame in the video pipeline. See VideoModulePosition.
    */
   position?: VideoModulePosition;
 }
@@ -1030,7 +1038,7 @@ export interface IAudioSpectrumObserver {
    *
    * After successfully calling registerAudioSpectrumObserver to implement the onRemoteAudioSpectrum callback in the IAudioSpectrumObserver and calling enableAudioSpectrumMonitor to enable audio spectrum monitoring, the SDK will trigger the callback as the time interval you set to report the received remote audio data spectrum.
    *
-   * @param spectrums The audio spectrum information of the remote user, see UserAudioSpectrumInfo. The number of arrays is the number of remote users monitored by the SDK. If the array is null, it means that no audio spectrum of remote users is detected.
+   * @param spectrums The audio spectrum information of the remote user. See UserAudioSpectrumInfo. The number of arrays is the number of remote users monitored by the SDK. If the array is null, it means that no audio spectrum of remote users is detected.
    * @param spectrumNumber The number of remote users.
    */
   onRemoteAudioSpectrum?(
