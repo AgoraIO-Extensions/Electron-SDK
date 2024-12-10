@@ -76,7 +76,7 @@
     ]
   },
   "dependencies": {
-    "agora-electron-sdk": "4.4.0",
+    "agora-electron-sdk": "4.5.0",
     "antd": "^4.20.3",
     "download": "^8.0.0",
     "koffi": "2.8.11",
