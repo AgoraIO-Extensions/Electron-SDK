@@ -192,7 +192,7 @@ export default class ScreenShare
       ScreenCaptureSourceType.ScreencapturesourcetypeScreen
     ) {
       this.engine?.startScreenCaptureByDisplayId(
-        targetSource.sourceId,
+        targetSource.sourceId!,
         {},
         {
           dimensions: { width, height },
@@ -208,7 +208,7 @@ export default class ScreenShare
       );
     } else {
       this.engine?.startScreenCaptureByWindowId(
-        targetSource.sourceId,
+        targetSource.sourceId!,
         {},
         {
           dimensions: { width, height },

@@ -515,7 +515,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
             value.iconImage.length!
           );
         }
-        value.sourceDisplayId = parseIntPtr2Number(value.sourceDisplayId);
+        value.sourceDisplayId = parseIntPtr2Number(value.sourceDisplayId!);
         return value;
       }
     );

@@ -1,3 +1,4 @@
+import AgoraALD from './AgoraALD/AgoraALD';
 import AudioMixing from './AudioMixing/AudioMixing';
 import AudioSpectrum from './AudioSpectrum/AudioSpectrum';
 import BeautyEffect from './BeautyEffect/BeautyEffect';
@@ -5,7 +6,6 @@ import ChannelMediaRelay from './ChannelMediaRelay/ChannelMediaRelay';
 import ContentInspect from './ContentInspect/ContentInspect';
 import DeviceManager from './DeviceManager/DeviceManager';
 import DirectCdnStreaming from './DirectCdnStreaming/DirectCdnStreaming';
-import EncodedVideoFrame from './EncodedVideoFrame/EncodedVideoFrame';
 import Encryption from './Encryption/Encryption';
 import Extension from './Extension/Extension';
 import JoinMultipleChannel from './JoinMultipleChannel/JoinMultipleChannel';
@@ -22,6 +22,7 @@ import RhythmPlayer from './RhythmPlayer/RhythmPlayer';
 import ScreenShare from './ScreenShare/ScreenShare';
 import SendMetadata from './SendMetadata/SendMetadata';
 import SendMultiVideoStream from './SendMultiVideoStream/SendMultiVideoStream';
+import Simulcast from './Simulcast/Simulcast';
 import SpatialAudio from './SpatialAudio/SpatialAudio';
 import StreamMessage from './StreamMessage/StreamMessage';
 import TakeSnapshot from './TakeSnapshot/TakeSnapshot';
@@ -32,6 +33,10 @@ import VoiceChanger from './VoiceChanger/VoiceChanger';
 const Advanced = {
   title: 'Advanced',
   data: [
+    {
+      name: 'AgoraALD',
+      component: AgoraALD,
+    },
     {
       name: 'AudioMixing',
       component: AudioMixing,
@@ -59,10 +64,6 @@ const Advanced = {
     {
       name: 'DirectCdnStreaming',
       component: DirectCdnStreaming,
-    },
-    {
-      name: 'EncodedVideoFrame',
-      component: EncodedVideoFrame,
     },
     {
       name: 'Encryption',
@@ -135,6 +136,10 @@ const Advanced = {
     {
       name: 'StreamMessage',
       component: StreamMessage,
+    },
+    {
+      name: 'Simulcast',
+      component: Simulcast,
     },
     {
       name: 'TakeSnapshot',
