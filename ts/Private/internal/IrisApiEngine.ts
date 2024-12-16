@@ -2,6 +2,8 @@ import EventEmitter from 'eventemitter3';
 import JSONBigInt from 'json-bigint';
 const JSON = JSONBigInt({ storeAsString: true });
 
+import createAgoraRtcEngine from '../../AgoraSdk';
+import { IAgoraElectronBridge } from '../../Types';
 import { AgoraEnv, logDebug, logError, logInfo, logWarn } from '../../Utils';
 import { IAudioEncodedFrameObserver } from '../AgoraBase';
 import {
@@ -67,8 +69,11 @@ import { RtcEngineExInternal } from './RtcEngineExInternal';
 // @ts-ignore
 export const DeviceEventEmitter: EventEmitter = new EventEmitter();
 
-const AgoraRtcNg = AgoraEnv.AgoraElectronBridge;
-AgoraRtcNg.OnEvent('call_back_with_buffer', (...params: any) => {
+const AgoraNode = require('../../../build/Release/agora_node_ext');
+export const AgoraElectronBridge: IAgoraElectronBridge =
+  new AgoraNode.AgoraElectronBridge();
+
+AgoraElectronBridge.OnEvent('call_back_with_buffer', (...params: any) => {
   try {
     handleEvent(...params);
   } catch (e) {
@@ -441,7 +446,7 @@ function handleEvent(...[event, data, buffers]: any) {
 export function callIrisApi(funcName: string, params: any): any {
   try {
     const buffers: Uint8Array[] = [];
-
+    const rtcEngine = createAgoraRtcEngine();
     if (funcName.startsWith('MediaEngine_')) {
       switch (funcName) {
         case 'MediaEngine_pushAudioFrame_c71f4ab':
@@ -485,16 +490,16 @@ export function callIrisApi(funcName: string, params: any): any {
     } else if (funcName.startsWith('RtcEngine_')) {
       switch (funcName) {
         case 'RtcEngine_initialize_0320339':
-          AgoraRtcNg.InitializeEnv();
+          AgoraElectronBridge.InitializeEnv();
           break;
         case 'RtcEngine_release':
-          AgoraRtcNg.CallApi(
+          AgoraElectronBridge.CallApi(
             funcName,
             JSON.stringify(params),
             buffers,
             buffers.length
           );
-          AgoraRtcNg.ReleaseEnv();
+          AgoraElectronBridge.ReleaseEnv();
           return;
         case 'RtcEngine_sendMetaData':
           // metadata.buffer
@@ -522,8 +527,17 @@ export function callIrisApi(funcName: string, params: any): any {
           break;
       }
     }
+    if (funcName.indexOf('joinChannel') != -1) {
+      if (AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
+        rtcEngine.getMediaEngine().registerVideoEncodedFrameObserver({});
+      }
+    } else if (funcName.indexOf('leaveChannel') != -1) {
+      if (AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
+        rtcEngine.getMediaEngine().unregisterVideoEncodedFrameObserver({});
+      }
+    }
 
-    let { callApiReturnCode, callApiResult } = AgoraRtcNg.CallApi(
+    let { callApiReturnCode, callApiResult } = AgoraElectronBridge.CallApi(
       funcName,
       JSON.stringify(params),
       buffers,
