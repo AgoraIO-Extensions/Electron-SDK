@@ -29,6 +29,8 @@ const getDownloadURL = () => {
   return downloadUrl;
 };
 
+// If native_stk_url is not defined in app/packaging.json,
+// it will be read from agora-electron-sdk/packaging.json
 const getNativeDownloadURL = () => {
   let downloadUrl = '';
   if (platform === 'win32') {
@@ -36,6 +38,21 @@ const getNativeDownloadURL = () => {
   } else if (platform === 'darwin') {
     downloadUrl = native_sdk_mac;
   }
+
+  if (!downloadUrl) {
+    const {
+      agora_electron: {
+        native_sdk_win,
+        native_sdk_mac,
+      }
+    } = require("../package.json");
+    if (platform === 'win32') {
+      downloadUrl = native_sdk_win;
+    } else if (platform === 'darwin') {
+      downloadUrl = native_sdk_mac;
+    }
+  }
+
   return downloadUrl;
 };
 
