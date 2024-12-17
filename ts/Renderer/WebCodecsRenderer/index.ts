@@ -1,11 +1,7 @@
-import { RendererType } from '../../Types';
+import { VideoFrame } from '../../Private/AgoraMediaBase';
+import { CodecConfigInfo, RendererType } from '../../Types';
 import { getContextByCanvas } from '../../Utils';
 import { IRenderer } from '../IRenderer';
-
-export type frameSize = {
-  width: number;
-  height: number;
-};
 
 export class WebCodecsRenderer extends IRenderer {
   gl?: WebGLRenderingContext | WebGL2RenderingContext | null;
@@ -35,11 +31,9 @@ export class WebCodecsRenderer extends IRenderer {
     }
   `;
 
-  bind(element: HTMLElement, frameSize: frameSize) {
+  bind(element: HTMLElement) {
     super.bind(element);
     if (!this.canvas) return;
-    this.canvas.width = frameSize.width;
-    this.canvas.height = frameSize.height;
     this.offscreenCanvas = this.canvas.transferControlToOffscreen();
     this.gl = getContextByCanvas(this.offscreenCanvas);
     if (!this.gl) return;
@@ -105,11 +99,14 @@ export class WebCodecsRenderer extends IRenderer {
     );
   }
 
-  drawFrame(frame: any) {
+  drawFrame(frame: any, _codecConfig: CodecConfigInfo) {
     if (!this.offscreenCanvas || !frame) return;
-    this.offscreenCanvas.width = frame.displayWidth;
-    this.offscreenCanvas.height = frame.displayHeight;
     this.updateRenderMode();
+    this.rotateCanvas({
+      width: _codecConfig.codedWidth,
+      height: _codecConfig.codedHeight,
+      rotation: _codecConfig.rotation,
+    });
     if (!this.gl) return;
 
     if (this.gl) {
@@ -137,5 +134,22 @@ export class WebCodecsRenderer extends IRenderer {
     }
     super.drawFrame();
     this.getFps();
+  }
+
+  protected override rotateCanvas({ width, height, rotation }: VideoFrame) {
+    if (!this.offscreenCanvas || !this.canvas) return;
+
+    if (rotation === 0 || rotation === 180) {
+      this.offscreenCanvas.width = width!;
+      this.offscreenCanvas.height = height!;
+    } else if (rotation === 90 || rotation === 270) {
+      this.offscreenCanvas.height = width!;
+      this.offscreenCanvas.width = height!;
+    } else {
+      throw new Error(
+        `Invalid rotation: ${rotation}, only 0, 90, 180, 270 are supported`
+      );
+    }
+    this.canvas.style.transform += ` rotateZ(${rotation}deg)`;
   }
 }

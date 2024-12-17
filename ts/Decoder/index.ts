@@ -1,11 +1,7 @@
-import {
-  EncodedVideoFrameInfo,
-  VideoCodecType,
-  VideoFrameType,
-} from '../Private/AgoraBase';
+import { EncodedVideoFrameInfo, VideoFrameType } from '../Private/AgoraBase';
 
 import { WebCodecsRenderer } from '../Renderer/WebCodecsRenderer/index';
-import { RendererCacheContext, RendererType } from '../Types';
+import { CodecConfigInfo, RendererCacheContext, RendererType } from '../Types';
 import { AgoraEnv, logDebug, logInfo } from '../Utils';
 
 const frameTypeMapping = {
@@ -19,11 +15,7 @@ export class WebCodecsDecoder {
   private renderers: WebCodecsRenderer[] = [];
   private _cacheContext: RendererCacheContext;
   private pendingFrame: VideoFrame | null = null;
-  private _currentCodecConfig: {
-    codecType: VideoCodecType | undefined;
-    codedWidth: number | undefined;
-    codedHeight: number | undefined;
-  } | null = null;
+  private _currentCodecConfig: CodecConfigInfo | null = null;
 
   private _base_ts = 0;
   private _base_ts_ntp = 1;
@@ -68,7 +60,7 @@ export class WebCodecsDecoder {
       if (renderer.rendererType !== RendererType.WEBCODECSRENDERER) {
         continue;
       }
-      renderer.drawFrame(this.pendingFrame);
+      renderer.drawFrame(this.pendingFrame, this._currentCodecConfig!);
       this.pendingFrame = null;
     }
   }
@@ -91,6 +83,7 @@ export class WebCodecsDecoder {
       codecType: frameInfo.codecType,
       codedWidth: frameInfo.width,
       codedHeight: frameInfo.height,
+      rotation: frameInfo.rotation,
     };
     this._decoder!.configure({
       codec: codec,
@@ -122,7 +115,8 @@ export class WebCodecsDecoder {
     if (
       this._currentCodecConfig?.codecType !== frameInfo.codecType ||
       this._currentCodecConfig?.codedWidth !== frameInfo.width ||
-      this._currentCodecConfig?.codedHeight !== frameInfo.height
+      this._currentCodecConfig?.codedHeight !== frameInfo.height ||
+      this._currentCodecConfig?.rotation !== frameInfo.rotation
     ) {
       logInfo('frameInfo has changed, reconfigure decoder');
       this._decoder.reset();

@@ -49,10 +49,7 @@ export class WebCodecsRendererCache extends IRendererCache {
         if (renderer.rendererType !== RendererType.WEBCODECSRENDERER) {
           continue;
         }
-        renderer.bind(renderer.context.view, {
-          width: _data.videoEncodedFrameInfo.width!,
-          height: _data.videoEncodedFrameInfo.height!,
-        });
+        renderer.bind(renderer.context.view);
       }
 
       try {

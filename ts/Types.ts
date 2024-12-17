@@ -199,3 +199,10 @@ export const codecMapping: CodecMappingItem[] = [
   { codec: 'vp8', type: VideoCodecType.VideoCodecVp8, profile: 'vp8' },
   { codec: 'vp9', type: VideoCodecType.VideoCodecVp9, profile: 'vp9' },
 ];
+
+export interface CodecConfigInfo {
+  codecType: VideoCodecType | undefined;
+  codedWidth: number | undefined;
+  codedHeight: number | undefined;
+  rotation: number | undefined;
+}
