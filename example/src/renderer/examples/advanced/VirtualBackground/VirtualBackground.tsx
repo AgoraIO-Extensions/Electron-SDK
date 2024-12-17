@@ -4,6 +4,7 @@ import {
   ChannelProfileType,
   ClientRoleType,
   IRtcEngineEventHandler,
+  RenderModeType,
   VideoModulePosition,
   VideoSourceType,
   createAgoraRtcEngine,
@@ -191,6 +192,7 @@ export default class VirtualBackground
           ? this.renderUser({
               position: video_module_position,
               sourceType: VideoSourceType.VideoSourceCamera,
+              renderMode: RenderModeType.RenderModeFit,
             })
           : undefined}
         {!!startPreview || joinChannelSuccess ? (
