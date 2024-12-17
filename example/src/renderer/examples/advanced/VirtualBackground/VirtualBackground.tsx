@@ -8,8 +8,6 @@ import {
   VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import { Checkbox, List } from 'antd';
-import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import React, { ReactElement } from 'react';
 import { SketchPicker } from 'react-color';
 
@@ -35,7 +33,6 @@ interface State extends BaseVideoComponentState {
   blur_degree: BackgroundBlurDegree;
   encodeAlpha: boolean;
   video_module_position: VideoModulePosition;
-  checked_video_module_position_list: CheckboxValueType[];
   enableVirtualBackground?: boolean;
 }
 
@@ -55,9 +52,6 @@ export default class VirtualBackground
       startPreview: false,
       encodeAlpha: true,
       video_module_position: VideoModulePosition.PositionPreEncoder,
-      checked_video_module_position_list: [
-        VideoModulePosition.PositionPostCapturer,
-      ],
       background_source_type: BackgroundSourceType.BackgroundNone,
       color: 0xffffff,
       source: getResourcePath('agora-logo.png'),
@@ -90,6 +84,8 @@ export default class VirtualBackground
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();
 
+    // if you want to use the alpha channel, you need to set the following parameters to let remoteView support alpha channel
+    this.engine?.setParameters('{"rtc.video.dec_split_alpha":true}');
     this.engine?.setVideoEncoderConfiguration({
       advanceOptions: {
         encodeAlpha: true,
@@ -100,9 +96,6 @@ export default class VirtualBackground
   handleStartPreview = () => {
     this.engine?.startPreview();
     this.setState({ startPreview: true });
-    console.log(
-      `startPreview with position:${this.state.video_module_position}`
-    );
   };
 
   handleStopPreview = () => {
@@ -222,44 +215,12 @@ export default class VirtualBackground
       source,
       blur_degree,
       encodeAlpha,
-      checked_video_module_position_list,
       startPreview,
+      joinChannelSuccess,
+      video_module_position,
     } = this.state;
     return (
       <>
-        <>
-          <p>local video module position</p>
-          <Checkbox.Group
-            style={{ width: '100%' }}
-            value={checked_video_module_position_list}
-            disabled={startPreview}
-            onChange={(checkedValues) => {
-              let result = 0;
-              checkedValues.forEach((value: CheckboxValueType) => {
-                result |= value as number;
-              });
-              this.setState({
-                checked_video_module_position_list: checkedValues,
-                video_module_position: result,
-              });
-            }}
-          >
-            <List
-              itemLayout="horizontal"
-              dataSource={enumToItems(VideoModulePosition)}
-              renderItem={(item) =>
-                item.value !== VideoModulePosition.PositionPreRenderer ? (
-                  <List.Item>
-                    <List.Item.Meta
-                      avatar={<Checkbox value={item.value} />}
-                      title={item.label}
-                    />
-                  </List.Item>
-                ) : undefined
-              }
-            />
-          </Checkbox.Group>
-        </>
         <AgoraDropdown
           title={'backgroundSourceType'}
           items={enumToItems(BackgroundSourceType)}
@@ -300,9 +261,23 @@ export default class VirtualBackground
           />
         ) : null}
         <AgoraSwitch
+          title={'PositionPostCapturer'}
+          disabled={startPreview || joinChannelSuccess}
+          value={
+            video_module_position === VideoModulePosition.PositionPostCapturer
+          }
+          onValueChange={(value) => {
+            this.setState({
+              video_module_position: value
+                ? VideoModulePosition.PositionPostCapturer
+                : VideoModulePosition.PositionPreEncoder,
+            });
+          }}
+        />
+        <AgoraSwitch
           title={'encodeAlpha'}
           //attention: encodeAlpha can only change before rendering, when rendering, you can't change it, otherwise, it will cause rendering error and crash
-          disabled={startPreview}
+          disabled={startPreview || joinChannelSuccess}
           value={encodeAlpha}
           onValueChange={(value) => {
             this.setState({ encodeAlpha: value });
