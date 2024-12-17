@@ -440,11 +440,11 @@ export enum VideoPixelFormat {
  */
 export enum RenderModeType {
   /**
-   * 1: Hidden mode. Uniformly scale the video until one of its dimension fits the boundary (zoomed to fit). One dimension of the video may have clipped contents.
+   * 1: Hidden mode. The priority is to fill the window. Any excess video that does not match the window size will be cropped.
    */
   RenderModeHidden = 1,
   /**
-   * 2: Fit mode. Uniformly scale the video until one of its dimension fits the boundary (zoomed to fit). Areas that are not filled due to disparity in the aspect ratio are filled with black.
+   * 2: Fit mode. The priority is to ensure that all video content is displayed. Any areas of the window that are not filled due to the mismatch between video size and window size will be filled with black.
    */
   RenderModeFit = 2,
   /**
@@ -798,7 +798,7 @@ export interface IAudioSpectrumObserver {
    *
    * After successfully calling registerAudioSpectrumObserver to implement the onRemoteAudioSpectrum callback in the IAudioSpectrumObserver and calling enableAudioSpectrumMonitor to enable audio spectrum monitoring, the SDK will trigger the callback as the time interval you set to report the received remote audio data spectrum.
    *
-   * @param spectrums The audio spectrum information of the remote user, see UserAudioSpectrumInfo. The number of arrays is the number of remote users monitored by the SDK. If the array is null, it means that no audio spectrum of remote users is detected.
+   * @param spectrums The audio spectrum information of the remote user. See UserAudioSpectrumInfo. The number of arrays is the number of remote users monitored by the SDK. If the array is null, it means that no audio spectrum of remote users is detected.
    * @param spectrumNumber The number of remote users.
    */
   onRemoteAudioSpectrum?(

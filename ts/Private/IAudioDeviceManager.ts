@@ -181,12 +181,21 @@ export abstract class IAudioDeviceManager {
   abstract getPlaybackDeviceMute(): boolean;
 
   /**
-   * @ignore
+   * Sets the mute status of the audio capture device.
+   *
+   * @param mute Whether to mute the audio recording device: true : Mute the audio capture device. false : Unmute the audio capture device.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract setRecordingDeviceMute(mute: boolean): number;
 
   /**
-   * @ignore
+   * Gets whether the audio capture device is muted.
+   *
+   * @returns
+   * true : The microphone is muted. false : The microphone is unmuted.
    */
   abstract getRecordingDeviceMute(): boolean;
 
