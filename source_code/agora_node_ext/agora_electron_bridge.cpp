@@ -373,6 +373,7 @@ AgoraElectronBridge::DisableVideoFrameCache(napi_env env,
   napi_obj_get_property(env, obj, "uid", config.uid);
   napi_obj_get_property(env, obj, "sourceType", config.video_source_type);
   napi_obj_get_property(env, obj, "channelId", channelId);
+  napi_obj_get_property(env, obj, "position", config.observed_frame_position);
   strcpy(config.channelId, channelId.c_str());
 
   char result[kBasicStringLength];
