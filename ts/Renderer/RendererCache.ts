@@ -75,7 +75,7 @@ export class RendererCache extends IRendererCache {
         this.videoFrame.vBuffer = Buffer.alloc(vStride! * height!);
         if (AgoraEnv.encodeAlpha) {
           this.videoFrame.alphaBuffer = Buffer.alloc(
-            this.videoFrame.yStride! * this.videoFrame.height!
+            this.videoFrame.width! * this.videoFrame.height!
           );
         }
 
