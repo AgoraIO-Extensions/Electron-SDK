@@ -101,6 +101,10 @@ export class WebCodecsRenderer extends IRenderer {
 
   drawFrame(frame: any, _codecConfig: CodecConfigInfo) {
     if (!this.offscreenCanvas || !frame) return;
+
+    this.offscreenCanvas.width = _codecConfig.codedWidth!;
+    this.offscreenCanvas.height = _codecConfig.codedHeight!;
+
     this.updateRenderMode();
     this.rotateCanvas({
       rotation: _codecConfig.rotation,
