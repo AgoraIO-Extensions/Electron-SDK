@@ -625,7 +625,7 @@ export enum QualityType {
    */
   QualityUnsupported = 7,
   /**
-   * 8: Detecting the network quality.
+   * 8: The last-mile network probe test is in progress.
    */
   QualityDetecting = 8,
 }
@@ -775,7 +775,7 @@ export enum OrientationMode {
  */
 export enum DegradationPreference {
   /**
-   * 0: (Default) Prefers to reduce the video frame rate while maintaining video resolution during video encoding under limited bandwidth. This degradation preference is suitable for scenarios where video quality is prioritized.
+   * 0: Prefers to reduce the video frame rate while maintaining video resolution during video encoding under limited bandwidth. This degradation preference is suitable for scenarios where video quality is prioritized. Deprecated: This enumerator is deprecated. Use other enumerations instead.
    */
   MaintainQuality = 0,
   /**
@@ -1124,7 +1124,7 @@ export enum CompressionPreference {
    */
   PreferLowLatency = 0,
   /**
-   * 1: (Default) High quality preference. The SDK compresses video frames while maintaining video quality. This preference is suitable for scenarios where video quality is prioritized.
+   * 1: High quality preference. The SDK compresses video frames while maintaining video quality. This preference is suitable for scenarios where video quality is prioritized.
    */
   PreferQuality = 1,
 }
@@ -2849,7 +2849,7 @@ export enum VideoDenoiserMode {
 }
 
 /**
- * The video noise reduction level.
+ * Video noise reduction level.
  */
 export enum VideoDenoiserLevel {
   /**
@@ -2857,11 +2857,11 @@ export enum VideoDenoiserLevel {
    */
   VideoDenoiserLevelHighQuality = 0,
   /**
-   * 1: Promotes reducing performance consumption during video noise reduction. prioritizes reducing performance consumption over video noise reduction quality. The performance consumption is lower, and the video noise reduction speed is faster. To avoid a noticeable shadowing effect (shadows trailing behind moving objects) in the processed video, Agora recommends that you use this settinging when the camera is fixed.
+   * 1: Promotes reducing performance consumption during video noise reduction. It prioritizes reducing performance consumption over video noise reduction quality. The performance consumption is lower, and the video noise reduction speed is faster. To avoid a noticeable shadowing effect (shadows trailing behind moving objects) in the processed video, Agora recommends that you use this setting when the camera is fixed.
    */
   VideoDenoiserLevelFast = 1,
   /**
-   * 2: Enhanced video noise reduction. prioritizes video noise reduction quality over reducing performance consumption. The performance consumption is higher, the video noise reduction speed is slower, and the video noise reduction quality is better. If VideoDenoiserLevelHighQuality is not enough for your video noise reduction needs, you can use this enumerator.
+   * @ignore
    */
   VideoDenoiserLevelStrength = 2,
 }
@@ -2887,7 +2887,7 @@ export class ColorEnhanceOptions {
  */
 export enum BackgroundSourceType {
   /**
-   * 0: Process the background as alpha data without replacement, only separating the portrait and the background. After setting this value, you can call startLocalVideoTranscoder to implement the picture-in-picture effect.
+   * @ignore
    */
   BackgroundNone = 0,
   /**
