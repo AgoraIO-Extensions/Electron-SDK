@@ -5,6 +5,7 @@ import {
   IRtcEngineEventHandler,
   IRtcEngineEx,
   LogFilterType,
+  RenderModeType,
   RtcConnection,
   RtcStats,
   VideoSourceType,
@@ -195,6 +196,7 @@ export default class VideoDecoder
                 useWebCodecsDecoder: true,
                 enableFps: true,
                 sourceType: VideoSourceType.VideoSourceRemote,
+                renderMode: RenderModeType.RenderModeFit,
               })
             )
           : undefined}
@@ -206,6 +208,7 @@ export default class VideoDecoder
                 useWebCodecsDecoder: true,
                 enableFps: true,
                 sourceType: VideoSourceType.VideoSourceRemote,
+                renderMode: RenderModeType.RenderModeFit,
               })
             )
           : undefined}

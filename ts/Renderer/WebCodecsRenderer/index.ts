@@ -103,8 +103,6 @@ export class WebCodecsRenderer extends IRenderer {
     if (!this.offscreenCanvas || !frame) return;
     this.updateRenderMode();
     this.rotateCanvas({
-      width: _codecConfig.codedWidth,
-      height: _codecConfig.codedHeight,
       rotation: _codecConfig.rotation,
     });
     if (!this.gl) return;
@@ -127,7 +125,7 @@ export class WebCodecsRenderer extends IRenderer {
         this.gl.drawingBufferWidth,
         this.gl.drawingBufferHeight
       );
-      this.gl.clearColor(1.0, 0.0, 0.0, 1.0);
+      this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
       this.gl.clear(this.gl.COLOR_BUFFER_BIT);
       // Draw the frame.
       this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, 4);
@@ -136,20 +134,8 @@ export class WebCodecsRenderer extends IRenderer {
     this.getFps();
   }
 
-  protected override rotateCanvas({ width, height, rotation }: VideoFrame) {
+  protected override rotateCanvas({ rotation }: VideoFrame) {
     if (!this.offscreenCanvas || !this.canvas) return;
-
-    if (rotation === 0 || rotation === 180) {
-      this.offscreenCanvas.width = width!;
-      this.offscreenCanvas.height = height!;
-    } else if (rotation === 90 || rotation === 270) {
-      this.offscreenCanvas.height = width!;
-      this.offscreenCanvas.width = height!;
-    } else {
-      throw new Error(
-        `Invalid rotation: ${rotation}, only 0, 90, 180, 270 are supported`
-      );
-    }
     this.canvas.style.transform += ` rotateZ(${rotation}deg)`;
   }
 }
