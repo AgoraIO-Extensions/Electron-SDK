@@ -4,7 +4,11 @@ import {
   VideoStreamType,
   VideoViewSetupMode,
 } from '../Private/AgoraBase';
-import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
+import {
+  RenderModeType,
+  VideoModulePosition,
+  VideoSourceType,
+} from '../Private/AgoraMediaBase';
 import {
   RendererCacheContext,
   RendererCacheType,
@@ -55,6 +59,15 @@ export class RendererManager {
    */
   private rendererType: RendererType;
 
+  /**
+   * Currently, the remote video frame is observed in the pre-renderer position and you can not change it.
+   * the local video frame is observed in the pre-encoder position by default, and you can change it.
+   * @ignore
+   */
+  private defaultObservedFramePosition: number =
+    VideoModulePosition.PositionPreRenderer |
+    VideoModulePosition.PositionPreEncoder;
+
   constructor() {
     this.renderingFps = 15;
     this._currentFrameCount = 0;
@@ -104,6 +117,7 @@ export class RendererManager {
     context.mirrorMode = context.mirrorMode || this.defaultMirrorMode;
     context.useWebCodecsDecoder = context.useWebCodecsDecoder || false;
     context.enableFps = context.enableFps || false;
+    context.position = context.position || this.defaultObservedFramePosition;
 
     if (!AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
       context.useWebCodecsDecoder = false;

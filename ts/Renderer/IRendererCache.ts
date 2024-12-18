@@ -32,6 +32,7 @@ export abstract class IRendererCache {
     enableFps,
     sourceType,
     localUid,
+    position,
   }: RendererContext) {
     this.renderers = [];
     this.cacheContext = {
@@ -41,6 +42,7 @@ export abstract class IRendererCache {
       enableFps,
       sourceType,
       localUid,
+      position,
     };
   }
 

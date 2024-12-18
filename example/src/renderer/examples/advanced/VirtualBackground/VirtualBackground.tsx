@@ -190,7 +190,8 @@ export default class VirtualBackground
       <>
         {!!startPreview || joinChannelSuccess
           ? this.renderUser({
-              position: video_module_position,
+              position:
+                video_module_position | VideoModulePosition.PositionPreRenderer,
               sourceType: VideoSourceType.VideoSourceCamera,
               renderMode: RenderModeType.RenderModeFit,
             })
@@ -200,6 +201,9 @@ export default class VirtualBackground
             data={remoteUsers ?? []}
             renderItem={(item) =>
               this.renderUser({
+                position:
+                  video_module_position |
+                  VideoModulePosition.PositionPreRenderer,
                 uid: item,
                 sourceType: VideoSourceType.VideoSourceRemote,
               })
