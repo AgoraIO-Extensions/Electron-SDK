@@ -41,11 +41,8 @@ const getNativeDownloadURL = () => {
 
   if (!downloadUrl) {
     const {
-      agora_electron: {
-        native_sdk_win,
-        native_sdk_mac,
-      }
-    } = require("../package.json");
+      agora_electron: { native_sdk_win, native_sdk_mac },
+    } = require('../package.json');
     if (platform === 'win32') {
       downloadUrl = native_sdk_win;
     } else if (platform === 'darwin') {
