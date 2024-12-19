@@ -1,21 +1,17 @@
+const fs = require('fs');
 const path = require('path');
 
 const { exec } = require('shelljs');
 
 const logger = require('./logger');
 const { getOS } = require('./util');
-const fs = require('fs');
 
-
-const keepList = [
-  'AgoraRtcWrapper',
-  'agora_node_ext'
-];
+const keepList = ['AgoraRtcWrapper', 'agora_node_ext'];
 
 const filesMove = (src, dest, keepList) => {
-  fs.readdirSync(src).forEach(file => {
+  fs.readdirSync(src).forEach((file) => {
     const filePath = path.join(src, file);
-    const shouldKeep = keepList.some(pattern => file.includes(pattern));
+    const shouldKeep = keepList.some((pattern) => file.includes(pattern));
     if (!shouldKeep) {
       const destPath = path.join(dest, file);
       fs.renameSync(filePath, destPath);
