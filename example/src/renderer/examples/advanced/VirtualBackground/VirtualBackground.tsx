@@ -51,10 +51,10 @@ export default class VirtualBackground
       joinChannelSuccess: false,
       remoteUsers: [],
       startPreview: false,
-      encodeAlpha: true,
+      encodeAlpha: false,
       video_module_position: VideoModulePosition.PositionPreEncoder,
       background_source_type: BackgroundSourceType.BackgroundNone,
-      color: 0xffffff,
+      color: 0xff0000,
       source: getResourcePath('agora-logo.png'),
       blur_degree: BackgroundBlurDegree.BlurDegreeMedium,
     };
@@ -232,6 +232,18 @@ export default class VirtualBackground
           items={enumToItems(BackgroundSourceType)}
           value={background_source_type}
           onValueChange={(value) => {
+            if (value !== BackgroundSourceType.BackgroundNone) {
+              this.engine?.setVideoEncoderConfiguration({
+                advanceOptions: {
+                  encodeAlpha: false,
+                },
+              });
+              this.setState({
+                video_module_position: VideoModulePosition.PositionPreEncoder,
+                encodeAlpha: false,
+              });
+            }
+            this.disableVirtualBackground();
             this.setState({ background_source_type: value });
           }}
         />
@@ -266,34 +278,38 @@ export default class VirtualBackground
             }}
           />
         ) : null}
-        <AgoraSwitch
-          title={'PositionPostCapturer'}
-          disabled={startPreview || joinChannelSuccess}
-          value={
-            video_module_position === VideoModulePosition.PositionPostCapturer
-          }
-          onValueChange={(value) => {
-            this.setState({
-              video_module_position: value
-                ? VideoModulePosition.PositionPostCapturer
-                : VideoModulePosition.PositionPreEncoder,
-            });
-          }}
-        />
-        <AgoraSwitch
-          title={'encodeAlpha'}
-          //attention: encodeAlpha can only change before rendering, when rendering, you can't change it, otherwise, it will cause rendering error and crash
-          disabled={startPreview || joinChannelSuccess}
-          value={encodeAlpha}
-          onValueChange={(value) => {
-            this.setState({ encodeAlpha: value });
-            this.engine?.setVideoEncoderConfiguration({
-              advanceOptions: {
-                encodeAlpha: value,
-              },
-            });
-          }}
-        />
+        {background_source_type === BackgroundSourceType.BackgroundNone ? (
+          <AgoraSwitch
+            title={'PositionPostCapturer'}
+            disabled={startPreview || joinChannelSuccess}
+            value={
+              video_module_position === VideoModulePosition.PositionPostCapturer
+            }
+            onValueChange={(value) => {
+              this.setState({
+                video_module_position: value
+                  ? VideoModulePosition.PositionPostCapturer
+                  : VideoModulePosition.PositionPreEncoder,
+              });
+            }}
+          />
+        ) : null}
+        {background_source_type === BackgroundSourceType.BackgroundNone ? (
+          <AgoraSwitch
+            title={'encodeAlpha'}
+            //attention: encodeAlpha can only change before rendering, when rendering, you can't change it, otherwise, it will cause rendering error and crash
+            disabled={startPreview || joinChannelSuccess}
+            value={encodeAlpha}
+            onValueChange={(value) => {
+              this.setState({ encodeAlpha: value });
+              this.engine?.setVideoEncoderConfiguration({
+                advanceOptions: {
+                  encodeAlpha: value,
+                },
+              });
+            }}
+          />
+        ) : null}
       </>
     );
   }

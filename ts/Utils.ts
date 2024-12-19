@@ -1,4 +1,4 @@
-import { AgoraEnvType } from './Types';
+import { AgoraEnvType, VideoFallbackStrategy } from './Types';
 
 /**
  * @ignore
@@ -192,5 +192,5 @@ export const AgoraEnv: AgoraEnvType = {
   webEnvReady: true,
   enableWebCodecsDecoder: false,
   encodeAlpha: false,
-  videoFallbackStrategy: 0,
+  videoFallbackStrategy: VideoFallbackStrategy.PerformancePriority,
 };
