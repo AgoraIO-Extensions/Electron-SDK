@@ -49,6 +49,10 @@ export interface AgoraEnvOptions {
    * @ignore
    */
   encodeAlpha: boolean;
+  /**
+   * @ignore
+   */
+  maxDecodeRetryCount: number;
 }
 
 /**

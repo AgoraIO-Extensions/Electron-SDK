@@ -20,6 +20,7 @@ export class WebCodecsDecoder {
   private _base_ts = 0;
   private _base_ts_ntp = 1;
   private _last_ts_ntp = 1;
+  private _decode_retry_count = 0;
 
   constructor(
     renders: WebCodecsRenderer[],
@@ -154,16 +155,33 @@ export class WebCodecsDecoder {
 
     this.updateTimestamps(ts);
 
-    this._decoder.decode(
-      new EncodedVideoChunk({
-        data: imageBuffer,
-        timestamp: this._last_ts_ntp,
-        // @ts-ignore
-        type: frameType,
-        // @ts-ignore
-        transfer: [imageBuffer.buffer],
-      })
-    );
+    try {
+      this._decoder.decode(
+        new EncodedVideoChunk({
+          data: imageBuffer,
+          timestamp: this._last_ts_ntp,
+          // @ts-ignore
+          type: frameType,
+          // @ts-ignore
+          transfer: [imageBuffer.buffer],
+        })
+      );
+      this._decode_retry_count = 0;
+    } catch (e) {
+      /// There are some cases that the decoder failed to decode the frame, we will retry for a few times
+      /// If the decoder still failed to decode the frame, we will fallback to native decoder
+      /// The retry count is defined in AgoraEnv.maxDecodeRetryCount
+      /// The retry count will be reset to 0 when the decoder successfully decode a frame
+      if (this._decode_retry_count >= AgoraEnv.maxDecodeRetryCount) {
+        AgoraEnv.AgoraRendererManager?.handleWebCodecsFallback(
+          this._cacheContext
+        );
+        throw new Error(
+          `failed to decode frame over ${this._decode_retry_count} times, fallback to native decoder`
+        );
+      }
+      this._decode_retry_count++;
+    }
   }
 
   reset() {
