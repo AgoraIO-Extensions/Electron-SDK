@@ -202,14 +202,20 @@ export default class VideoDecoder
           : undefined}
         {joinChannelExSuccess
           ? remoteUsers.map((item) =>
-              this.renderUser({
-                uid: item,
-                // Use WebCodecs to decode video stream
-                useWebCodecsDecoder: true,
-                enableFps: true,
-                sourceType: VideoSourceType.VideoSourceRemote,
-                renderMode: RenderModeType.RenderModeFit,
-              })
+              this.renderUser(
+                {
+                  uid: item,
+                  // Use WebCodecs to decode video stream
+                  useWebCodecsDecoder: true,
+                  enableFps: true,
+                  sourceType: VideoSourceType.VideoSourceRemote,
+                  renderMode: RenderModeType.RenderModeFit,
+                },
+                {
+                  channelId: this.state.channelId,
+                  localUid: this.state.uid2,
+                }
+              )
             )
           : undefined}
       </>
