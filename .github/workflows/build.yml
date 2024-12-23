@@ -105,7 +105,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: AgoraRtcNgExample-mac-${{ matrix.arch }}
+          name: AgoraRtcNgExample-mac-${{ matrix.arch }}-${{ github.run_id }}
           path: |
             example/dist/Agora-Electron-API-Example-*-mac.zip
           if-no-files-found: error
