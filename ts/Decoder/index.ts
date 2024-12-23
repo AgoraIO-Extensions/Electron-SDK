@@ -77,7 +77,7 @@ export class WebCodecsDecoder {
         this._cacheContext
       );
       throw new Error(
-        'codec is not in frameCodecMapping,failed to configure decoder, fallback to native decoder'
+        `codec ${frameInfo.codecType} is not in frameCodecMapping,failed to configure decoder, fallback to native decoder`
       );
     }
     this._currentCodecConfig = {
