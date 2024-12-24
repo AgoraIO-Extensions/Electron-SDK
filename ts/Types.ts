@@ -201,7 +201,11 @@ export const codecMapping: CodecMappingItem[] = [
     profile: 'hevc',
   },
   { codec: 'vp8', type: VideoCodecType.VideoCodecVp8, profile: 'vp8' },
-  { codec: 'vp9', type: VideoCodecType.VideoCodecVp9, profile: 'vp9' },
+  {
+    codec: 'vp09.00.50.08',
+    type: VideoCodecType.VideoCodecVp9,
+    profile: 'vp9',
+  },
 ];
 
 export interface CodecConfigInfo {
