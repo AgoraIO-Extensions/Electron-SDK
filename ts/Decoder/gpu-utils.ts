@@ -77,14 +77,21 @@ export const getGpuInfoInternal = (callback: any): void => {
           maxHeight: maxHeight ? Number(maxHeight) : 0,
         });
       }
-      /// By default, we support vp8 codec with resolution range from 16x16 to 4096x4096
-      convertResult.push({
-        codec: 'Decode vp8',
-        maxHeight: 4096,
-        maxWidth: 4096,
-        minHeight: 16,
-        minWidth: 16,
-      });
+      if (
+        convertResult.filter((item) => {
+          return item.codec.indexOf('vp9') !== -1;
+        }).length > 0
+      ) {
+        /// By default, we support vp8 if vp9 is supported
+        convertResult.push({
+          codec: 'Decode vp8',
+          maxHeight: 4096,
+          maxWidth: 4096,
+          minHeight: 16,
+          minWidth: 16,
+        });
+      }
+
       typeof callback === 'function' && callback(convertResult);
     })
     .catch((error: any) => {
