@@ -1855,6 +1855,10 @@ export enum LocalVideoStreamError {
    * @ignore
    */
   LocalVideoStreamReasonScreenCaptureDisplayDisconnected = 30,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorScreenCaptureAutoFallback = 31,
 }
 
 /**
