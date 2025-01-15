@@ -78,7 +78,7 @@ export abstract class IRendererCache {
     if (context.view) {
       const renderer = this.findRenderer(context.view);
       if (renderer) {
-        renderer.context = context;
+        renderer.setContext(context);
         return true;
       }
       return false;
