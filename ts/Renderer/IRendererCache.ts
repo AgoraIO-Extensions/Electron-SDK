@@ -84,7 +84,7 @@ export abstract class IRendererCache {
       return false;
     } else {
       this.renderers.forEach((it) => {
-        it.context = context;
+        it.setContext(context);
       });
       return this.renderers.length > 0;
     }

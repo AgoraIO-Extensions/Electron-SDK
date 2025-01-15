@@ -62,7 +62,7 @@ export abstract class IRenderer {
     if (this.context.mirrorMode !== context.mirrorMode) {
       this.updateMirrorMode(context.mirrorMode);
     }
-    this.context = context;
+    this.context = { ...this.context, ...context };
   }
 
   protected updateRenderMode(renderMode?: RenderModeType): void {
