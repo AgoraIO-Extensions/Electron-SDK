@@ -8,7 +8,6 @@ import {
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
-  VideoCanvas,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
 import React, { ReactElement } from 'react';
@@ -17,14 +16,7 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import {
-  AgoraButton,
-  AgoraCard,
-  AgoraList,
-  AgoraText,
-  AgoraTextInput,
-  RtcSurfaceView,
-} from '../../../components/ui';
+import { AgoraButton, AgoraList, AgoraTextInput } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { askMediaAccess } from '../../../utils/permissions';
 
@@ -446,26 +438,16 @@ export default class JoinMultipleChannel
             renderItem={(item) => {
               return this.renderVideo(
                 { uid: item },
-                remoteUsers2.indexOf(item) === -1 ? channelId : channelId2,
-                remoteUsers2.indexOf(item) === -1 ? uid : uid2
+                {
+                  channelId:
+                    remoteUsers2.indexOf(item) === -1 ? channelId : channelId2,
+                  localUid: remoteUsers2.indexOf(item) === -1 ? uid : uid2,
+                }
               );
             }}
           />
         ) : undefined}
       </>
-    );
-  }
-
-  protected renderVideo(
-    user: VideoCanvas,
-    channelId?: string,
-    localUid?: number
-  ): ReactElement | undefined {
-    return (
-      <AgoraCard title={`${channelId} - ${user.uid}`}>
-        <AgoraText>Click view to mirror</AgoraText>
-        <RtcSurfaceView canvas={user} connection={{ channelId, localUid }} />
-      </AgoraCard>
     );
   }
 

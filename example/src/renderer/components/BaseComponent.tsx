@@ -208,7 +208,10 @@ export abstract class BaseComponent<
     );
   }
 
-  protected renderUser(user: VideoCanvas): ReactElement | undefined {
+  protected renderUser(
+    user: VideoCanvas,
+    connection?: RtcConnection
+  ): ReactElement | undefined {
     const { enableVideo } = this.state;
     return (
       <AgoraCard
@@ -218,15 +221,18 @@ export abstract class BaseComponent<
         {enableVideo ? (
           <>
             <AgoraText>Click view to mirror</AgoraText>
-            {this.renderVideo(user)}
+            {this.renderVideo(user, connection)}
           </>
         ) : undefined}
       </AgoraCard>
     );
   }
 
-  protected renderVideo(user: VideoCanvas): ReactElement | undefined {
-    return <RtcSurfaceView canvas={user} />;
+  protected renderVideo(
+    user: VideoCanvas,
+    connection?: RtcConnection
+  ): ReactElement | undefined {
+    return <RtcSurfaceView canvas={user} connection={connection} />;
   }
 
   protected renderConfiguration(): ReactElement | undefined {

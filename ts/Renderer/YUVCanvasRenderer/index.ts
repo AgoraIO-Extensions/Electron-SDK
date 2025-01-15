@@ -24,35 +24,37 @@ export class YUVCanvasRenderer extends IRenderer {
     uBuffer,
     vBuffer,
     rotation,
+    alphaBuffer,
   }: VideoFrame) {
     this.rotateCanvas({ width, height, rotation });
     this.updateRenderMode();
 
     if (!this.frameSink) return;
 
-    this.frameSink.drawFrame(
-      YUVBuffer.frame(
-        YUVBuffer.format({
-          width,
-          height,
-          chromaWidth: width! / 2,
-          chromaHeight: height! / 2,
-          cropLeft: yStride! - width!,
-        }),
-        {
-          bytes: yBuffer,
-          stride: yStride,
-        },
-        {
-          bytes: uBuffer,
-          stride: uStride,
-        },
-        {
-          bytes: vBuffer,
-          stride: vStride,
-        }
-      )
+    const frame = YUVBuffer.frame(
+      YUVBuffer.format({
+        width,
+        height,
+        chromaWidth: width! / 2,
+        chromaHeight: height! / 2,
+        cropLeft: yStride! - width!,
+      }),
+      {
+        bytes: yBuffer,
+        stride: yStride,
+      },
+      {
+        bytes: uBuffer,
+        stride: uStride,
+      },
+      {
+        bytes: vBuffer,
+        stride: vStride,
+      }
     );
+    frame.a = alphaBuffer;
+    this.frameSink.drawFrame(frame);
+
     super.drawFrame();
   }
 

@@ -202,7 +202,7 @@ export default class MediaRecorder
     channelId: string,
     uid: number,
     state: RecorderState,
-    error: RecorderReasonCode
+    reason: RecorderReasonCode
   ) {
     this.info(
       'onRecorderStateChanged',
@@ -212,8 +212,8 @@ export default class MediaRecorder
       uid,
       'state',
       state,
-      'error',
-      error
+      'reason',
+      reason
     );
     switch (state) {
       case RecorderState.RecorderStateStart:
