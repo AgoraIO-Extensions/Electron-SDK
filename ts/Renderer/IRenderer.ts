@@ -56,16 +56,18 @@ export abstract class IRenderer {
 
   public setContext(context: RendererContext) {
     if (this.context.renderMode !== context.renderMode) {
-      this.updateRenderMode(context.renderMode);
+      this.context.renderMode = context.renderMode;
+      this.updateRenderMode();
     }
 
     if (this.context.mirrorMode !== context.mirrorMode) {
-      this.updateMirrorMode(context.mirrorMode);
+      this.context.mirrorMode = context.mirrorMode;
+      this.updateMirrorMode();
     }
     this.context = { ...this.context, ...context };
   }
 
-  protected updateRenderMode(renderMode?: RenderModeType): void {
+  protected updateRenderMode(): void {
     if (!this.canvas || !this.container) return;
 
     const { clientWidth, clientHeight } = this.container;
@@ -75,7 +77,8 @@ export abstract class IRenderer {
     const canvasAspectRatio = width / height;
     const widthScale = clientWidth / width;
     const heightScale = clientHeight / height;
-    const isHidden = renderMode === RenderModeType.RenderModeHidden;
+    const isHidden =
+      this.context.renderMode === RenderModeType.RenderModeHidden;
 
     let scale = 1;
     // If container's aspect ratio is larger than canvas's aspect ratio
@@ -91,12 +94,12 @@ export abstract class IRenderer {
     this.canvas.style.transform = `scale(${scale})`;
   }
 
-  protected updateMirrorMode(mirrorMode?: VideoMirrorModeType): void {
+  protected updateMirrorMode(): void {
     if (!this.parentElement) return;
 
     Object.assign(this.parentElement.style, {
       transform:
-        mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled
+        this.context.mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled
           ? 'rotateY(180deg)'
           : '',
     });
