@@ -74,6 +74,11 @@
       width: 20%;
       right: 0;
       top: 0;
+      display: flex;
+      flex-wrap: wrap;
+      .meetRenderContainer {
+        max-width: 70px;
+      }
     }
   }
 

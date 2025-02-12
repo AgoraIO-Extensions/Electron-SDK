@@ -52,6 +52,9 @@ import { askMediaAccess } from '../../../utils/permissions';
 interface State extends BaseVideoComponentState {
   token2: string;
   uid2: number;
+  showLeftView: boolean;
+  leftViewUid: number;
+  leftViewSourceType: VideoSourceType;
   sources?: ScreenCaptureSourceInfo[];
   targetSource?: ScreenCaptureSourceInfo;
   width: number;
@@ -91,7 +94,6 @@ interface State extends BaseVideoComponentState {
   blur_degree: BackgroundBlurDegree;
   enableVirtualBackground?: boolean;
   renderLocalCamera: boolean;
-  renderLocalScreen: boolean;
 }
 
 export default class Meet
@@ -113,6 +115,9 @@ export default class Meet
       startPreview: false,
       token2: '',
       uid2: 0,
+      showLeftView: false,
+      leftViewUid: 0,
+      leftViewSourceType: VideoSourceType.VideoSourceCamera,
       sources: [],
       targetSource: undefined,
       width: 1920,
@@ -151,7 +156,6 @@ export default class Meet
       source: getResourcePath('agora-logo.png'),
       blur_degree: BackgroundBlurDegree.BlurDegreeHigh,
       renderLocalCamera: true,
-      renderLocalScreen: true,
     };
   }
 
@@ -621,75 +625,64 @@ export default class Meet
     const {
       startPreview,
       joinChannelSuccess,
-      startScreenCapture,
       remoteUsers,
       remoteRenderLimit,
       renderLocalCamera,
-      renderLocalScreen,
+      showLeftView,
+      leftViewUid,
+      leftViewSourceType,
     } = this.state;
     return (
       <div className={AgoraStyle.meetContainer}>
-        {startScreenCapture && renderLocalScreen ? (
-          <div className={AgoraStyle.meetMain}>
+        <div className={AgoraStyle.meetMain}>
+          {showLeftView && (
             <div className={AgoraStyle.meetRenderContainer}>
-              <span>{`${'local-screen'} - ${
+              <RtcSurfaceView
+                containerClass={AgoraStyle.meetSurfaceViewContainer}
+                videoClass={AgoraStyle.meetSurfaceViewVideo}
+                canvas={{
+                  uid: leftViewUid,
+                  sourceType: leftViewSourceType,
+                  renderMode: RenderModeType.RenderModeFit,
+                }}
+              />
+            </div>
+          )}
+        </div>
+        <div className={AgoraStyle.meetRight}>
+          {(!!startPreview || joinChannelSuccess) && renderLocalCamera ? (
+            <div className={AgoraStyle.meetRenderContainer}>
+              <span>{`${'local-cam'} - ${
                 VideoSourceType.VideoSourceCamera
               }`}</span>
               <RtcSurfaceView
                 containerClass={AgoraStyle.meetSurfaceViewContainer}
                 videoClass={AgoraStyle.meetSurfaceViewVideo}
                 canvas={{
-                  sourceType: VideoSourceType.VideoSourceScreen,
+                  sourceType: VideoSourceType.VideoSourceCamera,
                   renderMode: RenderModeType.RenderModeFit,
                 }}
               />
             </div>
-          </div>
-        ) : undefined}
-        <div className={AgoraStyle.meetRight}>
-          {(!!startPreview || joinChannelSuccess) && renderLocalCamera ? (
-            <>
-              <div className={AgoraStyle.meetRenderContainer}>
-                <span>{`${'local-cam'} - ${
-                  VideoSourceType.VideoSourceCamera
+          ) : undefined}
+          {(remoteUsers.slice(0, remoteRenderLimit) ?? []).map((uid, index) => {
+            return (
+              <div key={index} className={AgoraStyle.meetRenderContainer}>
+                <span>{`${'remote-cam'} - ${
+                  VideoSourceType.VideoSourceRemote
                 }`}</span>
                 <RtcSurfaceView
                   containerClass={AgoraStyle.meetSurfaceViewContainer}
                   videoClass={AgoraStyle.meetSurfaceViewVideo}
                   canvas={{
-                    sourceType: VideoSourceType.VideoSourceCamera,
+                    uid: uid,
+                    sourceType: VideoSourceType.VideoSourceRemote,
                     renderMode: RenderModeType.RenderModeFit,
                   }}
                 />
               </div>
-            </>
-          ) : undefined}
-          {!!startPreview || joinChannelSuccess ? (
-            <>
-              {(remoteUsers.slice(0, remoteRenderLimit) ?? []).map(
-                (uid, index) => {
-                  return (
-                    <div key={index}>
-                      <div className={AgoraStyle.meetRenderContainer}>
-                        <span>{`${'local-cam'} - ${
-                          VideoSourceType.VideoSourceCamera
-                        }`}</span>
-                        <RtcSurfaceView
-                          containerClass={AgoraStyle.meetSurfaceViewContainer}
-                          videoClass={AgoraStyle.meetSurfaceViewVideo}
-                          canvas={{
-                            uid: uid,
-                            sourceType: VideoSourceType.VideoSourceRemote,
-                            renderMode: RenderModeType.RenderModeFit,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  );
-                }
-              )}
-            </>
-          ) : undefined}
+            );
+          })}
         </div>
       </div>
     );
@@ -701,6 +694,9 @@ export default class Meet
       startPreview,
       joinChannelSuccess,
       camEncodingPreference,
+      showLeftView,
+      leftViewUid,
+      leftViewSourceType,
       renderLocalCamera,
     } = this.state;
     return (
@@ -712,6 +708,50 @@ export default class Meet
             }}
             placeholder={`channelId`}
             value={channelId}
+          />
+          <AgoraText>leftViewUid</AgoraText>
+          <AgoraTextInput
+            editable={!showLeftView}
+            onChangeText={(text) => {
+              if (isNaN(+text)) return;
+              this.setState({
+                leftViewUid:
+                  text === '' ? this.createState().leftViewUid : +text,
+              });
+            }}
+            numberKeyboard={true}
+            placeholder={`leftViewUid`}
+            value={leftViewUid > 0 ? leftViewUid.toString() : ''}
+          />
+          <AgoraDropdown
+            title={'leftViewSourceType'}
+            enabled={!showLeftView}
+            items={[
+              {
+                value: VideoSourceType.VideoSourceCamera,
+                label: 'VideoSourceCamera',
+              },
+              {
+                value: VideoSourceType.VideoSourceScreen,
+                label: 'VideoSourceScreen',
+              },
+              {
+                value: VideoSourceType.VideoSourceRemote,
+                label: 'VideoSourceRemote',
+              },
+            ]}
+            value={leftViewSourceType}
+            onValueChange={(value) => {
+              this.setState({ leftViewSourceType: value });
+            }}
+          />
+          <AgoraButton
+            title={`${showLeftView ? 'hide' : 'show'} LeftView`}
+            onPress={() => {
+              this.setState({
+                showLeftView: !showLeftView,
+              });
+            }}
           />
           <AgoraButton
             title={`${joinChannelSuccess ? 'leave' : 'join'} Channel`}
@@ -828,7 +868,6 @@ export default class Meet
       blur_degree,
       enableVirtualBackground,
       startScreenCapture,
-      renderLocalScreen,
     } = this.state;
     return (
       <>
@@ -1132,13 +1171,6 @@ export default class Meet
                 ? this.unpublishScreenCapture
                 : this.publishScreenCapture
             }
-          />
-          <AgoraSwitch
-            title={`renderLocalScreen`}
-            value={renderLocalScreen}
-            onValueChange={(value) => {
-              this.setState({ renderLocalScreen: value });
-            }}
           />
         </>
         <>
