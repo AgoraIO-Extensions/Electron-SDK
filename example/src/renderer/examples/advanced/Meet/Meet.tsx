@@ -665,24 +665,28 @@ export default class Meet
               />
             </div>
           ) : undefined}
-          {(remoteUsers.slice(0, remoteRenderLimit) ?? []).map((uid, index) => {
-            return (
-              <div key={index} className={AgoraStyle.meetRenderContainer}>
-                <span>{`${'remote-cam'} - ${
-                  VideoSourceType.VideoSourceRemote
-                }`}</span>
-                <RtcSurfaceView
-                  containerClass={AgoraStyle.meetSurfaceViewContainer}
-                  videoClass={AgoraStyle.meetSurfaceViewVideo}
-                  canvas={{
-                    uid: uid,
-                    sourceType: VideoSourceType.VideoSourceRemote,
-                    renderMode: RenderModeType.RenderModeFit,
-                  }}
-                />
-              </div>
-            );
-          })}
+          {(remoteUsers.slice(0, remoteRenderLimit) ?? [])
+            .filter((uid) => {
+              return uid != leftViewUid;
+            })
+            .map((uid, index) => {
+              return (
+                <div key={index} className={AgoraStyle.meetRenderContainer}>
+                  <span>{`${'remote-cam'} - ${
+                    VideoSourceType.VideoSourceRemote
+                  }`}</span>
+                  <RtcSurfaceView
+                    containerClass={AgoraStyle.meetSurfaceViewContainer}
+                    videoClass={AgoraStyle.meetSurfaceViewVideo}
+                    canvas={{
+                      uid: uid,
+                      sourceType: VideoSourceType.VideoSourceRemote,
+                      renderMode: RenderModeType.RenderModeFit,
+                    }}
+                  />
+                </div>
+              );
+            })}
         </div>
       </div>
     );
