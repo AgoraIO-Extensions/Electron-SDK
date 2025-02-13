@@ -1,4 +1,4 @@
-import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { LeftOutlined } from '@ant-design/icons';
 import {
   ErrorCodeType,
   IRtcEngine,

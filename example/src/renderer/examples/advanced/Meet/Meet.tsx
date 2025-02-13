@@ -17,7 +17,6 @@ import {
   ScreenScenarioType,
   SimulcastStreamMode,
   UserOfflineReasonType,
-  VideoCanvas,
   VideoSourceType,
   VideoStreamType,
   createAgoraRtcEngine,
@@ -31,11 +30,9 @@ import {
 } from '../../../components/BaseComponent';
 import {
   AgoraButton,
-  AgoraCard,
   AgoraDivider,
   AgoraDropdown,
   AgoraImage,
-  AgoraList,
   AgoraSlider,
   AgoraStyle,
   AgoraSwitch,
@@ -66,6 +63,7 @@ interface State extends BaseVideoComponentState {
   camFrameRate: number;
   camBitrate: number;
   camEncodingPreference: EncodingPreference;
+  screenEncodingPreference: EncodingPreference;
   screenWidth: number;
   screenHeight: number;
   screenFrameRate: number;
@@ -129,6 +127,7 @@ export default class Meet
       camFrameRate: 10,
       camBitrate: 200,
       camEncodingPreference: EncodingPreference.PreferHardware,
+      screenEncodingPreference: EncodingPreference.PreferSoftware,
       screenWidth: 320,
       screenHeight: 180,
       screenFrameRate: 10,
@@ -232,6 +231,42 @@ export default class Meet
         encodingPreference: camEncodingPreference,
       },
     });
+  };
+
+  setVideoEncoderConfigurationEx = () => {
+    const {
+      uid2,
+      channelId,
+      screenWidth,
+      screenHeight,
+      screenBitrate,
+      screenFrameRate,
+      screenEncodingPreference,
+    } = this.state;
+
+    if (!channelId) {
+      this.error('channelId is invalid');
+      return;
+    }
+    if (uid2 <= 0) {
+      this.error('uid2 is invalid');
+      return;
+    }
+
+    this.engine?.setVideoEncoderConfigurationEx(
+      {
+        dimensions: {
+          width: screenWidth,
+          height: screenHeight,
+        },
+        frameRate: screenFrameRate,
+        bitrate: screenBitrate,
+        advanceOptions: {
+          encodingPreference: screenEncodingPreference,
+        },
+      },
+      { localUid: uid2, channelId: channelId }
+    );
   };
 
   setCameraStreamDualStreamMode = () => {
@@ -863,6 +898,7 @@ export default class Meet
       lighteningContrastLevel,
       lighteningLevel,
       smoothnessLevel,
+      screenEncodingPreference,
       rednessLevel,
       sharpnessLevel,
       enableBeautyEffect,
@@ -1147,6 +1183,18 @@ export default class Meet
           placeholder={`screenBitrate (defaults: ${
             this.createState().screenBitrate
           })`}
+        />
+        <AgoraDropdown
+          title={'EncodingPreference'}
+          items={enumToItems(EncodingPreference)}
+          value={screenEncodingPreference}
+          onValueChange={(value) => {
+            this.setState({ screenEncodingPreference: value });
+          }}
+        />
+        <AgoraButton
+          title={`setVideoEncoderConfigurationEx`}
+          onPress={this.setVideoEncoderConfigurationEx}
         />
         <AgoraButton
           title={`set ScreenStreamDualStreamMode`}
