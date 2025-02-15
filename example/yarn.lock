@@ -1773,10 +1773,10 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-agora-electron-sdk@4.4.0:
-  version "4.4.0"
-  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.4.0.tgz#6c702d0b35a45b82b9f450f671d2fc9e7b040e9f"
-  integrity sha512-urt4ITnusnUNvEf3V3e3+kFSObp/76Jsu2saIEZjq5UY+zFWkQ5OIimwKDdQxWFvwTU6CxDo3iTcWaL/dzBl8g==
+agora-electron-sdk@4.5.1:
+  version "4.5.1"
+  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.5.1.tgz#d5cf34bf89929e269ee10810c9957e2f9263e994"
+  integrity sha512-BFqzxq3BlCmiwIRtjaArYwlvACcQBf9R6b5qS6lh3gkBkOdmKNwqIYQ7jLSbOspr5Rm2pJZoQdU54p0HBGZhNw==
   dependencies:
     buffer "^6.0.3"
     cross-env "^7.0.3"
@@ -4192,9 +4192,9 @@ electron@22.0.0:
     extract-zip "^2.0.1"
 
 elliptic@^6.5.3, elliptic@^6.5.5:
-  version "6.5.7"
-  resolved "https://registry.npmjs.org/elliptic/-/elliptic-6.5.7.tgz#8ec4da2cb2939926a1b9a73619d768207e647c8b"
-  integrity sha512-ESVCtTwiA+XhY3wyh24QqRGBoP3rEdDUl3EDUUo9tft074fi19IrdpH7hLCMMP3CIj7jb3W96rn8lt/BqIlt5Q==
+  version "6.6.1"
+  resolved "https://registry.npmjs.org/elliptic/-/elliptic-6.6.1.tgz#3b8ffb02670bf69e382c7f65bf524c97c5405c06"
+  integrity sha512-RaddvvMatK2LJHqFJ+YA4WysVN5Ita9E35botqIYspQ4TkRAlCicdzKOjlyv/1Za5RyTNn7di//eEV0uTAfe3g==
   dependencies:
     bn.js "^4.11.9"
     brorand "^1.1.0"
