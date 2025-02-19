@@ -29,6 +29,8 @@ class App extends Component {
 
   componentDidMount() {
     const engine = createAgoraRtcEngine();
+    //@ts-ignore
+    window.ARTCEngine = engine;
     this.setState({ version: engine.getVersion() });
   }
 
