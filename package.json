@@ -11,6 +11,7 @@
     "types",
     "scripts",
     "!scripts/terra",
+    "!scripts/internal",
     "gulpfile.js",
     "CHANGELOG.md",
     "!**/__tests__"
@@ -142,9 +143,9 @@
     "yuv-canvas": "1.2.6"
   },
   "agora_electron": {
-    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.2.6.155-build.1_DCG_Windows_Video_Standalone_20250121_0517.zip",
-    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.2.6.154-build.1_DCG_Mac_Video_Standalone_20250109_0225.zip",
-    "native_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_rel.v4.2.6.155_27923_FULL_20250120_1148_534950.zip",
-    "native_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_rel.v4.2.6.154_23292_FULL_20250108_1705_516982.zip"
+    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.2.6.152-build.1_DCG_Windows_Video_Standalone_20250221_0241.zip",
+    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.2.6.152-build.1_DCG_Mac_Video_Standalone_20250221_0300.zip",
+    "native_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_rel.v4.2.6.152_28066_FULL_20250212_1519_568275.zip",
+    "native_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_rel.v4.2.6.152_23547_FULL_20250211_1734_566873.zip"
   }
 }
