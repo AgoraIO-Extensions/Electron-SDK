@@ -25,6 +25,8 @@ const { Content, Footer, Sider } = Layout;
 class App extends Component {
   state = {
     version: { version: undefined, build: undefined },
+    collapsed: false,
+    showFooter: true,
   };
 
   componentDidMount() {
@@ -38,6 +40,12 @@ class App extends Component {
       <Router>
         <Layout hasSider style={{ height: '100vh' }}>
           <Sider
+            collapsible
+            onCollapse={(e) =>
+              this.setState({
+                collapsed: e,
+              })
+            }
             style={{
               overflow: 'auto',
               height: '100vh',
@@ -81,7 +89,10 @@ class App extends Component {
               })()}
             ></Menu>
           </Sider>
-          <Layout className="site-layout" style={{ marginLeft: 200 }}>
+          <Layout
+            className="site-layout"
+            style={{ marginLeft: this.state.collapsed ? 0 : 200 }}
+          >
             <Content>
               <Switch>
                 <Route path="/" children={<AuthInfoScreen />} exact={true} />
@@ -102,9 +113,18 @@ class App extends Component {
                 </Route>
               </Switch>
             </Content>
-            <Footer style={{ textAlign: 'center' }}>
-              {`Powered by Agora RTC SDK ${version.version} ${version.build}`}
-            </Footer>
+            {this.state.showFooter && (
+              <Footer
+                style={{ textAlign: 'center', cursor: 'pointer' }}
+                onClick={() => {
+                  this.setState({
+                    showFooter: !this.state.showFooter,
+                  });
+                }}
+              >
+                {`Powered by Agora RTC SDK ${version.version} ${version.build}`}
+              </Footer>
+            )}
           </Layout>
         </Layout>
       </Router>

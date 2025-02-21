@@ -10,20 +10,31 @@ on:
 
 jobs:
   update-dependencies:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup
-        uses: ./.github/actions/setup
-
-      - name: Update dependencies
+      - name: Get dependencies
         id: dep
         uses: AgoraIO-Extensions/actions/.github/actions/dep@main
         with:
+          dependencies-content: ${{ inputs.dependencies-content }}
+
+      - name: Update dependencies
+        run: |
+          sh scripts/internal/dep.sh ${{ steps.dep.outputs.matches }}
+
+      - name: Create pull request
+        uses: AgoraIO-Extensions/actions/.github/actions/pr@main
+        with:
           github-token: ${{ secrets.GH_TOKEN }}
+          target-repo: ${{ github.workspace }}
           target-branch: ${{ github.ref_name }}
-          dependencies-content: ${{ inputs.dependencies-content }}          
-          target-files: |
-            package.json
+          target-branch-name-surffix: dep-update
+          pull-request-title: |
+            [AUTO] Update dependencies
+          pull-request-body: |
+            Dependencies content:
+
+            ${{ steps.dep.outputs.matches }}
