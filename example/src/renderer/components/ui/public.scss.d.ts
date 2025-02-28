@@ -4,8 +4,16 @@ declare namespace PublicScssNamespace {
     content: string;
     require: string;
     rightBar: string;
+    hide: string;
+    rightBarIcon: string;
     rightBarBig: string;
     screen: string;
+    meetRenderContainer: string;
+    meetContainer: string;
+    meetMain: string;
+    meetRight: string;
+    meetSurfaceViewContainer: string;
+    meetSurfaceViewVideo: string;
     selectedItem: string;
   }
 }

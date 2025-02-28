@@ -1,3 +1,4 @@
+import { LeftOutlined } from '@ant-design/icons';
 import {
   ErrorCodeType,
   IRtcEngine,
@@ -31,6 +32,7 @@ export interface BaseComponentState {
   joinChannelSuccess?: boolean;
   remoteUsers?: number[];
   startPreview?: boolean;
+  hideRightBar?: boolean;
 }
 
 export interface BaseAudioComponentState extends BaseComponentState {
@@ -146,7 +148,19 @@ export abstract class BaseComponent<
         <AgoraView className={AgoraStyle.content}>
           {users ? this.renderUsers() : undefined}
         </AgoraView>
-        <AgoraView className={AgoraStyle.rightBar}>
+        <AgoraView
+          className={`${AgoraStyle.rightBar} ${
+            this.state.hideRightBar ? AgoraStyle.hide : ''
+          }`}
+        >
+          <LeftOutlined
+            className={AgoraStyle.rightBarIcon}
+            onClick={() => {
+              this.setState({
+                hideRightBar: !this.state.hideRightBar,
+              });
+            }}
+          />
           {this.renderChannel()}
           {configuration ? (
             <>
