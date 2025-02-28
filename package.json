@@ -11,6 +11,7 @@
     "types",
     "scripts",
     "!scripts/terra",
+    "!scripts/publishCN",
     "!scripts/internal",
     "gulpfile.js",
     "CHANGELOG.md",
