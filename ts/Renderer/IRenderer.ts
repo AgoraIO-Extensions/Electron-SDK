@@ -1,14 +1,15 @@
 import { VideoMirrorModeType } from '../Private/AgoraBase';
 import { RenderModeType, VideoFrame } from '../Private/AgoraMediaBase';
-import { RendererContext } from '../Types';
-
-type Context = Pick<RendererContext, 'renderMode' | 'mirrorMode'>;
+import { CodecConfigInfo, RendererContext, RendererType } from '../Types';
 
 export abstract class IRenderer {
   parentElement?: HTMLElement;
   container?: HTMLElement;
   canvas?: HTMLCanvasElement;
-  _context: Context = {};
+  rendererType: RendererType | undefined;
+  context: RendererContext = {};
+  private _frameCount = 0;
+  private _startTime: number | null = null;
 
   public bind(element: HTMLElement) {
     this.parentElement = element;
@@ -43,30 +44,30 @@ export abstract class IRenderer {
     this.parentElement = undefined;
   }
 
-  public drawFrame(_videoFrame?: VideoFrame): void {
+  public drawFrame(
+    _videoFrame?: VideoFrame,
+    _codecConfig?: CodecConfigInfo
+  ): void {
     if (!this.canvas) return;
     if (this.canvas.style.display !== '') {
       this.canvas.style.display = '';
     }
   }
 
-  public set context({ renderMode, mirrorMode }: Context) {
-    if (this.context.renderMode !== renderMode) {
-      this.context.renderMode = renderMode;
+  public setContext(context: RendererContext) {
+    if (this.context.renderMode !== context.renderMode) {
+      this.context.renderMode = context.renderMode;
       this.updateRenderMode();
     }
 
-    if (this.context.mirrorMode !== mirrorMode) {
-      this.context.mirrorMode = mirrorMode;
+    if (this.context.mirrorMode !== context.mirrorMode) {
+      this.context.mirrorMode = context.mirrorMode;
       this.updateMirrorMode();
     }
+    this.context = { ...this.context, ...context };
   }
 
-  public get context(): Context {
-    return this._context;
-  }
-
-  protected updateRenderMode() {
+  protected updateRenderMode(): void {
     if (!this.canvas || !this.container) return;
 
     const { clientWidth, clientHeight } = this.container;
@@ -76,9 +77,8 @@ export abstract class IRenderer {
     const canvasAspectRatio = width / height;
     const widthScale = clientWidth / width;
     const heightScale = clientHeight / height;
-
     const isHidden =
-      this.context?.renderMode === RenderModeType.RenderModeHidden;
+      this.context.renderMode === RenderModeType.RenderModeHidden;
 
     let scale = 1;
     // If container's aspect ratio is larger than canvas's aspect ratio
@@ -119,5 +119,40 @@ export abstract class IRenderer {
         `Invalid rotation: ${rotation}, only 0, 90, 180, 270 are supported`
       );
     }
+  }
+
+  public getFps(): number {
+    let fps = 0;
+    if (!this.context.enableFps || !this.container) {
+      return fps;
+    }
+    if (this._startTime == null) {
+      this._startTime = performance.now();
+    } else {
+      const elapsed = (performance.now() - this._startTime) / 1000;
+      fps = ++this._frameCount / elapsed;
+    }
+
+    let span = this.container.querySelector('span');
+    if (!span) {
+      span = document.createElement('span');
+
+      Object.assign(span.style, {
+        position: 'absolute',
+        bottom: '0',
+        left: '0',
+        zIndex: '10',
+        width: '55px',
+        background: '#fff',
+      });
+
+      this.container.style.position = 'relative';
+
+      this.container.appendChild(span);
+    }
+
+    span.innerText = `fps: ${fps.toFixed(0)}`;
+
+    return fps;
   }
 }
