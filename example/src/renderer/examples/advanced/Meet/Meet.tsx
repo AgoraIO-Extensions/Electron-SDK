@@ -185,30 +185,30 @@ export default class Meet
 
     this.getScreenCaptureSources();
 
-    this.engine.setParameters(
-      JSON.stringify({ 'engine.video.hw_decoder_provider': 'qsv' })
-    );
-    this.engine.setParameters(
-      JSON.stringify({ 'rtc.video.default_hw_decoder_thres': 921600 })
-    );
-    this.engine.setParameters(
-      JSON.stringify({ 'rtc.video.enable_pvc': false })
-    );
-    this.engine.setParameters(
-      JSON.stringify({ 'che.video.brightness_detection_enable': false })
-    );
-    this.engine.setParameters(
-      JSON.stringify({ 'che.video.videoCodecIndex': 1 })
-    );
-    this.engine.setParameters(
-      JSON.stringify({ 'rtc.video.enable_sr': { mode: 2, enabled: false } })
-    );
-    this.engine.setParameters(
-      JSON.stringify({ 'che.video.h265_screen_enable': 0 })
-    );
-    this.engine?.setScreenCaptureScenario(
-      ScreenScenarioType.ScreenScenarioDocument
-    );
+    // this.engine.setParameters(
+    //   JSON.stringify({ 'engine.video.hw_decoder_provider': 'qsv' })
+    // );
+    // this.engine.setParameters(
+    //   JSON.stringify({ 'rtc.video.default_hw_decoder_thres': 921600 })
+    // );
+    // this.engine.setParameters(
+    //   JSON.stringify({ 'rtc.video.enable_pvc': false })
+    // );
+    // this.engine.setParameters(
+    //   JSON.stringify({ 'che.video.brightness_detection_enable': false })
+    // );
+    // this.engine.setParameters(
+    //   JSON.stringify({ 'che.video.videoCodecIndex': 1 })
+    // );
+    // this.engine.setParameters(
+    //   JSON.stringify({ 'rtc.video.enable_sr': { mode: 2, enabled: false } })
+    // );
+    // this.engine.setParameters(
+    //   JSON.stringify({ 'che.video.h265_screen_enable': 0 })
+    // );
+    // this.engine?.setScreenCaptureScenario(
+    //   ScreenScenarioType.ScreenScenarioDocument
+    // );
   }
 
   setVideoEncoderConfiguration = () => {
