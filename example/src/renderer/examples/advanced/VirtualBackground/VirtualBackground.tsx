@@ -87,11 +87,6 @@ export default class VirtualBackground
 
     // if you want to use the alpha channel, you need to set the following parameters to let remoteView support alpha channel
     this.engine?.setParameters('{"rtc.video.dec_split_alpha":true}');
-    this.engine?.setVideoEncoderConfiguration({
-      advanceOptions: {
-        encodeAlpha: true,
-      },
-    });
   }
 
   handleStartPreview = () => {
