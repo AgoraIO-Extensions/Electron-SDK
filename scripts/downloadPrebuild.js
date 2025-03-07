@@ -1,7 +1,6 @@
 const path = require('path');
-
-const download = require('download');
 const fs = require('fs-extra');
+const download = require('./download');
 
 const { cleanDir, buildDir } = require('./clean');
 const getConfig = require('./getConfig');

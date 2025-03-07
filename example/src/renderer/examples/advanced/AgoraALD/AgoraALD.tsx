@@ -8,7 +8,6 @@ import {
   IRtcEngineEventHandler,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import download from 'download';
 
 import React, { ReactElement } from 'react';
 
@@ -18,6 +17,7 @@ import {
 } from '../../../components/BaseComponent';
 import { AgoraButton, AgoraDivider, AgoraSwitch } from '../../../components/ui';
 import Config from '../../../config/agora.config';
+import download from '../../../utils/download';
 import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseAudioComponentState {

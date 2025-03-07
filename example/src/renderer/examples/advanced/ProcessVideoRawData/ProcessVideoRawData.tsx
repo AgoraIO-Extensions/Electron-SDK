@@ -8,7 +8,6 @@ import {
   IRtcEngineEventHandler,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
-import download from 'download';
 import ffi, { IKoffiLib } from 'koffi';
 import React, { ReactElement } from 'react';
 
@@ -18,6 +17,7 @@ import {
 } from '../../../components/BaseComponent';
 import { AgoraButton } from '../../../components/ui';
 import Config from '../../../config/agora.config';
+import download from '../../../utils/download';
 import { askMediaAccess } from '../../../utils/permissions';
 
 const pluginVersion = 'v4.4.0';
