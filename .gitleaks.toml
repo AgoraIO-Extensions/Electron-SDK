@@ -12,3 +12,10 @@ id = "agora-appid"
 description = "Agora AppId"
 regex = '''"[0-9a-f]{32}"'''
 # ----- END Agora AppId -----
+
+# ----- BEGIN MD5 Password -----
+[[rules]]
+id = "hashed-password-md5"
+description = "MD5 Password"
+regex = '''['\ "=]+[0-9a-f]{32}['\ "\n]+'''
+# ----- END MD5 Password -----
