@@ -1,8 +1,12 @@
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+
+import * as os from 'os';
+import * as path from 'path';
+
 import fetch from 'node-fetch';
-import extract from 'extract-zip';
-import os from 'os';
+
+// 使用 require 导入 extract-zip
+const extract = require('extract-zip');
 
 /**
  * 文件信息接口
@@ -165,7 +169,13 @@ async function processExtractedFiles(
   const strip = options.strip || 0;
 
   // 创建一个映射，存储文件信息
-  const fileInfoMap = new Map<string, { entry: string, fileInfo: FileInfo }>();
+  const fileInfoMap = new Map<
+    string,
+    {
+      entry: string;
+      fileInfo: FileInfo;
+    }
+  >();
 
   // 首先收集所有文件信息
   for (const entry of entries) {
@@ -176,7 +186,7 @@ async function processExtractedFiles(
     let fileInfo: FileInfo = {
       path: relativePath,
       type: stat.isDirectory() ? 'directory' : 'file',
-      data: stat.isFile() ? fs.readFileSync(entry) : Buffer.from([])
+      data: stat.isFile() ? fs.readFileSync(entry) : Buffer.from([]),
     };
 
     // 应用map函数
@@ -186,7 +196,7 @@ async function processExtractedFiles(
   }
 
   // 处理strip和应用filter
-  for (const [relativePath, { entry, fileInfo }] of fileInfoMap.entries()) {
+  for (const [relativePath, { entry, fileInfo }] of Array.from(fileInfoMap.entries())) {
     // 处理strip
     const parts = relativePath.split(path.sep);
     if (parts.length <= strip) continue;
@@ -220,7 +230,9 @@ async function processExtractedFiles(
         fs.mkdirSync(targetDir, { recursive: true });
       }
     } catch (error: any) {
-      throw new Error(`Failed to create directory ${targetDir}: ${error.message}`);
+      throw new Error(
+        `Failed to create directory ${targetDir}: ${error.message}`
+      );
     }
 
     // 根据修正后的类型处理
@@ -231,38 +243,23 @@ async function processExtractedFiles(
           fs.mkdirSync(dirPath, { recursive: true });
         }
       } catch (error: any) {
-        throw new Error(`Failed to create directory ${dirPath}: ${error.message}`);
+        throw new Error(
+          `Failed to create directory ${dirPath}: ${error.message}`
+        );
       }
     } else {
       try {
         fs.copyFileSync(entry, path.join(destDir, fileInfo.path));
       } catch (error: any) {
-        throw new Error(`Failed to copy file ${entry} to ${path.join(destDir, fileInfo.path)}: ${error.message}`);
+        throw new Error(
+          `Failed to copy file ${entry} to ${path.join(
+            destDir,
+            fileInfo.path
+          )}: ${error.message}`
+        );
       }
     }
   }
-}
-
-/**
- * 递归获取目录下的所有文件
- * @param dir 目录路径
- * @returns 文件路径数组
- */
-async function getAllFiles(dir: string): Promise<string[]> {
-  const files: string[] = [];
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-
-  for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name);
-
-    if (entry.isDirectory()) {
-      files.push(...await getAllFiles(fullPath));
-    } else {
-      files.push(fullPath);
-    }
-  }
-
-  return files;
 }
 
 /**
@@ -279,40 +276,11 @@ async function getAllFilesAndDirs(dir: string): Promise<string[]> {
     result.push(fullPath);
 
     if (entry.isDirectory()) {
-      result.push(...await getAllFilesAndDirs(fullPath));
+      result.push(...(await getAllFilesAndDirs(fullPath)));
     }
   }
 
   return result;
-}
-
-/**
- * 复制目录
- * @param src 源目录
- * @param dest 目标目录
- */
-function copyDir(src: string, dest: string): void {
-  // 确保目标目录存在
-  if (!fs.existsSync(dest)) {
-    fs.mkdirSync(dest, { recursive: true });
-  }
-
-  // 读取源目录
-  const entries = fs.readdirSync(src, { withFileTypes: true });
-
-  // 复制每个条目
-  for (const entry of entries) {
-    const srcPath = path.join(src, entry.name);
-    const destPath = path.join(dest, entry.name);
-
-    if (entry.isDirectory()) {
-      // 递归复制子目录
-      copyDir(srcPath, destPath);
-    } else {
-      // 复制文件
-      fs.copyFileSync(srcPath, destPath);
-    }
-  }
 }
 
 export default download;

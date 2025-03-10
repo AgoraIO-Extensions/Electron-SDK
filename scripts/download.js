@@ -1,8 +1,9 @@
 const fs = require('fs');
-const path = require('path');
-const fetch = require('node-fetch');
-const extract = require('extract-zip');
 const os = require('os');
+const path = require('path');
+
+const extract = require('extract-zip');
+const fetch = require('node-fetch');
 
 /**
  * 下载文件到指定目录
@@ -16,10 +17,10 @@ const os = require('os');
  * @returns {Promise<string>} - 下载的文件路径或解压后的目录路径
  */
 async function download(url, destDir, options = {}) {
-    // 确保URL正确编码
-    if (!url.includes('%')) {
-        url = encodeURI(url);
-    }
+  // 确保URL正确编码
+  if (!url.includes('%')) {
+    url = encodeURI(url);
+  }
 
   // 确保目标目录存在 - 使用递归创建确保父目录也存在
   try {
@@ -29,11 +30,11 @@ async function download(url, destDir, options = {}) {
     }
   } catch (error) {
     throw new Error(`Failed to create destination directory: ${error.message}`);
-    }
+  }
 
-    // 从URL中获取文件名
-    const fileName = path.basename(url);
-    const filePath = path.join(destDir, fileName);
+  // 从URL中获取文件名
+  const fileName = path.basename(url);
+  const filePath = path.join(destDir, fileName);
 
   // 确保文件所在目录存在
   const fileDir = path.dirname(filePath);
@@ -46,15 +47,15 @@ async function download(url, destDir, options = {}) {
     throw new Error(`Failed to create file directory: ${error.message}`);
   }
 
-    // 下载文件
+  // 下载文件
   try {
     const response = await fetch(url);
     if (!response.ok) {
-        throw new Error(`Failed to download: ${response.statusText}`);
+      throw new Error(`Failed to download: ${response.statusText}`);
     }
 
     if (!response.body) {
-        throw new Error('Response body is null');
+      throw new Error('Response body is null');
     }
 
     // 再次确保目录存在（以防在下载过程中被删除）
@@ -66,47 +67,47 @@ async function download(url, destDir, options = {}) {
     // 保存文件
     const fileStream = fs.createWriteStream(filePath);
     await new Promise((resolve, reject) => {
-        if (response.body) {
-          response.body.pipe(fileStream);
-          response.body.on('error', reject);
-          fileStream.on('finish', resolve);
-        } else {
-          reject(new Error('Response body is null'));
-        }
+      if (response.body) {
+        response.body.pipe(fileStream);
+        response.body.on('error', reject);
+        fileStream.on('finish', resolve);
+      } else {
+        reject(new Error('Response body is null'));
+      }
     });
   } catch (error) {
     throw new Error(`Failed to download file: ${error.message}`);
   }
 
-    // 如果需要解压缩
-    if (options.extract && filePath.endsWith('.zip')) {
-        try {
-            // 创建临时目录用于解压
-            const tempDir = path.join(os.tmpdir(), `extract-${Date.now()}`);
-            if (!fs.existsSync(tempDir)) {
-                fs.mkdirSync(tempDir, { recursive: true });
-            }
-
-            // 先解压到临时目录
-            await extract(filePath, { dir: tempDir });
-
-          // 再次确保目标目录存在（以防在解压过程中被删除）
-          if (!fs.existsSync(destDir)) {
-            fs.mkdirSync(destDir, { recursive: true });
-            console.log(`Re-created directory before extraction: ${destDir}`);
-          }
-
-          // 处理解压后的文件
-          await processExtractedFiles(tempDir, destDir, options);
-
-          // 清理临时目录
-          fs.rmSync(tempDir, { recursive: true, force: true });
-
-        return destDir;
-      } catch (error) {
-        throw new Error(`Failed to extract: ${error.message}`);
+  // 如果需要解压缩
+  if (options.extract && filePath.endsWith('.zip')) {
+    try {
+      // 创建临时目录用于解压
+      const tempDir = path.join(os.tmpdir(), `extract-${Date.now()}`);
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
       }
+
+      // 先解压到临时目录
+      await extract(filePath, { dir: tempDir });
+
+      // 再次确保目标目录存在（以防在解压过程中被删除）
+      if (!fs.existsSync(destDir)) {
+        fs.mkdirSync(destDir, { recursive: true });
+        console.log(`Re-created directory before extraction: ${destDir}`);
+      }
+
+      // 处理解压后的文件
+      await processExtractedFiles(tempDir, destDir, options);
+
+      // 清理临时目录
+      fs.rmSync(tempDir, { recursive: true, force: true });
+
+      return destDir;
+    } catch (error) {
+      throw new Error(`Failed to extract: ${error.message}`);
     }
+  }
 
   return filePath;
 }
@@ -152,9 +153,16 @@ async function processExtractedFiles(tempDir, destDir, options) {
     const stat = fs.lstatSync(entry); // 使用lstatSync代替statSync，以便能够检测符号链接
     let fileInfo = {
       path: relativePath,
-      type: stat.isSymbolicLink() ? 'symlink' : (stat.isDirectory() ? 'directory' : 'file'),
-      data: stat.isFile() && !stat.isSymbolicLink() ? fs.readFileSync(entry) : Buffer.from([]),
-      linkTarget: stat.isSymbolicLink() ? fs.readlinkSync(entry) : null
+      type: stat.isSymbolicLink()
+        ? 'symlink'
+        : stat.isDirectory()
+        ? 'directory'
+        : 'file',
+      data:
+        stat.isFile() && !stat.isSymbolicLink()
+          ? fs.readFileSync(entry)
+          : Buffer.from([]),
+      linkTarget: stat.isSymbolicLink() ? fs.readlinkSync(entry) : null,
     };
 
     // 应用map函数
@@ -198,7 +206,9 @@ async function processExtractedFiles(tempDir, destDir, options) {
         fs.mkdirSync(targetDir, { recursive: true });
       }
     } catch (error) {
-      throw new Error(`Failed to create directory ${targetDir}: ${error.message}`);
+      throw new Error(
+        `Failed to create directory ${targetDir}: ${error.message}`
+      );
     }
 
     // 根据修正后的类型处理
@@ -209,7 +219,9 @@ async function processExtractedFiles(tempDir, destDir, options) {
           fs.mkdirSync(dirPath, { recursive: true });
         }
       } catch (error) {
-        throw new Error(`Failed to create directory ${dirPath}: ${error.message}`);
+        throw new Error(
+          `Failed to create directory ${dirPath}: ${error.message}`
+        );
       }
     } else if (fileInfo.type === 'symlink') {
       // 处理符号链接
@@ -232,38 +244,25 @@ async function processExtractedFiles(tempDir, destDir, options) {
         // 创建符号链接
         fs.symlinkSync(linkTarget, targetPath);
       } catch (error) {
-        throw new Error(`Failed to create symlink ${path.join(destDir, fileInfo.path)}: ${error.message}`);
+        throw new Error(
+          `Failed to create symlink ${path.join(destDir, fileInfo.path)}: ${
+            error.message
+          }`
+        );
       }
     } else {
       try {
         fs.copyFileSync(entry, path.join(destDir, fileInfo.path));
       } catch (error) {
-        throw new Error(`Failed to copy file ${entry} to ${path.join(destDir, fileInfo.path)}: ${error.message}`);
+        throw new Error(
+          `Failed to copy file ${entry} to ${path.join(
+            destDir,
+            fileInfo.path
+          )}: ${error.message}`
+        );
       }
     }
   }
-}
-
-/**
- * 递归获取目录下的所有文件
- * @param {string} dir - 目录路径
- * @returns {Promise<string[]>} - 文件路径数组
- */
-async function getAllFiles(dir) {
-    const files = [];
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-
-    for (const entry of entries) {
-        const fullPath = path.join(dir, entry.name);
-
-        if (entry.isDirectory()) {
-            files.push(...await getAllFiles(fullPath));
-        } else {
-            files.push(fullPath);
-        }
-    }
-
-    return files;
 }
 
 /**
@@ -273,18 +272,18 @@ async function getAllFiles(dir) {
  */
 async function getAllFilesAndDirs(dir) {
   const result = [];
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
 
-    for (const entry of entries) {
-        const fullPath = path.join(dir, entry.name);
-      result.push(fullPath);
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    result.push(fullPath);
 
-        if (entry.isDirectory()) {
-          result.push(...await getAllFilesAndDirs(fullPath));
-        }
+    if (entry.isDirectory()) {
+      result.push(...(await getAllFilesAndDirs(fullPath)));
     }
+  }
 
-    return result;
+  return result;
 }
 
 module.exports = download;
