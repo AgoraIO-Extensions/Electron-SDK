@@ -219,8 +219,18 @@ async function processExtractedFiles(tempDir, destDir, options) {
         if (fs.existsSync(targetPath)) {
           fs.unlinkSync(targetPath);
         }
+
+        // 修复：处理相对路径的符号链接
+        let linkTarget = fileInfo.linkTarget;
+        // 检查是否是相对路径
+        if (!path.isAbsolute(linkTarget)) {
+          // 计算相对于目标文件的正确路径
+          const targetDir = path.dirname(targetPath);
+          linkTarget = path.resolve(targetDir, linkTarget);
+        }
+
         // 创建符号链接
-        fs.symlinkSync(fileInfo.linkTarget, targetPath);
+        fs.symlinkSync(linkTarget, targetPath);
       } catch (error) {
         throw new Error(`Failed to create symlink ${path.join(destDir, fileInfo.path)}: ${error.message}`);
       }
