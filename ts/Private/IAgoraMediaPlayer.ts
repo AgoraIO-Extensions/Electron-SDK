@@ -6,7 +6,6 @@ import {
   IAudioSpectrumObserver,
   RawAudioFrameOpModeType,
   RenderModeType,
-  VideoFrame,
 } from './AgoraMediaBase';
 import {
   MediaPlayerState,

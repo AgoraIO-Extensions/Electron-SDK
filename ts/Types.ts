@@ -10,6 +10,9 @@ import { RendererCache } from './Renderer/RendererCache';
 import { RendererManager } from './Renderer/RendererManager';
 import { WebCodecsRendererCache } from './Renderer/WebCodecsRendererCache';
 
+/**
+ * @ignore
+ */
 export enum VideoFallbackStrategy {
   /**
    * @ignore
@@ -177,12 +180,27 @@ export interface IAgoraElectronBridge {
  * @ignore
  */
 export enum IPCMessageType {
+  /**
+   * @ignore
+   */
   AGORA_IPC_GET_GPU_INFO = 'AGORA_IPC_GET_GPU_INFO',
 }
 
+/**
+ * @ignore
+ */
 interface CodecMappingItem {
+  /**
+   * @ignore
+   */
   codec: string;
+  /**
+   * @ignore
+   */
   type: VideoCodecType;
+  /**
+   * @ignore
+   */
   profile: string;
 }
 
@@ -208,9 +226,24 @@ export const codecMapping: CodecMappingItem[] = [
   },
 ];
 
+/**
+ * @ignore
+ */
 export interface CodecConfigInfo {
+  /**
+   * @ignore
+   */
   codecType: VideoCodecType | undefined;
+  /**
+   * @ignore
+   */
   codedWidth: number | undefined;
+  /**
+   * @ignore
+   */
   codedHeight: number | undefined;
+  /**
+   * @ignore
+   */
   rotation: number | undefined;
 }

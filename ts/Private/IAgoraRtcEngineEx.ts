@@ -145,6 +145,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    * Initializes the video view of a remote user.
    *
    * This method initializes the video view of a remote stream on the local device. It affects only the video view that the local user sees. Call this method to bind the remote video stream to a video view and to set the rendering and mirror modes of the video view. The application specifies the uid of the remote video in the VideoCanvas method before the remote user joins the channel. If the remote uid is unknown to the application, set it after the application receives the onUserJoined callback. If the Video Recording function is enabled, the Video Recording Service joins the channel as a dummy client, causing other clients to also receive the onUserJoined callback. Do not bind the dummy client to the application view because the dummy client does not send any video streams. To unbind the remote user from the view, set the view parameter to NULL. Once the remote user leaves the channel, the SDK unbinds the remote user.
+   *  Call this method after joinChannelEx.
    *  To update the rendering or mirror mode of the remote video view during a call, use the setRemoteRenderModeEx method.
    *
    * @param canvas The remote video view settings. See VideoCanvas.
@@ -929,7 +930,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * Enables tracing the video frame rendering process.
    *
-   * By default, the SDK starts tracing the video rendering event automatically when the local user successfully joins the channel. You can call this method at an appropriate time according to the actual application scenario to customize the tracing process.
+   * The SDK automatically starts tracking the rendering events of the video from the moment that you call joinChannel to join the channel. You can call this method at an appropriate time according to the actual application scenario to customize the tracing process.
    *  After the local user leaves the current channel, the SDK automatically resets the time point to the next time when the user successfully joins the channel. The SDK starts tracing the rendering status of the video frames in the channel from the moment this method is successfully called and reports information about the event through the onVideoRenderingTracingResult callback.
    *
    * @param connection The connection information. See RtcConnection.

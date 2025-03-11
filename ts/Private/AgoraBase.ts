@@ -1989,7 +1989,7 @@ export enum AudioProfileType {
    */
   AudioProfileMusicHighQualityStereo = 5,
   /**
-   * 6: A sample rate of 16 kHz, audio encoding, mono, and Acoustic Echo Cancellation (AES) enabled.
+   * 6: A sample rate of 16 kHz, audio encoding, mono, and Acoustic Echo Cancellation (AEC) enabled.
    */
   AudioProfileIot = 6,
   /**
@@ -2027,7 +2027,7 @@ export enum AudioScenarioType {
    */
   AudioScenarioAiServer = 9,
   /**
-   * @ignore
+   * 10: AI conversation scenario, which is only applicable to scenarios where the user interacts with the conversational AI agent created by.
    */
   AudioScenarioAiClient = 10,
   /**
@@ -2409,7 +2409,7 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonScreenCaptureResumed = 29,
   /**
-   * 30: The displayer used for screen capture is disconnected.
+   * 30: The displayer used for screen capture is disconnected. The current screen sharing has been paused. Prompt the user to restart the screen sharing.
    */
   LocalVideoStreamReasonScreenCaptureDisplayDisconnected = 30,
 }
@@ -3202,7 +3202,9 @@ export class TranscodingVideoStream {
    */
   remoteUserUid?: number;
   /**
-   * The URL of the image. Use this parameter only when the source type is the image for local video mixing.
+   * The file path of local images. Use this parameter only when the source type is the image for local video mixing. Examples:
+   *  macOS: ~/Pictures/image.png
+   *  Windows: C:\\Users\\{username}\\Pictures\\image.png
    */
   imageUrl?: string;
   /**
