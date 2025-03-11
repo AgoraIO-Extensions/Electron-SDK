@@ -85,14 +85,14 @@ export function classMix(...mixins: any[]): any {
   class MixClass {
     constructor() {
       for (let mixin of mixins) {
-        copyProperties(this, new mixin()); // 拷贝实例属性
+        copyProperties(this, new mixin()); // Copy instance properties
       }
     }
   }
 
   for (let mixin of mixins) {
-    copyProperties(MixClass, mixin); // 拷贝静态属性
-    copyProperties(MixClass.prototype, mixin.prototype); // 拷贝原型属性
+    copyProperties(MixClass, mixin); // Copy static properties
+    copyProperties(MixClass.prototype, mixin.prototype); // Copy prototype properties
   }
 
   return MixClass;

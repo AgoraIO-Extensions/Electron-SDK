@@ -1,8 +1,9 @@
-const path = require('path');
 const fs = require('fs');
-const download = require('./download');
+const path = require('path');
 
 const { cleanDir } = require('./clean');
+const download = require('./download');
+
 const getConfig = require('./getConfig');
 const logger = require('./logger');
 
@@ -32,7 +33,7 @@ const checkElectron = async (cb) => {
   await cleanDir(tp);
 
   await download(downloadUrl, tp, {
-    extract: true
+    extract: true,
   });
 
   logger.info(`Finish download:${downloadUrl}`);

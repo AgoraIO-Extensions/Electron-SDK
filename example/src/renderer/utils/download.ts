@@ -196,7 +196,9 @@ async function processExtractedFiles(
   }
 
   // 处理strip和应用filter
-  for (const [relativePath, { entry, fileInfo }] of Array.from(fileInfoMap.entries())) {
+  for (const [relativePath, { entry, fileInfo }] of Array.from(
+    fileInfoMap.entries()
+  )) {
     // 处理strip
     const parts = relativePath.split(path.sep);
     if (parts.length <= strip) continue;

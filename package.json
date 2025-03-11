@@ -140,7 +140,18 @@
     "ts-interface-checker": "^1.0.2",
     "winston": "^3.11.0",
     "yuv-buffer": "1.0.0",
-    "yuv-canvas": "1.2.6"
+    "yuv-canvas": "1.2.6",
+    "archive-type": "^4.0.0",
+    "content-disposition": "^0.5.2",
+    "decompress": "^4.2.1",
+    "ext-name": "^5.0.0",
+    "file-type": "^11.1.0",
+    "filenamify": "^3.0.0",
+    "get-stream": "^4.1.0",
+    "got": "^11.8.5",
+    "make-dir": "^2.1.0",
+    "p-event": "^2.1.0",
+    "pify": "^4.0.1"
   },
   "agora_electron": {
     "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.5.0-build.2_DCG_Windows_Video_Standalone_20241230_0238_587.zip",
