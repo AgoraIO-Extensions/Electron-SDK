@@ -1,11 +1,18 @@
 ﻿import { createCheckers } from 'ts-interface-checker';
 
+import { AgoraElectronBridge } from '../../Private/internal/IrisApiEngine';
 import { AgoraEnv, logError, parseIntPtr2Number } from '../../Utils';
+import { VideoEncoderConfiguration } from '../AgoraBase';
 let RendererManager: any;
-if (typeof window !== 'undefined') {
+let CapabilityManager: any;
+//@ts-ignore
+if (process.type === 'renderer') {
   RendererManager = require('../../Renderer/RendererManager').RendererManager;
+  CapabilityManager =
+    require('../../Renderer/CapabilityManager').CapabilityManager;
 } else {
   RendererManager = undefined;
+  CapabilityManager = undefined;
 }
 import {
   AudioEncodedFrameObserverConfig,
@@ -92,22 +99,25 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   private _h265_transcoder: IH265Transcoder = new H265TranscoderInternal();
 
   override initialize(context: RtcEngineContext): number {
+    const ret = super.initialize(context);
+    callIrisApi.call(this, 'RtcEngine_setAppType', {
+      appType: 3,
+    });
     if (AgoraEnv.webEnvReady) {
       // @ts-ignore
       window.AgoraEnv = AgoraEnv;
       if (AgoraEnv.AgoraRendererManager === undefined && RendererManager) {
         AgoraEnv.AgoraRendererManager = new RendererManager();
       }
+      if (AgoraEnv.CapabilityManager === undefined && CapabilityManager) {
+        AgoraEnv.CapabilityManager = new CapabilityManager();
+      }
     }
-    const ret = super.initialize(context);
-    callIrisApi.call(this, 'RtcEngine_setAppType', {
-      appType: 3,
-    });
     return ret;
   }
 
   override release(sync: boolean = false) {
-    AgoraEnv.AgoraElectronBridge.ReleaseRenderer();
+    AgoraElectronBridge.ReleaseRenderer();
     AgoraEnv.AgoraRendererManager?.release();
     AgoraEnv.AgoraRendererManager = undefined;
     this._media_engine.release();
@@ -127,6 +137,8 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     MediaRecorderInternal._observers.clear();
     this._h265_transcoder.release();
     this.removeAllListeners();
+    AgoraEnv.CapabilityManager?.release();
+    AgoraEnv.CapabilityManager = undefined;
     super.release(sync);
   }
 
@@ -326,6 +338,13 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return super.unregisterMediaMetadataObserver(observer, type);
   }
 
+  override setVideoEncoderConfiguration(
+    config: VideoEncoderConfiguration
+  ): number {
+    AgoraEnv.encodeAlpha = config?.advanceOptions?.encodeAlpha ?? false;
+    return super.setVideoEncoderConfiguration(config);
+  }
+
   protected override getApiTypeFromJoinChannel(
     token: string,
     channelId: string,
@@ -502,7 +521,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
         if (!value.thumbImage?.buffer || !value.thumbImage?.length) {
           value.thumbImage!.buffer = undefined;
         } else {
-          value.thumbImage!.buffer = AgoraEnv.AgoraElectronBridge.GetBuffer(
+          value.thumbImage!.buffer = AgoraElectronBridge.GetBuffer(
             value.thumbImage!.buffer as unknown as number,
             value.thumbImage.length!
           );
@@ -510,7 +529,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
         if (!value.iconImage?.buffer || !value.iconImage?.length) {
           value.iconImage!.buffer = undefined;
         } else {
-          value.iconImage.buffer = AgoraEnv.AgoraElectronBridge.GetBuffer(
+          value.iconImage.buffer = AgoraElectronBridge.GetBuffer(
             value.iconImage!.buffer as unknown as number,
             value.iconImage.length!
           );

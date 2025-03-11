@@ -65,7 +65,7 @@ export default class AgoraALD
     // Only need to enable audio on this case
     this.engine.enableAudio();
 
-    const url = `https://github.com/AgoraIO-Extensions/Electron-SDK/releases/download/v4.2.6-build.9-rc.1/AgoraALD.zip`;
+    const url = `https://download.agora.io/demo/test/ALD.zip`;
     const dllPath = path.resolve(os.tmpdir(), 'AgoraALD.driver');
     if (fs.existsSync(dllPath)) {
       fs.rmSync(dllPath, { recursive: true, force: true });
