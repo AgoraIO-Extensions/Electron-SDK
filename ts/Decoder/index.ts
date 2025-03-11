@@ -14,6 +14,7 @@ export class WebCodecsDecoder {
   private _decoder: VideoDecoder;
   private renderers: WebCodecsRenderer[] = [];
   private _cacheContext: RendererCacheContext;
+  // eslint-disable-next-line auto-import/auto-import
   private pendingFrame: VideoFrame | null = null;
   private _currentCodecConfig: CodecConfigInfo | null = null;
 
@@ -38,11 +39,13 @@ export class WebCodecsDecoder {
     });
   }
 
+  // eslint-disable-next-line auto-import/auto-import
   _output(frame: VideoFrame) {
     // Schedule the frame to be rendered.
     this._renderFrame(frame);
   }
 
+  // eslint-disable-next-line auto-import/auto-import
   private _renderFrame(frame: VideoFrame) {
     if (!this.pendingFrame) {
       // Schedule rendering in the next animation frame.

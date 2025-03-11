@@ -93,7 +93,6 @@
     "WebGLProgram": false,
     "WebGLUniformLocation": false,
     "VideoDecoder": false,
-    "VideoFrame": false,
     "EncodedVideoChunk":false,
     "HTMLCanvasElement": false,
     "ResizeObserver": false,
