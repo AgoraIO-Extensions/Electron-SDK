@@ -53,7 +53,9 @@ export default class StringUid
    * Step 1: getRtcEngine
    */
   protected async initRtcEngine() {
-    this.engine = createAgoraRtcEngine();
+    this.engine = createAgoraRtcEngine(); 
+		//@ts-ignore
+		window.aEngine = this.engine;
   }
 
   /**

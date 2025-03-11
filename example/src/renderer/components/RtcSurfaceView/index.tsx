@@ -95,7 +95,9 @@ export class RtcSurfaceView extends Component<Props, State> {
 
   getSetupVideoFunc = (): SetupVideoFunc => {
     const { canvas, connection } = this.props;
-    const engine = createAgoraRtcEngine();
+    const engine = createAgoraRtcEngine(); 
+    //@ts-ignore
+    window.aEngine = engine;
 
     let func: SetupVideoFunc;
 

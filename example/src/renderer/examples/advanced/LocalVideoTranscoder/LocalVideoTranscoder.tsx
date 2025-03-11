@@ -85,7 +85,9 @@ export default class LocalVideoTranscoder
       this.error(`appId is invalid`);
     }
 
-    this.engine = createAgoraRtcEngine();
+    this.engine = createAgoraRtcEngine(); 
+		//@ts-ignore
+		window.aEngine = this.engine;
     this.engine.registerEventHandler(this);
     this.engine.initialize({
       appId,

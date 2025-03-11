@@ -86,7 +86,9 @@ export default class JoinChannelVideo
       this.error(`appId is invalid`);
     }
 
-    this.engine = createAgoraRtcEngine();
+    this.engine = createAgoraRtcEngine(); 
+		//@ts-ignore
+		window.aEngine = this.engine;
     this.engine.initialize({
       appId,
       logConfig: { filePath: Config.logFilePath },
