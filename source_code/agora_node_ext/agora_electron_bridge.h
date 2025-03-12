@@ -30,6 +30,7 @@ class AgoraElectronBridge {
   static napi_value CallApi(napi_env env, napi_callback_info info);
   static napi_value GetBuffer(napi_env env, napi_callback_info info);
   static napi_value OnEvent(napi_env env, napi_callback_info info);
+  static napi_value UnEvent(napi_env env, napi_callback_info info);
   static napi_value EnableVideoFrameCache(napi_env env,
                                           napi_callback_info info);
   static napi_value DisableVideoFrameCache(napi_env env,

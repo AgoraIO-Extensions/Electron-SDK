@@ -8,6 +8,7 @@
 #include "agora_electron_bridge.h"
 #include <memory.h>
 #include <node_api.h>
+#include <regex>
 
 namespace agora {
 namespace rtc {
@@ -43,9 +44,25 @@ void NodeIrisEventHandler::addEvent(const std::string &eventName, napi_env &env,
       env, call_bcak, 1, &(_callbacks[eventName]->call_back_ref));
 }
 
+void NodeIrisEventHandler::removeEvent(const std::string &eventName) {
+  auto it = _callbacks.find(eventName);
+  if (it != _callbacks.end()) {
+    napi_delete_reference(it->second->env, it->second->call_back_ref);
+    delete it->second;
+    _callbacks.erase(it);
+  }
+}
+
 void NodeIrisEventHandler::OnEvent(EventParam *param) {
-  fireEvent(_callback_key, param->event, param->data, param->buffer,
-            param->length, param->buffer_count);
+  const char *event =
+      "VideoEncodedFrameObserver_onEncodedVideoFrameReceived_6922697";
+
+  if (strcmp(event, param->event) == 0) {
+    onEncodedVideoFrameReceived(param->data, param->buffer[0], param->length);
+  } else {
+    fireEvent(_callback_key, param->event, param->data, param->buffer,
+              param->length, param->buffer_count);
+  }
 }
 
 void NodeIrisEventHandler::fireEvent(const char *callback_name,
@@ -117,6 +134,50 @@ void NodeIrisEventHandler::fireEvent(const char *callback_name,
                                   argc, args, &result);
     }
   });
+}
+
+void NodeIrisEventHandler::onEncodedVideoFrameReceived(const char *data,
+                                                       void *buffer,
+                                                       unsigned int *length) {
+  std::string eventData = "";
+  if (data) { eventData = data; }
+  std::vector<unsigned char> buffer_data(length[0]);
+  memcpy(buffer_data.data(), buffer, length[0]);
+  std::string uid = "";
+  std::regex uidRegex(R"("uid"\s*:\s*(\d+))");
+  std::smatch match;
+  std::string jsonString(data);
+  if (std::regex_search(jsonString, match, uidRegex)) {
+    if (match.size() > 1) { uid = match[1].str(); }
+  }
+
+  unsigned int buffer_length = length[0];
+
+  node_async_call::async_call(
+      [this, eventData, buffer_data, buffer_length, uid] {
+        auto it = _callbacks.find("call_back_with_encoded_video_frame_" + uid);
+        if (it != _callbacks.end()) {
+          size_t argc = 2;
+          napi_value args[2];
+          napi_value result;
+          napi_status status;
+          status = napi_create_string_utf8(it->second->env, eventData.c_str(),
+                                           eventData.length(), &args[0]);
+
+          napi_create_buffer_copy(it->second->env, buffer_length,
+                                  buffer_data.data(), nullptr, &args[1]);
+
+          napi_value call_back_value;
+          status = napi_get_reference_value(
+              it->second->env, it->second->call_back_ref, &call_back_value);
+
+          napi_value recv_value;
+          status = napi_get_undefined(it->second->env, &recv_value);
+
+          status = napi_call_function(it->second->env, recv_value,
+                                      call_back_value, argc, args, &result);
+        }
+      });
 }
 
 }// namespace electron

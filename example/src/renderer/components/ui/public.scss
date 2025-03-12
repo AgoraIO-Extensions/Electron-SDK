@@ -4,6 +4,7 @@
   flex-direction: row;
   overflow: hidden;
   height: 100%;
+  position: relative;
 
   .card {
     height: 340px;
@@ -27,6 +28,18 @@
     flex-direction: column;
     padding: 16px 16px 0 16px;
     background-color: white;
+    position: relative;
+    &.hide {
+      flex: 0;
+      padding: 0 0 0 16px;
+    }
+  }
+
+  .rightBarIcon {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    cursor: pointer;
   }
 
   .rightBarBig {
@@ -39,6 +52,54 @@
 
     .require {
       color: red;
+    }
+  }
+
+  .meetContainer {
+    position: relative;
+    .meetMain {
+      position: absolute;
+      width: 80%;
+      left: 0;
+      top: 0;
+      .meetSurfaceViewContainer {
+        height: 500px;
+      }
+      .meetSurfaceViewVideo {
+        height: 500px;
+      }
+    }
+    .meetRight {
+      position: absolute;
+      width: 20%;
+      right: 0;
+      top: 0;
+      display: flex;
+      flex-wrap: wrap;
+      .meetRenderContainer {
+        max-width: 70px;
+      }
+    }
+  }
+
+  .meetRenderContainer {
+    position: relative;
+    span {
+      position: absolute;
+      width: 100%;
+      z-index: 333;
+      color: #fff;
+    }
+    .meetSurfaceViewContainer {
+      flex: 1;
+      height: 150px;
+    }
+
+    .meetSurfaceViewVideo {
+      flex: 1;
+      height: 150px;
+      background: #000000;
+      overflow: hidden;
     }
   }
 }

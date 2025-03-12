@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "4.5.1",
+  "version": "4.5.2",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk",
   "types": "types/AgoraSdk.d.ts",
@@ -11,6 +11,8 @@
     "types",
     "scripts",
     "!scripts/terra",
+    "!scripts/publishCN",
+    "!scripts/internal",
     "gulpfile.js",
     "CHANGELOG.md",
     "!**/__tests__"
@@ -65,6 +67,8 @@
     "@commitlint/config-conventional": "^17.0.2",
     "@evilmartians/lefthook": "^1.2.2",
     "@release-it/conventional-changelog": "^5.0.0",
+    "@types/dom-webcodecs": "^0.1.11",
+    "@types/node": "^22.8.2",
     "@types/jest": "^28.1.2",
     "@types/json-bigint": "^1.0.1",
     "@types/lodash.isequal": "^4.5.6",
@@ -138,6 +142,7 @@
     "lodash.isequal": "^4.5.0",
     "minimist": "^1.2.8",
     "shelljs": "^0.8.5",
+    "semver": "^7.6.0",
     "ts-interface-checker": "^1.0.2",
     "winston": "^3.11.0",
     "yuv-buffer": "1.0.0",
@@ -155,9 +160,9 @@
     "pify": "^4.0.1"
   },
   "agora_electron": {
-    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.5.0-build.2_DCG_Windows_Video_Standalone_20241230_0238_587.zip",
-    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.5.0-build.2_DCG_Mac_Video_Standalone_20241230_0238_546.zip",
-    "native_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_v4.5.0_FULL.zip",
-    "native_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v4.5.0_FULL.zip"
+    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.5.1-build.1_DCG_Windows_Video_Standalone_20250305_1103_622.zip",
+    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.5.1-build.1_DCG_Mac_Video_Standalone_20250305_1105_590.zip",
+    "native_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_v4.5.1_FULL.zip",
+    "native_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v4.5.1_FULL.zip"
   }
 }

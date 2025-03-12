@@ -1,6 +1,7 @@
 import path from 'path';
 import { format as formatUrl } from 'url';
 
+import 'agora-electron-sdk/js/Private/ipc/main.js';
 import { BrowserWindow, app, ipcMain, systemPreferences } from 'electron';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';

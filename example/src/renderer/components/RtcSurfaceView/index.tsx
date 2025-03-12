@@ -17,6 +17,8 @@ import styles from './index.scss';
 
 interface Props {
   canvas: VideoCanvas;
+  containerClass?: string;
+  videoClass?: string;
   connection?: RtcConnection;
 }
 
@@ -132,12 +134,12 @@ export class RtcSurfaceView extends Component<Props, State> {
   };
 
   render() {
-    const { canvas } = this.props;
+    const { canvas, containerClass, videoClass } = this.props;
     const { uniqueId } = this.state;
 
     return (
       <div
-        className={styles['window-item']}
+        className={containerClass ? containerClass : styles['window-item']}
         onClick={() => {
           this.setState((preState) => {
             return { isMirror: !preState.isMirror };
@@ -145,7 +147,7 @@ export class RtcSurfaceView extends Component<Props, State> {
         }}
       >
         <div
-          className={styles['video-item']}
+          className={videoClass ? videoClass : styles['video-item']}
           id={`video-${canvas.uid}-${uniqueId}`}
         />
       </div>
