@@ -11,6 +11,7 @@ const fileType = require('file-type');
 const filenamify = require('filenamify');
 const getStream = require('get-stream');
 const got = require('got');
+const makeDir = require('make-dir');
 const pEvent = require('p-event');
 const pify = require('pify');
 
@@ -89,13 +90,9 @@ module.exports = (uri, output, opts) => {
         return decompress(data, path.dirname(outputFilepath), opts);
       }
 
-      import('make-dir').then((module) => {
-        const { makeDirectory } = module;
-
-        return makeDirectory(path.dirname(outputFilepath))
-          .then(() => fsP.writeFile(outputFilepath, data))
-          .then(() => data);
-      });
+      return makeDir(path.dirname(outputFilepath))
+        .then(() => fsP.writeFile(outputFilepath, data))
+        .then(() => data);
     });
 
   stream.then = promise.then.bind(promise);
