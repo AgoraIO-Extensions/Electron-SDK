@@ -1,8 +1,8 @@
 const path = require('path');
 
-const download = require('download');
-
 const { destIrisSDKDir, cleanDir, destNativeSDKDir } = require('./clean');
+const download = require('./download');
+
 const getConfig = require('./getConfig');
 const logger = require('./logger');
 const { getOS, moveFile, getIrisStandAlone } = require('./util');
