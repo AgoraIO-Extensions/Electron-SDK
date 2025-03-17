@@ -1,12 +1,5 @@
 
 
-### Features
-
-* downlaod.js ([7e49fa6](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/7e49fa659c11f219e3d333112c9ae515651ee8f4))
-* remove pwd ([37e5d44](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/37e5d446542a42509f87e571142da93082751df2))
-* roll back example ([b0e7948](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/b0e79486d51629228465ad81c0e66ee65d3f3bdb))
-* update dependencies ([33cf7f6](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/33cf7f683e437484c67a0835222f37bf324f0f0e))
-
 ## [4.5.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.1...v4.5.2) (2025-03-11)
 
 
