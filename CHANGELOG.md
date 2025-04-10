@@ -1,5 +1,12 @@
 
 
+## [4.2.6-build.159-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.152-rc.1...v4.2.6-build.159-rc.1) (2025-04-10)
+
+
+### Features
+
+* support 4.2.6.159 ([#1282](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1282)) ([4d90aa1](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/4d90aa1df96adfbf8782e922a9e29f6ad7763e7f)), closes [#1281](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1281)
+
 ## [4.2.6-build.152-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.155-rc.1...v4.2.6-build.152-rc.1) (2025-02-21)
 
 
