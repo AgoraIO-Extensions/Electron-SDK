@@ -3,20 +3,20 @@ parsers:
     package: '@agoraio-extensions/terra-legacy-cxx-parser'
     args:
       includeHeaderDirs:
-        - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.153/include'
+        - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.159/include'
       parseFiles:
         include:
-          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.153/include/*.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.159/include/*.h'
         exclude:
-          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.153/include/AgoraRefPtr.h'
-          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.153/include/time_utils.h'
-          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.153/include/AgoraOptional.h'
-          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.153/include/AgoraRefPtr.h'
-          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.153/include/IAgoraH265Transcoder.h'
-          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.153/include/IAgoraMediaComponentFactory.h'
-          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.153/include/IAgoraParameter.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.159/include/AgoraRefPtr.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.159/include/time_utils.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.159/include/AgoraOptional.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.159/include/AgoraRefPtr.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.159/include/IAgoraH265Transcoder.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.159/include/IAgoraMediaComponentFactory.h'
+          - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.159/include/IAgoraParameter.h'
       customHeaders:
-        - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.153/custom_headers/*.h'
+        - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.6.159/custom_headers/*.h'
       language: ts
       definesMacros:
         - __ELECTRON__
