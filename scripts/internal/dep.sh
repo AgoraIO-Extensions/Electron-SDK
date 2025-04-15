@@ -16,7 +16,6 @@ IRIS_WINDOWS_DEPENDENCIES=$(echo "$INPUT" | jq -r '.[] | select(.platform == "Wi
 
 if [ -z "$MAC_DEPENDENCIES" ]; then
   echo "No mac native dependencies need to change."
-  exit 0
 else
   for DEP in $MAC_DEPENDENCIES; do
     sed 's|"native_sdk_mac": "\(.*\)"|"native_sdk_mac": "'"$DEP"'"|g' $PACKAGE_JSON_PATH > tmp
@@ -27,7 +26,6 @@ fi
 
 if [ -z "$IRIS_MAC_DEPENDENCIES" ]; then
   echo "No iris mac native dependencies need to change."
-  exit 0
 else
   for DEP in $IRIS_MAC_DEPENDENCIES; do
     if [[ "$DEP" == *Standalone* ]]; then
@@ -40,7 +38,6 @@ fi
 
 if [ -z "$WINDOWS_DEPENDENCIES" ]; then
   echo "No windows native dependencies need to change."
-  exit 0
 else
   sed 's|"native_sdk_win": "\(.*\)"|"native_sdk_win": "'"$WINDOWS_DEPENDENCIES"'"|g' $PACKAGE_JSON_PATH > tmp
   mv tmp package.json
@@ -48,7 +45,6 @@ fi
 
 if [ -z "$IRIS_WINDOWS_DEPENDENCIES" ]; then
   echo "No iris windows native dependencies need to change."
-  exit 0
 else
   for DEP in $IRIS_WINDOWS_DEPENDENCIES; do
     if [[ "$DEP" == *Standalone* ]]; then
