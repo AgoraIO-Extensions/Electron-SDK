@@ -42,7 +42,7 @@
     "release": "release-it",
     "example": "yarn --cwd example",
     "example:prepare": "yarn example && cross-env-shell gulp checkElectron \\\"--INIT_CWD=$INIT_CWD/example\\\" \"--electron_path=$INIT_CWD/example/node_modules/electron/dist\"",
-    "bootstrap": "yarn config set agora-electron-sdk-pre-built 0 && yarn example && yarn install && yarn patch-package && yarn build:ts-interface && yarn totalBuild && yarn link && yarn example link agora-electron-sdk && yarn config delete agora-electron-sdk-pre-built",
+    "bootstrap": "yarn config set agora-electron-sdk-pre-built 0 && yarn example && yarn install && yarn patch-package && yarn build:ts-interface && yarn totalBuild && yarn link && yarn example link agora-electron-sdk && yarn config delete agora-electron-sdk-pre-built && yarn example:prepare",
     "build:ts-interface": "ts-interface-builder ts/Private/*.ts -o ts/Private/ti/"
   },
   "keywords": [
