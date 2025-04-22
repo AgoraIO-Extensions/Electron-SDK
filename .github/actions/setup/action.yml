@@ -28,5 +28,5 @@ runs:
         yarn config set agora-electron-sdk-pre-built 0
         yarn install
         yarn patch-package
-         npx gulp --version
+        npx gulp --version
       shell: bash
