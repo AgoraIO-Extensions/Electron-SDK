@@ -93,6 +93,7 @@ jobs:
 
       - name: Prepare Build Example
         run: |
+          npx gulp --version
           yarn
         env:
           USE_HARD_LINKS: false
