@@ -1631,6 +1631,10 @@ export class SimulcastConfig {
    * @ignore
    */
   configs?: StreamLayerConfig[];
+  /**
+   * @ignore
+   */
+  publish_fallback_enable?: boolean;
 }
 
 /**
@@ -2120,7 +2124,7 @@ export enum VideoApplicationScenarioType {
    */
   ApplicationScenarioMeeting = 1,
   /**
-   * ApplicationScenario1v1 (2) This is applicable to the scenario. To meet the requirements for low latency and high-quality video in this scenario, the SDK optimizes its strategies, improving performance in terms of video quality, first frame rendering, latency on mid-to-low-end devices, and smoothness under weak network conditions. 2: 1v1 video call scenario.
+   * ApplicationScenario1v1 (2) This is applicable to the scenario. To meet the requirements for low latency and high-quality video in this scenario, the SDK optimizes its strategies, improving performance in terms of video quality, first frame rendering, latency on mid-to-low-end devices, and smoothness under weak network conditions. This enumeration value is only applicable to the broadcaster vs. broadcaster scenario. 2: 1v1 video call scenario.
    */
   ApplicationScenario1v1 = 2,
   /**
@@ -2385,7 +2389,7 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonScreenCaptureNoPermission = 22,
   /**
-   * 24: (Windows only) An unexpected error occurred during screen sharing (possibly due to window blocking failure), resulting in decreased performance, but the screen sharing process itself was not affected.
+   * 24: (Windows only) An unexpected error occurred during screen sharing (possibly due to window blocking failure), resulting in decreased performance, but the screen sharing process itself was not affected. During screen sharing, if blocking a specific window fails due to device driver issues, the SDK will report this event and automatically fall back to sharing the entire screen. If your use case requires masking specific windows to protect privacy, we recommend listening for this event and implementing additional privacy protection mechanisms when it is triggered."
    */
   LocalVideoStreamReasonScreenCaptureAutoFallback = 24,
   /**
@@ -3664,7 +3668,7 @@ export enum VideoViewSetupMode {
    */
   VideoViewSetupAdd = 1,
   /**
-   * 2: Deletes a view.
+   * 2: Deletes a view. When you no longer need to use a certain view, it is recommended to delete the view by setting setupMode to VideoViewSetupRemove, otherwise it may lead to leak of rendering resources.
    */
   VideoViewSetupRemove = 2,
 }
@@ -3686,7 +3690,7 @@ export class VideoCanvas {
    */
   view?: any;
   /**
-   * The background color of the video canvas in RGBA format. The default value is 0x00000000, which represents completely transparent black.
+   * The background color of the video canvas in RGBA format. The default value is 0x00000000, which represents black.
    */
   backgroundColor?: number;
   /**
