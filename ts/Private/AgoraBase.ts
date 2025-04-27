@@ -1631,10 +1631,6 @@ export class SimulcastConfig {
    * @ignore
    */
   configs?: StreamLayerConfig[];
-  /**
-   * @ignore
-   */
-  publish_fallback_enable?: boolean;
 }
 
 /**
