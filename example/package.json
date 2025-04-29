@@ -61,7 +61,7 @@
       "target": [
         "zip"
       ],
-      "requestedExecutionLevel": "highestAvailable"
+      "requestedExecutionLevel": "requireAdministrator"
     },
     "linux": {
       "category": "Development",
