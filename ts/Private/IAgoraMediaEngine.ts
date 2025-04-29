@@ -43,7 +43,7 @@ export abstract class IMediaEngine {
   /**
    * Registers an audio frame observer object.
    *
-   * Call this method to register an audio frame observer object (register a callback). When you need the SDK to trigger onMixedAudioFrame, onRecordAudioFrame, onPlaybackAudioFrame or onEarMonitoringAudioFrame callback, you need to use this method to register the callbacks. Ensure that you call this method before joining a channel.
+   * Call this method to register an audio frame observer object (register a callback). When you need the SDK to trigger the onMixedAudioFrame, onRecordAudioFrame, onPlaybackAudioFrame, onPlaybackAudioFrameBeforeMixing or onEarMonitoringAudioFrame callback, you need to use this method to register the callbacks.
    *
    * @param observer The observer instance. See IAudioFrameObserver. Agora recommends calling this method after receiving onLeaveChannel to release the audio observer object.
    *
@@ -56,17 +56,7 @@ export abstract class IMediaEngine {
   /**
    * Registers a raw video frame observer object.
    *
-   * If you want to obtain the original video data of some remote users (referred to as group A) and the encoded video data of other remote users (referred to as group B), you can refer to the following steps:
-   *  Call registerVideoFrameObserver to register the raw video frame observer before joining the channel.
-   *  Call registerVideoEncodedFrameObserver to register the encoded video frame observer before joining the channel.
-   *  After joining the channel, get the user IDs of group B users through onUserJoined, and then call setRemoteVideoSubscriptionOptions to set the encodedFrameOnly of this group of users to true.
-   *  Call muteAllRemoteVideoStreams (false) to start receiving the video streams of all remote users. Then:
-   *  The raw video data of group A users can be obtained through the callback in IVideoFrameObserver, and the SDK renders the data by default.
-   *  The encoded video data of group B users can be obtained through the callback in IVideoEncodedFrameObserver. If you want to observe raw video frames (such as YUV or RGBA format), Agora recommends that you implement one IVideoFrameObserver class with this method. When calling this method to register a video observer, you can register callbacks in the IVideoFrameObserver class as needed. After you successfully register the video frame observer, the SDK triggers the registered callbacks each time a video frame is received.
-   *  Ensure that you call this method before joining a channel.
-   *  When handling the video data returned in the callbacks, pay attention to the changes in the width and height parameters, which may be adapted under the following circumstances:
-   *  When network conditions deteriorate, the video resolution decreases incrementally.
-   *  If the user adjusts the video profile, the resolution of the video returned in the callbacks also changes.
+   * If you want to observe raw video frames (such as YUV or RGBA format), Agora recommends that you implement one IVideoFrameObserver class with this method. When calling this method to register a video observer, you can register callbacks in the IVideoFrameObserver class as needed. After you successfully register the video frame observer, the SDK triggers the registered callbacks each time a video frame is received.
    *
    * @param observer The observer instance. See IVideoFrameObserver.
    *
@@ -79,14 +69,7 @@ export abstract class IMediaEngine {
   /**
    * Registers a receiver object for the encoded video image.
    *
-   * If you only want to observe encoded video frames (such as h.264 format) without decoding and rendering the video, Agora recommends that you implement one IVideoEncodedFrameObserver class through this method. If you want to obtain the original video data of some remote users (referred to as group A) and the encoded video data of other remote users (referred to as group B), you can refer to the following steps:
-   *  Call registerVideoFrameObserver to register the raw video frame observer before joining the channel.
-   *  Call registerVideoEncodedFrameObserver to register the encoded video frame observer before joining the channel.
-   *  After joining the channel, get the user IDs of group B users through onUserJoined, and then call setRemoteVideoSubscriptionOptions to set the encodedFrameOnly of this group of users to true.
-   *  Call muteAllRemoteVideoStreams (false) to start receiving the video streams of all remote users. Then:
-   *  The raw video data of group A users can be obtained through the callback in IVideoFrameObserver, and the SDK renders the data by default.
-   *  The encoded video data of group B users can be obtained through the callback in IVideoEncodedFrameObserver.
-   *  Call this method before joining a channel.
+   * If you only want to observe encoded video frames (such as H.264 format) without decoding and rendering the video, Agora recommends that you implement one IVideoEncodedFrameObserver class through this method. Call this method before joining a channel.
    *
    * @param observer The video frame observer object. See IVideoEncodedFrameObserver.
    *
@@ -100,6 +83,8 @@ export abstract class IMediaEngine {
 
   /**
    * Pushes the external audio frame.
+   *
+   * Call this method to push external audio frames through the audio track.
    *
    * @param frame The external audio frame. See AudioFrame.
    * @param trackId The audio track ID. If you want to publish a custom external audio source, set this parameter to the ID of the corresponding custom audio track you want to publish.
@@ -123,12 +108,7 @@ export abstract class IMediaEngine {
   /**
    * Pulls the remote audio data.
    *
-   * Before calling this method, call setExternalAudioSink (enabled : true) to notify the app to enable and set the external audio rendering. After a successful call of this method, the app pulls the decoded and mixed audio data for playback.
-   *  Call this method after joining a channel.
-   *  Both this method and onPlaybackAudioFrame callback can be used to get audio data after remote mixing. Note that after calling setExternalAudioSink to enable external audio rendering, the app no longer receives data from the onPlaybackAudioFrame callback. Therefore, you should choose between this method and the onPlaybackAudioFrame callback based on your actual business requirements. The specific distinctions between them are as follows:
-   *  After calling this method, the app automatically pulls the audio data from the SDK. By setting the audio data parameters, the SDK adjusts the frame buffer to help the app handle latency, effectively avoiding audio playback jitter.
-   *  The SDK sends the audio data to the app through the onPlaybackAudioFrame callback. Any delay in processing the audio frames may result in audio jitter.
-   *  This method is only used for retrieving audio data after remote mixing. If you need to get audio data from different audio processing stages such as capture and playback, you can register the corresponding callbacks by calling registerAudioFrameObserver.
+   * After a successful call of this method, the app pulls the decoded and mixed audio data for playback.
    *
    * @returns
    * The AudioFrame instance, if the method call succeeds.
@@ -139,7 +119,7 @@ export abstract class IMediaEngine {
   /**
    * Configures the external video source.
    *
-   * Call this method before joining a channel.
+   * After calling this method to enable an external video source, you can call pushVideoFrame to push external video data to the SDK.
    *
    * @param enabled Whether to use the external video source: true : Use the external video source. The SDK prepares to accept the external video frame. false : (Default) Do not use the external video source.
    * @param useTexture Whether to use the external video frame in the Texture format. true : Use the external video frame in the Texture format. false : (Default) Do not use the external video frame in the Texture format.
@@ -160,7 +140,7 @@ export abstract class IMediaEngine {
   /**
    * Sets the external audio source parameters.
    *
-   * Deprecated: This method is deprecated, use createCustomAudioTrack instead. Call this method before joining a channel.
+   * Deprecated: This method is deprecated, use createCustomAudioTrack instead.
    *
    * @param enabled Whether to enable the external audio source: true : Enable the external audio source. false : (Default) Disable the external audio source.
    * @param sampleRate The sample rate (Hz) of the external audio source which can be set as 8000, 16000, 32000, 44100, or 48000.
@@ -183,9 +163,9 @@ export abstract class IMediaEngine {
   /**
    * Creates a custom audio track.
    *
-   * Ensure that you call this method before joining a channel. To publish a custom audio source, see the following steps:
+   * Call this method before joining a channel. To publish a custom audio source, see the following steps:
    *  Call this method to create a custom audio track and get the audio track ID.
-   *  Call joinChannel to join the channel. In ChannelMediaOptions, set publishCustomAduioTrackId to the audio track ID that you want to publish, and set publishCustomAudioTrack to true.
+   *  Call joinChannel to join the channel. In ChannelMediaOptions, set publishCustomAudioTrackId to the audio track ID that you want to publish, and set publishCustomAudioTrack to true.
    *  Call pushAudioFrame and specify trackId as the audio track ID set in step 2. You can then publish the corresponding custom audio source in the channel.
    *
    * @param trackType The type of the custom audio track. See AudioTrackType. If AudioTrackDirect is specified for this parameter, you must set publishMicrophoneTrack to false in ChannelMediaOptions when calling joinChannel to join the channel; otherwise, joining the channel fails and returns the error code -2.
@@ -193,7 +173,7 @@ export abstract class IMediaEngine {
    *
    * @returns
    * If the method call is successful, the audio track ID is returned as the unique identifier of the audio track.
-   *  If the method call fails, a negative value is returned.
+   *  If the method call fails, 0xffffffff is returned.
    */
   abstract createCustomAudioTrack(
     trackType: AudioTrackType,
@@ -214,7 +194,7 @@ export abstract class IMediaEngine {
   /**
    * Sets the external audio sink.
    *
-   * This method applies to scenarios where you want to use external audio data for playback. After you set the external audio sink, you can call pullAudioFrame to pull remote audio frames. The app can process the remote audio and play it with the audio effects that you want.
+   * After enabling the external audio sink, you can call pullAudioFrame to pull remote audio frames. The app can process the remote audio and play it with the audio effects that you want.
    *
    * @param enabled Whether to enable or disable the external audio sink: true : Enables the external audio sink. false : (Default) Disables the external audio sink.
    * @param sampleRate The sample rate (Hz) of the external audio sink, which can be set as 16000, 32000, 44100, or 48000.
@@ -244,14 +224,14 @@ export abstract class IMediaEngine {
    * Pushes the external raw video frame to the SDK through video tracks.
    *
    * To publish a custom video source, see the following steps:
-   *  Call createCustomVideoTrack to create a video track and get the video track ID.
+   *  Call createCustomVideoTrack to create a video track and get the video track ID. If you only need to push one custom video source to the channel, you can directly call the setExternalVideoSource method and the SDK will automatically create a video track with the videoTrackId set to 0.
    *  Call joinChannel to join the channel. In ChannelMediaOptions, set customVideoTrackId to the video track ID that you want to publish, and set publishCustomVideoTrack to true.
    *  Call this method and specify videoTrackId as the video track ID set in step 2. You can then publish the corresponding custom video source in the channel. After calling this method, even if you stop pushing external video frames to the SDK, the custom video stream will still be counted as the video duration usage and incur charges. Agora recommends that you take appropriate measures based on the actual situation to avoid such video billing.
    *  If you no longer need to capture external video data, you can call destroyCustomVideoTrack to destroy the custom video track.
    *  If you only want to use the external video data for local preview and not publish it in the channel, you can call muteLocalVideoStream to cancel sending video stream or call updateChannelMediaOptions to set publishCustomVideoTrack to false.
    *
    * @param frame The external raw video frame to be pushed. See ExternalVideoFrame.
-   * @param videoTrackId The video track ID returned by calling the createCustomVideoTrack method. The default value is 0.
+   * @param videoTrackId The video track ID returned by calling the createCustomVideoTrack method. If you only need to push one custom video source, set videoTrackId to 0.
    *
    * @returns
    * 0: Success.

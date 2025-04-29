@@ -2,23 +2,23 @@ import './extension/AgoraMediaBaseExtension';
 import { EncodedVideoFrameInfo } from './AgoraBase';
 
 /**
- * @ignore
+ * The context information of the extension.
  */
 export class ExtensionContext {
   /**
-   * @ignore
+   * Whether the uid in ExtensionContext is valid: true : The uid is valid. false : The uid is invalid.
    */
   isValid?: boolean;
   /**
-   * @ignore
+   * The user ID. 0 represents a local user, while greater than 0 represents a remote user.
    */
   uid?: number;
   /**
-   * @ignore
+   * The name of the extension provider.
    */
   providerName?: string;
   /**
-   * @ignore
+   * The name of the extension.
    */
   extensionName?: string;
 }
@@ -134,11 +134,11 @@ export enum AudioRoute {
    */
   RouteHeadsetbluetooth = 5,
   /**
-   * 7: The audio route is a USB peripheral device. (For macOS only)
+   * 6: The audio route is a USB peripheral device. (For macOS only)
    */
   RouteUsb = 6,
   /**
-   * 6: The audio route is an HDMI peripheral device. (For macOS only)
+   * 7: The audio route is an HDMI peripheral device. (For macOS only)
    */
   RouteHdmi = 7,
   /**
@@ -226,7 +226,7 @@ export enum MediaSourceType {
    */
   SecondaryScreenSource = 5,
   /**
-   * 6. Custom video source.
+   * 6: Custom video source.
    */
   CustomVideoSource = 6,
   /**
@@ -300,7 +300,7 @@ export enum ContentInspectType {
 }
 
 /**
- * A ContentInspectModule structure used to configure the frequency of video screenshot and upload.
+ * ContentInspectModule A structure used to configure the frequency of video screenshot and upload.
  */
 export class ContentInspectModule {
   /**
@@ -314,7 +314,7 @@ export class ContentInspectModule {
 }
 
 /**
- * Configuration of video screenshot and upload.
+ * Screenshot and upload configuration.
  */
 export class ContentInspectConfig {
   /**
@@ -470,11 +470,11 @@ export enum VideoPixelFormat {
  */
 export enum RenderModeType {
   /**
-   * 1: Hidden mode. Uniformly scale the video until one of its dimension fits the boundary (zoomed to fit). One dimension of the video may have clipped contents.
+   * 1: Hidden mode. The priority is to fill the window. Any excess video that does not match the window size will be cropped.
    */
   RenderModeHidden = 1,
   /**
-   * 2: Fit mode. Uniformly scale the video until one of its dimension fits the boundary (zoomed to fit). Areas that are not filled due to disparity in the aspect ratio are filled with black.
+   * 2: Fit mode. The priority is to ensure that all video content is displayed. Any areas of the window that are not filled due to the mismatch between video size and window size will be filled with black.
    */
   RenderModeFit = 2,
   /**
@@ -590,23 +590,29 @@ export class ExternalVideoFrame {
    */
   textureId?: number;
   /**
+   * @ignore
+   */
+  fence_object?: number;
+  /**
    * This parameter only applies to video data in Texture format. Incoming 4 × 4 transformational matrix. The typical value is a unit matrix.
    */
   matrix?: number[];
   /**
-   * This parameter only applies to video data in Texture format. The MetaData buffer. The default value is NULL.
+   * @ignore
    */
   metadata_buffer?: Uint8Array;
   /**
-   * This parameter only applies to video data in Texture format. The MetaData size. The default value is 0.
+   * @ignore
    */
   metadata_size?: number;
   /**
-   * @ignore
+   * The alpha channel data output by using portrait segmentation algorithm. This data matches the size of the video frame, with each pixel value ranging from [0,255], where 0 represents the background and 255 represents the foreground (portrait). By setting this parameter, you can render the video background into various effects, such as transparent, solid color, image, video, etc. In custom video rendering scenarios, ensure that both the video frame and alphaBuffer are of the Full Range type; other types may cause abnormal alpha data rendering.
    */
   alphaBuffer?: Uint8Array;
   /**
-   * @ignore
+   * This parameter only applies to video data in BGRA or RGBA format. Whether to extract the alpha channel data from the video frame and automatically fill it into alphaBuffer : true ：Extract and fill the alpha channel data. false : (Default) Do not extract and fill the Alpha channel data. For video data in BGRA or RGBA format, you can set the Alpha channel data in either of the following ways:
+   *  Automatically by setting this parameter to true.
+   *  Manually through the alphaBuffer parameter.
    */
   fillAlphaBuffer?: boolean;
 }
@@ -630,15 +636,15 @@ export class VideoFrame {
    */
   height?: number;
   /**
-   * For YUV data, the line span of the Y buffer; for RGBA data, the total data length.
+   * For YUV data, the line span of the Y buffer; for RGBA data, the total data length. When dealing with video data, it is necessary to process the offset between each line of pixel data based on this parameter, otherwise it may result in image distortion.
    */
   yStride?: number;
   /**
-   * For YUV data, the line span of the U buffer; for RGBA data, the value is 0.
+   * For YUV data, the line span of the U buffer; for RGBA data, the value is 0. When dealing with video data, it is necessary to process the offset between each line of pixel data based on this parameter, otherwise it may result in image distortion.
    */
   uStride?: number;
   /**
-   * For YUV data, the line span of the V buffer; for RGBA data, the value is 0.
+   * For YUV data, the line span of the V buffer; for RGBA data, the value is 0. When dealing with video data, it is necessary to process the offset between each line of pixel data based on this parameter, otherwise it may result in image distortion.
    */
   vStride?: number;
   /**
@@ -658,7 +664,7 @@ export class VideoFrame {
    */
   rotation?: number;
   /**
-   * The Unix timestamp (ms) when the video frame is rendered. This timestamp can be used to guide the rendering of the video frame. It is required.
+   * The Unix timestamp (ms) when the video frame is rendered. This timestamp can be used to guide the rendering of the video frame. This parameter is required.
    */
   renderTimeMs?: number;
   /**
@@ -678,11 +684,17 @@ export class VideoFrame {
    */
   textureId?: number;
   /**
+   * @ignore
+   */
+  fence_object?: number;
+  /**
    * This parameter only applies to video data in Texture format. Incoming 4 × 4 transformational matrix. The typical value is a unit matrix.
    */
   matrix?: number[];
   /**
-   * @ignore
+   * The alpha channel data output by using portrait segmentation algorithm. This data matches the size of the video frame, with each pixel value ranging from [0,255], where 0 represents the background and 255 represents the foreground (portrait). By setting this parameter, you can render the video background into various effects, such as transparent, solid color, image, video, etc.
+   *  In custom video rendering scenarios, ensure that both the video frame and alphaBuffer are of the Full Range type; other types may cause abnormal alpha data rendering.
+   *  Make sure that alphaBuffer is exactly the same size as the video frame (width × height), otherwise it may cause the app to crash.
    */
   alphaBuffer?: Uint8Array;
   /**
@@ -752,7 +764,7 @@ export class AudioFrame {
    */
   samplesPerChannel?: number;
   /**
-   * The number of bytes per sample. The number of bytes per audio sample, which is usually 16-bit (2-byte).
+   * The number of bytes per sample. For PCM, this parameter is generally set to 16 bits (2 bytes).
    */
   bytesPerSample?: BytesPerSample;
   /**
@@ -861,9 +873,6 @@ export interface IAudioFrameObserverBase {
    *
    * @param channelId The channel ID.
    * @param audioFrame The raw audio data. See AudioFrame.
-   *
-   * @returns
-   * Without practical meaning.
    */
   onRecordAudioFrame?(channelId: string, audioFrame: AudioFrame): void;
 
@@ -879,9 +888,6 @@ export interface IAudioFrameObserverBase {
    *
    * @param channelId The channel ID.
    * @param audioFrame The raw audio data. See AudioFrame.
-   *
-   * @returns
-   * Without practical meaning.
    */
   onPlaybackAudioFrame?(channelId: string, audioFrame: AudioFrame): void;
 
@@ -892,9 +898,6 @@ export interface IAudioFrameObserverBase {
    *
    * @param channelId The channel ID.
    * @param audioFrame The raw audio data. See AudioFrame.
-   *
-   * @returns
-   * Without practical meaning.
    */
   onMixedAudioFrame?(channelId: string, audioFrame: AudioFrame): void;
 
@@ -904,9 +907,6 @@ export interface IAudioFrameObserverBase {
    * In order to ensure that the obtained in-ear audio data meets the expectations, Agora recommends that you set the in-ear monitoring-ear audio data format as follows: After calling setEarMonitoringAudioFrameParameters to set the audio data format and registerAudioFrameObserver to register the audio frame observer object, the SDK calculates the sampling interval according to the parameters set in the methods, and triggers the onEarMonitoringAudioFrame callback according to the sampling interval.
    *
    * @param audioFrame The raw audio data. See AudioFrame.
-   *
-   * @returns
-   * Without practical meaning.
    */
   onEarMonitoringAudioFrame?(audioFrame: AudioFrame): void;
 }
@@ -916,14 +916,13 @@ export interface IAudioFrameObserverBase {
  */
 export interface IAudioFrameObserver extends IAudioFrameObserverBase {
   /**
-   * Retrieves the audio frame of a specified user before mixing.
+   * Retrieves the audio frame before mixing of subscribed remote users.
+   *
+   * Due to framework limitations, this callback does not support sending processed audio data back to the SDK.
    *
    * @param channelId The channel ID.
-   * @param uid The user ID of the specified user.
+   * @param uid The ID of subscribed remote users.
    * @param audioFrame The raw audio data. See AudioFrame.
-   *
-   * @returns
-   * Without practical meaning.
    */
   onPlaybackAudioFrameBeforeMixing?(
     channelId: string,
@@ -967,12 +966,9 @@ export interface IAudioSpectrumObserver {
   /**
    * Gets the statistics of a local audio spectrum.
    *
-   * After successfully calling registerAudioSpectrumObserver to implement the onLocalAudioSpectrum callback in IAudioSpectrumObserver and calling enableAudioSpectrumMonitor to enable audio spectrum monitoring, the SDK will trigger the callback as the time interval you set to report the received remote audio data spectrum.
+   * After successfully calling registerAudioSpectrumObserver to implement the onLocalAudioSpectrum callback in IAudioSpectrumObserver and calling enableAudioSpectrumMonitor to enable audio spectrum monitoring, the SDK triggers this callback as the time interval you set to report the received remote audio data spectrum before encoding.
    *
    * @param data The audio spectrum data of the local user. See AudioSpectrumData.
-   *
-   * @returns
-   * Whether the spectrum data is received: true : Spectrum data is received. false : No spectrum data is received.
    */
   onLocalAudioSpectrum?(data: AudioSpectrumData): void;
 
@@ -981,11 +977,8 @@ export interface IAudioSpectrumObserver {
    *
    * After successfully calling registerAudioSpectrumObserver to implement the onRemoteAudioSpectrum callback in the IAudioSpectrumObserver and calling enableAudioSpectrumMonitor to enable audio spectrum monitoring, the SDK will trigger the callback as the time interval you set to report the received remote audio data spectrum.
    *
-   * @param spectrums The audio spectrum information of the remote user, see UserAudioSpectrumInfo. The number of arrays is the number of remote users monitored by the SDK. If the array is null, it means that no audio spectrum of remote users is detected.
+   * @param spectrums The audio spectrum information of the remote user. See UserAudioSpectrumInfo. The number of arrays is the number of remote users monitored by the SDK. If the array is null, it means that no audio spectrum of remote users is detected.
    * @param spectrumNumber The number of remote users.
-   *
-   * @returns
-   * Whether the spectrum data is received: true : Spectrum data is received. false : No spectrum data is received.
    */
   onRemoteAudioSpectrum?(
     spectrums: UserAudioSpectrumInfo[],
@@ -1006,9 +999,6 @@ export interface IVideoEncodedFrameObserver {
    * @param imageBuffer The encoded video image buffer.
    * @param length The data length of the video image.
    * @param videoEncodedFrameInfo For the information of the encoded video frame, see EncodedVideoFrameInfo.
-   *
-   * @returns
-   * Without practical meaning.
    */
   onEncodedVideoFrameReceived?(
     uid: number,
@@ -1039,18 +1029,12 @@ export interface IVideoFrameObserver {
   /**
    * Occurs each time the SDK receives a video frame captured by local devices.
    *
-   * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data captured by local devices. You can then pre-process the data according to your scenarios. Once the pre-processing is complete, you can directly modify videoFrame in this callback, and set the return value to true to send the modified video data to the SDK.
-   *  The video data that this callback gets has not been pre-processed such as watermarking, cropping, and rotating.
-   *  If the video data type you get is RGBA, the SDK does not support processing the data of the alpha channel.
+   * You can get raw video data collected by the local device through this callback.
    *
    * @param sourceType Video source types, including cameras, screens, or media player. See VideoSourceType.
    * @param videoFrame The video frame. See VideoFrame. The default value of the video frame data format obtained through this callback is as follows:
-   *  macOS: I420 or CVPixelBufferRef
+   *  macOS: I420
    *  Windows: YUV420
-   *
-   * @returns
-   * When the video processing mode is ProcessModeReadOnly : true : Reserved for future use. false : Reserved for future use.
-   *  When the video processing mode is ProcessModeReadWrite : true : Sets the SDK to receive the video frame. false : Sets the SDK to discard the video frame.
    */
   onCaptureVideoFrame?(type: VideoSourceType, videoFrame: VideoFrame): void;
 
@@ -1058,16 +1042,15 @@ export interface IVideoFrameObserver {
    * Occurs each time the SDK receives a video frame before encoding.
    *
    * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data before encoding and then process the data according to your particular scenarios. After processing, you can send the processed video data back to the SDK in this callback.
+   *  It is recommended that you ensure the modified parameters in videoFrame are consistent with the actual situation of the video frames in the video frame buffer. Otherwise, it may cause unexpected rotation, distortion, and other issues in the local preview and remote video display.
+   *  It's recommended that you implement this callback through the C++ API.
+   *  Due to framework limitations, this callback does not support sending processed video data back to the SDK.
    *  The video data that this callback gets has been preprocessed, with its content cropped and rotated, and the image enhanced.
    *
    * @param videoFrame The video frame. See VideoFrame. The default value of the video frame data format obtained through this callback is as follows:
-   *  macOS: I420 or CVPixelBufferRef
+   *  macOS: I420
    *  Windows: YUV420
    * @param sourceType The type of the video source. See VideoSourceType.
-   *
-   * @returns
-   * When the video processing mode is ProcessModeReadOnly : true : Reserved for future use. false : Reserved for future use.
-   *  When the video processing mode is ProcessModeReadWrite : true : Sets the SDK to receive the video frame. false : Sets the SDK to discard the video frame.
    */
   onPreEncodeVideoFrame?(type: VideoSourceType, videoFrame: VideoFrame): void;
 
@@ -1080,17 +1063,16 @@ export interface IVideoFrameObserver {
    * Occurs each time the SDK receives a video frame sent by the remote user.
    *
    * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data sent from the remote end before rendering, and then process it according to the particular scenarios.
+   *  It is recommended that you ensure the modified parameters in videoFrame are consistent with the actual situation of the video frames in the video frame buffer. Otherwise, it may cause unexpected rotation, distortion, and other issues in the local preview and remote video display.
    *  If the video data type you get is RGBA, the SDK does not support processing the data of the alpha channel.
+   *  It's recommended that you implement this callback through the C++ API.
+   *  Due to framework limitations, this callback does not support sending processed video data back to the SDK.
    *
    * @param channelId The channel ID.
    * @param remoteUid The user ID of the remote user who sends the current video frame.
    * @param videoFrame The video frame. See VideoFrame. The default value of the video frame data format obtained through this callback is as follows:
-   *  macOS: I420 or CVPixelBufferRef
+   *  macOS: I420
    *  Windows: YUV420
-   *
-   * @returns
-   * When the video processing mode is ProcessModeReadOnly : true : Reserved for future use. false : Reserved for future use.
-   *  When the video processing mode is ProcessModeReadWrite : true : Sets the SDK to receive the video frame. false : Sets the SDK to discard the video frame.
    */
   onRenderVideoFrame?(
     channelId: string,

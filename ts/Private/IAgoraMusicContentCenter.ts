@@ -393,6 +393,11 @@ export abstract class IMusicContentCenter {
   /**
    * @ignore
    */
+  abstract preload(songCode: number, jsonOption: string): number;
+
+  /**
+   * @ignore
+   */
   abstract preload(songCode: number): string;
 
   /**
