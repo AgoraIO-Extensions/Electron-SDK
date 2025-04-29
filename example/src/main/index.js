@@ -11,6 +11,9 @@ app.allowRendererProcessReuse = false;
 let mainWindow;
 
 function createMainWindow() {
+  app.commandLine.appendSwitch('no-sandbox');
+  app.commandLine.appendSwitch('in-process-gpu');
+
   const window = new BrowserWindow({
     width: 1024,
     height: 728,
