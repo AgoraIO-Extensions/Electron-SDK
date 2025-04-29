@@ -18,6 +18,7 @@ function createMainWindow() {
       nodeIntegration: true,
       contextIsolation: false,
       webSecurity: false,
+      sandbox: false,
     },
   });
 
