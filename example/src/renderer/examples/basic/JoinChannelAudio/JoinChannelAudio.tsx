@@ -326,7 +326,7 @@ export default class JoinChannelAudio
     }
   }
 
-  setAudioAINSMode(): void {
+  setAudioAINSMode = () => {
     const {
       enableAINSMode,
       AINSMode,
@@ -344,7 +344,7 @@ export default class JoinChannelAudio
       })
     );
     this.engine?.setAINSMode(enableAINSMode, AINSMode);
-  }
+  };
 
   protected renderUser(user: VideoCanvas): ReactElement | undefined {
     return (
@@ -430,9 +430,7 @@ export default class JoinChannelAudio
           items={enumToItems(AudioAinsMode)}
           value={AINSMode}
           onValueChange={(value, index) => {
-            this.setState((preState) => {
-              return { AINSMode: preState.AINSMode };
-            });
+            this.setState({ AINSMode: value });
           }}
         />
         <AgoraText>aec_linear_filter_type:</AgoraText>
