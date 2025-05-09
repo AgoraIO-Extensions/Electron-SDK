@@ -1,4 +1,5 @@
 import {
+  AudioAinsMode,
   AudioVolumeInfo,
   ChannelProfileType,
   ClientRoleType,
@@ -26,9 +27,14 @@ import {
   AgoraButton,
   AgoraCard,
   AgoraDivider,
+  AgoraDropdown,
   AgoraSlider,
+  AgoraSwitch,
+  AgoraText,
+  AgoraTextInput,
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
+import { enumToItems } from '../../../utils';
 import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseAudioComponentState {
@@ -42,6 +48,10 @@ interface State extends BaseAudioComponentState {
   cpuAppUsage?: number;
   cpuTotalUsage?: number;
   txPacketLossRate?: number;
+  enableAINSMode: boolean;
+  AINSMode: AudioAinsMode;
+  aec_linear_filter_type: number;
+  aec_filter_length_ms: number;
   remoteUserStatsList: Map<
     number,
     { volume: number; remoteAudioStats: RemoteAudioStats }
@@ -72,6 +82,10 @@ export default class JoinChannelAudio
       cpuAppUsage: 0,
       cpuTotalUsage: 0,
       txPacketLossRate: 0,
+      enableAINSMode: false,
+      AINSMode: AudioAinsMode.AinsModeBalanced,
+      aec_linear_filter_type: 1,
+      aec_filter_length_ms: 400,
     };
   }
 
@@ -312,6 +326,26 @@ export default class JoinChannelAudio
     }
   }
 
+  setAudioAINSMode(): void {
+    const {
+      enableAINSMode,
+      AINSMode,
+      aec_linear_filter_type,
+      aec_filter_length_ms,
+    } = this.state;
+    this.engine?.setParameters(
+      JSON.stringify({
+        'che.audio.aec.linear_filter_type': aec_linear_filter_type,
+      })
+    );
+    this.engine?.setParameters(
+      JSON.stringify({
+        'che.audio.aec.filter.length.ms': aec_filter_length_ms,
+      })
+    );
+    this.engine?.setAINSMode(enableAINSMode, AINSMode);
+  }
+
   protected renderUser(user: VideoCanvas): ReactElement | undefined {
     return (
       <AgoraCard
@@ -381,9 +415,69 @@ export default class JoinChannelAudio
   }
 
   protected renderConfiguration(): ReactElement | undefined {
-    const { recordingSignalVolume, playbackSignalVolume } = this.state;
+    const {
+      recordingSignalVolume,
+      playbackSignalVolume,
+      AINSMode,
+      aec_linear_filter_type,
+      aec_filter_length_ms,
+      enableAINSMode,
+    } = this.state;
     return (
       <>
+        <AgoraDropdown
+          title={'AINSMode'}
+          items={enumToItems(AudioAinsMode)}
+          value={AINSMode}
+          onValueChange={(value, index) => {
+            this.setState((preState) => {
+              return { AINSMode: preState.AINSMode };
+            });
+          }}
+        />
+        <AgoraText>aec_linear_filter_type:</AgoraText>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              aec_linear_filter_type:
+                text === '' ? this.createState().aec_linear_filter_type : +text,
+            });
+          }}
+          numberKeyboard={true}
+          title={`aec_linear_filter_type`}
+          placeholder={`aec_linear_filter_type`}
+          value={
+            aec_linear_filter_type > 0 ? aec_linear_filter_type.toString() : ''
+          }
+        />
+        <AgoraText>aec_filter_length_ms:</AgoraText>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              aec_filter_length_ms:
+                text === '' ? this.createState().aec_filter_length_ms : +text,
+            });
+          }}
+          numberKeyboard={true}
+          title={`aec_filter_length_ms`}
+          placeholder={`aec_filter_length_ms`}
+          value={
+            aec_filter_length_ms > 0 ? aec_filter_length_ms.toString() : ''
+          }
+        />
+        <AgoraSwitch
+          title={'enableAINSMode'}
+          value={enableAINSMode}
+          onValueChange={(value) => {
+            this.setState({ enableAINSMode: value });
+          }}
+        />
+        <AgoraButton
+          title={'setAudioAINSMode'}
+          onPress={this.setAudioAINSMode}
+        />
         <AgoraSlider
           title={`recordingSignalVolume ${recordingSignalVolume}`}
           minimumValue={0}
