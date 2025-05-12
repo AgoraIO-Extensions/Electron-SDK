@@ -1,4 +1,5 @@
 import {
+  AudioAinsMode,
   ChannelProfileType,
   ClientRoleType,
   ErrorCodeType,
@@ -26,11 +27,14 @@ import {
 import {
   AgoraButton,
   AgoraDropdown,
+  AgoraSwitch,
+  AgoraText,
+  AgoraTextInput,
   AgoraView,
   RtcSurfaceView,
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
-import { arrayToItems } from '../../../utils';
+import { arrayToItems, enumToItems } from '../../../utils';
 import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
@@ -44,6 +48,12 @@ interface State extends BaseVideoComponentState {
   cpuAppUsage?: number;
   cpuTotalUsage?: number;
   txPacketLossRate?: number;
+  enableAINSMode: boolean;
+  AINSMode: AudioAinsMode;
+  aec_linear_filter_type: number;
+  aec_filter_length_ms: number;
+  aec_delay_search_range_ms: number;
+  aec_aggressiveness: number;
   remoteUserStatsList: Map<
     number,
     { remoteVideoStats: RemoteVideoStats; remoteAudioStats: RemoteAudioStats }
@@ -74,6 +84,12 @@ export default class JoinChannelVideo
       cpuTotalUsage: 0,
       txPacketLossRate: 0,
       startPreview: false,
+      enableAINSMode: true,
+      AINSMode: AudioAinsMode.AinsModeBalanced,
+      aec_linear_filter_type: 1,
+      aec_filter_length_ms: 400,
+      aec_delay_search_range_ms: 512,
+      aec_aggressiveness: 2,
     };
   }
 
@@ -105,6 +121,8 @@ export default class JoinChannelVideo
     // Start preview before joinChannel
     this.engine.startPreview();
     this.setState({ startPreview: true });
+
+    this.setAudioAINSMode();
   }
 
   /**
@@ -250,6 +268,39 @@ export default class JoinChannelVideo
     }
   }
 
+  setAudioAINSMode = () => {
+    const {
+      enableAINSMode,
+      AINSMode,
+      aec_linear_filter_type,
+      aec_filter_length_ms,
+      aec_delay_search_range_ms,
+    } = this.state;
+    this.engine?.setParameters(
+      JSON.stringify({
+        'che.audio.aec.linear_filter_type': aec_linear_filter_type,
+      })
+    );
+    this.engine?.setParameters(
+      JSON.stringify({
+        'che.audio.aec.filter.length.ms': aec_filter_length_ms,
+      })
+    );
+    this.engine?.setParameters(
+      JSON.stringify({
+        'che.audio.aec.delay_search_range.ms': aec_delay_search_range_ms,
+      })
+    );
+    this.engine?.setAINSMode(enableAINSMode, AINSMode);
+  };
+
+  setAecAggressiveness = () => {
+    const { aec_aggressiveness } = this.state;
+    this.engine?.setParameters(
+      JSON.stringify({ 'che.audio.aec.aggressiveness': aec_aggressiveness })
+    );
+  };
+
   protected renderUsers(): ReactElement | undefined {
     return super.renderUsers();
   }
@@ -335,9 +386,108 @@ export default class JoinChannelVideo
   }
 
   protected renderConfiguration(): ReactElement | undefined {
-    const { joinChannelSuccess, remoteUsers, selectedUser } = this.state;
+    const {
+      joinChannelSuccess,
+      remoteUsers,
+      selectedUser,
+      AINSMode,
+      aec_linear_filter_type,
+      aec_filter_length_ms,
+      aec_delay_search_range_ms,
+      enableAINSMode,
+      aec_aggressiveness,
+    } = this.state;
     return (
       <>
+        <AgoraDropdown
+          title={'AINSMode'}
+          items={enumToItems(AudioAinsMode)}
+          value={AINSMode}
+          onValueChange={(value, index) => {
+            this.setState({ AINSMode: value });
+          }}
+        />
+        <AgoraText>aec_linear_filter_type:</AgoraText>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              aec_linear_filter_type:
+                text === '' ? this.createState().aec_linear_filter_type : +text,
+            });
+          }}
+          numberKeyboard={true}
+          title={`aec_linear_filter_type`}
+          placeholder={`aec_linear_filter_type`}
+          value={
+            aec_linear_filter_type > 0 ? aec_linear_filter_type.toString() : ''
+          }
+        />
+        <AgoraText>aec_filter_length_ms:</AgoraText>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              aec_filter_length_ms:
+                text === '' ? this.createState().aec_filter_length_ms : +text,
+            });
+          }}
+          numberKeyboard={true}
+          title={`aec_filter_length_ms`}
+          placeholder={`aec_filter_length_ms`}
+          value={
+            aec_filter_length_ms > 0 ? aec_filter_length_ms.toString() : ''
+          }
+        />
+        <AgoraText>aec_delay_search_range_ms:</AgoraText>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              aec_delay_search_range_ms:
+                text === ''
+                  ? this.createState().aec_delay_search_range_ms
+                  : +text,
+            });
+          }}
+          numberKeyboard={true}
+          title={`aec_delay_search_range_ms`}
+          placeholder={`aec_delay_search_range_ms`}
+          value={
+            aec_delay_search_range_ms > 0
+              ? aec_delay_search_range_ms.toString()
+              : ''
+          }
+        />
+        <AgoraSwitch
+          title={'enableAINSMode'}
+          value={enableAINSMode}
+          onValueChange={(value) => {
+            this.setState({ enableAINSMode: value });
+          }}
+        />
+        <AgoraButton
+          title={'setAudioAINSMode'}
+          onPress={this.setAudioAINSMode}
+        />
+        <AgoraText>aec_aggressiveness:</AgoraText>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              aec_aggressiveness:
+                text === '' ? this.createState().aec_aggressiveness : +text,
+            });
+          }}
+          numberKeyboard={true}
+          title={`aec_aggressiveness`}
+          placeholder={`aec_aggressiveness`}
+          value={aec_aggressiveness > 0 ? aec_aggressiveness.toString() : ''}
+        />
+        <AgoraButton
+          title={'setAecAggressiveness'}
+          onPress={this.setAecAggressiveness}
+        />
         {joinChannelSuccess ? (
           <>
             <AgoraDropdown
