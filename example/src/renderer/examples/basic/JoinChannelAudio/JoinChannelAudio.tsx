@@ -84,7 +84,7 @@ export default class JoinChannelAudio
       cpuAppUsage: 0,
       cpuTotalUsage: 0,
       txPacketLossRate: 0,
-      enableAINSMode: false,
+      enableAINSMode: true,
       AINSMode: AudioAinsMode.AinsModeBalanced,
       aec_linear_filter_type: 1,
       aec_filter_length_ms: 400,
