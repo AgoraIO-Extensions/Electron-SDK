@@ -52,6 +52,8 @@ interface State extends BaseAudioComponentState {
   AINSMode: AudioAinsMode;
   aec_linear_filter_type: number;
   aec_filter_length_ms: number;
+  aec_delay_search_range_ms: number;
+  aec_aggressiveness: number;
   remoteUserStatsList: Map<
     number,
     { volume: number; remoteAudioStats: RemoteAudioStats }
@@ -86,6 +88,8 @@ export default class JoinChannelAudio
       AINSMode: AudioAinsMode.AinsModeBalanced,
       aec_linear_filter_type: 1,
       aec_filter_length_ms: 400,
+      aec_delay_search_range_ms: 512,
+      aec_aggressiveness: 2,
     };
   }
 
@@ -113,6 +117,8 @@ export default class JoinChannelAudio
     // Only need to enable audio on this case
     this.engine.enableAudio();
     this.engine.enableAudioVolumeIndication(200, 3, true);
+
+    this.setAudioAINSMode();
   }
 
   /**
@@ -332,6 +338,7 @@ export default class JoinChannelAudio
       AINSMode,
       aec_linear_filter_type,
       aec_filter_length_ms,
+      aec_delay_search_range_ms,
     } = this.state;
     this.engine?.setParameters(
       JSON.stringify({
@@ -343,7 +350,19 @@ export default class JoinChannelAudio
         'che.audio.aec.filter.length.ms': aec_filter_length_ms,
       })
     );
+    this.engine?.setParameters(
+      JSON.stringify({
+        'che.audio.aec.delay_search_range.ms': aec_delay_search_range_ms,
+      })
+    );
     this.engine?.setAINSMode(enableAINSMode, AINSMode);
+  };
+
+  setAecAggressiveness = () => {
+    const { aec_aggressiveness } = this.state;
+    this.engine?.setParameters(
+      JSON.stringify({ 'che.audio.aec.aggressiveness': aec_aggressiveness })
+    );
   };
 
   protected renderUser(user: VideoCanvas): ReactElement | undefined {
@@ -421,7 +440,9 @@ export default class JoinChannelAudio
       AINSMode,
       aec_linear_filter_type,
       aec_filter_length_ms,
+      aec_delay_search_range_ms,
       enableAINSMode,
+      aec_aggressiveness,
     } = this.state;
     return (
       <>
@@ -465,6 +486,26 @@ export default class JoinChannelAudio
             aec_filter_length_ms > 0 ? aec_filter_length_ms.toString() : ''
           }
         />
+        <AgoraText>aec_delay_search_range_ms:</AgoraText>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              aec_delay_search_range_ms:
+                text === ''
+                  ? this.createState().aec_delay_search_range_ms
+                  : +text,
+            });
+          }}
+          numberKeyboard={true}
+          title={`aec_delay_search_range_ms`}
+          placeholder={`aec_delay_search_range_ms`}
+          value={
+            aec_delay_search_range_ms > 0
+              ? aec_delay_search_range_ms.toString()
+              : ''
+          }
+        />
         <AgoraSwitch
           title={'enableAINSMode'}
           value={enableAINSMode}
@@ -475,6 +516,24 @@ export default class JoinChannelAudio
         <AgoraButton
           title={'setAudioAINSMode'}
           onPress={this.setAudioAINSMode}
+        />
+        <AgoraText>aec_aggressiveness:</AgoraText>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              aec_aggressiveness:
+                text === '' ? this.createState().aec_aggressiveness : +text,
+            });
+          }}
+          numberKeyboard={true}
+          title={`aec_aggressiveness`}
+          placeholder={`aec_aggressiveness`}
+          value={aec_aggressiveness > 0 ? aec_aggressiveness.toString() : ''}
+        />
+        <AgoraButton
+          title={'setAecAggressiveness'}
+          onPress={this.setAecAggressiveness}
         />
         <AgoraSlider
           title={`recordingSignalVolume ${recordingSignalVolume}`}
