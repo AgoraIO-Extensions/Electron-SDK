@@ -67,7 +67,9 @@ module.exports = (uri, output, opts) => {
     rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false',
   };
 
-  const stream = got.stream(uri);
+  const stream = got.stream(uri, {
+    headers: opts.headers,
+  });
 
   const promise = pEvent(stream, 'response')
     .then((res) => {

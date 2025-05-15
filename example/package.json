@@ -10,6 +10,7 @@
     "dist": "npm run compile && electron-builder",
     "dist:mac": "npm run dist -- --mac",
     "dist:win": "npm run dist -- --win",
+    "dist:linux": "npm run dist -- --linux",
     "dist:win32": "npm run dist:win -- --ia32",
     "dist:win64": "npm run dist:win -- --x64"
   },

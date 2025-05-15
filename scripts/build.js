@@ -23,6 +23,9 @@ const build = async (cb) => {
           : 'build_windows_win32_release';
       }
       break;
+    case 'linux':
+      scriptStr = debug ? 'build_linux_debug' : 'build_linux_release';
+      break;
     default:
       break;
   }

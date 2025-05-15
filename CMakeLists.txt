@@ -124,21 +124,21 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
           ${AGORA_IRIS_SDK_PATH}/${AGORA_DCG_SDK_ARCH_FILE_NAME}/AgoraRtcWrapper.lib
           )
 elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-  # if(${CMAKE_OSX_ARCHITECTURES} STREQUAL "i386")
-  #         set(AGORA_RTC_PROJECT_ARCH "x86")
-  #         set(AGORA_IRIS_PROJECT_ARCH "Win32")
-  #         elseif(${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86_64")
-  #         set(AGORA_RTC_PROJECT_ARCH "x86_64")
-  #         set(AGORA_IRIS_PROJECT_ARCH "x64")
-  # endif()
+  if(${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86")
+    set(AGORA_RTC_PROJECT_ARCH "x86")
+    set(AGORA_IRIS_PROJECT_ARCH "x86")
+  elseif(${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86_64")
+    set(AGORA_RTC_PROJECT_ARCH "x86_64")
+    set(AGORA_IRIS_PROJECT_ARCH "x86_64")
+  endif()
 
   # native rtc sdk path
   set(AGORA_RTC_SDK_PATH
-          ${CMAKE_CURRENT_SOURCE_DIR}/iris/RTC/sdk
+          ${CMAKE_CURRENT_SOURCE_DIR}/native
           )
-
-  set(AGORA_RTC_SDK_LIBRARY
-          ${AGORA_RTC_SDK_PATH}/x86_64/*.so
+  
+  file(GLOB AGORA_RTC_SDK_LIBRARY
+          ${AGORA_RTC_SDK_PATH}/*_Native_SDK_for_Linux_FULL/rtc/sdk/*.so
           )
 
   # iris sdk path
@@ -146,7 +146,7 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
           ${CMAKE_CURRENT_SOURCE_DIR}/iris
           )
   set(AGORA_IRIS_SDK_LIBRARY
-          ${AGORA_IRIS_SDK_PATH}/x86_64/*
+          ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/*.so
           )
   # iris sdk include file
   set(AGORA_IRIS_SDK_HEADER_FILE_DIR
@@ -197,7 +197,7 @@ function(build_target_agora_node_ext)
     set_target_properties(
             libagora_iris_sdk
             PROPERTIES IMPORTED_LOCATION
-            ${AGORA_IRIS_SDK_PATH}/x86_64/libAgoraRtcWrapper.so
+            ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/libAgoraRtcWrapper.so
     )
 
     add_library(${AGORA_NODE_EXT_NAME} SHARED
@@ -220,18 +220,29 @@ function(build_target_agora_node_ext)
           ${AGORA_RTC_SDK_HEADER_FILE_DIR}
           ${AGORA_IRIS_SDK_HEADER_FILE_DIR}
           )
-  set_target_properties(${AGORA_NODE_EXT_NAME} PROPERTIES
-          ARCHIVE_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}"
-          LIBRARY_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}"
-          RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}"
-          PDB_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}"
-          PREFIX ""
-          SUFFIX ".node"
-          )
+  if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    set_target_properties(${AGORA_NODE_EXT_NAME} PROPERTIES
+            ARCHIVE_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}"
+            LIBRARY_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}"
+            RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}"
+            PDB_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}"
+            PREFIX ""
+            SUFFIX ".node"
+            )
+  else()
+    set_target_properties(${AGORA_NODE_EXT_NAME} PROPERTIES
+            ARCHIVE_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}"
+            LIBRARY_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}"
+            RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}"
+            PDB_OUTPUT_DIRECTORY "${OUTPUT_DIRECTORY}"
+            PREFIX ""
+            SUFFIX ".node"
+            )
+  endif()
 endfunction(build_target_agora_node_ext)
 
 function(copy_library)
-  if (WIN32)
+  if (WIN32 OR (UNIX AND NOT APPLE))
     add_custom_command(
             TARGET ${AGORA_NODE_EXT_NAME}
             POST_BUILD

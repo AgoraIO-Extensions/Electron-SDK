@@ -9,7 +9,19 @@ const { getOS, moveFile, getIrisStandAlone } = require('./util');
 
 const config = getConfig();
 
-const { iris_sdk_mac, iris_sdk_win, native_sdk_mac, native_sdk_win } = config;
+const { iris_sdk_mac, iris_sdk_win, native_sdk_mac, native_sdk_win, iris_sdk_linux, native_sdk_linux } = config;
+
+const IRIS_SDK_URLS = {
+  mac: iris_sdk_mac,
+  win32: iris_sdk_win,
+  linux: iris_sdk_linux,
+};
+
+const NATIVE_SDK_URLS = {
+  mac: native_sdk_mac,
+  win32: native_sdk_win,
+  linux: native_sdk_linux,
+};
 
 const downloadSDK = async ({
   preHook,
@@ -21,6 +33,9 @@ const downloadSDK = async ({
   logger.info(`Downloading:${sdkURL}`);
   await preHook();
   await download(sdkURL, destDir, {
+    headers: {
+      'X-JFrog-Art-Api': process.env.JFROG_API_KEY || ''
+    },
     strip: strip,
     extract: true,
     //https://github.com/kevva/decompress/issues/68
@@ -47,7 +62,7 @@ const syncLib = async (cb) => {
         cleanDir(destNativeSDKDir);
       }
     },
-    sdkURL: os === 'mac' ? iris_sdk_mac : iris_sdk_win,
+    sdkURL: IRIS_SDK_URLS[os],
     destDir: destIrisSDKDir,
   });
   if (irisStandAlone) {
@@ -56,7 +71,7 @@ const syncLib = async (cb) => {
         cleanDir(destNativeSDKDir);
       },
       strip: 0,
-      sdkURL: os === 'mac' ? native_sdk_mac : native_sdk_win,
+      sdkURL: NATIVE_SDK_URLS[os],
       destDir: destNativeSDKDir,
     });
   } else {

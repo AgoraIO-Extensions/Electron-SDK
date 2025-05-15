@@ -28,7 +28,7 @@ exports.moveFile = (sp, tp) => {
 };
 
 exports.getIrisStandAlone = () => {
-  const { iris_sdk_mac, iris_sdk_win } = getConfig();
+  const { iris_sdk_mac, iris_sdk_win, iris_sdk_linux } = getConfig();
   const os = this.getOS();
   if (
     (os === 'mac' &&
@@ -36,7 +36,10 @@ exports.getIrisStandAlone = () => {
       iris_sdk_mac.toLowerCase().indexOf('standalone') !== -1) ||
     (os === 'win32' &&
       iris_sdk_win &&
-      iris_sdk_win.toLowerCase().indexOf('standalone') !== -1)
+      iris_sdk_win.toLowerCase().indexOf('standalone') !== -1) ||
+    (os === 'linux' &&
+      iris_sdk_linux &&
+      iris_sdk_linux.toLowerCase().indexOf('standalone') !== -1)
   ) {
     logger.info('iris use standalone package');
     return true;

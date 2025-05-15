@@ -210,8 +210,8 @@ napi_value AgoraElectronBridge::GetBuffer(napi_env env,
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
   assert(status == napi_ok);
 
-  long long bufferPtr;
-  int bufferSize;
+  int64_t bufferPtr;
+  int32_t bufferSize;
 
   status = napi_get_value_int64(env, args[0], &bufferPtr);
   status = napi_get_value_int32(env, args[1], &bufferSize);

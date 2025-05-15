@@ -33,8 +33,8 @@
     "build_windows_win32_release": "cmake-js rebuild --arch=ia32 --CDCMAKE_OSX_ARCHITECTURES=\"i386\" --CDCMAKE_BUILD_TYPE=Release",
     "build_windows_x64_debug": "cmake-js rebuild --arch=x64 --CDCMAKE_OSX_ARCHITECTURES=\"x86_64\" --CDCMAKE_BUILD_TYPE=Debug -G \"Visual Studio 16 2019\"",
     "build_windows_x64_release": "cmake-js rebuild --arch=x64 --CDCMAKE_OSX_ARCHITECTURES=\"x86_64\" --CDCMAKE_BUILD_TYPE=Release",
-    "build_linux_debug": "cmake-js rebuild --arch=x64 --CDCMAKE_BUILD_TYPE=Debug -G \"Unix Makefiles\"",
-    "build_linux_release": "cmake-js rebuild --arch=x64 --CDCMAKE_BUILD_TYPE=Release -G \"Unix Makefiles\"",
+    "build_linux_debug": "cmake-js rebuild --arch=x64 --CDCMAKE_OSX_ARCHITECTURES=\"x86_64\" --CDCMAKE_BUILD_TYPE=Debug -G \"Unix Makefiles\"",
+    "build_linux_release": "cmake-js rebuild --arch=x64 --CDCMAKE_OSX_ARCHITECTURES=\"x86_64\" --CDCMAKE_BUILD_TYPE=Release -G \"Unix Makefiles\"",
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
@@ -161,7 +161,9 @@
   "agora_electron": {
     "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.5.2.131-build.1_DCG_Windows_Video_Standalone_20250427_1135_31667.zip",
     "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.5.1.132-build.1_DCG_Mac_Video_Standalone_20250421_0519_32621.zip",
+    "iris_sdk_linux": "https://artifactory-api.bj2.agoralab.co/artifactory/CSDC_repo/EP/huangpeilin/20250514/linux/iris_4.5.40-test.3_DCG_Linux_Video_Standalone_20250514_0109_3520.zip",
     "native_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_rel.v4.5.2.131_28783_FULL_20250425_2008_675994.zip",
-    "native_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_rel.v4.5.1.132_24140_FULL_20250414_1751_658859.zip"
+    "native_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_rel.v4.5.1.132_24140_FULL_20250414_1751_658859.zip",
+    "native_sdk_linux": "http://10.80.1.174:8090/agora_sdk/4.5.40/nightly_build/2025-05-12/linux/full/Agora_Native_SDK_for_Linux_rel.v4.5.40_25634_FULL_20250512_1133_697252_external.zip"
   }
 }
