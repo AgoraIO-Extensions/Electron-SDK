@@ -70,7 +70,7 @@ jobs:
         with:
           name: AgoraRtcNgExample-win-${{ matrix.arch }}-${{ github.run_id }}
           path: |
-            example/dist/Agora-Electron-API-Example-*-win.zip
+            example/dist/Agora-Electron-API-Example Setup *.exe
           if-no-files-found: error
 
   build-mac:
