@@ -59,7 +59,7 @@
     },
     "win": {
       "target": [
-        "zip"
+        "nsis"
       ]
     },
     "linux": {
