@@ -8,13 +8,18 @@ import {
   LocalAudioStats,
   LocalAudioStreamReason,
   LocalAudioStreamState,
+  LocalVideoStats,
+  LocalVideoStreamReason,
+  LocalVideoStreamState,
   MediaDeviceType,
   QualityType,
   RemoteAudioStats,
+  RemoteVideoStats,
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
   VideoCanvas,
+  VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
 import React, { ReactElement } from 'react';
@@ -32,12 +37,18 @@ import {
   AgoraSwitch,
   AgoraText,
   AgoraTextInput,
+  RtcSurfaceView,
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { enumToItems } from '../../../utils';
 import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseAudioComponentState {
+  selectedUser?: number;
+  videoSentBitrate?: number;
+  encodedFrameWidth?: number;
+  encodedFrameHeight?: number;
+  encoderOutputFrameRate?: number;
   enableLocalAudio: boolean;
   muteLocalAudioStream: boolean;
   recordingSignalVolume: number;
@@ -56,11 +67,15 @@ interface State extends BaseAudioComponentState {
   aec_aggressiveness: number;
   remoteUserStatsList: Map<
     number,
-    { volume: number; remoteAudioStats: RemoteAudioStats }
+    {
+      volume: number;
+      remoteVideoStats: RemoteVideoStats;
+      remoteAudioStats: RemoteAudioStats;
+    }
   >;
 }
 
-export default class JoinChannelAudio
+export default class PW
   extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler
 {
@@ -78,14 +93,19 @@ export default class JoinChannelAudio
       recordingSignalVolume: 100,
       playbackSignalVolume: 100,
       remoteUserStatsList: new Map(),
+      encodedFrameWidth: 0,
+      encodedFrameHeight: 0,
+      encoderOutputFrameRate: 0,
       localVolume: 0,
       lastmileDelay: 0,
+      videoSentBitrate: 0,
       audioSentBitrate: 0,
       cpuAppUsage: 0,
       cpuTotalUsage: 0,
       txPacketLossRate: 0,
       enableAINSMode: true,
-      AINSMode: AudioAinsMode.AinsModeBalanced,
+      startPreview: false,
+      AINSMode: AudioAinsMode.AinsModeAggressive,
       aec_linear_filter_type: 1,
       aec_filter_length_ms: 400,
       aec_delay_search_range_ms: 512,
@@ -111,8 +131,16 @@ export default class JoinChannelAudio
     });
     this.engine.registerEventHandler(this);
 
-    // Need granted the microphone permission
-    await askMediaAccess(['microphone']);
+    // Need granted the microphone and camera permission
+    await askMediaAccess(['microphone', 'camera']);
+
+    // Need to enable video on this case
+    // If you only call `enableAudio`, only relay the audio stream to the target channel
+    this.engine.enableVideo();
+
+    // Start preview before joinChannel
+    this.engine.startPreview();
+    this.setState({ startPreview: true });
 
     // Only need to enable audio on this case
     this.engine.enableAudio();
@@ -302,6 +330,8 @@ export default class JoinChannelAudio
           volume: speaker.volume!,
           remoteAudioStats:
             remoteUserStatsList.get(speaker.uid)?.remoteAudioStats || {},
+          remoteVideoStats:
+            remoteUserStatsList.get(speaker.uid)?.remoteVideoStats || {},
         });
       }
     });
@@ -316,10 +346,63 @@ export default class JoinChannelAudio
     });
   }
 
+  onVideoDeviceStateChanged(
+    deviceId: string,
+    deviceType: number,
+    deviceState: number
+  ) {
+    this.info(
+      'onVideoDeviceStateChanged',
+      'deviceId',
+      deviceId,
+      'deviceType',
+      deviceType,
+      'deviceState',
+      deviceState
+    );
+  }
+
+  onLocalVideoStateChanged(
+    source: VideoSourceType,
+    state: LocalVideoStreamState,
+    error: LocalVideoStreamReason
+  ) {
+    this.info(
+      'onLocalVideoStateChanged',
+      'source',
+      source,
+      'state',
+      state,
+      'error',
+      error
+    );
+  }
+
+  onLocalVideoStats(connection: RtcConnection, stats: LocalVideoStats): void {
+    this.setState({
+      videoSentBitrate: stats.sentBitrate,
+      encodedFrameWidth: stats.encodedFrameWidth,
+      encodedFrameHeight: stats.encodedFrameHeight,
+      encoderOutputFrameRate: stats.encoderOutputFrameRate,
+    });
+  }
+
   onLocalAudioStats(connection: RtcConnection, stats: LocalAudioStats): void {
     this.setState({
       audioSentBitrate: stats.sentBitrate,
     });
+  }
+
+  onRemoteVideoStats(connection: RtcConnection, stats: RemoteVideoStats): void {
+    const { remoteUserStatsList } = this.state;
+    if (stats.uid) {
+      remoteUserStatsList.set(stats.uid, {
+        volume: remoteUserStatsList.get(stats.uid)?.volume || 0,
+        remoteVideoStats: stats,
+        remoteAudioStats:
+          remoteUserStatsList.get(stats.uid)?.remoteAudioStats || {},
+      });
+    }
   }
 
   onRemoteAudioStats(connection: RtcConnection, stats: RemoteAudioStats): void {
@@ -327,6 +410,8 @@ export default class JoinChannelAudio
     if (stats.uid) {
       remoteUserStatsList.set(stats.uid, {
         volume: remoteUserStatsList.get(stats.uid)?.volume || 0,
+        remoteVideoStats:
+          remoteUserStatsList.get(stats.uid)?.remoteVideoStats || {},
         remoteAudioStats: stats,
       });
     }
@@ -379,8 +464,11 @@ export default class JoinChannelAudio
   protected renderVideo(user: VideoCanvas): ReactElement | undefined {
     const {
       joinChannelSuccess,
-      localVolume,
+      encodedFrameWidth,
+      encodedFrameHeight,
+      encoderOutputFrameRate,
       lastmileDelay,
+      videoSentBitrate,
       audioSentBitrate,
       cpuAppUsage,
       cpuTotalUsage,
@@ -388,11 +476,16 @@ export default class JoinChannelAudio
       remoteUserStatsList,
     } = this.state;
     return (
-      <>
+      <div className="video-view-container">
+        <RtcSurfaceView canvas={user} />
         {joinChannelSuccess && user.sourceType === 0 && (
           <div className="status-bar">
-            <p>Volume: {localVolume}</p>
+            <p>
+              {encodedFrameWidth}x{encodedFrameHeight},{encoderOutputFrameRate}
+              fps
+            </p>
             <p>LM Delay: {lastmileDelay}ms</p>
+            <p>VSend: {videoSentBitrate}kbps</p>
             <p>ASend: {audioSentBitrate}kbps</p>
             <p>
               CPU: {cpuAppUsage}%/{cpuTotalUsage}%
@@ -402,7 +495,14 @@ export default class JoinChannelAudio
         )}
         {joinChannelSuccess && user.sourceType != 0 && user.uid && (
           <div className="status-bar">
-            <p>Volume: {remoteUserStatsList.get(user.uid)?.volume}</p>
+            <p>
+              VRecv:{' '}
+              {
+                remoteUserStatsList.get(user.uid)?.remoteVideoStats
+                  .receivedBitrate
+              }
+              kbps
+            </p>
             <p>
               ARecv:{' '}
               {
@@ -410,6 +510,14 @@ export default class JoinChannelAudio
                   .receivedBitrate
               }
               kbps
+            </p>
+            <p>
+              VLoss:{' '}
+              {
+                remoteUserStatsList.get(user.uid)?.remoteVideoStats
+                  .packetLossRate
+              }
+              %
             </p>
             <p>
               ALoss:{' '}
@@ -429,7 +537,7 @@ export default class JoinChannelAudio
             </p>
           </div>
         )}
-      </>
+      </div>
     );
   }
 

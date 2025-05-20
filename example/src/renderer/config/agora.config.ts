@@ -7,7 +7,7 @@ const config = {
   appId: localAppId,
   // Please refer to https://docs.agora.io/en/Agora%20Platform/token
   token: '',
-  channelId: 'testdcg',
+  channelId: 'PWTEST',
   uid: 0,
   logFilePath: '',
 };
