@@ -65,6 +65,7 @@ interface State extends BaseAudioComponentState {
   aec_filter_length_ms: number;
   aec_delay_search_range_ms: number;
   aec_aggressiveness: number;
+  enableAudioDump: boolean;
   remoteUserStatsList: Map<
     number,
     {
@@ -110,6 +111,7 @@ export default class PW
       aec_filter_length_ms: 400,
       aec_delay_search_range_ms: 512,
       aec_aggressiveness: 2,
+      enableAudioDump: false,
     };
   }
 
@@ -450,6 +452,13 @@ export default class PW
     );
   };
 
+  setAudioDump = () => {
+    const { enableAudioDump } = this.state;
+    this.engine?.setParameters(
+      JSON.stringify({ 'che.audio.frame_dump': enableAudioDump })
+    );
+  };
+
   protected renderUser(user: VideoCanvas): ReactElement | undefined {
     return (
       <AgoraCard
@@ -551,6 +560,7 @@ export default class PW
       aec_delay_search_range_ms,
       enableAINSMode,
       aec_aggressiveness,
+      enableAudioDump,
     } = this.state;
     return (
       <>
@@ -625,6 +635,14 @@ export default class PW
           title={'setAudioAINSMode'}
           onPress={this.setAudioAINSMode}
         />
+        <AgoraSwitch
+          title={'enableAudioDump'}
+          value={enableAudioDump}
+          onValueChange={(value) => {
+            this.setState({ enableAudioDump: value });
+          }}
+        />
+        <AgoraButton title={'setAudioDump'} onPress={this.setAudioDump} />
         <AgoraText>aec_aggressiveness:</AgoraText>
         <AgoraTextInput
           onChangeText={(text) => {
