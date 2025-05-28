@@ -18,7 +18,7 @@ export interface IMediaPlayerSourceObserver {
    * When the state of the media player changes, the SDK triggers this callback to report the current playback state.
    *
    * @param state The playback state. See MediaPlayerState.
-   * @param ec The error code. See MediaPlayerError.
+   * @param reason The reason for the changes in the media player status. See MediaPlayerReason.
    */
   onPlayerSourceStateChanged?(
     state: MediaPlayerState,
@@ -26,11 +26,12 @@ export interface IMediaPlayerSourceObserver {
   ): void;
 
   /**
-   * Reports current playback progress.
+   * Reports the playback progress of the media file.
    *
    * When playing media files, the SDK triggers this callback every two second to report current playback progress.
    *
-   * @param position The playback position (ms) of media files.
+   * @param positionMs The playback position (ms) of media files.
+   * @param timeStampMs The NTP timestamp (ms) of the current playback progress.
    */
   onPositionChanged?(positionMs: number): void;
 
@@ -39,7 +40,7 @@ export interface IMediaPlayerSourceObserver {
    *
    * After calling the seek method, the SDK triggers the callback to report the results of the seek operation.
    *
-   * @param eventCode The player events. See MediaPlayerEvent.
+   * @param eventCode The player event. See MediaPlayerEvent.
    * @param elapsedTime The time (ms) when the event occurs.
    * @param message Information about the event.
    */
@@ -63,8 +64,8 @@ export interface IMediaPlayerSourceObserver {
    * Reports the playback duration that the buffered data can support.
    *
    * When playing online media resources, the SDK triggers this callback every two seconds to report the playback duration that the currently buffered data can support.
-   *  When the playback duration supported by the buffered data is less than the threshold (0 by default), the SDK returns PlayerEventBufferLow.
-   *  When the playback duration supported by the buffered data is greater than the threshold (0 by default), the SDK returns PlayerEventBufferRecover.
+   *  When the playback duration supported by the buffered data is less than the threshold (0 by default), the SDK returns PlayerEventBufferLow (6).
+   *  When the playback duration supported by the buffered data is greater than the threshold (0 by default), the SDK returns PlayerEventBufferRecover (7).
    *
    * @param playCachedBuffer The playback duration (ms) that the buffered data can support.
    */

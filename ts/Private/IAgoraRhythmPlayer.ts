@@ -1,26 +1,26 @@
 import './extension/IAgoraRhythmPlayerExtension';
 /**
- * @ignore
+ * Virtual metronome state.
  */
 export enum RhythmPlayerStateType {
   /**
-   * @ignore
+   * (810): The virtual metronome is not enabled or disabled already.
    */
   RhythmPlayerStateIdle = 810,
   /**
-   * @ignore
+   * 811: Opening the beat files.
    */
   RhythmPlayerStateOpening = 811,
   /**
-   * @ignore
+   * 812: Decoding the beat files.
    */
   RhythmPlayerStateDecoding = 812,
   /**
-   * @ignore
+   * 813: The beat files are playing.
    */
   RhythmPlayerStatePlaying = 813,
   /**
-   * @ignore
+   * 814: Failed to start virtual metronome. You can use the reported errorCode to troubleshoot the cause of the error, or you can try to start the virtual metronome again.
    */
   RhythmPlayerStateFailed = 814,
 }

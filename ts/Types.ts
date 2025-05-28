@@ -6,6 +6,9 @@ import { RendererCache } from './Renderer/RendererCache';
 import { RendererManager } from './Renderer/RendererManager';
 import { WebCodecsRendererCache } from './Renderer/WebCodecsRendererCache';
 
+/**
+ * @ignore
+ */
 export enum VideoFallbackStrategy {
   /**
    * @ignore
@@ -82,7 +85,12 @@ export type RendererCacheType = RendererCache | WebCodecsRendererCache;
 
 export type RendererCacheContext = Pick<
   RendererContext,
-  'channelId' | 'localUid' | 'uid' | 'sourceType' | 'useWebCodecsDecoder' | 'enableFps'
+  | 'channelId'
+  | 'localUid'
+  | 'uid'
+  | 'sourceType'
+  | 'useWebCodecsDecoder'
+  | 'enableFps'
 >;
 
 /**
@@ -158,12 +166,27 @@ export interface IAgoraElectronBridge {
  * @ignore
  */
 export enum IPCMessageType {
+  /**
+   * @ignore
+   */
   AGORA_IPC_GET_GPU_INFO = 'AGORA_IPC_GET_GPU_INFO',
 }
 
+/**
+ * @ignore
+ */
 interface CodecMappingItem {
+  /**
+   * @ignore
+   */
   codec: string;
+  /**
+   * @ignore
+   */
   type: VideoCodecType;
+  /**
+   * @ignore
+   */
   profile: string;
 }
 
