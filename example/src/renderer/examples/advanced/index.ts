@@ -14,6 +14,7 @@ import LocalSpatialAudioEngine from './LocalSpatialAudioEngine/LocalSpatialAudio
 import LocalVideoTranscoder from './LocalVideoTranscoder/LocalVideoTranscoder';
 import MediaPlayer from './MediaPlayer/MediaPlayer';
 import MediaRecorder from './MediaRecorder/MediaRecorder';
+import Meet from './Meet/Meet';
 import MusicContentCenter from './MusicContentCenter/MusicContentCenter';
 import PlayEffect from './PlayEffect/PlayEffect';
 import ProcessVideoRawData from './ProcessVideoRawData/ProcessVideoRawData';
@@ -161,6 +162,10 @@ const Advanced = {
     {
       name: 'VoiceChanger',
       component: VoiceChanger,
+    },
+    {
+      name: 'Meet',
+      component: Meet,
     },
   ],
 };
