@@ -1920,7 +1920,7 @@ export enum AudioProfileType {
    */
   AudioProfileMusicHighQualityStereo = 5,
   /**
-   * 6: A sample rate of 16 kHz, audio encoding, mono, and Acoustic Echo Cancellation (AES) enabled.
+   * 6: A sample rate of 16 kHz, audio encoding, mono, and Acoustic Echo Cancellation (AEC) enabled.
    */
   AudioProfileIot = 6,
   /**
@@ -2300,7 +2300,7 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonScreenCaptureNoPermission = 22,
   /**
-   * 24: (Windows only) An unexpected error occurred during screen sharing (possibly due to window blocking failure), resulting in decreased performance, but the screen sharing process itself was not affected.
+   * 24: (Windows only) An unexpected error occurred during screen sharing (possibly due to window blocking failure), resulting in decreased performance, but the screen sharing process itself was not affected. During screen sharing, if blocking a specific window fails due to device driver issues, the SDK will report this event and automatically fall back to sharing the entire screen. If your use case requires masking specific windows to protect privacy, we recommend listening for this event and implementing additional privacy protection mechanisms when it is triggered."
    */
   LocalVideoStreamReasonScreenCaptureAutoFallback = 24,
   /**
@@ -2324,7 +2324,7 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonScreenCaptureResumed = 29,
   /**
-   * 30: The displayer used for screen capture is disconnected.
+   * 30: The displayer used for screen capture is disconnected. The current screen sharing has been paused. Prompt the user to restart the screen sharing.
    */
   LocalVideoStreamReasonScreenCaptureDisplayDisconnected = 30,
 }
@@ -3117,7 +3117,9 @@ export class TranscodingVideoStream {
    */
   remoteUserUid?: number;
   /**
-   * The URL of the image. Use this parameter only when the source type is the image for local video mixing.
+   * The file path of local images. Use this parameter only when the source type is the image for local video mixing. Examples:
+   *  macOS: ~/Pictures/image.png
+   *  Windows: C:\\Users\\{username}\\Pictures\\image.png
    */
   imageUrl?: string;
   /**
@@ -3533,7 +3535,7 @@ export enum VideoViewSetupMode {
    */
   VideoViewSetupAdd = 1,
   /**
-   * 2: Deletes a view.
+   * 2: Deletes a view. When you no longer need to use a certain view, it is recommended to delete the view by setting setupMode to VideoViewSetupRemove, otherwise it may lead to leak of rendering resources.
    */
   VideoViewSetupRemove = 2,
 }
@@ -3555,7 +3557,7 @@ export class VideoCanvas {
    */
   view?: any;
   /**
-   * The background color of the video canvas in RGBA format. The default value is 0x00000000, which represents completely transparent black.
+   * The background color of the video canvas in RGBA format. The default value is 0x00000000, which represents black.
    */
   backgroundColor?: number;
   /**

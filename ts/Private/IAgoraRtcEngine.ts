@@ -1652,7 +1652,7 @@ export interface IRtcEngineEventHandler {
   /**
    * Occurs when the remote video stream state changes.
    *
-   * This callback does not work properly when the number of users (in the communication profile) or hosts (in the live streaming channel) in a channel exceeds 17.
+   * This callback does not work properly when the number of users (in the communication profile) or hosts (in the live streaming channel) in a channel exceeds 32.
    *
    * @param connection The connection information. See RtcConnection.
    * @param remoteUid The ID of the remote user whose video state changes.
@@ -1691,7 +1691,7 @@ export interface IRtcEngineEventHandler {
    * Occurs when a remote user (in the communication profile)/ host (in the live streaming profile) joins the channel.
    *
    * In a communication channel, this callback indicates that a remote user joins the channel. The SDK also triggers this callback to report the existing users in the channel when a user joins the channel.
-   *  In a live-broadcast channel, this callback indicates that a host joins the channel. The SDK also triggers this callback to report the existing hosts in the channel when a host joins the channel. Agora recommends limiting the number of hosts to 17.
+   *  In a live-broadcast channel, this callback indicates that a host joins the channel. The SDK also triggers this callback to report the existing hosts in the channel when a host joins the channel. Agora recommends limiting the number of co-hosts to 32, with a maximum of 17 video hosts.
    *
    * @param connection The connection information. See RtcConnection.
    * @param remoteUid The ID of the user or host who joins the channel.
@@ -1723,7 +1723,7 @@ export interface IRtcEngineEventHandler {
   /**
    * Occurs when a remote user (in the communication profile) or a host (in the live streaming profile) stops/resumes sending the audio stream.
    *
-   * The SDK triggers this callback when the remote user stops or resumes sending the audio stream by calling the muteLocalAudioStream method. This callback does not work properly when the number of users (in the communication profile) or hosts (in the live streaming channel) in a channel exceeds 17.
+   * The SDK triggers this callback when the remote user stops or resumes sending the audio stream by calling the muteLocalAudioStream method. This callback does not work properly when the number of users (in the communication profile) or hosts (in the live streaming channel) in a channel exceeds 32.
    *
    * @param connection The connection information. See RtcConnection.
    * @param remoteUid The user ID.
@@ -1738,7 +1738,7 @@ export interface IRtcEngineEventHandler {
   /**
    * Occurs when a remote user stops or resumes publishing the video stream.
    *
-   * When a remote user calls muteLocalVideoStream to stop or resume publishing the video stream, the SDK triggers this callback to report to the local user the state of the streams published by the remote user. This callback can be inaccurate when the number of users (in the communication profile) or hosts (in the live streaming profile) in a channel exceeds 17.
+   * When a remote user calls muteLocalVideoStream to stop or resume publishing the video stream, the SDK triggers this callback to report to the local user the state of the streams published by the remote user. This callback can be inaccurate when the number of users (in the communication profile) or hosts (in the live streaming profile) in a channel exceeds 32.
    *
    * @param connection The connection information. See RtcConnection.
    * @param remoteUid The user ID of the remote user.
@@ -2076,7 +2076,7 @@ export interface IRtcEngineEventHandler {
   /**
    * Occurs when the remote audio state changes.
    *
-   * When the audio state of a remote user (in a voice/video call channel) or host (in a live streaming channel) changes, the SDK triggers this callback to report the current state of the remote audio stream. This callback does not work properly when the number of users (in the communication profile) or hosts (in the live streaming channel) in a channel exceeds 17.
+   * When the audio state of a remote user (in a voice/video call channel) or host (in a live streaming channel) changes, the SDK triggers this callback to report the current state of the remote audio stream. This callback does not work properly when the number of users (in the communication profile) or hosts (in the live streaming channel) in a channel exceeds 32.
    *
    * @param connection The connection information. See RtcConnection.
    * @param remoteUid The ID of the remote user whose audio state changes.
@@ -3410,6 +3410,7 @@ export abstract class IRtcEngine {
    * Enables/Disables the virtual background.
    *
    * The virtual background feature enables the local user to replace their original background with a static image, dynamic video, blurred background, or portrait-background segmentation to achieve picture-in-picture effect. Once the virtual background feature is enabled, all users in the channel can see the custom background. Call this method after calling enableVideo or startPreview.
+   *  Using a video as a your virtual background will lead to continuous increase in memory usage, which may cause issues such as app crashes. Therefore,it is recommended to reduce the resolution and frame rate of the video when using it.
    *  This feature has high requirements on device performance. When calling this method, the SDK automatically checks the capabilities of the current device. Agora recommends you use virtual background on devices with the following processors:
    *  Devices with an i5 CPU and better
    *  Agora recommends that you use this feature in scenarios that meet the following conditions:
@@ -3482,7 +3483,7 @@ export abstract class IRtcEngine {
    *  If someone subscribes to the low-quality stream, the SDK enables the low-quality stream and resets it to the SimulcastStreamConfig configuration used in the most recent calling of setDualStreamMode. If no configuration has been set by the user previously, the following values are used:
    *  Resolution: 480 × 272
    *  Frame rate: 15 fps
-   *  Bitrate: 500 Kbps ApplicationScenario1v1 (2) This is applicable to the scenario. To meet the requirements for low latency and high-quality video in this scenario, the SDK optimizes its strategies, improving performance in terms of video quality, first frame rendering, latency on mid-to-low-end devices, and smoothness under weak network conditions. ApplicationScenarioLiveshow (3) This is applicable to the scenario. In this scenario, fast video rendering and high image quality are crucial. The SDK implements several performance optimizations, including automatically enabling accelerated audio and video frame rendering to minimize first-frame latency (no need to call enableInstantMediaRendering), and B-frame encoding to achieve better image quality and bandwidth efficiency. The SDK also provides enhanced video quality and smooth playback, even in poor network conditions or on lower-end devices.
+   *  Bitrate: 500 Kbps ApplicationScenario1v1 (2) This is applicable to the scenario. To meet the requirements for low latency and high-quality video in this scenario, the SDK optimizes its strategies, improving performance in terms of video quality, first frame rendering, latency on mid-to-low-end devices, and smoothness under weak network conditions. This enumeration value is only applicable to the broadcaster vs. broadcaster scenario. ApplicationScenarioLiveshow (3) This is applicable to the scenario. In this scenario, fast video rendering and high image quality are crucial. The SDK implements several performance optimizations, including automatically enabling accelerated audio and video frame rendering to minimize first-frame latency (no need to call enableInstantMediaRendering), and B-frame encoding to achieve better image quality and bandwidth efficiency. The SDK also provides enhanced video quality and smooth playback, even in poor network conditions or on lower-end devices.
    *
    * @returns
    * 0: Success.
@@ -5151,7 +5152,6 @@ export abstract class IRtcEngine {
    * Enables loopback audio capturing.
    *
    * If you enable loopback audio capturing, the output of the sound card is mixed into the audio stream sent to the other end.
-   *  The macOS system's default sound card does not support recording functionality. As of v4.5.0, when you call this method for the first time, the SDK will automatically install the built-in AgoraALD virtual sound card developed by Agora. After successful installation, the audio routing will automatically switch to the virtual sound card and use it for audio capturing.
    *  You can call this method either before or after joining a channel.
    *  If you call the disableAudio method to disable the audio module, audio capturing will be disabled as well. If you need to enable audio capturing, call the enableAudio method to enable the audio module and then call the enableLoopbackRecording method.
    *
@@ -5949,7 +5949,7 @@ export abstract class IRtcEngine {
    *  Each client within the channel can have up to 5 data channels simultaneously, with a total shared packet bitrate limit of 30 KB/s for all data channels.
    *  Each data channel can send up to 60 packets per second, with each packet being a maximum of 1 KB. A successful method call triggers the onStreamMessage callback on the remote client, from which the remote user gets the stream message. A failed method call triggers the onStreamMessageError callback on the remote client.
    *  This method needs to be called after createDataStream and joining the channel.
-   *  In live streaming scenarios, this method only applies to hosts.
+   *  This method applies to broadcasters only.
    *
    * @param streamId The data stream ID. You can get the data stream ID by calling createDataStream.
    * @param data The message to be sent.
@@ -6570,7 +6570,7 @@ export abstract class IRtcEngine {
    * Enables tracing the video frame rendering process.
    *
    * The SDK starts tracing the rendering status of the video frames in the channel from the moment this method is successfully called and reports information about the event through the onVideoRenderingTracingResult callback.
-   *  By default, the SDK starts tracing the video rendering event automatically when the local user successfully joins the channel. You can call this method at an appropriate time according to the actual application scenario to customize the tracing process.
+   *  The SDK automatically starts tracking the rendering events of the video from the moment that you call joinChannel to join the channel. You can call this method at an appropriate time according to the actual application scenario to customize the tracing process.
    *  After the local user leaves the current channel, the SDK automatically resets the time point to the next time when the user successfully joins the channel.
    *
    * @returns
@@ -6840,6 +6840,10 @@ export enum MediaDeviceStateType {
    * 2: The device is disabled.
    */
   MediaDeviceStateDisabled = 2,
+  /**
+   * 3: The device is plugged in.
+   */
+  MediaDeviceStatePluggedIn = 3,
   /**
    * 4: The device is not found.
    */
