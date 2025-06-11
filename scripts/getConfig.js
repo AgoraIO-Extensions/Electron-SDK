@@ -68,6 +68,29 @@ const getConfig = () => {
   if (npm_config_agora_electron_sdk_arch !== undefined) {
     config.arch = npm_config_agora_electron_sdk_arch;
   }
+
+  try {
+    if (process.env.AGORA_INIT_PATH) {
+      const agoraProjectDir = path.join(
+        process.env.AGORA_INIT_PATH,
+        'package.json'
+      );
+      const { agora_electron = {} } = require(agoraProjectDir);
+      if (agora_electron.native_sdk_win) {
+        config.native_sdk_win = agora_electron.native_sdk_win;
+        logger.info(
+          `env native_sdk_win: ${agora_electron.native_sdk_win} from AGORA_INIT_PATH`
+        );
+      }
+      if (agora_electron.native_sdk_mac) {
+        config.native_sdk_mac = agora_electron.native_sdk_mac;
+        logger.info(
+          `env native_sdk_mac: ${agora_electron.native_sdk_mac} from AGORA_INIT_PATH`
+        );
+      }
+    }
+  } catch (error) {}
+
   return config;
 };
 module.exports = getConfig;
