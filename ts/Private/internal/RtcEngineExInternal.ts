@@ -103,6 +103,21 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     callIrisApi.call(this, 'RtcEngine_setAppType', {
       appType: 3,
     });
+    this.setParameters(
+      JSON.stringify({
+        'rtc.video.color_space_enable': true,
+      })
+    );
+    this.setParameters(
+      JSON.stringify({
+        'rtc.video.videoFullrange': 1,
+      })
+    );
+    this.setParameters(
+      JSON.stringify({
+        'rtc.video.matrixCoefficients': 5,
+      })
+    );
     if (AgoraEnv.webEnvReady) {
       // @ts-ignore
       window.AgoraEnv = AgoraEnv;
