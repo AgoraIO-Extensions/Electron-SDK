@@ -137,6 +137,9 @@ export default class ScreenShare
     this.engine.setParameters(
       JSON.stringify({ 'che.video.enable_promote_gpu_priority': true })
     );
+    this.engine.setParameters(
+      JSON.stringify({ 'che.video.using_ipc_capturer': true })
+    );
 
     // Need granted the microphone and camera permission
     await askMediaAccess(['microphone', 'camera', 'screen']);
@@ -187,6 +190,7 @@ export default class ScreenShare
       { width: 64, height: 64 },
       true
     );
+    console.log('sources:', sources);
     this.setState({
       sources,
       targetSource: sources?.at(0),

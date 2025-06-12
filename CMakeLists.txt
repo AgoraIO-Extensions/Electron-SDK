@@ -102,6 +102,7 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 
   file(GLOB AGORA_RTC_SDK_LIBRARY
           ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_FULL/sdk/${AGORA_RTC_PROJECT_ARCH}/*.dll
+          ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_FULL/sdk/${AGORA_RTC_PROJECT_ARCH}/*.exe
           )
 
   # iris sdk path
@@ -113,6 +114,7 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
           )
   file(GLOB AGORA_IRIS_SDK_LIBRARY
           ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/*.dll
+          ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/*.exe
           )
 
   # iris sdk include file

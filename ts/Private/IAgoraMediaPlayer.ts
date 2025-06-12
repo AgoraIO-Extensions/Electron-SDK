@@ -6,7 +6,6 @@ import {
   IAudioSpectrumObserver,
   RawAudioFrameOpModeType,
   RenderModeType,
-  VideoFrame,
 } from './AgoraMediaBase';
 import {
   MediaPlayerState,
@@ -31,7 +30,7 @@ export abstract class IMediaPlayer {
   /**
    * Opens the media resource.
    *
-   * This method is called asynchronously. If you need to play a media file, make sure you receive the onPlayerSourceStateChanged callback reporting PlayerStateOpenCompleted before calling the play method to play the file.
+   * This method is called asynchronously.
    *
    * @param url The path of the media file. Both local path and online path are supported.
    * @param startPos The starting position (ms) for playback. Default value is 0.
@@ -58,8 +57,6 @@ export abstract class IMediaPlayer {
   /**
    * Plays the media file.
    *
-   * After calling open or seek, you can call this method to play the media file.
-   *
    * @returns
    * 0: Success.
    *  < 0: Failure.
@@ -77,6 +74,8 @@ export abstract class IMediaPlayer {
 
   /**
    * Stops playing the media track.
+   *
+   * After calling this method to stop playback, if you want to play again, you need to call open or openWithMediaSource to open the media resource.
    *
    * @returns
    * 0: Success.
@@ -96,9 +95,8 @@ export abstract class IMediaPlayer {
   /**
    * Seeks to a new playback position.
    *
-   * After successfully calling this method, you will receive the onPlayerEvent callback, reporting the result of the seek operation to the new playback position. To play the media file from a specific position, do the following:
-   *  Call this method to seek to the position you want to begin playback.
-   *  Call the play method to play the media file.
+   * If you call seek after the playback has completed (upon receiving callback onPlayerSourceStateChanged reporting playback status as PlayerStatePlaybackCompleted or PlayerStatePlaybackAllLoopsCompleted), the SDK will play the media file from the specified position. At this point, you will receive callback onPlayerSourceStateChanged reporting playback status as PlayerStatePlaying.
+   *  If you call seek while the playback is paused, upon successful call of this method, the SDK will seek to the specified position. To resume playback, call resume or play .
    *
    * @param newPos The new playback position (ms).
    *
@@ -134,7 +132,7 @@ export abstract class IMediaPlayer {
    *
    * @returns
    * Returns the current playback progress (ms) if the call succeeds.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure. See MediaPlayerReason.
    */
   abstract getPlayPosition(): number;
 
@@ -145,20 +143,17 @@ export abstract class IMediaPlayer {
    *
    * @returns
    * The number of the media streams in the media resource if the method call succeeds.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure. See MediaPlayerReason.
    */
   abstract getStreamCount(): number;
 
   /**
    * Gets the detailed information of the media stream.
    *
-   * Call this method after calling getStreamCount.
-   *
-   * @param index The index of the media stream.
+   * @param index The index of the media stream. This parameter must be less than the return value of getStreamCount.
    *
    * @returns
-   * If the call succeeds, returns the detailed information of the media stream. See PlayerStreamInfo.
-   *  If the call fails, returns NULL.
+   * If the call succeeds, returns the detailed information of the media stream. See PlayerStreamInfo. null, if the method call fails.
    */
   abstract getStreamInfo(index: number): PlayerStreamInfo;
 
@@ -168,6 +163,8 @@ export abstract class IMediaPlayer {
    * If you want to loop, call this method and set the number of the loops. When the loop finishes, the SDK triggers onPlayerSourceStateChanged and reports the playback state as PlayerStatePlaybackAllLoopsCompleted.
    *
    * @param loopCount The number of times the audio effect loops:
+   *  ≥0: Number of times for playing. For example, setting it to 0 means no loop playback, playing only once; setting it to 1 means loop playback once, playing a total of twice.
+   *  -1: Play the audio file in an infinite loop.
    *
    * @returns
    * 0: Success.
@@ -180,8 +177,8 @@ export abstract class IMediaPlayer {
    *
    * Call this method after calling open.
    *
-   * @param speed The playback speed. Agora recommends that you limit this value to a range between 50 and 400, which is defined as follows:
-   *  50: Half the original speed.
+   * @param speed The playback speed. Agora recommends that you set this to a value between 30 and 400, defined as follows:
+   *  30: 0.3 times the original speed.
    *  100: The original speed.
    *  400: 4 times the original speed.
    *
@@ -205,12 +202,30 @@ export abstract class IMediaPlayer {
   abstract selectAudioTrack(index: number): number;
 
   /**
-   * @ignore
+   * Sets media player options.
+   *
+   * The media player supports setting options through key and value. The difference between this method and setPlayerOptionInString is that the value parameter of this method is of type Int, while the value of setPlayerOptionInString is of type String. These two methods cannot be used together.
+   *
+   * @param key The key of the option.
+   * @param value The value of the key.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract setPlayerOptionInInt(key: string, value: number): number;
 
   /**
-   * @ignore
+   * Sets media player options.
+   *
+   * The media player supports setting options through key and value. The difference between this method and setPlayerOptionInInt is that the value parameter of this method is of type String, while the value of setPlayerOptionInInt is of type String. These two methods cannot be used together.
+   *
+   * @param key The key of the option.
+   * @param value The value of the key.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract setPlayerOptionInString(key: string, value: string): number;
 
@@ -306,6 +321,8 @@ export abstract class IMediaPlayer {
 
   /**
    * Sets the view.
+   *
+   * @param view The render view. On Windows, this parameter sets the window handle (HWND).
    *
    * @returns
    * 0: Success.
@@ -487,7 +504,7 @@ export abstract class IMediaPlayer {
    *
    * You can call this method to switch the media resource to be played according to the current network status. For example:
    *  When the network is poor, the media resource to be played is switched to a media resource address with a lower bitrate.
-   *  When the network is good, the media resource to be played is switched to a media resource address with a higher bitrate. After calling this method, if you receive the PlayerEventSwitchComplete event in the onPlayerEvent callback, the switch is successful; If you receive the PlayerEventSwitchError event in the onPlayerEvent callback, the switch fails.
+   *  When the network is good, the media resource to be played is switched to a media resource address with a higher bitrate. After calling this method, if you receive the onPlayerEvent callback report the PlayerEventSwitchComplete event, the switching is successful. If the switching fails, the SDK will automatically retry 3 times. If it still fails, you will receive the onPlayerEvent callback reporting the PlayerEventSwitchError event indicating an error occurred during media resource switching.
    *  Ensure that you call this method after open.
    *  To ensure normal playback, pay attention to the following when calling this method:
    *  Do not call this method when playback is paused.
@@ -495,7 +512,7 @@ export abstract class IMediaPlayer {
    *  Before switching the media resource, make sure that the playback position does not exceed the total duration of the media resource to be switched.
    *
    * @param src The URL of the media resource.
-   * @param syncPts Whether to synchronize the playback position (ms) before and after the switch: true : Synchronize the playback position before and after the switch. false : (Default) Do not synchronize the playback position before and after the switch. Make sure to set this parameter as false if you need to play live streams, or the switch fails. If you need to play on-demand streams, you can set the value of this parameter according to your scenarios.
+   * @param syncPts Whether to synchronize the playback position (ms) before and after the switch: true : Synchronize the playback position before and after the switch. false : (Default) Do not synchronize the playback position before and after the switch.
    *
    * @returns
    * 0: Success.
@@ -506,7 +523,9 @@ export abstract class IMediaPlayer {
   /**
    * Preloads a media resource.
    *
-   * You can call this method to preload a media resource into the playlist. If you need to preload multiple media resources, you can call this method multiple times. After calling this method, if you receive the PlayerPreloadEventComplete event in the onPreloadEvent callback, the preload is successful; If you receive the PlayerPreloadEventError event in the onPreloadEvent callback, the preload fails. If the preload is successful and you want to play the media resource, call playPreloadedSrc; if you want to clear the playlist, call stop. Agora does not support preloading duplicate media resources to the playlist. However, you can preload the media resources that are being played to the playlist again.
+   * You can call this method to preload a media resource into the playlist. If you need to preload multiple media resources, you can call this method multiple times. After calling this method, if you receive the PlayerPreloadEventComplete event in the onPreloadEvent callback, the preload is successful; If you receive the PlayerPreloadEventError event in the onPreloadEvent callback, the preload fails. If the preload is successful and you want to play the media resource, call playPreloadedSrc; if you want to clear the playlist, call stop.
+   *  Before calling this method, ensure that you have called open or openWithMediaSource to open the media resource successfully.
+   *  Agora does not support preloading duplicate media resources to the playlist. However, you can preload the media resources that are being played to the playlist again.
    *
    * @param src The URL of the media resource.
    * @param startPos The starting position (ms) for playing after the media resource is preloaded to the playlist. When preloading a live stream, set this parameter to 0.
@@ -571,7 +590,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure. See MediaPlayerReason.
    */
   abstract removeAllCaches(): number;
 
@@ -582,7 +601,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure. See MediaPlayerReason.
    */
   abstract removeOldCache(): number;
 
@@ -595,7 +614,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure. See MediaPlayerReason.
    */
   abstract removeCacheByUri(uri: string): number;
 
@@ -608,7 +627,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure. See MediaPlayerReason.
    */
   abstract setCacheDir(path: string): number;
 
@@ -619,7 +638,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure. See MediaPlayerReason.
    */
   abstract setMaxCacheFileCount(count: number): number;
 
@@ -630,7 +649,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure. See MediaPlayerReason.
    */
   abstract setMaxCacheFileSize(cacheSize: number): number;
 
@@ -643,7 +662,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure. See MediaPlayerReason.
    */
   abstract enableAutoRemoveCache(enable: boolean): number;
 
@@ -656,7 +675,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * The call succeeds, and the SDK returns the storage path of the cached media files.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure. See MediaPlayerReason.
    */
   abstract getCacheDir(length: number): string;
 
@@ -667,7 +686,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * > 0: The call succeeds and returns the maximum number of media files that can be cached.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure. See MediaPlayerReason.
    */
   abstract getMaxCacheFileCount(): number;
 
@@ -678,7 +697,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * > 0: The call succeeds and returns the maximum size (in bytes) of the aggregate storage space for cached media files.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure. See MediaPlayerReason.
    */
   abstract getMaxCacheFileSize(): number;
 
@@ -687,7 +706,7 @@ export abstract class IMediaPlayerCacheManager {
    *
    * @returns
    * ≥ 0: The call succeeds and returns the number of media files that are cached.
-   *  < 0: Failure. See MediaPlayerError.
+   *  < 0: Failure. See MediaPlayerReason.
    */
   abstract getCacheFileCount(): number;
 }

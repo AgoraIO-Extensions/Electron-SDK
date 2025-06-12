@@ -296,6 +296,7 @@ export default class SendMultiVideoStream
     return true;
   }
 
+  //@ts-ignore
   onFrame(frame: AudioPcmFrame | VideoFrame) {
     this.info('onFrame', frame);
   }
