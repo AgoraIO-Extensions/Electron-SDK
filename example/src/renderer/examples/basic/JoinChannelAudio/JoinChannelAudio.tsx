@@ -74,6 +74,7 @@ interface State extends BaseAudioComponentState {
       remoteAudioStats: RemoteAudioStats;
     }
   >;
+  audioANSNoiseGate: number;
 }
 
 export default class PW
@@ -112,6 +113,7 @@ export default class PW
       aec_delay_search_range_ms: 512,
       aec_aggressiveness: 2,
       enableAudioDump: false,
+      audioANSNoiseGate: 400,
     };
   }
 
@@ -119,7 +121,7 @@ export default class PW
    * Step 1: initRtcEngine
    */
   protected async initRtcEngine() {
-    const { appId } = this.state;
+    const { appId, audioANSNoiseGate } = this.state;
     if (!appId) {
       this.error(`appId is invalid`);
     }
@@ -147,6 +149,11 @@ export default class PW
     // Only need to enable audio on this case
     this.engine.enableAudio();
     this.engine.enableAudioVolumeIndication(200, 3, true);
+    this.engine.setParameters(
+      JSON.stringify({
+        'che.audio.ans.noise_gate': audioANSNoiseGate,
+      })
+    );
 
     this.setAudioAINSMode();
   }
@@ -452,6 +459,13 @@ export default class PW
     );
   };
 
+  setAudioANSNoiseGate = () => {
+    const { audioANSNoiseGate } = this.state;
+    this.engine?.setParameters(
+      JSON.stringify({ 'che.audio.ans.noise_gate': audioANSNoiseGate })
+    );
+  };
+
   setAudioDump = () => {
     const { enableAudioDump } = this.state;
     this.engine?.setParameters(
@@ -561,6 +575,7 @@ export default class PW
       enableAINSMode,
       aec_aggressiveness,
       enableAudioDump,
+      audioANSNoiseGate,
     } = this.state;
     return (
       <>
@@ -660,6 +675,24 @@ export default class PW
         <AgoraButton
           title={'setAecAggressiveness'}
           onPress={this.setAecAggressiveness}
+        />
+        <AgoraText>audioANSNoiseGate:</AgoraText>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              audioANSNoiseGate:
+                text === '' ? this.createState().audioANSNoiseGate : +text,
+            });
+          }}
+          numberKeyboard={true}
+          title={`audioANSNoiseGate`}
+          placeholder={`audioANSNoiseGate`}
+          value={audioANSNoiseGate > 0 ? audioANSNoiseGate.toString() : ''}
+        />
+        <AgoraButton
+          title={'setAudioANSNoiseGate'}
+          onPress={this.setAudioANSNoiseGate}
         />
         <AgoraSlider
           title={`recordingSignalVolume ${recordingSignalVolume}`}
