@@ -89,7 +89,7 @@ echo example_sdk_mode: $example_sdk_mode
 echo package_version: $package_version
 
 export https_proxy=http://10.80.1.174:1080 http_proxy=http://10.80.1.174:1080 all_proxy=http://10.80.1.174:1080
-source ~/.nvm/nvm.sh --install
+# source ~/.nvm/nvm.sh --install
 # nvm ls-remote 14.17.3
 # nvm install 14.17.3
 # nvm use 14.17.3
