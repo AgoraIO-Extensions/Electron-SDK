@@ -1042,6 +1042,46 @@ export class ExternalVideoFrame {
 }
 
 /**
+ * Video color space standard.
+ */
+export enum VideoColorSpace {
+  /**
+   * 0: Unspecified color space.
+   */
+  VideoColorSpaceUnspecified = 0,
+  /**
+   * 1: BT.601 color space.
+   */
+  VideoColorSpaceBT601 = 1,
+  /**
+   * 2: BT.709 color space.
+   */
+  VideoColorSpaceBT709 = 2,
+  /**
+   * 3: BT.2020 color space.
+   */
+  VideoColorSpaceBT2020 = 3,
+}
+
+/**
+ * Video color range.
+ */
+export enum VideoColorRange {
+  /**
+   * 0: Unspecified range.
+   */
+  VideoColorRangeUnspecified = 0,
+  /**
+   * 1: Limited range (16-235 for Y, 16-240 for UV).
+   */
+  VideoColorRangeLimited = 1,
+  /**
+   * 2: Full range (0-255).
+   */
+  VideoColorRangeFull = 2,
+}
+
+/**
  * Configurations of the video frame.
  *
  * Note that the buffer provides a pointer to a pointer. This interface cannot modify the pointer of the buffer, but it can modify the content of the buffer.
@@ -1136,7 +1176,11 @@ export class VideoFrame {
   /**
    * By default, the color space properties of video frames will apply the Full Range and BT.709 standard configurations. You can configure the settings according your needs for custom video capturing and rendering.
    */
-  colorSpace?: ColorSpace;
+  colorSpace?: VideoColorSpace;
+  /**
+   * The color range of the video frame. See VideoColorRange.
+   */
+  colorRange?: VideoColorRange;
 }
 
 /**
