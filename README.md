@@ -1,6 +1,9 @@
 > NOTE: These sdk and samples only for the Agora Video 4.x APIs. For examples using previous releases please see the following branches:
 >  - [3.x](https://github.com/AgoraIO-Extensions/Electron-SDK/tree/3.x)
 
+> To improve our support and provide better responses to your questions, we have migrated GitHub issues to [Agora Support](https://agoraio.zendesk.com/hc/en-us/)
+> If you encounter any problems, please submit your issues through this new support platform.
+
 # Agora RTC SDK for Electron
 
 <div align="left">
