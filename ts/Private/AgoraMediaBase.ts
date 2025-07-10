@@ -346,7 +346,7 @@ export enum ContentInspectType {
 }
 
 /**
- * ContentInspectModule A structure used to configure the frequency of video screenshot and upload.
+ * Configures the local screenshot upload module.
  */
 export class ContentInspectModule {
   /**

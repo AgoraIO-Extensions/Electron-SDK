@@ -1558,7 +1558,7 @@ export class SimulcastStreamConfig {
    */
   dimensions?: VideoDimensions;
   /**
-   * Video receive bitrate (Kbps), represented by an instantaneous value. This parameter does not need to be set. The SDK automatically matches the most suitable bitrate based on the video resolution and frame rate you set.
+   * Video bitrate (Kbps). The default value is -1. This parameter does not need to be set. The SDK automatically matches the most suitable bitrate based on the video resolution and frame rate you set.
    */
   kBitrate?: number;
   /**
@@ -1678,7 +1678,9 @@ export class WatermarkRatio {
 }
 
 /**
- * Configurations of the watermark image.
+ * Configures the watermark image.
+ *
+ * Used to configure the watermark image to be added.
  */
 export class WatermarkOptions {
   /**
@@ -4073,7 +4075,7 @@ export enum SegModelType {
 }
 
 /**
- * Processing properties for background images.
+ * Configures segmentation properties.
  */
 export class SegmentationProperty {
   /**
