@@ -1101,7 +1101,7 @@ export class ImageTrackOptions {
 }
 
 /**
- * The channel media options.
+ * Configures media options for the channel.
  *
  * Agora supports publishing multiple audio streams and one video stream at the same time and in the same RtcConnection. For example, publishMicrophoneTrack, publishCustomAudioTrack, and publishMediaPlayerAudioTrack can be set as true at the same time, but only one of publishCameraTrack, publishScreenTrack, publishCustomVideoTrack, or publishEncodedVideoTrack can be set as true. Agora recommends that you set member parameter values yourself according to your business scenario, otherwise the SDK will automatically assign values to member parameters.
  */
@@ -3144,20 +3144,18 @@ export abstract class IRtcEngine {
   abstract leaveChannel(options?: LeaveChannelOptions): number;
 
   /**
-   * Renews the token.
+   * Updates the token.
    *
-   * You can call this method to pass a new token to the SDK. A token will expire after a certain period of time, at which point the SDK will be unable to establish a connection with the server.
+   * After you enable and use a token, it expires after a certain period of time.
    *
-   * @param token The new token.
+   * In the following cases, generate a new token on your server and call this method to update it. Otherwise, the SDK disconnects from the server:
+   *  When the onTokenPrivilegeWillExpire callback is triggered;
+   *  When the onRequestToken callback is triggered;
+   *  When the ERR_TOKEN_EXPIRED(-109) error is reported. After this method is successfully called, the SDK triggers the onRenewTokenResult callback to report the result of the token update.
    *
    * @returns
    * 0: Success.
    *  < 0: Failure.
-   *  -2: The parameter is invalid. For example, the token is empty.
-   *  -7: The IRtcEngine object has not been initialized. You need to initialize the IRtcEngine object before calling this method.
-   *  110: Invalid token. Ensure the following:
-   *  The user ID specified when generating the token is consistent with the user ID used when joining the channel.
-   *  The generated token is the same as the token passed in to join the channel.
    */
   abstract renewToken(token: string): number;
 
@@ -3662,7 +3660,7 @@ export abstract class IRtcEngine {
    * Enables/Disables the local video capture.
    *
    * This method disables or re-enables the local video capture, and does not affect receiving the remote video stream. After calling enableVideo, the local video capture is enabled by default. If you call enableLocalVideo (false) to disable local video capture within the channel, it also simultaneously stops publishing the video stream within the channel. If you want to restart video catpure, you can call enableLocalVideo (true) and then call updateChannelMediaOptions to set the options parameter to publish the locally captured video stream in the channel. After the local video capturer is successfully disabled or re-enabled, the SDK triggers the onRemoteVideoStateChanged callback on the remote client.
-   *  You can call this method either before or after joining a channel.
+   *  You can call this method either before or after joining a channel. However, if you call it before joining, the settings will only take effect once you have joined the channel.
    *  This method enables the internal engine and is valid after leaving the channel.
    *
    * @param enabled Whether to enable the local video capture. true : (Default) Enable the local video capture. false : Disable the local video capture. Once the local video is disabled, the remote users cannot receive the video stream of the local user, while the local user can still receive the video streams of remote users. When set to false, this method does not require a local camera.
@@ -6681,8 +6679,8 @@ export abstract class IRtcEngine {
    * Enables tracing the video frame rendering process.
    *
    * The SDK starts tracing the rendering status of the video frames in the channel from the moment this method is successfully called and reports information about the event through the onVideoRenderingTracingResult callback.
-   *  The SDK automatically starts tracking the rendering events of the video from the moment that you call joinChannel to join the channel. You can call this method at an appropriate time according to the actual application scenario to customize the tracing process.
-   *  After the local user leaves the current channel, the SDK automatically resets the time point to the next time when the user successfully joins the channel.
+   *  If you have not called this method, the SDK tracks the rendering events of the video frames from the moment you call joinChannel to join the channel. You can call this method at an appropriate time according to the actual application scenario to set the starting position for tracking video rendering events.
+   *  After the local user leaves the current channel, the SDK automatically tracks the video rendering events from the moment you join a channel.
    *
    * @returns
    * 0: Success.
@@ -6764,13 +6762,13 @@ export abstract class IRtcEngine {
   abstract stopScreenCaptureBySourceType(sourceType: VideoSourceType): number;
 
   /**
-   * Releases the IRtcEngine instance.
+   * Releases all resources used by the Agora SDK.
    *
-   * This method releases all resources used by the Agora SDK. Use this method for apps in which users occasionally make voice or video calls. When users do not make calls, you can free up resources for other operations. After a successful method call, you can no longer use any method or callback in the SDK anymore. If you want to use the real-time communication functions again, you must call createAgoraRtcEngine and initialize to create a new IRtcEngine instance.
-   *  This method can be called synchronously. You need to wait for the resource of IRtcEngine to be released before performing other operations (for example, create a new IRtcEngine object). Therefore, Agora recommends calling this method in the child thread to avoid blocking the main thread.
-   *  Besides, Agora does not recommend you calling release in any callback of the SDK. Otherwise, the SDK cannot release the resources until the callbacks return results, which may result in a deadlock.
+   * This method is intended for applications that occasionally make voice or video calls. It releases resources when not in a call so they can be used for other operations. Once this method is called to destroy the engine instance, other methods in the SDK can no longer be used, and no callbacks will be triggered. To start communication again, call the sharedEngineWithAppId method to create a new instance.
    *
-   * @param sync Whether the method is called synchronously: true : Synchronous call. false : Asynchronous call. Currently this method only supports synchronous calls. Do not set this parameter to this value.
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract release(sync?: boolean): void;
 
