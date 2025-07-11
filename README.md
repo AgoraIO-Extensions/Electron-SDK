@@ -1,5 +1,8 @@
+> ⚠️ **Note**: To provide you with better and higher quality technical support services, we will no longer provide technical support through GitHub issues. If you need help, please contact us directly through [Agora Support](https://www.agora.io/en/customer-support/).
+
 > NOTE: These sdk and samples only for the Agora Video 4.x APIs. For examples using previous releases please see the following branches:
->  - [3.x](https://github.com/AgoraIO-Extensions/Electron-SDK/tree/3.x)
+>
+> - [3.x](https://github.com/AgoraIO-Extensions/Electron-SDK/tree/3.x)
 
 # Agora RTC SDK for Electron
 
@@ -73,10 +76,10 @@ npm install --agora_electron_sdk_arch=x64
 ## 🔨 Usage
 
 ```javascript
-import createAgoraRtcEngine from "agora-electron-sdk";
+import createAgoraRtcEngine from 'agora-electron-sdk';
 
 const rtcEngine = createAgoraRtcEngine();
-rtcEngine.initialize({appId: "<your agora app id>"});
+rtcEngine.initialize({ appId: '<your agora app id>' });
 ```
 
 ### When using without electron-webpack
