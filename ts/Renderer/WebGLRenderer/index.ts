@@ -1,5 +1,9 @@
-import { VideoFrame } from '../../Private/AgoraMediaBase';
-import { VideoColorRange, VideoColorSpace } from '../../Private/AgoraMediaBase';
+import {
+  ColorSpace,
+  PrimaryID,
+  RangeID,
+  VideoFrame,
+} from '../../Private/AgoraMediaBase';
 import { RendererType } from '../../Types';
 import { AgoraEnv, logWarn } from '../../Utils';
 import { IRenderer } from '../IRenderer';
@@ -219,7 +223,6 @@ export class WebGLRenderer extends IRenderer {
     rotation,
     alphaBuffer,
     colorSpace,
-    colorRange,
   }: VideoFrame) {
     this.rotateCanvas({ width, height, rotation });
     this.updateRenderMode();
@@ -227,7 +230,7 @@ export class WebGLRenderer extends IRenderer {
     if (!this.gl || !this.program) return;
 
     // Set color space conversion parameters based on frame properties
-    this.setColorSpaceUniforms(colorSpace, colorRange);
+    this.setColorSpaceUniforms(colorSpace);
 
     const left = 0,
       top = 0,
@@ -561,20 +564,16 @@ export class WebGLRenderer extends IRenderer {
   /**
    * Get color space conversion parameters based on color space and range
    */
-  private getColorSpaceParams(
-    colorSpace?: VideoColorSpace,
-    colorRange?: VideoColorRange
-  ): ColorSpaceParams {
+  private getColorSpaceParams(colorSpace?: ColorSpace): ColorSpaceParams {
     // Default to BT.601 Limited if not specified
-    const actualColorSpace = colorSpace ?? VideoColorSpace.VideoColorSpaceBT601;
-    const actualColorRange =
-      colorRange ?? VideoColorRange.VideoColorRangeLimited;
+    const primaries = colorSpace?.primaries ?? PrimaryID.PrimaryidBt709;
+    const range = colorSpace?.range ?? RangeID.RangeidLimited;
 
     // Y offset and scale based on range
     let yOffset: number;
     let yScale: number;
 
-    if (actualColorRange === VideoColorRange.VideoColorRangeFull) {
+    if (range === RangeID.RangeidFull) {
       yOffset = 0.0;
       yScale = 1.0;
     } else {
@@ -586,53 +585,67 @@ export class WebGLRenderer extends IRenderer {
     // Color space conversion coefficients
     let rVCoeff: number, gUCoeff: number, gVCoeff: number, bUCoeff: number;
 
-    switch (actualColorSpace) {
-      case VideoColorSpace.VideoColorSpaceBT709:
-        if (actualColorRange === VideoColorRange.VideoColorRangeFull) {
+    switch (primaries) {
+      case PrimaryID.PrimaryidBt709:
+        if (range === RangeID.RangeidFull) {
           // BT.709 Full Range
           rVCoeff = 1.5748;
-          gUCoeff = -0.1873;
-          gVCoeff = -0.4681;
+          gUCoeff = -0.187324;
+          gVCoeff = -0.468124;
           bUCoeff = 1.8556;
         } else {
           // BT.709 Limited Range
-          rVCoeff = 1.5748;
-          gUCoeff = -0.1873;
-          gVCoeff = -0.4681;
-          bUCoeff = 1.8556;
+          rVCoeff = 1.792741;
+          gUCoeff = -0.213249;
+          gVCoeff = -0.532909;
+          bUCoeff = 2.112402;
         }
         break;
 
-      case VideoColorSpace.VideoColorSpaceBT2020:
-        if (actualColorRange === VideoColorRange.VideoColorRangeFull) {
+      case PrimaryID.PrimaryidBt2020:
+        if (range === RangeID.RangeidFull) {
           // BT.2020 Full Range
-          rVCoeff = 1.7166;
-          gUCoeff = -0.191;
-          gVCoeff = -0.665;
-          bUCoeff = 2.141;
+          rVCoeff = 1.4746;
+          gUCoeff = -0.164553;
+          gVCoeff = -0.571353;
+          bUCoeff = 1.8814;
         } else {
           // BT.2020 Limited Range
-          rVCoeff = 1.7166;
-          gUCoeff = -0.191;
-          gVCoeff = -0.665;
-          bUCoeff = 2.141;
+          rVCoeff = 1.678674;
+          gUCoeff = -0.187326;
+          gVCoeff = -0.650424;
+          bUCoeff = 2.141772;
         }
         break;
 
-      case VideoColorSpace.VideoColorSpaceBT601:
-      default:
-        if (actualColorRange === VideoColorRange.VideoColorRangeFull) {
+      case PrimaryID.PrimaryidSmpte170m || PrimaryID.PrimaryidBt470bg:
+        if (range === RangeID.RangeidFull) {
           // BT.601 Full Range
           rVCoeff = 1.402;
-          gUCoeff = -0.3441;
-          gVCoeff = -0.7141;
+          gUCoeff = -0.344136;
+          gVCoeff = -0.714136;
+          bUCoeff = 1.772;
+        } else {
+          // BT.601 Limited Range
+          rVCoeff = 1.596027;
+          gUCoeff = -0.391762;
+          gVCoeff = -0.812968;
+          bUCoeff = 2.017232;
+        }
+        break;
+      default:
+        if (range === RangeID.RangeidFull) {
+          // BT.601 Full Range
+          rVCoeff = 1.402;
+          gUCoeff = -0.344136;
+          gVCoeff = -0.714136;
           bUCoeff = 1.772;
         } else {
           // BT.601 Limited Range (your original values)
-          rVCoeff = 1.5958;
-          gUCoeff = -0.39173;
-          gVCoeff = -0.8129;
-          bUCoeff = 2.017;
+          rVCoeff = 1.596027;
+          gUCoeff = -0.391762;
+          gVCoeff = -0.812968;
+          bUCoeff = 2.017232;
         }
         break;
     }
@@ -650,13 +663,10 @@ export class WebGLRenderer extends IRenderer {
   /**
    * Set color space uniform values in the shader
    */
-  private setColorSpaceUniforms(
-    colorSpace?: VideoColorSpace,
-    colorRange?: VideoColorRange
-  ): void {
+  private setColorSpaceUniforms(colorSpace?: ColorSpace): void {
     if (!this.gl || !this.program) return;
 
-    const params = this.getColorSpaceParams(colorSpace, colorRange);
+    const params = this.getColorSpaceParams(colorSpace);
 
     if (this.colorSpaceUniforms.yOffset) {
       this.gl.uniform1f(this.colorSpaceUniforms.yOffset, params.yOffset);

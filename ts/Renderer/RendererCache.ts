@@ -24,6 +24,7 @@ export class RendererCache extends IRendererCache {
       uStride: 0,
       vStride: 0,
       rotation: 0,
+      colorSpace: undefined,
     };
     this._enabled = false;
   }
