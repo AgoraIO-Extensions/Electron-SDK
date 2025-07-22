@@ -569,7 +569,7 @@ export class WebGLRenderer extends IRenderer {
     const primaries = colorSpace?.primaries ?? PrimaryID.PrimaryidBt709;
     const range = colorSpace?.range ?? RangeID.RangeidLimited;
 
-    // Y offset and scale based on range
+    // Y offset and scale based on ran
     let yOffset: number;
     let yScale: number;
 
