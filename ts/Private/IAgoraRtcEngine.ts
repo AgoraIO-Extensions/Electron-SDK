@@ -1101,7 +1101,7 @@ export class ImageTrackOptions {
 }
 
 /**
- * Configures media options for the channel.
+ * The channel media options.
  *
  * Agora supports publishing multiple audio streams and one video stream at the same time and in the same RtcConnection. For example, publishMicrophoneTrack, publishCustomAudioTrack, and publishMediaPlayerAudioTrack can be set as true at the same time, but only one of publishCameraTrack, publishScreenTrack, publishCustomVideoTrack, or publishEncodedVideoTrack can be set as true. Agora recommends that you set member parameter values yourself according to your business scenario, otherwise the SDK will automatically assign values to member parameters.
  */
@@ -1129,11 +1129,11 @@ export class ChannelMediaOptions {
   /**
    * @ignore
    */
-  publishScreenCaptureVideo?: boolean;
+  publishScreenCaptureAudio?: boolean;
   /**
    * @ignore
    */
-  publishScreenCaptureAudio?: boolean;
+  publishScreenCaptureVideo?: boolean;
   /**
    * Whether to publish the video captured from the screen: true : Publish the video captured from the screen. false : Do not publish the video captured from the screen.
    */
@@ -3144,18 +3144,20 @@ export abstract class IRtcEngine {
   abstract leaveChannel(options?: LeaveChannelOptions): number;
 
   /**
-   * Updates the token.
+   * Renews the token.
    *
-   * After you enable and use a token, it expires after a certain period of time.
+   * You can call this method to pass a new token to the SDK. A token will expire after a certain period of time, at which point the SDK will be unable to establish a connection with the server.
    *
-   * In the following cases, generate a new token on your server and call this method to update it. Otherwise, the SDK disconnects from the server:
-   *  When the onTokenPrivilegeWillExpire callback is triggered;
-   *  When the onRequestToken callback is triggered;
-   *  When the ERR_TOKEN_EXPIRED(-109) error is reported. After this method is successfully called, the SDK triggers the onRenewTokenResult callback to report the result of the token update.
+   * @param token The new token.
    *
    * @returns
    * 0: Success.
    *  < 0: Failure.
+   *  -2: The parameter is invalid. For example, the token is empty.
+   *  -7: The IRtcEngine object has not been initialized. You need to initialize the IRtcEngine object before calling this method.
+   *  110: Invalid token. Ensure the following:
+   *  The user ID specified when generating the token is consistent with the user ID used when joining the channel.
+   *  The generated token is the same as the token passed in to join the channel.
    */
   abstract renewToken(token: string): number;
 
@@ -6762,13 +6764,13 @@ export abstract class IRtcEngine {
   abstract stopScreenCaptureBySourceType(sourceType: VideoSourceType): number;
 
   /**
-   * Releases all resources used by the Agora SDK.
+   * Releases the IRtcEngine instance.
    *
-   * This method is intended for applications that occasionally make voice or video calls. It releases resources when not in a call so they can be used for other operations. Once this method is called to destroy the engine instance, other methods in the SDK can no longer be used, and no callbacks will be triggered. To start communication again, call the sharedEngineWithAppId method to create a new instance.
+   * This method releases all resources used by the Agora SDK. Use this method for apps in which users occasionally make voice or video calls. When users do not make calls, you can free up resources for other operations. After a successful method call, you can no longer use any method or callback in the SDK anymore. If you want to use the real-time communication functions again, you must call createAgoraRtcEngine and initialize to create a new IRtcEngine instance.
+   *  This method can be called synchronously. You need to wait for the resource of IRtcEngine to be released before performing other operations (for example, create a new IRtcEngine object). Therefore, Agora recommends calling this method in the child thread to avoid blocking the main thread.
+   *  Besides, Agora does not recommend you calling release in any callback of the SDK. Otherwise, the SDK cannot release the resources until the callbacks return results, which may result in a deadlock.
    *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
+   * @param sync Whether the method is called synchronously: true : Synchronous call. false : Asynchronous call. Currently this method only supports synchronous calls. Do not set this parameter to this value.
    */
   abstract release(sync?: boolean): void;
 

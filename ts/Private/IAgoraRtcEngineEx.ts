@@ -25,6 +25,7 @@ import {
 import {
   ChannelMediaOptions,
   IRtcEngine,
+  ImageTrackOptions,
   LeaveChannelOptions,
   StreamFallbackOptions,
 } from './IAgoraRtcEngine';
@@ -966,6 +967,15 @@ export abstract class IRtcEngineEx extends IRtcEngine {
     connection: RtcConnection,
     metadata: string,
     length: number
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract enableVideoImageSourceEx(
+    enable: boolean,
+    options: ImageTrackOptions,
+    connection: RtcConnection
   ): number;
 
   /**
