@@ -1678,9 +1678,7 @@ export class WatermarkRatio {
 }
 
 /**
- * Configures the watermark image.
- *
- * Used to configure the watermark image to be added.
+ * Configurations of the watermark image.
  */
 export class WatermarkOptions {
   /**
@@ -4075,7 +4073,7 @@ export enum SegModelType {
 }
 
 /**
- * Configures segmentation properties.
+ * Processing properties for background images.
  */
 export class SegmentationProperty {
   /**
@@ -4413,9 +4411,41 @@ export enum VoiceAiTunerType {
 }
 
 /**
+ * The audio configuration for the shared screen stream.
+ *
+ * Only available where captureAudio is true.
+ */
+export class ScreenAudioParameters {
+  /**
+   * Audio sample rate (Hz). The default value is 16000.
+   */
+  sampleRate?: number;
+  /**
+   * The number of audio channels. The default value is 2, which means stereo.
+   */
+  channels?: number;
+  /**
+   * The volume of the captured system audio. The value range is [0, 100]. The default value is 100.
+   */
+  captureSignalVolume?: number;
+  /**
+   * @ignore
+   */
+  excludeCurrentProcessAudio?: boolean;
+}
+
+/**
  * Screen sharing configurations.
  */
 export class ScreenCaptureParameters {
+  /**
+   * @ignore
+   */
+  captureAudio?: boolean;
+  /**
+   * @ignore
+   */
+  audioParams?: ScreenAudioParameters;
   /**
    * The video encoding resolution of the screen sharing stream. See VideoDimensions. The default value is 1920 × 1080, that is, 2,073,600 pixels. Agora uses the value of this parameter to calculate the charges. If the screen dimensions are different from the value of this parameter, Agora applies the following strategies for encoding. Suppose dimensions is set to 1920 × 1080:
    *  If the value of the screen dimensions is lower than that of dimensions, for example, 1000 × 1000 pixels, the SDK uses the screen dimensions, that is, 1000 × 1000 pixels, for encoding.
@@ -5186,26 +5216,6 @@ export class ScreenVideoParameters {
    * The content hint for screen sharing.
    */
   contentHint?: VideoContentHint;
-}
-
-/**
- * The audio configuration for the shared screen stream.
- *
- * Only available where captureAudio is true.
- */
-export class ScreenAudioParameters {
-  /**
-   * Audio sample rate (Hz). The default value is 16000.
-   */
-  sampleRate?: number;
-  /**
-   * The number of audio channels. The default value is 2, which means stereo.
-   */
-  channels?: number;
-  /**
-   * The volume of the captured system audio. The value range is [0, 100]. The default value is 100.
-   */
-  captureSignalVolume?: number;
 }
 
 /**
