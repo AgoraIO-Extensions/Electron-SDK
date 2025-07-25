@@ -159,7 +159,7 @@
     "pify": "^4.0.1"
   },
   "agora_electron": {
-    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.5.2.143-build.1_DCG_Windows_Video_Standalone_20250710_0903_31716.zip",
-    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.5.2.143-build.1_DCG_Mac_Video_Standalone_20250710_0902_32659.zip"
+    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.5.2.29574-dev.1_DCG_Windows_Video_20250725_0424_31728.zip",
+    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.5.2.29574-dev.1_DCG_Mac_Video_20250725_0424_32667.zip"
   }
 }
