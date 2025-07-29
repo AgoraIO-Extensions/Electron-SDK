@@ -19,6 +19,7 @@ import {
 import { ContentInspectConfig, RenderModeType } from '../AgoraMediaBase';
 import {
   ChannelMediaOptions,
+  ImageTrackOptions,
   LeaveChannelOptions,
   StreamFallbackOptions,
 } from '../IAgoraRtcEngine';
@@ -1703,6 +1704,40 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     startPos: number = 0
   ): string {
     return 'RtcEngineEx_playEffectEx';
+  }
+
+  enableVideoImageSourceEx(
+    enable: boolean,
+    options: ImageTrackOptions,
+    connection: RtcConnection
+  ): number {
+    const apiType = this.getApiTypeFromEnableVideoImageSourceEx(
+      enable,
+      options,
+      connection
+    );
+    const jsonParams = {
+      enable: enable,
+      options: options,
+      connection: connection,
+      toJSON: () => {
+        return {
+          enable: enable,
+          options: options,
+          connection: connection,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromEnableVideoImageSourceEx(
+    enable: boolean,
+    options: ImageTrackOptions,
+    connection: RtcConnection
+  ): string {
+    return 'RtcEngineEx_enableVideoImageSourceEx';
   }
 }
 

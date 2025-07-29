@@ -1486,7 +1486,7 @@ export enum AudioProfileType {
    */
   AudioProfileMusicHighQualityStereo = 5,
   /**
-   * 6: A sample rate of 16 kHz, audio encoding, mono, and Acoustic Echo Cancellation (AES) enabled.
+   * 6: A sample rate of 16 kHz, audio encoding, mono, and Acoustic Echo Cancellation (AEC) enabled.
    */
   AudioProfileIot = 6,
   /**
@@ -2751,7 +2751,7 @@ export enum VideoViewSetupMode {
    */
   VideoViewSetupAdd = 1,
   /**
-   * 2: Deletes a view.
+   * 2: Deletes a view. When you no longer need to use a certain view, it is recommended to delete the view by setting setupMode to VideoViewSetupRemove, otherwise it may lead to leak of rendering resources.
    */
   VideoViewSetupRemove = 2,
 }
