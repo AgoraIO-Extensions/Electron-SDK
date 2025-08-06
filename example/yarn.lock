@@ -1773,10 +1773,10 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-agora-electron-sdk@4.5.1-build.1-rc.1:
-  version "4.5.1-build.1-rc.1"
-  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.5.1-build.1-rc.1.tgz#760f89283137acaccd4ae99e2c57444b9ff22272"
-  integrity sha512-YE1QbJ2r6OfNT8EJNq5cieBdeREf435Lt4uw6AdNn2KccCdSiAn8C1/rOOKLcKIcESH+ECmi3DIvmXRBMae88g==
+agora-electron-sdk@4.5.2:
+  version "4.5.2"
+  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.5.2.tgz#c60478e570fcfda2296a68d434e1fc4e345eed2a"
+  integrity sha512-W7Fw+5NBzEUaWVkhOVwtsUm0svbKVh++TTLTzHjWgfODSsJwX9qpBIJU4oKZz1510PdB19QtxAKu4cc7hk2kEw==
   dependencies:
     buffer "^6.0.3"
     cross-env "^7.0.3"
@@ -10044,9 +10044,9 @@ tmp-promise@^3.0.2:
     tmp "^0.2.0"
 
 tmp@^0.2.0:
-  version "0.2.3"
-  resolved "https://registry.npmjs.org/tmp/-/tmp-0.2.3.tgz#eb783cc22bc1e8bebd0671476d46ea4eb32a79ae"
-  integrity sha512-nZD7m9iCPC5g0pYmcaxogYKggSfLsdxl8of3Q/oIbqCqLLIO9IAF0GWjX1z9NZRHPiXv8Wex4yDCaZsgEw0Y8w==
+  version "0.2.4"
+  resolved "https://registry.npmjs.org/tmp/-/tmp-0.2.4.tgz#c6db987a2ccc97f812f17137b36af2b6521b0d13"
+  integrity sha512-UdiSoX6ypifLmrfQ/XfiawN6hkjSBpCjhKxxZcWlUUmoXLaCKQU0bx4HF/tdDK2uzRuchf1txGvrWBzYREssoQ==
 
 to-absolute-glob@^2.0.0:
   version "2.0.2"
