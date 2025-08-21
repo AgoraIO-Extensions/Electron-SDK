@@ -1773,10 +1773,10 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-agora-electron-sdk@4.5.1-build.1-rc.1:
-  version "4.5.1-build.1-rc.1"
-  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.5.1-build.1-rc.1.tgz#760f89283137acaccd4ae99e2c57444b9ff22272"
-  integrity sha512-YE1QbJ2r6OfNT8EJNq5cieBdeREf435Lt4uw6AdNn2KccCdSiAn8C1/rOOKLcKIcESH+ECmi3DIvmXRBMae88g==
+agora-electron-sdk@4.5.2:
+  version "4.5.2"
+  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.5.2.tgz#c60478e570fcfda2296a68d434e1fc4e345eed2a"
+  integrity sha512-W7Fw+5NBzEUaWVkhOVwtsUm0svbKVh++TTLTzHjWgfODSsJwX9qpBIJU4oKZz1510PdB19QtxAKu4cc7hk2kEw==
   dependencies:
     buffer "^6.0.3"
     cross-env "^7.0.3"
@@ -2948,12 +2948,12 @@ ci-info@^3.2.0:
   integrity sha512-NIxF55hv4nSqQswkAeiOi1r83xy8JldOFDTWiug55KBu9Jnblncd2U6ViHmYgHf01TPZS77NJBhBMKdWj9HQMQ==
 
 cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/cipher-base/-/cipher-base-1.0.4.tgz#8760e4ecc272f4c363532f926d874aae2c1397de"
-  integrity sha512-Kkht5ye6ZGmwv40uUDZztayT2ThLQGfnj/T71N/XzeZeo3nf8foyW7zGTsPYkEya3m5f3cAypH+qe7YOrM1U2Q==
+  version "1.0.6"
+  resolved "https://registry.npmjs.org/cipher-base/-/cipher-base-1.0.6.tgz#8fe672437d01cd6c4561af5334e0cc50ff1955f7"
+  integrity sha512-3Ek9H3X6pj5TgenXYtNWdaBon1tgYCaebd+XPg0keyjEbEfkD4KkmAxkQ/i1vYvxdcT5nscLBfq9VJRmCBcFSw==
   dependencies:
-    inherits "^2.0.1"
-    safe-buffer "^5.0.1"
+    inherits "^2.0.4"
+    safe-buffer "^5.2.1"
 
 class-utils@^0.3.5:
   version "0.3.6"
