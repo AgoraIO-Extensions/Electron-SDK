@@ -1081,11 +1081,11 @@ export enum H264PacketizeMode {
  */
 export enum VideoStreamType {
   /**
-   * 0: High-quality video stream.
+   * 0: High-quality video stream, that is, a video stream with the highest resolution and bitrate.
    */
   VideoStreamHigh = 0,
   /**
-   * 1: Low-quality video stream.
+   * 1: Low-quality video stream, that is, a video stream with the lowest resolution and bitrate.
    */
   VideoStreamLow = 1,
 }
@@ -1294,7 +1294,9 @@ export class WatermarkRatio {
 }
 
 /**
- * Configurations of the watermark image.
+ * Watermark image configurations.
+ *
+ * Configuration options for setting the watermark image to be added.
  */
 export class WatermarkOptions {
   visibleInPreview?: boolean;
@@ -1486,7 +1488,7 @@ export enum AudioProfileType {
    */
   AudioProfileMusicHighQualityStereo = 5,
   /**
-   * 6: A sample rate of 16 kHz, audio encoding, mono, and Acoustic Echo Cancellation (AES) enabled.
+   * 6: A sample rate of 16 kHz, audio encoding, mono, and Acoustic Echo Cancellation (AEC) enabled.
    */
   AudioProfileIot = 6,
   /**
@@ -2751,7 +2753,7 @@ export enum VideoViewSetupMode {
    */
   VideoViewSetupAdd = 1,
   /**
-   * 2: Deletes a view.
+   * 2: Deletes a view. When you no longer need to use a certain view, it is recommended to delete the view by setting setupMode to VideoViewSetupRemove, otherwise it may lead to leak of rendering resources.
    */
   VideoViewSetupRemove = 2,
 }
@@ -2985,6 +2987,33 @@ export enum AudioTrackType {
  */
 export class AudioTrackConfig {
   enableLocalPlayback?: boolean;
+}
+
+/**
+ * @ignore
+ */
+export enum LoopbackAudioTrackType {
+  /**
+   * @ignore
+   */
+  LoopbackSystem = 0,
+  /**
+   * @ignore
+   */
+  LoopbackSystemExcludeSelf = 1,
+  /**
+   * @ignore
+   */
+  LoopbackApplication = 2,
+}
+
+/**
+ * @ignore
+ */
+export class LoopbackAudioTrackConfig {
+  appName?: string;
+  volume?: number;
+  loopbackType?: LoopbackAudioTrackType;
 }
 
 /**
