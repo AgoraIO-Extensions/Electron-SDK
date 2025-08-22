@@ -65,7 +65,7 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
           )
   # native rtc sdk library
   set(AGORA_RTC_SDK_LIBRARY
-          ${AGORA_RTC_SDK_PATH}/*.xcframework/macos-arm64_x86_64/*.framework
+          ${AGORA_RTC_SDK_PATH}/*.framework
           )
 
   # iris sdk path
