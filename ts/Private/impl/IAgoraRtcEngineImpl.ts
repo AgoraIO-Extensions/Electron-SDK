@@ -795,6 +795,12 @@ export function processIRtcEngineEventHandler(
       }
       break;
 
+    case 'onPermissionGranted':
+      if (handler.onPermissionGranted !== undefined) {
+        handler.onPermissionGranted(jsonParams.permissionType);
+      }
+      break;
+
     case 'onLocalUserRegistered':
       if (handler.onLocalUserRegistered !== undefined) {
         handler.onLocalUserRegistered(jsonParams.uid, jsonParams.userAccount);
