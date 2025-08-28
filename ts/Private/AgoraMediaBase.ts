@@ -536,6 +536,10 @@ export class ExternalVideoFrame {
    */
   textureId?: number;
   /**
+   * @ignore
+   */
+  fence_object?: number;
+  /**
    * This parameter only applies to video data in Texture format. Incoming 4 × 4 transformational matrix. The typical value is a unit matrix.
    */
   matrix?: number[];
