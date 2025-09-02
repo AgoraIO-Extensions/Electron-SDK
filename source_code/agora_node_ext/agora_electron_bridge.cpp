@@ -370,8 +370,8 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
                                               napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
-  size_t argc = 1;
-  napi_value args[1];
+  size_t argc = 2;
+  napi_value args[2];
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
 
   AgoraElectronBridge *agoraElectronBridge;
@@ -380,6 +380,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   IrisRtcVideoFrameConfig config = EmptyIrisRtcVideoFrameConfig;
 
   napi_value obj = args[0];
+  napi_value obj1 = args[1];
   int videoSourceType;
   std::string channel_id;
   napi_value y_buffer_obj;
@@ -391,11 +392,15 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_value v_buffer_obj;
   void *v_buffer;
   size_t v_length;
+  napi_value alpha_buffer_obj;
+  void *alpha_buffer;
+  size_t alpha_length;
   int height;
   int width;
   int yStride;
   int uStride;
   int vStride;
+  bool enableAlphaMask;
 
   napi_obj_get_property(env, obj, "uid", config.uid);
   napi_obj_get_property(env, obj, "videoSourceType", config.video_source_type);
@@ -411,11 +416,15 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_obj_get_property(env, obj, "vBuffer", v_buffer_obj);
   napi_get_buffer_info(env, v_buffer_obj, &v_buffer, &v_length);
 
+  napi_obj_get_property(env, obj, "alphaBuffer", alpha_buffer_obj);
+
   napi_obj_get_property(env, obj, "height", height);
   napi_obj_get_property(env, obj, "width", width);
   napi_obj_get_property(env, obj, "yStride", yStride);
   napi_obj_get_property(env, obj, "uStride", uStride);
   napi_obj_get_property(env, obj, "vStride", vStride);
+
+  napi_obj_get_property(env, obj1, "enableAlphaMask", enableAlphaMask);
 
   IrisCVideoFrame videoFrame;
   videoFrame.yBuffer = (uint8_t *) y_buffer;
@@ -428,7 +437,12 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   videoFrame.vStride = vStride;
   videoFrame.metadata_buffer = nullptr;
   videoFrame.metadata_size = 0;
-  videoFrame.alphaBuffer = nullptr;
+  if (enableAlphaMask) {
+    napi_get_buffer_info(env, alpha_buffer_obj, &alpha_buffer, &alpha_length);
+    videoFrame.alphaBuffer = (uint8_t *) alpha_buffer;
+  } else {
+    videoFrame.alphaBuffer = nullptr;
+  }
 
   bool isFresh = false;
   napi_value retObj;

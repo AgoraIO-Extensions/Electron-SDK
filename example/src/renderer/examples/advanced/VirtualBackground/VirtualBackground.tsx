@@ -4,6 +4,7 @@ import {
   ChannelProfileType,
   ClientRoleType,
   IRtcEngineEventHandler,
+  VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
 import React, { ReactElement } from 'react';
@@ -16,6 +17,8 @@ import {
 import {
   AgoraButton,
   AgoraDropdown,
+  AgoraList,
+  AgoraSwitch,
   AgoraTextInput,
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
@@ -28,6 +31,7 @@ interface State extends BaseVideoComponentState {
   source: string;
   blur_degree: BackgroundBlurDegree;
   enableVirtualBackground: boolean;
+  enableAlphaMask: boolean;
 }
 
 export default class VirtualBackground
@@ -44,11 +48,12 @@ export default class VirtualBackground
       joinChannelSuccess: false,
       remoteUsers: [],
       startPreview: false,
-      background_source_type: BackgroundSourceType.BackgroundColor,
+      background_source_type: BackgroundSourceType.BackgroundNone,
       color: 0xffffff,
       source: getResourcePath('agora-logo.png'),
       blur_degree: BackgroundBlurDegree.BlurDegreeMedium,
       enableVirtualBackground: false,
+      enableAlphaMask: true,
     };
   }
 
@@ -82,10 +87,8 @@ export default class VirtualBackground
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();
-
-    // This case works if startPreview without joinChannel
-    this.engine.startPreview();
-    this.setState({ startPreview: true });
+    // if you want to use the alpha channel, you need to set the following parameters to let remoteView support alpha channel
+    this.engine?.setParameters('{"rtc.video.dec_split_alpha":true}');
   }
 
   /**
@@ -155,6 +158,16 @@ export default class VirtualBackground
     this.engine?.leaveChannel();
   }
 
+  handleStartPreview = () => {
+    this.engine?.startPreview();
+    this.setState({ startPreview: true });
+  };
+
+  handleStopPreview = () => {
+    this.engine?.stopPreview();
+    this.setState({ startPreview: false });
+  };
+
   /**
    * Step 5: releaseRtcEngine
    */
@@ -163,8 +176,44 @@ export default class VirtualBackground
     this.engine?.release();
   }
 
+  protected renderUsers(): ReactElement | undefined {
+    const { startPreview, joinChannelSuccess, remoteUsers, enableAlphaMask } =
+      this.state;
+    return (
+      <>
+        {!!startPreview || joinChannelSuccess
+          ? this.renderUser({
+              enableAlphaMask: enableAlphaMask,
+              sourceType: VideoSourceType.VideoSourceCamera,
+            })
+          : undefined}
+        {!!startPreview || joinChannelSuccess ? (
+          <AgoraList
+            data={remoteUsers ?? []}
+            renderItem={(item) =>
+              this.renderUser({
+                uid: item,
+                enableAlphaMask: enableAlphaMask,
+
+                sourceType: VideoSourceType.VideoSourceRemote,
+              })
+            }
+          />
+        ) : undefined}
+      </>
+    );
+  }
+
   protected renderConfiguration(): ReactElement | undefined {
-    const { background_source_type, color, source, blur_degree } = this.state;
+    const {
+      background_source_type,
+      color,
+      source,
+      blur_degree,
+      enableAlphaMask,
+      startPreview,
+      joinChannelSuccess,
+    } = this.state;
     return (
       <>
         <AgoraDropdown
@@ -208,6 +257,14 @@ export default class VirtualBackground
             this.setState({ blur_degree: value });
           }}
         />
+        <AgoraSwitch
+          title={'enableAlphaMask'}
+          disabled={startPreview && !joinChannelSuccess}
+          value={enableAlphaMask}
+          onValueChange={(value) => {
+            this.setState({ enableAlphaMask: value });
+          }}
+        />
       </>
     );
   }
@@ -217,6 +274,13 @@ export default class VirtualBackground
       this.state;
     return (
       <>
+        <AgoraButton
+          disabled={joinChannelSuccess}
+          title={`${startPreview ? 'stop' : 'start'} Preview`}
+          onPress={
+            startPreview ? this.handleStopPreview : this.handleStartPreview
+          }
+        />
         <AgoraButton
           disabled={!(startPreview || joinChannelSuccess)}
           title={`${

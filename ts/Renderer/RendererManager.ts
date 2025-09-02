@@ -68,6 +68,7 @@ export class RendererManager extends IRendererManager {
       rendererOptions: {
         contentMode: RenderModeType.RenderModeFit,
         mirror: false,
+        enableAlphaMask: false,
       },
     };
   }
@@ -349,6 +350,10 @@ export class RendererManager extends IRendererManager {
     }
   }
 
+  public getEnableAlphaMaskByRenders(renders: IRenderer[]): boolean {
+    return renders.some((render) => render.enableAlphaMask);
+  }
+
   /**
    * @ignore
    */
@@ -358,12 +363,16 @@ export class RendererManager extends IRendererManager {
       rendererItem: RenderConfig,
       { videoSourceType, channelId, uid }: VideoFrameCacheConfig
     ) => {
+      let enableAlphaMask = this.getEnableAlphaMaskByRenders(
+        rendererItem.renders
+      );
       const { renders } = rendererItem;
       if (!renders || renders?.length === 0) {
         return;
       }
       let finalResult = this.msgBridge.GetVideoFrame(
-        rendererItem.shareVideoFrame
+        rendererItem.shareVideoFrame,
+        { enableAlphaMask: enableAlphaMask }
       );
 
       switch (finalResult.ret) {
@@ -375,6 +384,7 @@ export class RendererManager extends IRendererManager {
           // GET_VIDEO_FRAME_CACHE_RETURN_TYPE::RESIZED
           const { width, height, yStride, uStride, vStride } = finalResult;
           const newShareVideoFrame = this.resizeShareVideoFrame(
+            enableAlphaMask,
             videoSourceType,
             channelId,
             uid,
@@ -385,7 +395,9 @@ export class RendererManager extends IRendererManager {
             vStride
           );
           rendererItem.shareVideoFrame = newShareVideoFrame;
-          finalResult = this.msgBridge.GetVideoFrame(newShareVideoFrame);
+          finalResult = this.msgBridge.GetVideoFrame(newShareVideoFrame, {
+            enableAlphaMask: enableAlphaMask,
+          });
           break;
         }
         case 2:
@@ -571,7 +583,7 @@ export class RendererManager extends IRendererManager {
   /**
    * @ignore
    */
-  private ensureRendererConfig(config: VideoFrameCacheConfig):
+  private ensureRendererConfig(config: FormatRendererVideoConfig):
     | Map<
         number,
         {
@@ -584,6 +596,7 @@ export class RendererManager extends IRendererManager {
     const emptyRenderConfig = {
       renders: [],
       shareVideoFrame: this.resizeShareVideoFrame(
+        config.rendererOptions.enableAlphaMask ?? false,
         videoSourceType,
         channelId,
         uid
@@ -618,6 +631,7 @@ export class RendererManager extends IRendererManager {
    * @ignore
    */
   private resizeShareVideoFrame(
+    enableAlphaMask: boolean,
     videoSourceType: VideoSourceType,
     channelId: string,
     uid: number,
@@ -632,30 +646,14 @@ export class RendererManager extends IRendererManager {
       channelId,
       uid,
       yBuffer: Buffer.alloc(yStride * height),
-      uBuffer: Buffer.alloc((yStride * height) / 4),
-      vBuffer: Buffer.alloc((yStride * height) / 4),
+      uBuffer: Buffer.alloc(uStride * height),
+      vBuffer: Buffer.alloc(vStride * height),
+      alphaBuffer: enableAlphaMask ? Buffer.alloc(width * height) : undefined,
       width,
       height,
       yStride,
       uStride,
       vStride,
     };
-  }
-
-  /**
-   * @ignore
-   */
-  public updateVideoFrameCacheInMap(
-    config: VideoFrameCacheConfig,
-    shareVideoFrame: ShareVideoFrame
-  ): void {
-    let rendererConfigMap = this.ensureRendererConfig(config);
-    rendererConfigMap
-      ? Object.assign(rendererConfigMap.get(config.uid) ?? {}, {
-          shareVideoFrame,
-        })
-      : logWarn(
-          `updateVideoFrameCacheInMap videoSourceType:${config.videoSourceType} channelId:${config.channelId} uid:${config.uid} rendererConfigMap is null`
-        );
   }
 }

@@ -573,7 +573,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
           value.thumbImage!.buffer = AgoraEnv.AgoraElectronBridge.GetBuffer(
             value.thumbImage!.buffer as unknown as number,
             value.thumbImage.length!
-          );
+          ) as unknown as Uint8Array;
         }
         if (!value.iconImage?.buffer || !value.iconImage?.length) {
           value.iconImage!.buffer = undefined;
@@ -581,7 +581,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
           value.iconImage.buffer = AgoraEnv.AgoraElectronBridge.GetBuffer(
             value.iconImage!.buffer as unknown as number,
             value.iconImage.length!
-          );
+          ) as unknown as Uint8Array;
         }
         return value;
       }
@@ -600,6 +600,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       view,
       renderMode,
       mirrorMode,
+      enableAlphaMask,
     } = canvas;
     if (
       sourceType === VideoSourceType.VideoSourceMediaPlayer &&
@@ -616,6 +617,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
         rendererOptions: {
           contentMode: renderMode,
           mirror: mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled,
+          enableAlphaMask,
         },
       }) ?? -ErrorCodeType.ErrNotInitialized
     );
@@ -628,6 +630,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       view,
       renderMode,
       mirrorMode,
+      enableAlphaMask,
     } = canvas;
     return (
       AgoraEnv.AgoraRendererManager?.setupRemoteVideo({
@@ -639,6 +642,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
         rendererOptions: {
           contentMode: renderMode,
           mirror: mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled,
+          enableAlphaMask,
         },
       }) ?? -ErrorCodeType.ErrNotInitialized
     );
@@ -654,6 +658,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       view,
       renderMode,
       mirrorMode,
+      enableAlphaMask,
     } = canvas;
     const { channelId } = connection;
     return (
@@ -665,6 +670,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
         rendererOptions: {
           contentMode: renderMode,
           mirror: mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled,
+          enableAlphaMask,
         },
       }) ?? -ErrorCodeType.ErrNotInitialized
     );

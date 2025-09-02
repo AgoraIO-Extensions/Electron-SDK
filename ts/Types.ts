@@ -75,6 +75,10 @@ export interface RendererOptions {
    * @ignore
    */
   mirror?: boolean;
+  /**
+   * @ignore
+   */
+  enableAlphaMask?: boolean;
 }
 
 /**
@@ -204,6 +208,10 @@ export interface ShareVideoFrame {
   /**
    * @ignore
    */
+  alphaBuffer?: Buffer | Uint8Array;
+  /**
+   * @ignore
+   */
   mirror?: boolean;
   /**
    * @ignore
@@ -274,7 +282,10 @@ export interface AgoraElectronBridge {
 
   GetBuffer(ptr: number, length: number): Buffer;
 
-  GetVideoFrame(streamInfo: ShareVideoFrame): {
+  GetVideoFrame(
+    streamInfo: ShareVideoFrame,
+    config: { enableAlphaMask: boolean }
+  ): {
     ret: number;
     isNewFrame: boolean;
     yStride: number;
