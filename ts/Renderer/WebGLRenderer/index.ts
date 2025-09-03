@@ -25,22 +25,29 @@ const yuvShaderSource =
   'uniform sampler2D Ytex;' +
   'uniform sampler2D Utex;' +
   'uniform sampler2D Vtex;' +
+  'uniform sampler2D Atex;' +
+  'uniform bool hasAlpha;' +
   'varying vec2 v_texCoord;' +
   'void main(void) {' +
-  '  float nx,ny,r,g,b,y,u,v;' +
+  '  float nx,ny,r,g,b,y,u,v,a;' +
   '  mediump vec4 txl,ux,vx;' +
   '  nx=v_texCoord[0];' +
   '  ny=v_texCoord[1];' +
   '  y=texture2D(Ytex,vec2(nx,ny)).r;' +
   '  u=texture2D(Utex,vec2(nx,ny)).r;' +
   '  v=texture2D(Vtex,vec2(nx,ny)).r;' +
+  '  if (hasAlpha) {' +
+  '    a=texture2D(Atex,vec2(nx,ny)).r;' +
+  '  } else {' +
+  '    a=1.0;' +
+  '  }' +
   '  y=1.1643*(y-0.0625);' +
   '  u=u-0.5;' +
   '  v=v-0.5;' +
   '  r=y+1.5958*v;' +
   '  g=y-0.39173*u-0.81290*v;' +
   '  b=y+2.017*u;' +
-  '  gl_FragColor=vec4(r,g,b,1.0);' +
+  '  gl_FragColor=vec4(r,g,b,a);' +
   '}';
 
 export class WebGLRenderer extends IRenderer {
@@ -51,6 +58,8 @@ export class WebGLRenderer extends IRenderer {
   yTexture: WebGLTexture | null;
   uTexture: WebGLTexture | null;
   vTexture: WebGLTexture | null;
+  aTexture: WebGLTexture | null;
+  hasAlpha: WebGLUniformLocation | null;
   texCoordBuffer: WebGLBuffer | null;
   surfaceBuffer: WebGLBuffer | null;
 
@@ -74,6 +83,8 @@ export class WebGLRenderer extends IRenderer {
     this.yTexture = null;
     this.uTexture = null;
     this.vTexture = null;
+    this.aTexture = null;
+    this.hasAlpha = null;
     this.texCoordBuffer = null;
     this.surfaceBuffer = null;
     this.fallback = fallback;
@@ -136,9 +147,10 @@ export class WebGLRenderer extends IRenderer {
         right: videoFrame.yStride - videoFrame.width,
         bottom: 0,
         rotation: videoFrame.rotation || 0,
-        yplane: videoFrame.yBuffer,
-        uplane: videoFrame.uBuffer,
-        vplane: videoFrame.vBuffer,
+        yplane: videoFrame.yBuffer as Uint8Array,
+        uplane: videoFrame.uBuffer as Uint8Array,
+        vplane: videoFrame.vBuffer as Uint8Array,
+        aplane: videoFrame.alphaBuffer as Uint8Array,
       });
     } catch (err) {
       error = err;
@@ -174,6 +186,7 @@ export class WebGLRenderer extends IRenderer {
     yplane: Uint8Array;
     uplane: Uint8Array;
     vplane: Uint8Array;
+    aplane: Uint8Array;
   }) {
     // Rotation, width, height, left, top, right, bottom, yplane, uplane, vplane
 
@@ -223,7 +236,14 @@ export class WebGLRenderer extends IRenderer {
       0
     );
 
-    this.uploadYuv(xWidth, xHeight, image.yplane, image.uplane, image.vplane);
+    this.uploadYuv(
+      xWidth,
+      xHeight,
+      image.yplane,
+      image.uplane,
+      image.vplane,
+      image.aplane
+    );
 
     this.updateCanvas(image.rotation, image.width, image.height);
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
@@ -234,7 +254,8 @@ export class WebGLRenderer extends IRenderer {
     height: number,
     yplane: Uint8Array,
     uplane: Uint8Array,
-    vplane: Uint8Array
+    vplane: Uint8Array,
+    aplane: Uint8Array
   ) {
     if (!this.gl || !this.yTexture || !this.uTexture || !this.vTexture) {
       return;
@@ -283,6 +304,24 @@ export class WebGLRenderer extends IRenderer {
       this.gl.UNSIGNED_BYTE,
       vplane
     );
+    if (aplane) {
+      this.gl.activeTexture(this.gl.TEXTURE3);
+      this.gl.bindTexture(this.gl.TEXTURE_2D, this.aTexture);
+      this.gl.texImage2D(
+        this.gl.TEXTURE_2D,
+        0,
+        this.gl.LUMINANCE,
+        width,
+        height,
+        0,
+        this.gl.LUMINANCE,
+        this.gl.UNSIGNED_BYTE,
+        aplane
+      );
+      this.gl.uniform1i(this.hasAlpha, 1);
+    } else {
+      this.gl.uniform1i(this.hasAlpha, 0);
+    }
   }
 
   private updateCanvas(rotation: number, width: number, height: number) {
@@ -460,10 +499,10 @@ export class WebGLRenderer extends IRenderer {
           const context = this.canvas?.getContext(contextName, {
             depth: true,
             stencil: true,
-            alpha: false,
+            alpha: true,
             antialias: false,
             premultipliedAlpha: true,
-            preserveDrawingBuffer: true,
+            preserveDrawingBuffer: this.hasAlpha,
             powerPreference: 'default',
             failIfMajorPerformanceCaveat: false,
           });
@@ -489,12 +528,16 @@ export class WebGLRenderer extends IRenderer {
     }
 
     // Set clear color to black, fully opaque
-    this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
     // Enable depth testing
     this.gl.enable(this.gl.DEPTH_TEST);
     // Near things obscure far things
     this.gl.depthFunc(this.gl.LEQUAL);
     // Clear the color as well as the depth buffer.
+    // Enable blending
+    this.gl.enable(this.gl.BLEND);
+    // Set blending function
+    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
     this.gl.clear(
       this.gl.COLOR_BUFFER_BIT |
         this.gl.DEPTH_BUFFER_BIT |
@@ -522,6 +565,8 @@ export class WebGLRenderer extends IRenderer {
       this.program!,
       'a_texCoord'
     );
+
+    this.hasAlpha = this.gl.getUniformLocation(this.program!, 'hasAlpha');
 
     this.surfaceBuffer = this.gl.createBuffer();
     this.texCoordBuffer = this.gl.createBuffer();
@@ -560,6 +605,7 @@ export class WebGLRenderer extends IRenderer {
     this.yTexture = createTexture(this.gl.TEXTURE0);
     this.uTexture = createTexture(this.gl.TEXTURE1);
     this.vTexture = createTexture(this.gl.TEXTURE2);
+    this.aTexture = createTexture(this.gl.TEXTURE3);
 
     const y = this.gl.getUniformLocation(this.program!, 'Ytex');
     this.gl.uniform1i(y, 0); /* Bind Ytex to texture unit 0 */
@@ -569,6 +615,9 @@ export class WebGLRenderer extends IRenderer {
 
     const v = this.gl.getUniformLocation(this.program!, 'Vtex');
     this.gl.uniform1i(v, 2); /* Bind Vtex to texture unit 2 */
+
+    const a = this.gl.getUniformLocation(this.program!, 'Atex');
+    this.gl.uniform1i(a, 3); /* Bind Atex to texture unit 3 */
   }
 
   private releaseTextures() {
@@ -581,9 +630,11 @@ export class WebGLRenderer extends IRenderer {
     this.gl?.deleteTexture(this.yTexture);
     this.gl?.deleteTexture(this.uTexture);
     this.gl?.deleteTexture(this.vTexture);
+    this.gl?.deleteTexture(this.aTexture);
     this.yTexture = null;
     this.uTexture = null;
     this.vTexture = null;
+    this.aTexture = null;
 
     this.gl?.deleteBuffer(this.texCoordBuffer);
     this.gl?.deleteBuffer(this.surfaceBuffer);

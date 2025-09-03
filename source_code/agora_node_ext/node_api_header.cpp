@@ -128,6 +128,15 @@ napi_status napi_obj_get_property(napi_env &env, napi_value &object,
 }
 
 napi_status napi_obj_get_property(napi_env &env, napi_value &object,
+                                  const char *utf8name, bool &result) {
+  napi_status status;
+  napi_value retValue;
+  napi_get_named_property(env, object, utf8name, &retValue);
+  status = napi_get_value_bool(env, retValue, &result);
+  return status;
+}
+
+napi_status napi_obj_get_property(napi_env &env, napi_value &object,
                                   const char *utf8name, uint32_t &result) {
   napi_status status;
   napi_value retValue;

@@ -7,6 +7,7 @@ export abstract class IRenderer {
   canvas?: HTMLCanvasElement;
   contentMode = RenderModeType.RenderModeHidden;
   mirror?: boolean;
+  enableAlphaMask = false;
 
   public snapshot(fileType = 'image/png') {
     if (this.canvas && this.canvas.toDataURL) {
@@ -56,9 +57,18 @@ export abstract class IRenderer {
 
   abstract drawFrame(imageData: ShareVideoFrame): void;
 
-  public setRenderOption({ contentMode, mirror }: RendererOptions) {
+  public setRenderOption({
+    contentMode,
+    mirror,
+    enableAlphaMask,
+  }: RendererOptions) {
     this.contentMode = contentMode ?? RenderModeType.RenderModeFit;
     this.mirror = mirror;
+
+    if (enableAlphaMask !== undefined) {
+      this.enableAlphaMask = enableAlphaMask;
+    }
+
     Object.assign(this.parentElement!.style, {
       transform: mirror ? 'rotateY(180deg)' : '',
     });

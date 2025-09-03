@@ -24,6 +24,7 @@ export class YUVCanvasRenderer extends IRenderer {
       yBuffer: new Uint8Array(0),
       uBuffer: new Uint8Array(0),
       vBuffer: new Uint8Array(0),
+      alphaBuffer: new Uint8Array(0),
     };
   }
 
@@ -100,13 +101,14 @@ export class YUVCanvasRenderer extends IRenderer {
       },
       {
         bytes: this._videoFrame.uBuffer,
-        stride: frame.yStride / 2,
+        stride: frame.uStride,
       },
       {
         bytes: this._videoFrame.vBuffer,
-        stride: frame.yStride / 2,
+        stride: frame.vStride,
       }
     );
+    yuvBufferFrame.a = frame.alphaBuffer;
     this._yuvCanvasSink.drawFrame(yuvBufferFrame);
   }
 

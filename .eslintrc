@@ -87,6 +87,7 @@
     "RenderingContext": false,
     "WebGLRenderingContext": false,
     "WebGL2RenderingContext": false,
+    "WebGLUniformLocation": false,
     "WebGLTexture": false,
     "WebGLBuffer": false,
     "WebGLProgram": false,
