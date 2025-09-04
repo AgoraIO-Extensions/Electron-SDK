@@ -503,6 +503,19 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_obj_set_property(env, obj1, "renderTimeMs", videoFrame.renderTimeMs);
   napi_obj_set_property(env, obj1, "avsync_type", videoFrame.avsync_type);
   napi_obj_set_property(env, obj1, "metadata_size", videoFrame.metadata_size);
+
+  napi_value colorSpace;
+  status = napi_create_object(env, &colorSpace);
+
+  napi_obj_set_property(env, colorSpace, "primaries",
+                        videoFrame.colorSpace.primaries);
+  napi_obj_set_property(env, colorSpace, "transfer",
+                        videoFrame.colorSpace.transfer);
+  napi_obj_set_property(env, colorSpace, "matrix",
+                        videoFrame.colorSpace.matrix);
+  napi_obj_set_property(env, colorSpace, "range",
+                        videoFrame.colorSpace.range);
+  napi_obj_set_property(env, obj1, "colorSpace", colorSpace);
   // napi_obj_set_property(env, obj1, "textureId", videoFrame.textureId);
 
   return retObj;
