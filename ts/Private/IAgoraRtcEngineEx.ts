@@ -25,6 +25,7 @@ import {
 import {
   ChannelMediaOptions,
   IRtcEngine,
+  ImageTrackOptions,
   LeaveChannelOptions,
   StreamFallbackOptions,
 } from './IAgoraRtcEngine';
@@ -590,7 +591,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * Adds a watermark image to the local video.
    *
-   * This method adds a PNG watermark image to the local video in the live streaming. Once the watermark image is added, all the audience in the channel (CDN audience included), and the capturing device can see and capture it. The Agora SDK supports adding only one watermark image onto a local video or CDN live stream. The newly added watermark image replaces the previous one. The watermark coordinates are dependent on the settings in the setVideoEncoderConfigurationEx method:
+   * This method adds a PNG watermark image to the local video in the live streaming. Once the watermark image is added, all the audience in the channel (CDN audience included), and the capturing device can see and capture it. The Agora SDK supports adding only one watermark image onto a live video stream. The newly added watermark image replaces the previous one. The watermark coordinates are dependent on the settings in the setVideoEncoderConfigurationEx method:
    *  If the orientation mode of the encoding video (OrientationMode) is fixed landscape mode or the adaptive landscape mode, the watermark uses the landscape orientation.
    *  If the orientation mode of the encoding video (OrientationMode) is fixed portrait mode or the adaptive portrait mode, the watermark uses the portrait orientation.
    *  When setting the watermark position, the region must be less than the dimensions set in the setVideoEncoderConfigurationEx method; otherwise, the watermark image will be cropped.
@@ -966,6 +967,15 @@ export abstract class IRtcEngineEx extends IRtcEngine {
     connection: RtcConnection,
     metadata: string,
     length: number
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract enableVideoImageSourceEx(
+    enable: boolean,
+    options: ImageTrackOptions,
+    connection: RtcConnection
   ): number;
 
   /**
