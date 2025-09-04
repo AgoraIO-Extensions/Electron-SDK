@@ -1410,17 +1410,12 @@
   resolved "https://registry.npmjs.org/@types/ms/-/ms-0.7.34.tgz#10964ba0dee6ac4cd462e2795b6bebd407303433"
   integrity sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==
 
-"@types/node@*":
-  version "22.4.1"
-  resolved "https://registry.npmjs.org/@types/node/-/node-22.4.1.tgz#9b595d292c65b94c20923159e2ce947731b6fdce"
-  integrity sha512-1tbpb9325+gPnKK0dMm+/LMriX0vKxf6RnB0SZUqfyVkQ4fMgUSySqhxE/y8Jvs4NyF1yHzTfG9KlnkIODxPKg==
+"@types/node@*", "@types/node@^22.7.7":
+  version "22.18.0"
+  resolved "https://registry.npmjs.org/@types/node/-/node-22.18.0.tgz#9e4709be4f104e3568f7dd1c71e2949bf147a47b"
+  integrity sha512-m5ObIqwsUp6BZzyiy4RdZpzWGub9bqLJMvZDD0QMXhxjqMHMENlj+SqF5QxoUwaQNFe+8kz8XM8ZQhqkQPTgMQ==
   dependencies:
-    undici-types "~6.19.2"
-
-"@types/node@^16.11.26":
-  version "16.18.105"
-  resolved "https://registry.npmjs.org/@types/node/-/node-16.18.105.tgz#7147176852774ec4d6dd626803888adf6b999feb"
-  integrity sha512-w2d0Z9yMk07uH3+Cx0N8lqFyi3yjXZxlbYappPj+AsOlT02OyxyiuNoNHdGt6EuiSm8Wtgp2YV7vWg+GMFrvFA==
+    undici-types "~6.21.0"
 
 "@types/plist@^3.0.1":
   version "3.0.5"
@@ -1773,10 +1768,10 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-agora-electron-sdk@4.5.1-build.1-rc.1:
-  version "4.5.1-build.1-rc.1"
-  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.5.1-build.1-rc.1.tgz#760f89283137acaccd4ae99e2c57444b9ff22272"
-  integrity sha512-YE1QbJ2r6OfNT8EJNq5cieBdeREf435Lt4uw6AdNn2KccCdSiAn8C1/rOOKLcKIcESH+ECmi3DIvmXRBMae88g==
+agora-electron-sdk@4.5.2:
+  version "4.5.2"
+  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.5.2.tgz#c60478e570fcfda2296a68d434e1fc4e345eed2a"
+  integrity sha512-W7Fw+5NBzEUaWVkhOVwtsUm0svbKVh++TTLTzHjWgfODSsJwX9qpBIJU4oKZz1510PdB19QtxAKu4cc7hk2kEw==
   dependencies:
     buffer "^6.0.3"
     cross-env "^7.0.3"
@@ -4183,13 +4178,13 @@ electron-webpack@^2.8.2:
     webpack-merge "^4.2.2"
     yargs "^15.3.1"
 
-electron@22.0.0:
-  version "22.0.0"
-  resolved "https://registry.npmjs.org/electron/-/electron-22.0.0.tgz#ef84ab9cf23aa3f8c2f42a1e8e000ad7fd941058"
-  integrity sha512-cgRc4wjyM+81A0E8UGv1HNJjL1HBI5cWNh/DUIjzYvoUuiEM0SS0hAH/zaFQ18xOz2ced6Yih8SybpOiOYJhdg==
+electron@35.7.5:
+  version "35.7.5"
+  resolved "https://registry.npmjs.org/electron/-/electron-35.7.5.tgz#294a4aebb2ad2a884de730c410f2358d061e8d53"
+  integrity sha512-dnL+JvLraKZl7iusXTVTGYs10TKfzUi30uEDTqsmTm0guN9V2tbOjTzyIZbh9n3ygUjgEYyo+igAwMRXIi3IPw==
   dependencies:
     "@electron/get" "^2.0.0"
-    "@types/node" "^16.11.26"
+    "@types/node" "^22.7.7"
     extract-zip "^2.0.1"
 
 elliptic@^6.5.3, elliptic@^6.5.5:
@@ -10281,10 +10276,10 @@ undertaker@^1.2.1:
     object.reduce "^1.0.0"
     undertaker-registry "^1.0.0"
 
-undici-types@~6.19.2:
-  version "6.19.8"
-  resolved "https://registry.npmjs.org/undici-types/-/undici-types-6.19.8.tgz#35111c9d1437ab83a7cdc0abae2f26d88eda0a02"
-  integrity sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==
+undici-types@~6.21.0:
+  version "6.21.0"
+  resolved "https://registry.npmjs.org/undici-types/-/undici-types-6.21.0.tgz#691d00af3909be93a7faa13be61b3a5b50ef12cb"
+  integrity sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==
 
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"
