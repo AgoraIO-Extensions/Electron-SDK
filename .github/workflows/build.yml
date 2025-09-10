@@ -9,14 +9,14 @@ on:
     inputs:
       type:
         description: 'Build type'
-        required: true
+        required: false
         default: 'sdk'
         type: string
   workflow_dispatch:
     inputs:
       type:
         description: 'Build type'
-        required: true
+        required: false
         default: 'demo'
         type: choice
         options:
