@@ -4,6 +4,9 @@ set +x
 MY_PATH=$(realpath $(dirname "$0"))
 PROJECT_ROOT=$(realpath ${MY_PATH}/../..)
 PACKAGE_JSON_PATH="${PROJECT_ROOT}/package.json"
+TERRA_CONFIG_PATH1="${PROJECT_ROOT}/scripts/terra/config/types_config.yaml"
+TERRA_CONFIG_PATH2="${PROJECT_ROOT}/scripts/terra/config/impl_config.yaml"
+
 if [ "$#" -lt 1 ]; then
     exit 1
 fi
@@ -15,6 +18,7 @@ WINDOWS_DEPENDENCIES=$(echo "$INPUT" | jq -r '.[] | select(.platform == "Windows
 IRIS_WINDOWS_DEPENDENCIES=$(echo "$INPUT" | jq -r '.[] | select(.platform == "Windows") | .iris_cdn[]')
 LINUX_DEPENDENCIES=$(echo "$INPUT" | jq -r '.[] | select(.platform == "Linux") | .cdn[]')
 IRIS_LINUX_DEPENDENCIES=$(echo "$INPUT" | jq -r '.[] | select(.platform == "Linux") | .iris_cdn[]')
+DEP_VERSION=$(echo "$INPUT" | jq -r '.[] | select(.platform == "Windows") | .version')
 
 if [ -z "$MAC_DEPENDENCIES" ]; then
   echo "No mac native dependencies need to change."
@@ -74,4 +78,14 @@ else
       break
     fi
   done
+fi
+
+if [ -z "$DEP_VERSION" ]; then
+  echo "can not find dependencies version."
+else
+  echo "update dependencies version to $TERRA_CONFIG_PATH1"
+  sed 's|sdkVersion: \(.*\)|sdkVersion: '$DEP_VERSION'|g' $TERRA_CONFIG_PATH1 > tmp
+  mv tmp $TERRA_CONFIG_PATH1
+  sed 's|sdkVersion: \(.*\)|sdkVersion: '$DEP_VERSION'|g' $TERRA_CONFIG_PATH2 > tmp
+  mv tmp $TERRA_CONFIG_PATH2
 fi
