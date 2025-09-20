@@ -236,7 +236,7 @@ export class WebGLRenderer extends IRenderer {
       0
     );
 
-    this.uploadYuv(
+    this.uploadYuva(
       xWidth,
       xHeight,
       image.yplane,
@@ -249,7 +249,7 @@ export class WebGLRenderer extends IRenderer {
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
   }
 
-  private uploadYuv(
+  private uploadYuva(
     width: number,
     height: number,
     yplane: Uint8Array,
@@ -635,6 +635,7 @@ export class WebGLRenderer extends IRenderer {
     this.uTexture = null;
     this.vTexture = null;
     this.aTexture = null;
+    this.hasAlpha = false;
 
     this.gl?.deleteBuffer(this.texCoordBuffer);
     this.gl?.deleteBuffer(this.surfaceBuffer);
