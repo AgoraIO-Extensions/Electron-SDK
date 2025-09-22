@@ -88,8 +88,12 @@ export default class VirtualBackground
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();
-    // if you want to use the alpha channel, you need to set the following parameters to let remoteView support alpha channel
-    this.engine?.setParameters('{"rtc.video.dec_split_alpha":true}');
+    this.engine.setParameters(
+      JSON.stringify({ 'rtc.video.send_alpha_data': true })
+    );
+    this.engine.setParameters(
+      JSON.stringify({ 'rtc.video.alpha_data_codec_type': 3 })
+    );
   }
 
   /**
