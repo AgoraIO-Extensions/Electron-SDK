@@ -151,6 +151,9 @@ export class WebGLRenderer extends IRenderer {
         uplane: videoFrame.uBuffer as Uint8Array,
         vplane: videoFrame.vBuffer as Uint8Array,
         aplane: videoFrame.alphaBuffer as Uint8Array,
+        yStride: videoFrame.yStride,
+        uStride: videoFrame.uStride,
+        vStride: videoFrame.vStride,
       });
     } catch (err) {
       error = err;
@@ -187,6 +190,9 @@ export class WebGLRenderer extends IRenderer {
     uplane: Uint8Array;
     vplane: Uint8Array;
     aplane: Uint8Array;
+    yStride: number;
+    uStride: number;
+    vStride: number;
   }) {
     // Rotation, width, height, left, top, right, bottom, yplane, uplane, vplane
 
@@ -236,26 +242,32 @@ export class WebGLRenderer extends IRenderer {
       0
     );
 
-    this.uploadYuv(
-      xWidth,
-      xHeight,
+    this.uploadYuva(
+      image.width,
+      image.height,
       image.yplane,
       image.uplane,
       image.vplane,
-      image.aplane
+      image.aplane,
+      image.yStride,
+      image.uStride,
+      image.vStride
     );
 
     this.updateCanvas(image.rotation, image.width, image.height);
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
   }
 
-  private uploadYuv(
+  private uploadYuva(
     width: number,
     height: number,
     yplane: Uint8Array,
     uplane: Uint8Array,
     vplane: Uint8Array,
-    aplane: Uint8Array
+    aplane: Uint8Array,
+    yStride: number,
+    uStride: number,
+    vStride: number
   ) {
     if (!this.gl || !this.yTexture || !this.uTexture || !this.vTexture) {
       return;
@@ -269,7 +281,7 @@ export class WebGLRenderer extends IRenderer {
       this.gl.TEXTURE_2D,
       0,
       this.gl.LUMINANCE,
-      width,
+      yStride,
       height,
       0,
       this.gl.LUMINANCE,
@@ -283,7 +295,7 @@ export class WebGLRenderer extends IRenderer {
       this.gl.TEXTURE_2D,
       0,
       this.gl.LUMINANCE,
-      width / 2,
+      uStride,
       height / 2,
       0,
       this.gl.LUMINANCE,
@@ -297,7 +309,7 @@ export class WebGLRenderer extends IRenderer {
       this.gl.TEXTURE_2D,
       0,
       this.gl.LUMINANCE,
-      width / 2,
+      vStride,
       height / 2,
       0,
       this.gl.LUMINANCE,
@@ -635,6 +647,7 @@ export class WebGLRenderer extends IRenderer {
     this.uTexture = null;
     this.vTexture = null;
     this.aTexture = null;
+    this.hasAlpha = null;
 
     this.gl?.deleteBuffer(this.texCoordBuffer);
     this.gl?.deleteBuffer(this.surfaceBuffer);

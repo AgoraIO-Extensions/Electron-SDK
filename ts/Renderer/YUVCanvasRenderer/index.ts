@@ -57,12 +57,8 @@ export class YUVCanvasRenderer extends IRenderer {
       this._videoFrame.height != frame.height
     ) {
       this._videoFrame.yBuffer = new Uint8Array(frame.yStride * frameHeight);
-      this._videoFrame.uBuffer = new Uint8Array(
-        (frame.yStride * frameHeight) / 4
-      );
-      this._videoFrame.vBuffer = new Uint8Array(
-        (frame.yStride * frameHeight) / 4
-      );
+      this._videoFrame.uBuffer = new Uint8Array(frame.uStride * frameHeight);
+      this._videoFrame.vBuffer = new Uint8Array(frame.vStride * frameHeight);
     }
 
     this._videoFrame.yBuffer.set(frame.yBuffer);
