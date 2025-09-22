@@ -1,5 +1,12 @@
 
 
+## [4.2.2-build.152-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.2-build.152-rc.1...v4.2.2-build.152-rc.2) (2025-09-22)
+
+
+### Features
+
+* change iris to 4.2.2.152-build.2 ([d398f95](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/d398f95bdc90ea0b80344d62cbe86df6b93240d7))
+
 ## [4.2.2-build.152-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.2-build.150-rc.1...v4.2.2-build.152-rc.1) (2025-09-03)
 
 
