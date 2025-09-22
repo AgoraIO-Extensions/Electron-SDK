@@ -243,8 +243,8 @@ export class WebGLRenderer extends IRenderer {
     );
 
     this.uploadYuva(
-      xWidth,
-      xHeight,
+      image.width,
+      image.height,
       image.yplane,
       image.uplane,
       image.vplane,
@@ -647,7 +647,7 @@ export class WebGLRenderer extends IRenderer {
     this.uTexture = null;
     this.vTexture = null;
     this.aTexture = null;
-    this.hasAlpha = false;
+    this.hasAlpha = null;
 
     this.gl?.deleteBuffer(this.texCoordBuffer);
     this.gl?.deleteBuffer(this.surfaceBuffer);
