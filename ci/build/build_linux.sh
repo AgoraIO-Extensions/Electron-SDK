@@ -103,15 +103,15 @@ fi
 # 取消代理设置
 export -n https_proxy http_proxy all_proxy
 
-pushd /tmp/jenkins/Electron-SDK
+pushd /tmp/jenkins/electron-sdk
 
 rm -rf *.zip || true
-rm -rf Electron-SDK || true
+rm -rf electron-sdk || true
 rm -rf example/dist || true
 
 if [ "$isBuildSdk" = true ]
 then
-  sh /tmp/jenkins/Electron-SDK/ci/electron-sdk-build-linux-release.sh
+  sh /tmp/jenkins/electron-sdk/ci/electron-sdk-build-linux-release.sh
 
   # electron.zip
   # 执行上传到artifactory
@@ -126,13 +126,13 @@ then
 
   if [ "$example_sdk_mode" = 1 ]
   then
-    unzip electron.zip -d ./Electron-SDK/
+    unzip electron.zip -d ./electron-sdk/
   fi
 fi
 
 if [ "$isBuildDemo" = true ]
 then
-  sh /tmp/jenkins/Electron-SDK/ci/packager-linux.sh $example_sdk_mode $example_electron_version
+  sh /tmp/jenkins/electron-sdk/ci/packager-linux.sh $example_sdk_mode $example_electron_version
   # electronDemo.zip
   # 执行上传到artifactory
   echo 执行上传electronDemo.zip到artifactory
