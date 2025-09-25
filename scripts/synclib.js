@@ -9,7 +9,14 @@ const { getOS, moveFile, getIrisStandAlone } = require('./util');
 
 const config = getConfig();
 
-const { iris_sdk_mac, iris_sdk_win, native_sdk_mac, native_sdk_win, iris_sdk_linux, native_sdk_linux } = config;
+const {
+  iris_sdk_mac,
+  iris_sdk_win,
+  native_sdk_mac,
+  native_sdk_win,
+  iris_sdk_linux,
+  native_sdk_linux,
+} = config;
 
 const IRIS_SDK_URLS = {
   mac: iris_sdk_mac,
@@ -34,7 +41,7 @@ const downloadSDK = async ({
   await preHook();
   await download(sdkURL, destDir, {
     headers: {
-      'X-JFrog-Art-Api': process.env.JFROG_API_KEY || ''
+      'X-JFrog-Art-Api': process.env.JFROG_API_KEY || '',
     },
     strip: strip,
     extract: true,
