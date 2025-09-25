@@ -13,6 +13,8 @@ MAC_DEPENDENCIES=$(echo "$INPUT" | jq -r '.[] | select(.platform == "macOS") | .
 IRIS_MAC_DEPENDENCIES=$(echo "$INPUT" | jq -r '.[] | select(.platform == "macOS") | .iris_cdn[]')
 WINDOWS_DEPENDENCIES=$(echo "$INPUT" | jq -r '.[] | select(.platform == "Windows") | .cdn[]')
 IRIS_WINDOWS_DEPENDENCIES=$(echo "$INPUT" | jq -r '.[] | select(.platform == "Windows") | .iris_cdn[]')
+LINUX_DEPENDENCIES=$(echo "$INPUT" | jq -r '.[] | select(.platform == "Linux") | .cdn[]')
+IRIS_LINUX_DEPENDENCIES=$(echo "$INPUT" | jq -r '.[] | select(.platform == "Linux") | .iris_cdn[]')
 
 if [ -z "$MAC_DEPENDENCIES" ]; then
   echo "No mac native dependencies need to change."
@@ -49,6 +51,25 @@ else
   for DEP in $IRIS_WINDOWS_DEPENDENCIES; do
     if [[ "$DEP" == *Standalone* ]]; then
       sed 's|"iris_sdk_win": "\(.*\)"|"iris_sdk_win": "'"$DEP"'"|g' $PACKAGE_JSON_PATH > tmp
+      mv tmp package.json
+      break
+    fi
+  done
+fi
+
+if [ -z "$LINUX_DEPENDENCIES" ]; then
+  echo "No linux native dependencies need to change."
+else
+  sed 's|"native_sdk_linux": "\(.*\)"|"native_sdk_linux": "'"$LINUX_DEPENDENCIES"'"|g' $PACKAGE_JSON_PATH > tmp
+  mv tmp package.json
+fi
+
+if [ -z "$IRIS_LINUX_DEPENDENCIES" ]; then
+  echo "No iris linux native dependencies need to change."
+else
+  for DEP in $IRIS_LINUX_DEPENDENCIES; do
+    if [[ "$DEP" == *Standalone* ]]; then
+      sed 's|"iris_sdk_linux": "\(.*\)"|"iris_sdk_linux": "'"$DEP"'"|g' $PACKAGE_JSON_PATH > tmp
       mv tmp package.json
       break
     fi
