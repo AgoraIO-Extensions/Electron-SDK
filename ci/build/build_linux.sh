@@ -90,7 +90,7 @@ echo example_sdk_mode: $example_sdk_mode
 echo package_version: $package_version
 
 # 设置代理 (Linux环境根据需要调整)
-export https_proxy=http://10.80.1.174:1080 http_proxy=http://10.80.1.174:1080 all_proxy=http://10.80.1.174:1080
+export https_proxy=http://10.15.67.1:18080 http_proxy=http://110.15.67.1:18080 all_proxy=http://10.15.67.1:18080
 
 # 安装Node.js (Linux使用nvm)
 if [ -f ~/.nvm/nvm.sh ]; then
