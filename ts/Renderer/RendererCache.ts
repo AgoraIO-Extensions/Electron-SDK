@@ -17,7 +17,7 @@ export class RendererCache extends IRendererCache {
       yBuffer: Buffer.alloc(0),
       uBuffer: Buffer.alloc(0),
       vBuffer: Buffer.alloc(0),
-      alphaBuffer: AgoraEnv.encodeAlpha ? Buffer.alloc(0) : undefined,
+      alphaBuffer: Buffer.alloc(0),
       width: 0,
       height: 0,
       yStride: 0,
@@ -95,7 +95,21 @@ export class RendererCache extends IRendererCache {
     }
 
     if (!AgoraEnv.encodeAlpha) {
-      this.videoFrame.alphaBuffer = undefined;
+      if (
+        this.videoFrame.alphaBuffer &&
+        this.videoFrame.alphaBuffer.length > 0
+      ) {
+        this.videoFrame.alphaBuffer = Buffer.alloc(0);
+      }
+    } else {
+      if (
+        !this.videoFrame.alphaBuffer ||
+        this.videoFrame.alphaBuffer.length === 0
+      ) {
+        this.videoFrame.alphaBuffer = Buffer.alloc(
+          this.videoFrame.width! * this.videoFrame.height!
+        );
+      }
     }
 
     if (isNewFrame) {

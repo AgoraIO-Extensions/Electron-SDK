@@ -19,6 +19,7 @@ function createMainWindow() {
       contextIsolation: false,
       webSecurity: false,
     },
+    icon: path.join(__dirname, '/icons/512x512.png'),
   });
 
   window.webContents.openDevTools({

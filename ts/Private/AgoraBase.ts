@@ -1154,11 +1154,11 @@ export enum H264PacketizeMode {
  */
 export enum VideoStreamType {
   /**
-   * 0: High-quality video stream.
+   * 0: High-quality video stream, that is, a video stream with the highest resolution and bitrate.
    */
   VideoStreamHigh = 0,
   /**
-   * 1: Low-quality video stream.
+   * 1: Low-quality video stream, that is, a video stream with the lowest resolution and bitrate.
    */
   VideoStreamLow = 1,
   /**
@@ -1558,7 +1558,7 @@ export class SimulcastStreamConfig {
    */
   dimensions?: VideoDimensions;
   /**
-   * Video receive bitrate (Kbps), represented by an instantaneous value. This parameter does not need to be set. The SDK automatically matches the most suitable bitrate based on the video resolution and frame rate you set.
+   * Video bitrate (Kbps). The default value is -1. This parameter does not need to be set. The SDK automatically matches the most suitable bitrate based on the video resolution and frame rate you set.
    */
   kBitrate?: number;
   /**
@@ -1678,7 +1678,9 @@ export class WatermarkRatio {
 }
 
 /**
- * Configurations of the watermark image.
+ * Watermark image configurations.
+ *
+ * Configuration options for setting the watermark image to be added.
  */
 export class WatermarkOptions {
   /**
@@ -2385,7 +2387,7 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonScreenCaptureNoPermission = 22,
   /**
-   * 24: (Windows only) An unexpected error occurred during screen sharing (possibly due to window blocking failure), resulting in decreased performance, but the screen sharing process itself was not affected. During screen sharing, if blocking a specific window fails due to device driver issues, the SDK will report this event and automatically fall back to sharing the entire screen. If your use case requires masking specific windows to protect privacy, we recommend listening for this event and implementing additional privacy protection mechanisms when it is triggered."
+   * 24: (Windows only) An unexpected error occurred during screen sharing (possibly due to window blocking failure), resulting in decreased performance, but the screen sharing process itself was not affected. During screen sharing, if blocking a specific window fails due to device driver issues, the SDK will report this event and automatically fall back to sharing the entire screen. If your use case requires masking specific windows to protect privacy, we recommend listening for this event and implementing additional privacy protection mechanisms when it is triggered.
    */
   LocalVideoStreamReasonScreenCaptureAutoFallback = 24,
   /**

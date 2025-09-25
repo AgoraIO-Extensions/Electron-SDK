@@ -1,5 +1,10 @@
 properties([
-    buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '7', numToKeepStr: '100')),
+    buildDiscarder(logRotator(
+        artifactDaysToKeepStr: '', 
+        artifactNumToKeepStr: '', 
+        daysToKeepStr: '7', 
+        numToKeepStr: '100'
+    )),
     parameters([
         string(name: 'electron_sdk_branch', defaultValue: '', description: 'Electron branch', trim: true),
         string(name: 'network_path', defaultValue: '', description: '', trim: true),
@@ -47,6 +52,11 @@ timestamps {
         "electron_windows_x64_build": {
             build job: 'ELECTRON/build_windows', parameters: commonBuildParams + [
                 string(name: 'arch', value: "x64"),
+            ]
+        },
+        "electron_linux_build": {
+            build job: 'ELECTRON/build_linux', parameters: commonBuildParams + [
+                string(name: 'arch', value: "x64")
             ]
         }
     ]

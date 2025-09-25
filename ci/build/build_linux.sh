@@ -1,3 +1,4 @@
+#!/bin/bash
 # --------------------------------------------------------------------------------------------------------------------------
 # =====================================
 # ========== Guidelines ===============
@@ -9,7 +10,7 @@
 # ${Package_Publish} (boolean): Indicates whether it is build package process, e.g. If you want to get one CI SDK package.
 # ${Clean_Clone} (boolean): Indicates whether it is clean build. If true, CI will clean ${output} for each build process.
 # ${is_tag_fetch} (boolean): If true, git checkout will work as tag fetch mode.
-# ${is_official_build} (boolean): Indicates whether it is official build release.
+# ${is_offical_build} (boolean): Indicates whether it is official build release.
 # ${arch} (string): Indicates build arch set in build pipeline.
 # ${short_version} (string): CI auto generated short version string.
 # ${release_version} (string): CI auto generated version string.
@@ -73,7 +74,7 @@ set -e
 echo Package_Publish: $Package_Publish
 echo is_tag_fetch: $is_tag_fetch
 echo arch: $arch
-echo source_root: %source_root%
+echo source_root: ${source_root}
 echo output: /tmp/jenkins/${project}_out
 echo build_date: $build_date
 echo build_time: $build_time
@@ -88,27 +89,34 @@ echo example_electron_version: $example_electron_version
 echo example_sdk_mode: $example_sdk_mode
 echo package_version: $package_version
 
+# 设置代理 (Linux环境根据需要调整)
 export https_proxy=http://10.15.67.1:18080 http_proxy=http://110.15.67.1:18080 all_proxy=http://10.15.67.1:18080
-source ~/.nvm/nvm.sh --install
-nvm ls-remote 14.17.3
-nvm install 14.17.3
-nvm use 14.17.3
+
+# 安装Node.js (Linux使用nvm)
+if [ -f ~/.nvm/nvm.sh ]; then
+    source ~/.nvm/nvm.sh --install
+    nvm ls-remote 14.17.3
+    nvm install 14.17.3
+    nvm use 14.17.3
+fi
+
+# 取消代理设置
 export -n https_proxy http_proxy all_proxy
 
-pushd /tmp/jenkins/Electron-SDK
+pushd /tmp/jenkins/electron-sdk
 
 rm -rf *.zip || true
-rm -rf Electron-SDK || true
+rm -rf electron-sdk || true
 rm -rf example/dist || true
 
 if [ "$isBuildSdk" = true ]
 then
-  sh /tmp/jenkins/Electron-SDK/ci/electron-sdk-build-mac-release.sh
+  sh /tmp/jenkins/electron-sdk/ci/electron-sdk-build-linux-release.sh
 
   # electron.zip
   # 执行上传到artifactory
   echo 执行上传electron.zip到artifactory
-  cp -f electron.zip $WORKSPACE/${build_time}_${package_version}_mac.zip
+  cp -f electron.zip $WORKSPACE/${build_time}_${package_version}_linux.zip
   if [ "$Upload_CDN" = true ]
   then
     # electron.zip
@@ -118,17 +126,17 @@ then
 
   if [ "$example_sdk_mode" = 1 ]
   then
-    unzip electron.zip -d ./Electron-SDK/
+    unzip electron.zip -d ./electron-sdk/
   fi
 fi
 
 if [ "$isBuildDemo" = true ]
 then
-  sh /tmp/jenkins/Electron-SDK/ci/packager-mac.sh $example_sdk_mode $example_electron_version
+  sh /tmp/jenkins/electron-sdk/ci/packager-linux.sh $example_sdk_mode $example_electron_version
   # electronDemo.zip
   # 执行上传到artifactory
   echo 执行上传electronDemo.zip到artifactory
-  cp -f electronDemo.zip $WORKSPACE/${build_time}_mac_${package_version}_electron_demo.zip
+  cp -f electronDemo.zip $WORKSPACE/${build_time}_linux_${package_version}_electron_demo.zip
 fi
 
 popd

@@ -273,7 +273,7 @@ export class WebGLRenderer extends IRenderer {
         pixels: vBuffer!,
       },
     };
-    if (alphaBuffer) {
+    if (alphaBuffer && alphaBuffer.length > 0) {
       textures[this.gl.TEXTURE3] = {
         texture: this.aTexture,
         stride: width!,
