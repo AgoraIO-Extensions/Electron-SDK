@@ -1,5 +1,12 @@
 
 
+## [4.5.40-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.40-rc.1...v4.5.40-rc.2) (2025-09-28)
+
+
+### Features
+
+* **downloadPrebuild:** add support for Linux platform in native SDK download and file handling ([0299504](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/02995042880b2274c10fb2673c5a873767d47d82))
+
 ## [4.5.40-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.2-build.131-rc.1...v4.5.40-rc.1) (2025-09-28)
 
 
