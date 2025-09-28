@@ -16,6 +16,7 @@ const {
   no_symbol,
   native_sdk_mac,
   native_sdk_win,
+  native_sdk_linux,
 } = getConfig();
 
 const workspaceDir = `${path.join(__dirname, '..')}`;
@@ -38,16 +39,20 @@ const getNativeDownloadURL = () => {
     downloadUrl = native_sdk_win;
   } else if (platform === 'darwin') {
     downloadUrl = native_sdk_mac;
+  } else if (platform === 'linux') {
+    downloadUrl = native_sdk_linux;
   }
 
   if (!downloadUrl) {
     const {
-      agora_electron: { native_sdk_win, native_sdk_mac },
+      agora_electron: { native_sdk_win, native_sdk_mac, native_sdk_linux },
     } = require('../package.json');
     if (platform === 'win32') {
       downloadUrl = native_sdk_win;
     } else if (platform === 'darwin') {
       downloadUrl = native_sdk_mac;
+    } else if (platform === 'linux') {
+      downloadUrl = native_sdk_linux;
     }
   }
 
@@ -71,6 +76,9 @@ const matchNativeFile = (path) => {
       result =
         path.startsWith('libs') &&
         /^libs\/.*\.xcframework\/macos-arm64_x86_64\//.test(path);
+      break;
+    case 'linux':
+      result = path.startsWith('rtc/sdk/') && path.endsWith('.so');
       break;
   }
   return result;
@@ -115,8 +123,27 @@ const winNoSymbolList = [
   './build/Release/VideoSource.ilk',
 ];
 
+const linuxNoSymbolList = [
+  './build/Release/obj.target',
+  './build/Api',
+  './build/Renderer',
+  './build/Utils',
+  './build/agora_node_ext.target.mk',
+  './build/AgoraSdk.js',
+  './build/binding.Makefile',
+  './build/config.gypi',
+  './build/gyp-mac-tool',
+  './build/Makefile',
+  './build/VideoSource.target.mk',
+];
+
 const removeFileByFilter = async () => {
-  const filterList = platform === 'darwin' ? macNoSymbolList : winNoSymbolList;
+  let filterList = winNoSymbolList;
+  if (platform === 'darwin') {
+    filterList = macNoSymbolList;
+  } else if (platform === 'linux') {
+    filterList = linuxNoSymbolList;
+  }
 
   for (const iterator of filterList) {
     const filePath = `${path.join(workspaceDir, iterator)}`;
@@ -179,6 +206,12 @@ module.exports = async () => {
                 /^libs\/.*\.xcframework\/macos-arm64_x86_64\//,
                 ''
               );
+              if (fs.exists(`${nativeLibDir}/${file.path}`)) {
+                fs.remove(`${nativeLibDir}/${file.path}`);
+              }
+              break;
+            case 'linux':
+              file.path = file.path.replace(/^rtc\/sdk\//, '');
               if (fs.exists(`${nativeLibDir}/${file.path}`)) {
                 fs.remove(`${nativeLibDir}/${file.path}`);
               }
