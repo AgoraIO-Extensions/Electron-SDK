@@ -346,7 +346,7 @@ export enum ContentInspectType {
 }
 
 /**
- * ContentInspectModule A structure used to configure the frequency of video screenshot and upload.
+ * Configures the local screenshot upload module.
  */
 export class ContentInspectModule {
   /**
@@ -429,6 +429,10 @@ export class AudioPcmFrame {
    * The number of audio channels.
    */
   num_channels_?: number;
+  /**
+   * @ignore
+   */
+  audio_track_number_?: number;
   /**
    * The number of bytes per sample.
    */
