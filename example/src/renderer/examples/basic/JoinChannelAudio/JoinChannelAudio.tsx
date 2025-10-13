@@ -133,6 +133,11 @@ export default class PW
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
+    this.engine.setParameters(
+      JSON.stringify({
+        'che.audio.enable_concurrent_downlink_processing': false,
+      })
+    );
     this.engine.registerEventHandler(this);
 
     // Need granted the microphone and camera permission
