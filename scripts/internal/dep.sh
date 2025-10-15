@@ -4,8 +4,7 @@ set +x
 MY_PATH=$(realpath $(dirname "$0"))
 PROJECT_ROOT=$(realpath ${MY_PATH}/../..)
 PACKAGE_JSON_PATH="${PROJECT_ROOT}/package.json"
-TERRA_CONFIG_PATH1="${PROJECT_ROOT}/scripts/terra/config/types_config.yaml"
-TERRA_CONFIG_PATH2="${PROJECT_ROOT}/scripts/terra/config/impl_config.yaml"
+TERRA_CONFIG_PATH1="${PROJECT_ROOT}/scripts/terra/code_config.yaml"
 
 if [ "$#" -lt 1 ]; then
     exit 1
@@ -63,8 +62,6 @@ if [ -z "$DEP_VERSION" ]; then
   echo "can not find dependencies version."
 else
   echo "update dependencies version to $TERRA_CONFIG_PATH1"
-  sed 's|sdkVersion: \(.*\)|sdkVersion: '$DEP_VERSION'|g' $TERRA_CONFIG_PATH1 > tmp
+  sed 's|rtc_[^/]*|rtc_'$DEP_VERSION'|g' $TERRA_CONFIG_PATH1 > tmp
   mv tmp $TERRA_CONFIG_PATH1
-  sed 's|sdkVersion: \(.*\)|sdkVersion: '$DEP_VERSION'|g' $TERRA_CONFIG_PATH2 > tmp
-  mv tmp $TERRA_CONFIG_PATH2
 fi
