@@ -6,10 +6,10 @@ on:
       increment:
         description: 'Increment "major", "minor", "patch", or "pre*" version; or specify version [default: "patch"]'
         required: true
-        default: 'patch'
+        default: "patch"
         type: string
       dry-run:
-        description: 'Do not touch or write anything, but show the commands'
+        description: "Do not touch or write anything, but show the commands"
         default: true
         type: boolean
 
@@ -62,8 +62,13 @@ jobs:
         run: |
           git add example
           git commit -m "chore(example): update example to install ${{steps.package-info.outputs.name}}@${{steps.package-info.outputs.version}}"
-      
+
       - name: Release
         if: ${{ !inputs.dry-run }}
         run: |
           yarn release ${{ inputs.increment }} --ci --no-npm --no-git.commit
+
+      - name: print publish info
+        run: |
+          echo "[publish info][tag]: https://github.com/AgoraIO-Extensions/Electron-SDK/releases/tag/v${{ inputs.increment }}"
+          echo "[publish info][url]: https://www.npmjs.com/package/agora-electron-sdk/v/${{ inputs.increment }}"
