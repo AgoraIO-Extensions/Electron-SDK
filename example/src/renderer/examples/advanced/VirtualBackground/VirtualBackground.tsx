@@ -292,7 +292,6 @@ export default class VirtualBackground
         {background_source_type === BackgroundSourceType.BackgroundNone ? (
           <AgoraSwitch
             title={'encodeAlpha'}
-            //attention: encodeAlpha can only change before rendering, when rendering, you can't change it, otherwise, it will cause rendering error and crash
             disabled={startPreview || joinChannelSuccess}
             value={encodeAlpha}
             onValueChange={(value) => {

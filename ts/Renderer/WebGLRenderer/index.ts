@@ -318,7 +318,7 @@ export class WebGLRenderer extends IRenderer {
         pixels: vBuffer!,
       },
     };
-    if (alphaBuffer) {
+    if (alphaBuffer && alphaBuffer.length > 0) {
       textures[this.gl.TEXTURE3] = {
         texture: this.aTexture,
         stride: width!,
@@ -527,6 +527,8 @@ export class WebGLRenderer extends IRenderer {
     this.yTexture = null;
     this.uTexture = null;
     this.vTexture = null;
+    this.aTexture = null;
+    this.hasAlpha = null;
 
     this.gl?.deleteBuffer(this.texCoordBuffer);
     this.gl?.deleteBuffer(this.surfaceBuffer);
