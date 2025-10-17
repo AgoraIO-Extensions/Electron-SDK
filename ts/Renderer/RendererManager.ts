@@ -408,6 +408,24 @@ export class RendererManager extends IRendererManager {
         default:
           break;
       }
+      if (!enableAlphaMask) {
+        if (
+          rendererItem.shareVideoFrame.alphaBuffer &&
+          rendererItem.shareVideoFrame.alphaBuffer.length > 0
+        ) {
+          rendererItem.shareVideoFrame.alphaBuffer = Buffer.alloc(0);
+        }
+      } else {
+        if (
+          !rendererItem.shareVideoFrame.alphaBuffer ||
+          rendererItem.shareVideoFrame.alphaBuffer.length === 0
+        ) {
+          rendererItem.shareVideoFrame.alphaBuffer = Buffer.alloc(
+            rendererItem.shareVideoFrame.width *
+              rendererItem.shareVideoFrame.height
+          );
+        }
+      }
       if (finalResult.ret !== 0) {
         logDebug('GetVideoFrame ret is', finalResult.ret, rendererItem);
         return;
@@ -648,7 +666,9 @@ export class RendererManager extends IRendererManager {
       yBuffer: Buffer.alloc(yStride * height),
       uBuffer: Buffer.alloc(uStride * height),
       vBuffer: Buffer.alloc(vStride * height),
-      alphaBuffer: enableAlphaMask ? Buffer.alloc(width * height) : undefined,
+      alphaBuffer: enableAlphaMask
+        ? Buffer.alloc(width * height)
+        : Buffer.alloc(0),
       width,
       height,
       yStride,
