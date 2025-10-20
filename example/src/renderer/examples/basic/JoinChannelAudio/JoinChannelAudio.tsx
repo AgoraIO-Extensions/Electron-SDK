@@ -28,13 +28,13 @@ interface State extends BaseAudioComponentState {
   muteLocalAudioStream: boolean;
   recordingSignalVolume: number;
   playbackSignalVolume: number;
-  // Loopback 音频轨道相关状态
+  // Loopback audio track related states
   loopbackTrackId: number | null;
   loopbackAppName: string;
   loopbackVolume: number;
   loopbackType: LoopbackAudioTrackType;
-  // 系统 Loopback 录制相关状态
-  systemLoopbackEnabled: boolean;
+  loopbackDeviceName: string;
+  loopbackProcessId: number;
 }
 
 export default class JoinChannelAudio
@@ -54,13 +54,13 @@ export default class JoinChannelAudio
       muteLocalAudioStream: false,
       recordingSignalVolume: 100,
       playbackSignalVolume: 100,
-      // Loopback 音频轨道相关状态
+      // Loopback audio track related states
       loopbackTrackId: null,
       loopbackAppName: 'System Audio',
       loopbackVolume: 100,
       loopbackType: LoopbackAudioTrackType.LoopbackSystem,
-      // 系统 Loopback 录制相关状态
-      systemLoopbackEnabled: false,
+      loopbackDeviceName: 'AgoraALD',
+      loopbackProcessId: 0,
     };
   }
 
@@ -82,8 +82,7 @@ export default class JoinChannelAudio
     });
     this.engine.registerEventHandler(this);
 
-    this.engine?.setParameters('{"che.audio.loopback.use_standalone":false}');
-    this.engine?.setParameters('{"che.audio.loopback.enable_aec":true}');
+    this.engine?.setParameters('{"che.audio.loopback.enable_aec":false}');
 
     // Need granted the microphone permission
     await askMediaAccess(['microphone']);
@@ -171,12 +170,29 @@ export default class JoinChannelAudio
    * 创建 Loopback 音频轨道
    */
   createLoopbackAudioTrack = () => {
-    const { loopbackAppName, loopbackVolume, loopbackType } = this.state;
+    const {
+      loopbackAppName,
+      loopbackVolume,
+      loopbackType,
+      loopbackDeviceName,
+      loopbackProcessId,
+    } = this.state;
+
+    // Validate processId is required
+    if (
+      loopbackType === LoopbackAudioTrackType.LoopbackProcess &&
+      loopbackProcessId <= 0
+    ) {
+      this.error('Process ID cannot be empty or less than or equal to 0 in Process Loopback mode');
+      return;
+    }
 
     const config: LoopbackAudioTrackConfig = {
       appName: loopbackAppName,
       volume: loopbackVolume,
       loopbackType: loopbackType,
+      deviceName: loopbackDeviceName,
+      processId: loopbackProcessId,
     };
 
     try {
@@ -191,26 +207,26 @@ export default class JoinChannelAudio
             publishLoopbackAudioTrack: true,
             publishLoopbackAudioTrackId: trackId,
           });
-          this.info(`Loopback 音频轨道创建成功，Track ID: ${trackId}`);
+          this.info(`Loopback audio track created successfully, Track ID: ${trackId}`);
         } else {
-          this.error(`Loopback 音频轨道创建失败，错误码: ${trackId}`);
+          this.error(`Failed to create Loopback audio track, error code: ${trackId}`);
         }
       } else {
-        this.error('无法获取 MediaEngine 实例');
+        this.error('Unable to get MediaEngine instance');
       }
     } catch (error) {
-      this.error(`创建 Loopback 音频轨道时发生错误: ${error}`);
+      this.error(`Error occurred while creating Loopback audio track: ${error}`);
     }
   };
 
   /**
-   * 销毁 Loopback 音频轨道
+   * Destroy Loopback audio track
    */
   destroyLoopbackAudioTrack = () => {
     const { loopbackTrackId } = this.state;
 
     if (loopbackTrackId === null) {
-      this.error('没有可销毁的 Loopback 音频轨道');
+      this.error('No Loopback audio track to destroy');
       return;
     }
 
@@ -225,27 +241,42 @@ export default class JoinChannelAudio
         const result = mediaEngine.destroyLoopbackAudioTrack(loopbackTrackId);
         if (result === 0) {
           this.setState({ loopbackTrackId: null });
-          this.info(`Loopback 音频轨道销毁成功，Track ID: ${loopbackTrackId}`);
+          this.info(`Loopback audio track destroyed successfully, Track ID: ${loopbackTrackId}`);
         } else {
-          this.error(`Loopback 音频轨道销毁失败，错误码: ${result}`);
+          this.error(`Failed to destroy Loopback audio track, error code: ${result}`);
         }
       } else {
-        this.error('无法获取 MediaEngine 实例');
+        this.error('Unable to get MediaEngine instance');
       }
     } catch (error) {
-      this.error(`销毁 Loopback 音频轨道时发生错误: ${error}`);
+      this.error(`Error occurred while destroying Loopback audio track: ${error}`);
     }
   };
 
   /**
-   * 更新 Loopback 音频轨道配置
+   * Update Loopback audio track configuration
    */
   updateLoopbackAudioTrackConfig = () => {
-    const { loopbackTrackId, loopbackAppName, loopbackVolume, loopbackType } =
-      this.state;
+    const {
+      loopbackTrackId,
+      loopbackAppName,
+      loopbackVolume,
+      loopbackType,
+      loopbackDeviceName,
+      loopbackProcessId,
+    } = this.state;
 
     if (loopbackTrackId === null) {
-      this.error('没有可更新的 Loopback 音频轨道');
+      this.error('No Loopback audio track to update');
+      return;
+    }
+
+    // Validate processId is required
+    if (
+      loopbackType === LoopbackAudioTrackType.LoopbackProcess &&
+      loopbackProcessId <= 0
+    ) {
+      this.error('Process ID cannot be empty or less than or equal to 0 in Process Loopback mode');
       return;
     }
 
@@ -253,6 +284,8 @@ export default class JoinChannelAudio
       appName: loopbackAppName,
       volume: loopbackVolume,
       loopbackType: loopbackType,
+      deviceName: loopbackDeviceName,
+      processId: loopbackProcessId,
     };
 
     try {
@@ -263,41 +296,18 @@ export default class JoinChannelAudio
           config
         );
         if (result === 0) {
-          this.info(`Loopback 音频轨道配置更新成功`);
+          this.info(`Loopback audio track configuration updated successfully`);
         } else {
-          this.error(`Loopback 音频轨道配置更新失败，错误码: ${result}`);
+          this.error(`Failed to update Loopback audio track configuration, error code: ${result}`);
         }
       } else {
-        this.error('无法获取 MediaEngine 实例');
+        this.error('Unable to get MediaEngine instance');
       }
     } catch (error) {
-      this.error(`更新 Loopback 音频轨道配置时发生错误: ${error}`);
+      this.error(`Error occurred while updating Loopback audio track configuration: ${error}`);
     }
   };
 
-  /**
-   * 启用/禁用系统 Loopback 录制
-   */
-  toggleSystemLoopbackRecording = () => {
-    const { systemLoopbackEnabled } = this.state;
-    const newEnabled = !systemLoopbackEnabled;
-
-    try {
-      const result = this.engine?.enableLoopbackRecording(newEnabled, '');
-      if (result === 0) {
-        this.setState({ systemLoopbackEnabled: newEnabled });
-        this.info(`系统 Loopback 录制${newEnabled ? '启用' : '禁用'}成功`);
-      } else {
-        this.error(
-          `系统 Loopback 录制${
-            newEnabled ? '启用' : '禁用'
-          }失败，错误码: ${result}`
-        );
-      }
-    } catch (error) {
-      this.error(`系统 Loopback 录制操作时发生错误: ${error}`);
-    }
-  };
 
   /**
    * Step 4: leaveChannel
@@ -440,11 +450,22 @@ export default class JoinChannelAudio
       enableLocalAudio,
       muteLocalAudioStream,
       loopbackTrackId,
-      systemLoopbackEnabled,
       loopbackAppName,
       loopbackVolume,
       loopbackType,
+      loopbackDeviceName,
+      loopbackProcessId,
     } = this.state;
+
+    // 判断是否应该显示 deviceName 输入框
+    const shouldShowDeviceName =
+      loopbackType === LoopbackAudioTrackType.LoopbackSystem ||
+      loopbackType === LoopbackAudioTrackType.LoopbackSystemExcludeSelf;
+
+    // 判断是否应该显示 processId 输入框
+    const shouldShowProcessId =
+      loopbackType === LoopbackAudioTrackType.LoopbackProcess;
+
     return (
       <>
         <AgoraButton
@@ -465,10 +486,10 @@ export default class JoinChannelAudio
         />
 
         <AgoraDivider />
-        <h3>Loopback 音频轨道配置</h3>
+        <h3>Loopback Audio Track Configuration</h3>
 
         <div style={{ marginBottom: 10 }}>
-          <label>应用名称:</label>
+          <label>App Name:</label>
           <input
             type="text"
             value={loopbackAppName}
@@ -478,9 +499,9 @@ export default class JoinChannelAudio
         </div>
 
         <div style={{ marginBottom: 10 }}>
-          <label>音量:</label>
+          <label>Volume:</label>
           <AgoraSlider
-            title={`音量 ${loopbackVolume}`}
+            title={`Volume ${loopbackVolume}`}
             minimumValue={0}
             maximumValue={400}
             step={1}
@@ -492,7 +513,7 @@ export default class JoinChannelAudio
         </div>
 
         <div style={{ marginBottom: 10 }}>
-          <label>Loopback 类型:</label>
+          <label>Loopback Type:</label>
           <select
             value={loopbackType}
             onChange={(e) =>
@@ -501,50 +522,76 @@ export default class JoinChannelAudio
             style={{ marginLeft: 10, padding: 5 }}
           >
             <option value={LoopbackAudioTrackType.LoopbackSystem}>
-              系统音频
+              System Audio
             </option>
             <option value={LoopbackAudioTrackType.LoopbackSystemExcludeSelf}>
-              系统音频（排除自己）
+              System Audio (Exclude Self)
             </option>
             <option value={LoopbackAudioTrackType.LoopbackApplication}>
-              应用音频
+              Application Audio
+            </option>
+            <option value={LoopbackAudioTrackType.LoopbackProcess}>
+              Process Audio
             </option>
           </select>
         </div>
 
+        {shouldShowDeviceName && (
+          <div style={{ marginBottom: 10 }}>
+            <label>Device Name:</label>
+            <input
+              type="text"
+              value={loopbackDeviceName}
+              onChange={(e) =>
+                this.setState({ loopbackDeviceName: e.target.value })
+              }
+              placeholder="Default: AgoraALD"
+              style={{ marginLeft: 10, padding: 5, width: 200 }}
+            />
+          </div>
+        )}
+
+        {shouldShowProcessId && (
+          <div style={{ marginBottom: 10 }}>
+            <label>Process ID:</label>
+            <input
+              type="number"
+              value={loopbackProcessId}
+              onChange={(e) =>
+                this.setState({ loopbackProcessId: Number(e.target.value) })
+              }
+              placeholder="Required"
+              min="1"
+              style={{ marginLeft: 10, padding: 5, width: 200 }}
+            />
+            <span style={{ color: 'red', marginLeft: 10 }}>* Required</span>
+          </div>
+        )}
+
         <div style={{ marginBottom: 10 }}>
           <span>
-            当前轨道 ID: {loopbackTrackId !== null ? loopbackTrackId : '无'}
+            Current Track ID: {loopbackTrackId !== null ? loopbackTrackId : 'None'}
           </span>
         </div>
 
         <AgoraButton
-          title="创建 Loopback 音频轨道"
+          title="Create Loopback Audio Track"
           onPress={this.createLoopbackAudioTrack}
           disabled={loopbackTrackId !== null}
         />
 
         <AgoraButton
-          title="销毁 Loopback 音频轨道"
+          title="Destroy Loopback Audio Track"
           onPress={this.destroyLoopbackAudioTrack}
           disabled={loopbackTrackId === null}
         />
 
         <AgoraButton
-          title="更新 Loopback 音频轨道配置"
+          title="Update Loopback Audio Track Configuration"
           onPress={this.updateLoopbackAudioTrackConfig}
           disabled={loopbackTrackId === null}
         />
 
-        <AgoraDivider />
-        <h3>系统 Loopback 录制操作</h3>
-
-        <AgoraButton
-          title={`${
-            systemLoopbackEnabled ? '禁用' : '启用'
-          } 系统 Loopback 录制`}
-          onPress={this.toggleSystemLoopbackRecording}
-        />
       </>
     );
   }
