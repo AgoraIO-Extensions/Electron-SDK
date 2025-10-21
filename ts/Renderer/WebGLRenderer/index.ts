@@ -316,7 +316,7 @@ export class WebGLRenderer extends IRenderer {
       this.gl.UNSIGNED_BYTE,
       vplane
     );
-    if (aplane && aplane.length > 0) {
+    if (aplane && aplane.length > 0 && this.enableAlphaMask) {
       this.gl.activeTexture(this.gl.TEXTURE3);
       this.gl.bindTexture(this.gl.TEXTURE_2D, this.aTexture);
       this.gl.texImage2D(

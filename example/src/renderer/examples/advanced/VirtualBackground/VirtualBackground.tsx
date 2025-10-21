@@ -1,5 +1,4 @@
 import {
-  AgoraEnv,
   BackgroundBlurDegree,
   BackgroundSourceType,
   ChannelProfileType,
@@ -216,8 +215,6 @@ export default class VirtualBackground
       source,
       blur_degree,
       enableAlphaMask,
-      startPreview,
-      joinChannelSuccess,
     } = this.state;
     return (
       <>
