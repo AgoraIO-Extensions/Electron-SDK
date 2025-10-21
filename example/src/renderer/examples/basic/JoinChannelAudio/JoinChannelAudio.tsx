@@ -82,6 +82,7 @@ export default class JoinChannelAudio
     });
     this.engine.registerEventHandler(this);
 
+    // this will disable AEC in loopback audio track
     this.engine?.setParameters('{"che.audio.loopback.enable_aec":false}');
 
     // Need granted the microphone permission
@@ -167,7 +168,7 @@ export default class JoinChannelAudio
   };
 
   /**
-   * 创建 Loopback 音频轨道
+   * Create Loopback audio track
    */
   createLoopbackAudioTrack = () => {
     const {
@@ -183,7 +184,9 @@ export default class JoinChannelAudio
       loopbackType === LoopbackAudioTrackType.LoopbackProcess &&
       loopbackProcessId <= 0
     ) {
-      this.error('Process ID cannot be empty or less than or equal to 0 in Process Loopback mode');
+      this.error(
+        'Process ID cannot be empty or less than or equal to 0 in Process Loopback mode'
+      );
       return;
     }
 
@@ -207,15 +210,21 @@ export default class JoinChannelAudio
             publishLoopbackAudioTrack: true,
             publishLoopbackAudioTrackId: trackId,
           });
-          this.info(`Loopback audio track created successfully, Track ID: ${trackId}`);
+          this.info(
+            `Loopback audio track created successfully, Track ID: ${trackId}`
+          );
         } else {
-          this.error(`Failed to create Loopback audio track, error code: ${trackId}`);
+          this.error(
+            `Failed to create Loopback audio track, error code: ${trackId}`
+          );
         }
       } else {
         this.error('Unable to get MediaEngine instance');
       }
     } catch (error) {
-      this.error(`Error occurred while creating Loopback audio track: ${error}`);
+      this.error(
+        `Error occurred while creating Loopback audio track: ${error}`
+      );
     }
   };
 
@@ -241,15 +250,21 @@ export default class JoinChannelAudio
         const result = mediaEngine.destroyLoopbackAudioTrack(loopbackTrackId);
         if (result === 0) {
           this.setState({ loopbackTrackId: null });
-          this.info(`Loopback audio track destroyed successfully, Track ID: ${loopbackTrackId}`);
+          this.info(
+            `Loopback audio track destroyed successfully, Track ID: ${loopbackTrackId}`
+          );
         } else {
-          this.error(`Failed to destroy Loopback audio track, error code: ${result}`);
+          this.error(
+            `Failed to destroy Loopback audio track, error code: ${result}`
+          );
         }
       } else {
         this.error('Unable to get MediaEngine instance');
       }
     } catch (error) {
-      this.error(`Error occurred while destroying Loopback audio track: ${error}`);
+      this.error(
+        `Error occurred while destroying Loopback audio track: ${error}`
+      );
     }
   };
 
@@ -276,7 +291,9 @@ export default class JoinChannelAudio
       loopbackType === LoopbackAudioTrackType.LoopbackProcess &&
       loopbackProcessId <= 0
     ) {
-      this.error('Process ID cannot be empty or less than or equal to 0 in Process Loopback mode');
+      this.error(
+        'Process ID cannot be empty or less than or equal to 0 in Process Loopback mode'
+      );
       return;
     }
 
@@ -298,21 +315,54 @@ export default class JoinChannelAudio
         if (result === 0) {
           this.info(`Loopback audio track configuration updated successfully`);
         } else {
-          this.error(`Failed to update Loopback audio track configuration, error code: ${result}`);
+          this.error(
+            `Failed to update Loopback audio track configuration, error code: ${result}`
+          );
         }
       } else {
         this.error('Unable to get MediaEngine instance');
       }
     } catch (error) {
-      this.error(`Error occurred while updating Loopback audio track configuration: ${error}`);
+      this.error(
+        `Error occurred while updating Loopback audio track configuration: ${error}`
+      );
     }
   };
-
 
   /**
    * Step 4: leaveChannel
    */
   protected leaveChannel() {
+    // Destroy loopback audio track before leaving channel
+    const { loopbackTrackId } = this.state;
+    if (loopbackTrackId !== null) {
+      try {
+        const mediaEngine = this.engine?.getMediaEngine();
+        if (mediaEngine) {
+          this.engine?.updateChannelMediaOptions({
+            publishLoopbackAudioTrack: false,
+            publishLoopbackAudioTrackId: loopbackTrackId,
+          });
+
+          const result = mediaEngine.destroyLoopbackAudioTrack(loopbackTrackId);
+          if (result === 0) {
+            this.setState({ loopbackTrackId: null });
+            this.info(
+              `Loopback audio track destroyed before leaving channel, Track ID: ${loopbackTrackId}`
+            );
+          } else {
+            this.error(
+              `Failed to destroy Loopback audio track before leaving channel, error code: ${result}`
+            );
+          }
+        }
+      } catch (error) {
+        this.error(
+          `Error occurred while destroying Loopback audio track before leaving channel: ${error}`
+        );
+      }
+    }
+
     this.engine?.leaveChannel();
   }
 
@@ -457,12 +507,12 @@ export default class JoinChannelAudio
       loopbackProcessId,
     } = this.state;
 
-    // 判断是否应该显示 deviceName 输入框
+    // Determine whether to show deviceName input field
     const shouldShowDeviceName =
       loopbackType === LoopbackAudioTrackType.LoopbackSystem ||
       loopbackType === LoopbackAudioTrackType.LoopbackSystemExcludeSelf;
 
-    // 判断是否应该显示 processId 输入框
+    // Determine whether to show processId input field
     const shouldShowProcessId =
       loopbackType === LoopbackAudioTrackType.LoopbackProcess;
 
@@ -570,7 +620,8 @@ export default class JoinChannelAudio
 
         <div style={{ marginBottom: 10 }}>
           <span>
-            Current Track ID: {loopbackTrackId !== null ? loopbackTrackId : 'None'}
+            Current Track ID:{' '}
+            {loopbackTrackId !== null ? loopbackTrackId : 'None'}
           </span>
         </div>
 
@@ -591,7 +642,6 @@ export default class JoinChannelAudio
           onPress={this.updateLoopbackAudioTrackConfig}
           disabled={loopbackTrackId === null}
         />
-
       </>
     );
   }
