@@ -35,6 +35,7 @@ interface State extends BaseAudioComponentState {
   loopbackType: LoopbackAudioTrackType;
   loopbackDeviceName: string;
   loopbackProcessId: number;
+  forceUseALD: boolean;
 }
 
 export default class JoinChannelAudio
@@ -61,6 +62,7 @@ export default class JoinChannelAudio
       loopbackType: LoopbackAudioTrackType.LoopbackSystem,
       loopbackDeviceName: 'AgoraALD',
       loopbackProcessId: 0,
+      forceUseALD: false,
     };
   }
 
@@ -165,6 +167,26 @@ export default class JoinChannelAudio
   adjustPlaybackSignalVolume = () => {
     const { playbackSignalVolume } = this.state;
     this.engine?.adjustPlaybackSignalVolume(playbackSignalVolume);
+  };
+
+  /**
+   * Handle Force use ALD checkbox change
+   */
+  handleForceUseALDChange = (checked: boolean) => {
+    this.setState({ forceUseALD: checked });
+
+    // Set catap parameter based on checkbox state
+    const catapValue = checked ? 'false' : 'true';
+    this.engine?.setParameters(
+      `{"che.audio.loopback.allow_loopback_with_catap":${catapValue}}`
+    );
+    this.engine?.setParameters(
+      `{"che.audio.loopback.allow_loopback_with_sck":${catapValue}}`
+    );
+
+    this.info(
+      `Force use ALD: ${checked ? 'enabled' : 'disabled'}, catap: ${catapValue}`
+    );
   };
 
   /**
@@ -623,6 +645,18 @@ export default class JoinChannelAudio
             Current Track ID:{' '}
             {loopbackTrackId !== null ? loopbackTrackId : 'None'}
           </span>
+        </div>
+
+        <div style={{ marginBottom: 10 }}>
+          <label>
+            <input
+              type="checkbox"
+              checked={this.state.forceUseALD}
+              onChange={(e) => this.handleForceUseALDChange(e.target.checked)}
+              style={{ marginRight: 8 }}
+            />
+            Force use ALD
+          </label>
         </div>
 
         <AgoraButton
