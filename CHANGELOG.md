@@ -1,5 +1,12 @@
 
 
+## [4.2.6-build.159-rc.6](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.159-rc.5...v4.2.6-build.159-rc.6) (2025-10-24)
+
+
+### Features
+
+* upgrade iris url to 4.2.6.159-test.3 for macos ([cd32d5d](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/cd32d5d2d0f98ef4f044d6bd37ed92e654f34e39))
+
 ## [4.2.6-build.159-rc.5](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.159-rc.4...v4.2.6-build.159-rc.5) (2025-10-21)
 
 
