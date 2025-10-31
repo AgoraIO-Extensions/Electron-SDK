@@ -13,10 +13,6 @@ on:
         default: true
         type: boolean
 
-permissions:
-  id-token: write # Required for OIDC
-  contents: read
-
 jobs:
   release-it:
     runs-on: ubuntu-latest
@@ -31,13 +27,9 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      # - name: Setup NPM auth token
-      #   run: |
-      #     npm set "//registry.npmjs.org/:_authToken" ${{ secrets.NPM_TOKEN }}
-
-      - name: Update NPM
+      - name: Setup NPM auth token
         run: |
-          npm install -g npm@11.5.1
+          npm set "//registry.npmjs.org/:_authToken" ${{ secrets.NPM_TOKEN }}
 
       - name: Dry Run Release
         if: ${{ inputs.dry-run }}
