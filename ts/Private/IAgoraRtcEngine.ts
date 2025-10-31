@@ -697,6 +697,7 @@ export class ChannelMediaOptions {
   isInteractiveAudience?: boolean;
   customVideoTrackId?: number;
   isAudioFilterable?: boolean;
+  parameters?: string;
 }
 
 /**
