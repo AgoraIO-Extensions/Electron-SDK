@@ -5,7 +5,13 @@ import { RtcConnection } from './IAgoraRtcEngineEx';
  * The spatial position of the remote user or the media player.
  */
 export class RemoteVoicePositionInfo {
+  /**
+   * The coordinates in the world coordinate system. This parameter is an array of length 3, and the three values represent the front, right, and top coordinates in turn.
+   */
   position?: number[];
+  /**
+   * The unit vector of the x axis in the coordinate system. This parameter is an array of length 3, and the three values represent the front, right, and top coordinates in turn.
+   */
   forward?: number[];
 }
 
@@ -13,14 +19,45 @@ export class RemoteVoicePositionInfo {
  * Sound insulation area settings.
  */
 export class SpatialAudioZone {
+  /**
+   * The ID of the sound insulation area.
+   */
   zoneSetId?: number;
+  /**
+   * The spatial center point of the sound insulation area. This parameter is an array of length 3, and the three values represent the front, right, and top coordinates in turn.
+   */
   position?: number[];
+  /**
+   * Starting at position, the forward unit vector. This parameter is an array of length 3, and the three values represent the front, right, and top coordinates in turn.
+   */
   forward?: number[];
+  /**
+   * Starting at position, the right unit vector. This parameter is an array of length 3, and the three values represent the front, right, and top coordinates in turn.
+   */
   right?: number[];
+  /**
+   * Starting at position, the up unit vector. This parameter is an array of length 3, and the three values represent the front, right, and top coordinates in turn.
+   */
   up?: number[];
+  /**
+   * The entire sound insulation area is regarded as a cube; this represents the length of the forward side in the unit length of the game engine.
+   */
   forwardLength?: number;
+  /**
+   * The entire sound insulation area is regarded as a cube; this represents the length of the right side in the unit length of the game engine.
+   */
   rightLength?: number;
+  /**
+   * The entire sound insulation area is regarded as a cube; this represents the length of the up side in the unit length of the game engine.
+   */
   upLength?: number;
+  /**
+   * The sound attenuation coefficient when users within the sound insulation area communicate with external users. The value range is [0,1]. The values are as follows:
+   *  0: Broadcast mode, where the volume and timbre are not attenuated with distance, and the volume and timbre heard by local users do not change regardless of distance.
+   *  (0,0.5): Weak attenuation mode, that is, the volume and timbre are only weakly attenuated during the propagation process, and the sound can travel farther than the real environment.
+   *  0.5: (Default) simulates the attenuation of the volume in the real environment; the effect is equivalent to not setting the audioAttenuation parameter.
+   *  (0.5,1]: Strong attenuation mode (default value is 1), that is, the volume and timbre attenuate rapidly during propagation.
+   */
   audioAttenuation?: number;
 }
 

@@ -30,7 +30,13 @@ import {
  * Contains connection information.
  */
 export class RtcConnection {
+  /**
+   * The channel name.
+   */
   channelId?: string;
+  /**
+   * The ID of the local user.
+   */
   localUid?: number;
 }
 
@@ -272,7 +278,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Set the blocklist of subscriptions for audio streams.
+   * Sets the blocklist of subscriptions for audio streams.
    *
    * You can call this method to specify the audio streams of a user that you do not want to subscribe to.
    *  You can call this method either before or after joining a channel.
@@ -318,7 +324,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Set the blocklist of subscriptions for video streams.
+   * Sets the blocklist of subscriptions for video streams.
    *
    * You can call this method to specify the video streams of a user that you do not want to subscribe to.
    *  If a user is added in the allowlist and blocklist at the same time, only the blocklist takes effect.
@@ -341,7 +347,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Set the allowlist of subscriptions for video streams.
+   * Sets the allowlist of subscriptions for video streams.
    *
    * You can call this method to specify the video streams of a user that you want to subscribe to.
    *  If a user is added in the allowlist and blocklist at the same time, only the blocklist takes effect.
@@ -364,7 +370,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Options for subscribing to remote video streams.
+   * Sets options for subscribing to remote video streams.
    *
    * When a remote user has enabled dual-stream mode, you can call this method to choose the option for subscribing to the video streams sent by the remote user.
    *
@@ -581,7 +587,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * Adds a watermark image to the local video.
    *
-   * This method adds a PNG watermark image to the local video in the live streaming. Once the watermark image is added, all the audience in the channel (CDN audience included), and the capturing device can see and capture it. The Agora SDK supports adding only one watermark image onto a local video or CDN live stream. The newly added watermark image replaces the previous one. The watermark coordinates are dependent on the settings in the setVideoEncoderConfigurationEx method:
+   * This method adds a PNG watermark image to the local video in the live streaming. Once the watermark image is added, all the audience in the channel (CDN audience included), and the capturing device can see and capture it. The Agora SDK supports adding only one watermark image onto a live video stream. The newly added watermark image replaces the previous one. The watermark coordinates are dependent on the settings in the setVideoEncoderConfigurationEx method:
    *  If the orientation mode of the encoding video (OrientationMode) is fixed landscape mode or the adaptive landscape mode, the watermark uses the landscape orientation.
    *  If the orientation mode of the encoding video (OrientationMode) is fixed portrait mode or the adaptive portrait mode, the watermark uses the portrait orientation.
    *  When setting the watermark position, the region must be less than the dimensions set in the setVideoEncoderConfigurationEx method; otherwise, the watermark image will be cropped.
@@ -724,6 +730,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    * Agora recommends that you use the server-side Media Push function. You can call this method to stop the live stream on the specified CDN address. This method can stop pushing media streams to only one CDN address at a time, so if you need to stop pushing streams to multiple addresses, call this method multiple times. After you call this method, the SDK triggers the onRtmpStreamingStateChanged callback on the local client to report the state of the streaming.
    *
    * @param url The address of Media Push. The format is RTMP or RTMPS. The character length cannot exceed 1024 bytes. Special characters such as Chinese characters are not supported.
+   * @param connection The connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
