@@ -18,7 +18,8 @@ parsers:
   - name: ReturnTypeParser
     package: '@agoraio-extensions/terra_shared_configs'
     args:
-      configFilePath: '@agoraio-extensions/terra_shared_configs:configs/rtc/ts/c_to_ts_config.ts'
+      ignoreDefaultConfig: true
+      configFilePath: '@agoraio-extensions/terra_shared_configs:configs/rtc/legacy/fixed_return_type_list.ts'
 
 renderers:
   - path: ../impl.ts
