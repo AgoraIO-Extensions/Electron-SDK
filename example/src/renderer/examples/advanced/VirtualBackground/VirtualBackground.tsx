@@ -1,5 +1,4 @@
 import {
-  AgoraEnv,
   BackgroundBlurDegree,
   BackgroundSourceType,
   ChannelProfileType,
@@ -216,8 +215,6 @@ export default class VirtualBackground
       source,
       blur_degree,
       enableAlphaMask,
-      startPreview,
-      joinChannelSuccess,
     } = this.state;
     return (
       <>
@@ -264,11 +261,8 @@ export default class VirtualBackground
         />
         <AgoraSwitch
           title={'enableAlphaMask'}
-          disabled={startPreview && !joinChannelSuccess}
           value={enableAlphaMask}
           onValueChange={(value) => {
-            //If you change the enableAlphaMask, you need to clear the renderer manager that will be remove all renderer
-            AgoraEnv.AgoraRendererManager?.clear();
             this.setState({ enableAlphaMask: value });
           }}
         />
