@@ -43,25 +43,19 @@ jobs:
           git config --global user.name "${{ secrets.GIT_USERNAME }}"
           yarn release ${{ inputs.increment }} --ci --no-git.tag --no-github.release --npm.allowSameVersion
 
-      - name: Get Package Info
+      - name: Update Example
         if: ${{ !inputs.dry-run }}
         id: package-info
         run: |
-          name=$(node -p "require('./package.json').name")
-          version=$(node -p "require('./package.json').version")
-          echo "name=${name}" >> "$GITHUB_OUTPUT"
-          echo "version=${version}" >> "$GITHUB_OUTPUT"
-
-      - name: Update Example
-        if: ${{ !inputs.dry-run }}
-        run: |
-          yarn example add ${{steps.package-info.outputs.name}}@${{steps.package-info.outputs.version}}
+          sed "s/\"agora-electron-sdk\": \"\(.*\)\"/\"agora-electron-sdk\": \"${{ inputs.increment }}\"/g" package.json > tmp
+          mv tmp package.json
+        working-directory: example
 
       - name: Commit Example
         if: ${{ !inputs.dry-run }}
         run: |
           git add example
-          git commit -m "chore(example): update example to install ${{steps.package-info.outputs.name}}@${{steps.package-info.outputs.version}}"
+          git commit -m "chore(example): update example to install agora-electron-sdk@${{ inputs.increment }}"
 
       - name: Release
         if: ${{ !inputs.dry-run }}
@@ -72,3 +66,6 @@ jobs:
         run: |
           echo "[publish info][tag]: https://github.com/AgoraIO-Extensions/Electron-SDK/releases/tag/v${{ inputs.increment }}"
           echo "[publish info][url]: https://www.npmjs.com/package/agora-electron-sdk/v/${{ inputs.increment }}"
+          echo "[publish info][url]: https://download.agora.io/sdk/release/Electron-mac-${{ inputs.increment }}-napi.zip"
+          echo "[publish info][url]: https://download.agora.io/sdk/release/Electron-win32-${{ inputs.increment }}-napi.zip"
+          echo "[publish info][url]: https://download.agora.io/sdk/release/Electron-win64-${{ inputs.increment }}-napi.zip"

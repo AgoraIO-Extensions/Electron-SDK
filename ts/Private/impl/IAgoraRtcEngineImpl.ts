@@ -263,7 +263,7 @@ export function processIRtcEngineEventHandler(
     case 'onFirstLocalVideoFramePublished':
       if (handler.onFirstLocalVideoFramePublished !== undefined) {
         handler.onFirstLocalVideoFramePublished(
-          jsonParams.source,
+          jsonParams.connection,
           jsonParams.elapsed
         );
       }
@@ -412,7 +412,7 @@ export function processIRtcEngineEventHandler(
 
     case 'onLocalVideoStats':
       if (handler.onLocalVideoStats !== undefined) {
-        handler.onLocalVideoStats(jsonParams.source, jsonParams.stats);
+        handler.onLocalVideoStats(jsonParams.connection, jsonParams.stats);
       }
       break;
 
@@ -1213,40 +1213,6 @@ export class IRtcEngineImpl implements IRtcEngine {
     uid: number
   ): string {
     return 'RtcEngine_preloadChannel';
-  }
-
-  preloadChannelWithUserAccount(
-    token: string,
-    channelId: string,
-    userAccount: string
-  ): number {
-    const apiType = this.getApiTypeFromPreloadChannelWithUserAccount(
-      token,
-      channelId,
-      userAccount
-    );
-    const jsonParams = {
-      token: token,
-      channelId: channelId,
-      userAccount: userAccount,
-      toJSON: () => {
-        return {
-          token: token,
-          channelId: channelId,
-          userAccount: userAccount,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromPreloadChannelWithUserAccount(
-    token: string,
-    channelId: string,
-    userAccount: string
-  ): string {
-    return 'RtcEngine_preloadChannelWithUserAccount';
   }
 
   updatePreloadChannelToken(token: string): number {
@@ -5114,35 +5080,6 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_startScreenCapture';
   }
 
-  startScreenCaptureBySourceType(
-    sourceType: VideoSourceType,
-    config: ScreenCaptureConfiguration
-  ): number {
-    const apiType = this.getApiTypeFromStartScreenCaptureBySourceType(
-      sourceType,
-      config
-    );
-    const jsonParams = {
-      sourceType: sourceType,
-      config: config,
-      toJSON: () => {
-        return {
-          sourceType: sourceType,
-          config: config,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromStartScreenCaptureBySourceType(
-    sourceType: VideoSourceType,
-    config: ScreenCaptureConfiguration
-  ): string {
-    return 'RtcEngine_startScreenCaptureBySourceType';
-  }
-
   updateScreenCapture(captureParams: ScreenCaptureParameters2): number {
     const apiType = this.getApiTypeFromUpdateScreenCapture(captureParams);
     const jsonParams = {
@@ -5203,27 +5140,6 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromStopScreenCapture(): string {
     return 'RtcEngine_stopScreenCapture';
-  }
-
-  stopScreenCaptureBySourceType(sourceType: VideoSourceType): number {
-    const apiType =
-      this.getApiTypeFromStopScreenCaptureBySourceType(sourceType);
-    const jsonParams = {
-      sourceType: sourceType,
-      toJSON: () => {
-        return {
-          sourceType: sourceType,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromStopScreenCaptureBySourceType(
-    sourceType: VideoSourceType
-  ): string {
-    return 'RtcEngine_stopScreenCaptureBySourceType';
   }
 
   getCallId(): string {
@@ -6739,6 +6655,56 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_isFeatureAvailableOnDevice';
   }
 
+  startScreenCaptureBySourceType(
+    sourceType: VideoSourceType,
+    config: ScreenCaptureConfiguration
+  ): number {
+    const apiType = this.getApiTypeFromStartScreenCaptureBySourceType(
+      sourceType,
+      config
+    );
+    const jsonParams = {
+      sourceType: sourceType,
+      config: config,
+      toJSON: () => {
+        return {
+          sourceType: sourceType,
+          config: config,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromStartScreenCaptureBySourceType(
+    sourceType: VideoSourceType,
+    config: ScreenCaptureConfiguration
+  ): string {
+    return 'RtcEngine_startScreenCaptureBySourceType';
+  }
+
+  stopScreenCaptureBySourceType(sourceType: VideoSourceType): number {
+    const apiType =
+      this.getApiTypeFromStopScreenCaptureBySourceType(sourceType);
+    const jsonParams = {
+      sourceType: sourceType,
+      toJSON: () => {
+        return {
+          sourceType: sourceType,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromStopScreenCaptureBySourceType(
+    sourceType: VideoSourceType
+  ): string {
+    return 'RtcEngine_stopScreenCaptureBySourceType';
+  }
+
   getAudioDeviceManager(): IAudioDeviceManager {
     const apiType = this.getApiTypeFromGetAudioDeviceManager();
     const jsonParams = {};
@@ -6915,6 +6881,40 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromGetNativeHandle(): string {
     return 'RtcEngine_getNativeHandle';
+  }
+
+  preloadChannelWithUserAccount(
+    token: string,
+    channelId: string,
+    userAccount: string
+  ): number {
+    const apiType = this.getApiTypeFromPreloadChannelWithUserAccount(
+      token,
+      channelId,
+      userAccount
+    );
+    const jsonParams = {
+      token: token,
+      channelId: channelId,
+      userAccount: userAccount,
+      toJSON: () => {
+        return {
+          token: token,
+          channelId: channelId,
+          userAccount: userAccount,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromPreloadChannelWithUserAccount(
+    token: string,
+    channelId: string,
+    userAccount: string
+  ): string {
+    return 'RtcEngine_preloadChannelWithUserAccount';
   }
 }
 
