@@ -270,7 +270,7 @@ export enum ContentInspectType {
 }
 
 /**
- * ContentInspectModule A structure used to configure the frequency of video screenshot and upload.
+ * ContentInspectModule class, a structure used to configure the frequency of video screenshot and upload.
  */
 export class ContentInspectModule {
   /**
@@ -1092,15 +1092,15 @@ export enum MediaRecorderContainerFormat {
  */
 export enum MediaRecorderStreamType {
   /**
-   * Only audio.
+   * 1: Only audio.
    */
   StreamTypeAudio = 0x01,
   /**
-   * Only video.
+   * 2: Only video.
    */
   StreamTypeVideo = 0x02,
   /**
-   * (Default) Audio and video.
+   * 3: (Default) Audio and video.
    */
   StreamTypeBoth = 0x01 | 0x02,
 }

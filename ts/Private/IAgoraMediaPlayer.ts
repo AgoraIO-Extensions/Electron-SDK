@@ -153,7 +153,7 @@ export abstract class IMediaPlayer {
    * @param index The index of the media stream. This parameter must be less than the return value of getStreamCount.
    *
    * @returns
-   * If the call succeeds, returns the detailed information of the media stream. See PlayerStreamInfo. null, if the method call fails.
+   * If the call succeeds, returns the detailed information of the media stream. See PlayerStreamInfo. null is returned, if the method call fails.
    */
   abstract getStreamInfo(index: number): PlayerStreamInfo;
 
@@ -200,34 +200,6 @@ export abstract class IMediaPlayer {
    *  < 0: Failure.
    */
   abstract selectAudioTrack(index: number): number;
-
-  /**
-   * Sets media player options.
-   *
-   * The media player supports setting options through key and value. The difference between this method and setPlayerOptionInString is that the value parameter of this method is of type Int, while the value of setPlayerOptionInString is of type String. These two methods cannot be used together.
-   *
-   * @param key The key of the option.
-   * @param value The value of the key.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
-   */
-  abstract setPlayerOptionInInt(key: string, value: number): number;
-
-  /**
-   * Sets media player options.
-   *
-   * The media player supports setting options through key and value. The difference between this method and setPlayerOptionInInt is that the value parameter of this method is of type String, while the value of setPlayerOptionInInt is of type String. These two methods cannot be used together.
-   *
-   * @param key The key of the option.
-   * @param value The value of the key.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
-   */
-  abstract setPlayerOptionInString(key: string, value: string): number;
 
   /**
    * @ignore
@@ -577,6 +549,34 @@ export abstract class IMediaPlayer {
    * @ignore
    */
   abstract setSoundPositionParams(pan: number, gain: number): number;
+
+  /**
+   * Sets media player options.
+   *
+   * The media player supports setting options through key and value. The difference between this method and setPlayerOptionInString is that the value parameter of this method is of type Int, while the value of setPlayerOptionInString is of type String. These two methods cannot be used together.
+   *
+   * @param key The key of the option.
+   * @param value The value of the key.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
+   */
+  abstract setPlayerOptionInInt(key: string, value: number): number;
+
+  /**
+   * Sets media player options.
+   *
+   * The media player supports setting options through key and value. The difference between this method and setPlayerOptionInInt is that the value parameter of this method is of type String, while the value of setPlayerOptionInInt is of type String. These two methods cannot be used together.
+   *
+   * @param key The key of the option.
+   * @param value The value of the key.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
+   */
+  abstract setPlayerOptionInString(key: string, value: string): number;
 }
 
 /**

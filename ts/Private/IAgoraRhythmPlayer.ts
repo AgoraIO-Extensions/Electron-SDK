@@ -1,10 +1,11 @@
 import './extension/IAgoraRhythmPlayerExtension';
+
 /**
  * Virtual metronome state.
  */
 export enum RhythmPlayerStateType {
   /**
-   * (810): The virtual metronome is not enabled or disabled already.
+   * 810: The virtual metronome is not enabled or disabled already.
    */
   RhythmPlayerStateIdle = 810,
   /**
