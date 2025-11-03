@@ -5,31 +5,20 @@ concurrency:
   cancel-in-progress: true
 
 on:
-  workflow_call:
-    inputs:
-      type:
-        description: 'Build type'
-        required: true
-        default: 'sdk'
-        type: string
   workflow_dispatch:
     inputs:
       type:
-        description: 'Build type'
+        description: "Build type"
         required: true
-        default: 'demo'
+        default: "demo"
         type: choice
         options:
           - demo
           - sdk
-  release:
-    types: [published]
-  pull_request:
-    types: [labeled, synchronize]
 
 jobs:
   build-jenkins:
-    if: ${{ inputs.type == 'sdk' || (github.event_name == 'release' && github.event.action == 'published') }}
+    if: ${{ inputs.type == 'sdk' }}
     runs-on: ubuntu-latest
     steps:
       - name: Build
@@ -39,7 +28,7 @@ jobs:
           -d "{\"branch\": \"${{github.ref_name}}\", \"type\": \"sdk\"}"
 
   build-windows:
-    if: ${{ inputs.type == 'demo' || contains(github.event.pull_request.labels.*.name, 'ci:dep-update') }}
+    if: ${{ inputs.type == 'demo' }}
     strategy:
       matrix:
         arch: [ia32, x64]
@@ -74,7 +63,7 @@ jobs:
           if-no-files-found: error
 
   build-mac:
-    if: ${{ inputs.type == 'demo' || contains(github.event.pull_request.labels.*.name, 'ci:dep-update') }}
+    if: ${{ inputs.type == 'demo' }}
     strategy:
       matrix:
         arch: [arm64, x64]

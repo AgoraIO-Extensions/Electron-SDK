@@ -287,52 +287,6 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     return 'MediaPlayer_selectMultiAudioTrack';
   }
 
-  setPlayerOptionInInt(key: string, value: number): number {
-    const apiType = this.getApiTypeFromSetPlayerOptionInInt(key, value);
-    const jsonParams = {
-      key: key,
-      value: value,
-      toJSON: () => {
-        return {
-          key: key,
-          value: value,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromSetPlayerOptionInInt(
-    key: string,
-    value: number
-  ): string {
-    return 'MediaPlayer_setPlayerOptionInInt';
-  }
-
-  setPlayerOptionInString(key: string, value: string): number {
-    const apiType = this.getApiTypeFromSetPlayerOptionInString(key, value);
-    const jsonParams = {
-      key: key,
-      value: value,
-      toJSON: () => {
-        return {
-          key: key,
-          value: value,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromSetPlayerOptionInString(
-    key: string,
-    value: string
-  ): string {
-    return 'MediaPlayer_setPlayerOptionInString';
-  }
-
   takeScreenshot(filename: string): number {
     const apiType = this.getApiTypeFromTakeScreenshot(filename);
     const jsonParams = {
@@ -982,6 +936,52 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     gain: number
   ): string {
     return 'MediaPlayer_setSoundPositionParams';
+  }
+
+  setPlayerOptionInInt(key: string, value: number): number {
+    const apiType = this.getApiTypeFromSetPlayerOptionInInt(key, value);
+    const jsonParams = {
+      key: key,
+      value: value,
+      toJSON: () => {
+        return {
+          key: key,
+          value: value,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSetPlayerOptionInInt(
+    key: string,
+    value: number
+  ): string {
+    return 'MediaPlayer_setPlayerOptionInInt';
+  }
+
+  setPlayerOptionInString(key: string, value: string): number {
+    const apiType = this.getApiTypeFromSetPlayerOptionInString(key, value);
+    const jsonParams = {
+      key: key,
+      value: value,
+      toJSON: () => {
+        return {
+          key: key,
+          value: value,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSetPlayerOptionInString(
+    key: string,
+    value: string
+  ): string {
+    return 'MediaPlayer_setPlayerOptionInString';
   }
 }
 

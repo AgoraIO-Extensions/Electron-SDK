@@ -1,0 +1,25 @@
+parsers:
+  - name: RTCParser
+    package: '@agoraio-extensions/terra_shared_configs'
+    args:
+      sdkVersion: 4.2.7.127
+      definesMacros:
+        - __ELECTRON__
+      FixEnumConstantParser:
+        skipCalEnumValue: true
+
+  - name: UpdateSimpleTypeParser
+    package: '@agoraio-extensions/terra_shared_configs'
+    args:
+      parserDefaultValue: true
+      ignoreDefaultConfig: true
+      configFilePath: '@agoraio-extensions/terra_shared_configs:configs/rtc/ts/c_to_ts_config.ts'
+
+  - name: ReturnTypeParser
+    package: '@agoraio-extensions/terra_shared_configs'
+    args:
+      ignoreDefaultConfig: true
+      configFilePath: '@agoraio-extensions/terra_shared_configs:configs/rtc/legacy/fixed_return_type_list.ts'
+
+renderers:
+  - path: ../impl.ts
