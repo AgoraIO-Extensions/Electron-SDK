@@ -39,6 +39,7 @@ jobs:
       - name: Update NPM
         run: |
           npm install -g npm@11.5.1
+          npm ci
 
       - name: Dry Run Release
         if: ${{ inputs.dry-run }}
