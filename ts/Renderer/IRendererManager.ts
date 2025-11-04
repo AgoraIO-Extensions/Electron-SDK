@@ -22,10 +22,16 @@ export abstract class IRendererManager {
    * @ignore
    */
   private _previousFirstFrameTime: number;
+
   /**
    * @ignore
    */
-  private _renderingTimer?: number;
+  private _rafId?: number;
+
+  /**
+   * @ignore
+   */
+  private _lastFrameTime: number = 0;
   /**
    * @ignore
    */
@@ -39,6 +45,7 @@ export abstract class IRendererManager {
     this._renderingFps = 30;
     this._currentFrameCount = 0;
     this._previousFirstFrameTime = 0;
+    this._lastFrameTime = 0;
     this._rendererCaches = [];
     this._context = {
       renderMode: RenderModeType.RenderModeHidden,
@@ -48,10 +55,13 @@ export abstract class IRendererManager {
 
   public set renderingFps(fps: number) {
     if (this._renderingFps !== fps) {
-      logInfo('[FPS_INFO] 帧率设置变更:', this._renderingFps, '->', fps);
+      logInfo('[FPS_INFO][RAF] 帧率设置变更:', this._renderingFps, '->', fps);
       this._renderingFps = fps;
-      if (this._renderingTimer) {
-        logInfo('[FPS_INFO] 重启渲染循环以应用新帧率');
+
+      // 如果渲染循环正在运行，重启它以应用新帧率
+      const isRendering = this._rafId !== undefined;
+      if (isRendering) {
+        logInfo('[FPS_INFO][RAF] 重启渲染循环以应用新帧率');
         this.stopRendering();
         this.startRendering();
       }
@@ -240,17 +250,19 @@ export abstract class IRendererManager {
   ): IRenderer;
 
   public startRendering(): void {
-    if (this._renderingTimer) return;
+    if (this._rafId) return;
 
     logInfo('[FPS_INFO] 开始渲染循环，目标帧率:', this._renderingFps);
 
-    const renderingLooper = () => {
-      const loopStartTime = performance.now();
+    // 使用requestAnimationFrame实现的渲染循环
+    const rafRenderingLooper = (timestamp: number) => {
+      // 计算帧间隔时间
+      const frameInterval = 1000 / this._renderingFps; // 理想帧间隔时间，单位ms
 
+      // 如果是首次调用或者需要重置
       if (this._previousFirstFrameTime === 0) {
-        // Get the current time as the time of the first frame of per second
-        this._previousFirstFrameTime = loopStartTime;
-        // Reset the frame count
+        this._previousFirstFrameTime = timestamp;
+        this._lastFrameTime = timestamp;
         this._currentFrameCount = 0;
         logInfo(
           '[FPS_INFO] 重置帧计数和时间基准点:',
@@ -258,42 +270,54 @@ export abstract class IRendererManager {
         );
       }
 
-      // Increase the frame count
+      // 计算从上一帧到现在经过的时间
+      const timeSinceLastFrame = timestamp - this._lastFrameTime;
+
+      // 移除跳过渲染的逻辑，让它尽可能频繁地渲染
+      // 记录每一帧的时间间隔，以便观察
+      logInfo(
+        '[FPS_INFO][RAF] 原生帧间隔:',
+        timeSinceLastFrame.toFixed(2) + 'ms',
+        '理想帧间隔:',
+        frameInterval.toFixed(2) + 'ms'
+      );
+
+      // 简单更新上一帧的时间戳为当前时间
+      this._lastFrameTime = timestamp;
+
+      // 增加帧计数
       ++this._currentFrameCount;
 
-      // Get the current time
-      const currentFrameTime = performance.now();
-      // Calculate the time difference between the current frame and the previous frame
-      const deltaTime = currentFrameTime - this._previousFirstFrameTime;
-      // Calculate the expected time of the current frame
-      const expectedTime =
-        (this._currentFrameCount * 1000) / this._renderingFps;
+      // 增加帧计数后直接进行帧率控制
 
       // 详细的帧率调试信息
+      const idealFrameInterval = 1000 / this._renderingFps; // 理想帧间隔
+      const frameIntervalDiff = timeSinceLastFrame - idealFrameInterval; // 实际与理想帧间隔的差异
+
       logInfo(
-        '[FPS_INFO]',
+        '[FPS_INFO][RAF]',
         '时间:',
         new Date().toLocaleTimeString(),
         '帧数:',
         this._currentFrameCount,
         '目标帧率:',
         this._renderingFps,
-        '预期时间:',
-        expectedTime.toFixed(2) + 'ms', //帧的预期时间，参数为毫秒
-        '实际时间差:',
-        deltaTime.toFixed(2) + 'ms', //帧的实际时间差，时间差是正数表示延迟，负数表示超前,参数为毫秒
-        '延迟:',
-        (deltaTime - expectedTime).toFixed(2) + 'ms' //帧的延迟，参数为毫秒
+        '理想帧间隔:',
+        idealFrameInterval.toFixed(2) + 'ms',
+        '实际帧间隔:',
+        timeSinceLastFrame.toFixed(2) + 'ms',
+        '帧间隔差异:',
+        frameIntervalDiff.toFixed(2) + 'ms'
       );
 
+      // 如果没有渲染器，停止渲染循环
       if (this._rendererCaches.length === 0) {
-        // If there is no renderer, stop rendering
-        logInfo('[FPS_INFO] 没有渲染器，停止渲染循环');
+        logInfo('[FPS_INFO][RAF] 没有渲染器，停止渲染循环');
         this.stopRendering();
         return;
       }
 
-      // Render all renderers
+      // 渲染所有渲染器
       const renderStartTime = performance.now();
       let renderedCount = 0;
 
@@ -306,47 +330,53 @@ export abstract class IRendererManager {
       const renderTime = renderEndTime - renderStartTime;
 
       logInfo(
-        '[FPS_INFO] 渲染性能:',
+        '[FPS_INFO][RAF] 渲染性能:',
         '渲染器总数:',
         renderedCount,
         '渲染耗时:',
         renderTime.toFixed(2) + 'ms'
       );
 
-      if (this._currentFrameCount >= this.renderingFps) {
-        logInfo('[FPS_INFO] 达到每秒帧数限制，重置计数器');
-        this._previousFirstFrameTime = 0;
+      // 每秒重置一次计数器，用于FPS统计
+      const secondsElapsed = (timestamp - this._previousFirstFrameTime) / 1000;
+      if (secondsElapsed >= 1.0) {
+        const actualFps = this._currentFrameCount / secondsElapsed;
+        logInfo(
+          '[FPS_INFO][RAF] 每秒统计:',
+          '实际FPS:',
+          actualFps.toFixed(2),
+          '目标FPS:',
+          this._renderingFps,
+          '差异:',
+          (actualFps - this._renderingFps).toFixed(2)
+        );
+        this._previousFirstFrameTime = timestamp;
+        this._currentFrameCount = 0;
       }
 
-      if (deltaTime < expectedTime) {
-        // If the time difference between the current frame and the previous frame is less than the expected time, then wait for the difference
-        const waitTime = expectedTime - deltaTime;
-        logInfo('[FPS_INFO] 等待下一帧:', waitTime.toFixed(2) + 'ms');
-
-        this._renderingTimer = window.setTimeout(renderingLooper, waitTime);
-      } else {
-        // If the time difference between the current frame and the previous frame is greater than the expected time, then render immediately
-        logInfo('[FPS_INFO] 帧延迟，立即渲染下一帧');
-        renderingLooper();
-      }
+      // 继续请求下一帧
+      this._rafId = requestAnimationFrame(rafRenderingLooper);
     };
-    renderingLooper();
+
+    // 启动渲染循环
+    this._rafId = requestAnimationFrame(rafRenderingLooper);
   }
 
   public abstract doRendering(rendererCache: RendererCache): void;
 
   public stopRendering(): void {
-    if (this._renderingTimer) {
-      window.clearTimeout(this._renderingTimer);
-      this._renderingTimer = undefined;
-      logInfo('[FPS_INFO] 停止渲染循环，清除定时器');
+    // 取消requestAnimationFrame
+    if (this._rafId) {
+      cancelAnimationFrame(this._rafId);
+      this._rafId = undefined;
+      logInfo('[FPS_INFO][RAF] 停止渲染循环，取消动画帧');
 
       // 记录最终帧率统计
       const totalTime = performance.now() - this._previousFirstFrameTime;
       if (totalTime > 0 && this._currentFrameCount > 0) {
         const actualFps = (this._currentFrameCount * 1000) / totalTime;
         logInfo(
-          '[FPS_INFO] 渲染循环统计:',
+          '[FPS_INFO][RAF] 渲染循环统计:',
           '总帧数:',
           this._currentFrameCount,
           '总时间:',
@@ -359,6 +389,9 @@ export abstract class IRendererManager {
           (actualFps - this._renderingFps).toFixed(2)
         );
       }
+
+      // 重置状态
+      this._lastFrameTime = 0;
     }
   }
 
