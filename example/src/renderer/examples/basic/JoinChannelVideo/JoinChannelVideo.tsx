@@ -71,6 +71,13 @@ export default class JoinChannelVideo
 
     // Start preview before joinChannel
     this.engine.startPreview();
+    this.engine.setVideoEncoderConfiguration({
+      frameRate: 30,
+      dimensions: {
+        width: 1920,
+        height: 1080,
+      },
+    });
     this.setState({ startPreview: true });
   }
 

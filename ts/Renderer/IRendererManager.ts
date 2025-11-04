@@ -1,7 +1,7 @@
 import { VideoMirrorModeType, VideoViewSetupMode } from '../Private/AgoraBase';
 import { RenderModeType, VideoSourceType } from '../Private/AgoraMediaBase';
 import { RendererContext, RendererType } from '../Types';
-import { logDebug } from '../Utils';
+import { logInfo } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 import { RendererCache, generateRendererCacheKey } from './RendererCache';
@@ -36,7 +36,7 @@ export abstract class IRendererManager {
   private _context: RendererContext;
 
   constructor() {
-    this._renderingFps = 15;
+    this._renderingFps = 30;
     this._currentFrameCount = 0;
     this._previousFirstFrameTime = 0;
     this._rendererCaches = [];
@@ -48,8 +48,10 @@ export abstract class IRendererManager {
 
   public set renderingFps(fps: number) {
     if (this._renderingFps !== fps) {
+      logInfo('[FPS_INFO] 帧率设置变更:', this._renderingFps, '->', fps);
       this._renderingFps = fps;
       if (this._renderingTimer) {
+        logInfo('[FPS_INFO] 重启渲染循环以应用新帧率');
         this.stopRendering();
         this.startRendering();
       }
@@ -146,12 +148,34 @@ export abstract class IRendererManager {
       throw new Error('You have already added this view to the renderer');
     }
 
+    const startTime = performance.now();
     let rendererCache = this.getRendererCache(checkedContext);
     if (!rendererCache) {
       rendererCache = new RendererCache(checkedContext);
       this._rendererCaches.push(rendererCache);
+      logInfo(
+        '[FPS_INFO] 创建新的渲染器:',
+        '类型:',
+        checkedContext.sourceType,
+        'UID:',
+        checkedContext.uid,
+        '通道:',
+        checkedContext.channelId || '默认'
+      );
     }
-    rendererCache.addRenderer(this.createRenderer(checkedContext));
+
+    const renderer = this.createRenderer(checkedContext);
+    rendererCache.addRenderer(renderer);
+
+    const endTime = performance.now();
+    logInfo(
+      '[FPS_INFO] 添加渲染器:',
+      '耗时:',
+      (endTime - startTime).toFixed(2) + 'ms',
+      '当前渲染器数:',
+      rendererCache.renderers.length
+    );
+
     this.startRendering();
     return rendererCache;
   }
@@ -218,12 +242,20 @@ export abstract class IRendererManager {
   public startRendering(): void {
     if (this._renderingTimer) return;
 
+    logInfo('[FPS_INFO] 开始渲染循环，目标帧率:', this._renderingFps);
+
     const renderingLooper = () => {
+      const loopStartTime = performance.now();
+
       if (this._previousFirstFrameTime === 0) {
         // Get the current time as the time of the first frame of per second
-        this._previousFirstFrameTime = performance.now();
+        this._previousFirstFrameTime = loopStartTime;
         // Reset the frame count
         this._currentFrameCount = 0;
+        logInfo(
+          '[FPS_INFO] 重置帧计数和时间基准点:',
+          this._previousFirstFrameTime
+        );
       }
 
       // Increase the frame count
@@ -236,39 +268,65 @@ export abstract class IRendererManager {
       // Calculate the expected time of the current frame
       const expectedTime =
         (this._currentFrameCount * 1000) / this._renderingFps;
-      logDebug(
+
+      // 详细的帧率调试信息
+      logInfo(
+        '[FPS_INFO]',
+        '时间:',
         new Date().toLocaleTimeString(),
-        'currentFrameCount',
+        '帧数:',
         this._currentFrameCount,
-        'expectedTime',
-        expectedTime,
-        'deltaTime',
-        deltaTime
+        '目标帧率:',
+        this._renderingFps,
+        '预期时间:',
+        expectedTime.toFixed(2) + 'ms', //帧的预期时间，参数为毫秒
+        '实际时间差:',
+        deltaTime.toFixed(2) + 'ms', //帧的实际时间差，时间差是正数表示延迟，负数表示超前,参数为毫秒
+        '延迟:',
+        (deltaTime - expectedTime).toFixed(2) + 'ms' //帧的延迟，参数为毫秒
       );
 
       if (this._rendererCaches.length === 0) {
         // If there is no renderer, stop rendering
+        logInfo('[FPS_INFO] 没有渲染器，停止渲染循环');
         this.stopRendering();
         return;
       }
 
       // Render all renderers
+      const renderStartTime = performance.now();
+      let renderedCount = 0;
+
       for (const rendererCache of this._rendererCaches) {
         this.doRendering(rendererCache);
+        renderedCount += rendererCache.renderers.length;
       }
 
+      const renderEndTime = performance.now();
+      const renderTime = renderEndTime - renderStartTime;
+
+      logInfo(
+        '[FPS_INFO] 渲染性能:',
+        '渲染器总数:',
+        renderedCount,
+        '渲染耗时:',
+        renderTime.toFixed(2) + 'ms'
+      );
+
       if (this._currentFrameCount >= this.renderingFps) {
+        logInfo('[FPS_INFO] 达到每秒帧数限制，重置计数器');
         this._previousFirstFrameTime = 0;
       }
 
       if (deltaTime < expectedTime) {
         // If the time difference between the current frame and the previous frame is less than the expected time, then wait for the difference
-        this._renderingTimer = window.setTimeout(
-          renderingLooper,
-          expectedTime - deltaTime
-        );
+        const waitTime = expectedTime - deltaTime;
+        logInfo('[FPS_INFO] 等待下一帧:', waitTime.toFixed(2) + 'ms');
+
+        this._renderingTimer = window.setTimeout(renderingLooper, waitTime);
       } else {
         // If the time difference between the current frame and the previous frame is greater than the expected time, then render immediately
+        logInfo('[FPS_INFO] 帧延迟，立即渲染下一帧');
         renderingLooper();
       }
     };
@@ -281,6 +339,26 @@ export abstract class IRendererManager {
     if (this._renderingTimer) {
       window.clearTimeout(this._renderingTimer);
       this._renderingTimer = undefined;
+      logInfo('[FPS_INFO] 停止渲染循环，清除定时器');
+
+      // 记录最终帧率统计
+      const totalTime = performance.now() - this._previousFirstFrameTime;
+      if (totalTime > 0 && this._currentFrameCount > 0) {
+        const actualFps = (this._currentFrameCount * 1000) / totalTime;
+        logInfo(
+          '[FPS_INFO] 渲染循环统计:',
+          '总帧数:',
+          this._currentFrameCount,
+          '总时间:',
+          totalTime.toFixed(2) + 'ms',
+          '实际帧率:',
+          actualFps.toFixed(2) + 'fps',
+          '目标帧率:',
+          this._renderingFps + 'fps',
+          '帧率差异:',
+          (actualFps - this._renderingFps).toFixed(2)
+        );
+      }
     }
   }
 
