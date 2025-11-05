@@ -18,7 +18,12 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import { AgoraButton, AgoraDropdown, AgoraView } from '../../../components/ui';
+import {
+  AgoraButton,
+  AgoraDropdown,
+  AgoraList,
+  AgoraView,
+} from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { arrayToItems } from '../../../utils';
 import { askMediaAccess } from '../../../utils/permissions';
@@ -69,8 +74,6 @@ export default class JoinChannelVideo
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();
 
-    // Start preview before joinChannel
-    this.engine.startPreview();
     this.engine.setVideoEncoderConfiguration({
       frameRate: 30,
       dimensions: {
@@ -179,7 +182,22 @@ export default class JoinChannelVideo
   }
 
   protected renderUsers(): ReactElement | undefined {
-    return super.renderUsers();
+    const { joinChannelSuccess, remoteUsers } = this.state;
+    return (
+      <>
+        {joinChannelSuccess ? (
+          <AgoraList
+            data={remoteUsers ?? []}
+            renderItem={(item) =>
+              this.renderUser({
+                uid: item,
+                sourceType: VideoSourceType.VideoSourceRemote,
+              })
+            }
+          />
+        ) : undefined}
+      </>
+    );
   }
 
   protected renderVideo(user: VideoCanvas): ReactElement | undefined {
