@@ -98,8 +98,8 @@ call npm config list
 set https_proxy=http://10.80.1.174:1080
 set http_proxy=http://10.80.1.174:1080
 set all_proxy=http://10.80.1.174:1080
-call nvm install 14.17.3
-call nvm use 14.17.3
+call nvm install 16.18.1
+call nvm use 16.18.1
 set https_proxy=
 set http_proxy=
 set all_proxy=
