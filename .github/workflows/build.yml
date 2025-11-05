@@ -5,6 +5,13 @@ concurrency:
   cancel-in-progress: true
 
 on:
+  workflow_call:
+    inputs:
+      type:
+        description: "Build type"
+        required: true
+        default: "sdk"
+        type: string
   workflow_dispatch:
     inputs:
       type:
@@ -15,10 +22,12 @@ on:
         options:
           - demo
           - sdk
+  release:
+    types: [published]
 
 jobs:
   build-jenkins:
-    if: ${{ inputs.type == 'sdk' }}
+    if: ${{ inputs.type == 'sdk' || (github.event_name == 'release' && github.event.action == 'published') }}
     runs-on: ubuntu-latest
     steps:
       - name: Build
