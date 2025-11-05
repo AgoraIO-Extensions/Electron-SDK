@@ -1,5 +1,12 @@
 
 
+## [4.2.7-build.127-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.7-build.127-rc.1...v4.2.7-build.127-rc.2) (2025-11-05)
+
+
+### Bug Fixes
+
+* alpha can not change at any time ([#1341](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1341)) ([5f3d2a1](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/5f3d2a12c2102e66928b12078d85027d1d1f0d4b))
+
 ## [4.2.7-build.127-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.205-rc.3...v4.2.7-build.127-rc.1) (2025-10-31)
 
 ## [4.2.6-build.205-rc.3](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.205-rc.2...v4.2.6-build.205-rc.3) (2025-09-22)
