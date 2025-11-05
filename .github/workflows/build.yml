@@ -24,8 +24,6 @@ on:
           - sdk
   release:
     types: [published]
-  pull_request:
-    types: [labeled, synchronize]
 
 jobs:
   build-jenkins:
