@@ -1,5 +1,5 @@
 import { VideoFrame } from '../../Private/AgoraMediaBase';
-import { logWarn, logInfo } from '../../Utils';
+import { logInfo, logWarn } from '../../Utils';
 import { IRenderer } from '../IRenderer';
 
 export type WebGLFallback = (renderer: WebGLRenderer, error: Error) => void;
@@ -54,7 +54,6 @@ export class WebGLRenderer extends IRenderer {
   surfaceBuffer: WebGLBuffer | null;
   fallback?: WebGLFallback;
   frameCount: number = 0; // 用于跟踪渲染的帧数
-  rendererId: string; // 渲染器唯一标识符
 
   constructor(fallback?: WebGLFallback) {
     super();
@@ -65,10 +64,6 @@ export class WebGLRenderer extends IRenderer {
     this.texCoordBuffer = null;
     this.surfaceBuffer = null;
     this.fallback = fallback;
-    // 生成唯一的渲染器ID
-    this.rendererId = `renderer_${Date.now()}_${Math.floor(
-      Math.random() * 10000
-    )}`;
   }
 
   public override bind(view: HTMLElement) {
@@ -137,14 +132,11 @@ export class WebGLRenderer extends IRenderer {
         yuvShaderSource,
       ]) as WebGLProgram;
       this.gl.useProgram(this.program);
-      logInfo(`[FPS_INFO][WEBGL-${this.rendererId}] 着色器程序创建成功`);
+      logInfo(`[FPS_INFO][WEBGL] 着色器程序创建成功`);
 
       this.initTextures();
     } catch (error) {
-      logInfo(
-        `[FPS_INFO][WEBGL-${this.rendererId}] 着色器程序创建失败:`,
-        error
-      );
+      logInfo(`[FPS_INFO][WEBGL] 着色器程序创建失败:`, error);
     }
   }
 
@@ -166,39 +158,37 @@ export class WebGLRenderer extends IRenderer {
     super.unbind();
   }
 
-  public override drawFrame({
-    width,
-    height,
-    yStride,
-    uStride,
-    vStride,
-    yBuffer,
-    uBuffer,
-    vBuffer,
-    rotation,
-  }: VideoFrame) {
+  public override drawFrame(
+    uid: number,
+    {
+      width,
+      height,
+      yStride,
+      uStride,
+      vStride,
+      yBuffer,
+      uBuffer,
+      vBuffer,
+      rotation,
+    }: VideoFrame
+  ) {
     const startTime = performance.now();
-    // 添加渲染器唯一标识符
-    const contextInfo = `渲染器ID:${this.rendererId}`;
 
     logInfo(
-      `[FPS_INFO][WEBGL-${this.rendererId}] 开始渲染帧:`,
+      `[FPS_INFO][WEBGL][UID:${uid}] 开始渲染帧:`,
       '宽度:',
       width,
       '高度:',
       height,
       '旋转:',
-      rotation,
-      contextInfo
+      rotation
     );
 
     this.rotateCanvas({ width, height, rotation });
     this.updateRenderMode();
 
     if (!this.gl || !this.program) {
-      logInfo(
-        `[FPS_INFO][WEBGL-${this.rendererId}] 渲染失败: 上下文或程序未初始化`
-      );
+      logInfo(`[FPS_INFO][WEBGL][UID:${uid}] 渲染失败: 上下文或程序未初始化`);
       return;
     }
 
@@ -288,22 +278,19 @@ export class WebGLRenderer extends IRenderer {
       const endTime = performance.now();
       const renderTime = endTime - startTime;
       this.frameCount++;
-      // 添加渲染器唯一标识符
-      const contextInfo = `渲染器ID:${this.rendererId}`;
 
       logInfo(
-        `[FPS_INFO][WEBGL-${this.rendererId}] 渲染完成:`,
+        `[FPS_INFO][WEBGL][UID:${uid}] 渲染完成:`,
         '耗时:',
         renderTime.toFixed(2) + 'ms',
         'YUV纹理大小:',
         `${xWidth}x${height!}`,
         '帧ID:',
-        this.frameCount,
-        contextInfo
+        this.frameCount
       );
-      super.drawFrame();
+      super.drawFrame(uid);
     } catch (error) {
-      logInfo(`[FPS_INFO][WEBGL-${this.rendererId}] 渲染错误:`, error);
+      logInfo(`[FPS_INFO][WEBGL][UID:${uid}] 渲染错误:`, error);
     }
   }
 
@@ -470,7 +457,7 @@ export class WebGLRenderer extends IRenderer {
 
   private handleContextLost = (event: Event) => {
     event.preventDefault();
-    logWarn(`[FPS_INFO][WEBGL-${this.rendererId}] 上下文丢失`, event);
+    logWarn(`[FPS_INFO][WEBGL]上下文丢失`, event);
 
     this.releaseTextures();
 
@@ -483,7 +470,7 @@ export class WebGLRenderer extends IRenderer {
 
   private handleContextRestored = (event: Event) => {
     event.preventDefault();
-    logWarn(`[FPS_INFO][WEBGL-${this.rendererId}] 上下文恢复`, event);
+    logWarn(`[FPS_INFO][WEBGL] 上下文恢复`, event);
 
     // Setup GLSL program
     this.program = createProgramFromSources(this.gl, [

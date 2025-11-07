@@ -43,7 +43,7 @@ export abstract class IRenderer {
     this.parentElement = undefined;
   }
 
-  public drawFrame(_videoFrame?: VideoFrame): void {
+  public drawFrame(uid: number, _videoFrame?: VideoFrame): void {
     if (!this.canvas) return;
     if (this.canvas.style.display !== '') {
       this.canvas.style.display = '';

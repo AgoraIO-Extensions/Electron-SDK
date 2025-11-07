@@ -1,6 +1,6 @@
 import { VideoFrame } from '../Private/AgoraMediaBase';
 import { RendererCacheContext, RendererContext } from '../Types';
-import { AgoraEnv, logDebug } from '../Utils';
+import { AgoraEnv, logDebug, logInfo } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 
@@ -90,11 +90,12 @@ export class RendererCache {
   }
 
   public draw() {
+    logInfo(`[FPS_INFO][UID:${this.context.uid}]draw GetVideoFrame start`);
     let { ret, isNewFrame } = this.bridge.GetVideoFrame(
       this.context,
       this.videoFrame
     );
-
+    logInfo(`[FPS_INFO][UID:${this.context.uid}]draw GetVideoFrame end`);
     switch (ret) {
       case 0: // GET_VIDEO_FRAME_CACHE_RETURN_TYPE::OK = 0
         //
@@ -115,9 +116,11 @@ export class RendererCache {
     }
 
     if (isNewFrame) {
+      logInfo(`[FPS_INFO][UID:${this.context.uid}]draw`);
       this.renderers.forEach((renderer) => {
-        renderer.drawFrame(this.videoFrame);
+        renderer.drawFrame(this.context.uid!, this.videoFrame);
       });
+      logInfo(`[FPS_INFO][UID:${this.context.uid}]draw end`);
     }
   }
 

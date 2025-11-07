@@ -388,6 +388,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_obj_get_property(env, obj0, "sourceType", config.video_source_type);
   napi_obj_get_property(env, obj0, "channelId", channel_id);
   strcpy(config.channelId, channel_id.c_str());
+  LOG_F(INFO, "[GetVideoFrame]start, uid: %d", config.uid);
 
   napi_value obj1 = args[1];
   napi_value y_buffer_obj;
@@ -444,8 +445,10 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
     return retObj;
   }
 
+  LOG_F(INFO, "[GetVideoFrame]GetVideoFrameCache start, uid: %d", config.uid);
   ret = agoraElectronBridge->_iris_rendering->GetVideoFrameCache(
       config, &videoFrame, isNewFrame);
+  LOG_F(INFO, "[GetVideoFrame]GetVideoFrameCache end, uid: %d", config.uid);
 
   napi_obj_set_property(env, retObj, "ret", ret);
   napi_obj_set_property(env, retObj, "isNewFrame", isNewFrame);
@@ -462,6 +465,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_obj_set_property(env, obj1, "metadata_size", videoFrame.metadata_size);
   // napi_obj_set_property(env, obj1, "textureId", videoFrame.textureId);
 
+  LOG_F(INFO, "[GetVideoFrame]end, uid: %d", config.uid);
   return retObj;
 }
 
