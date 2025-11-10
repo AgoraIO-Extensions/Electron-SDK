@@ -158,6 +158,42 @@ export class WebGLRenderer extends IRenderer {
     super.unbind();
   }
 
+  // 跟踪帧参数变化
+  private lastFrameParams = {
+    width: 0,
+    height: 0,
+    yStride: 0,
+    uStride: 0,
+    vStride: 0,
+    rotation: -1,
+  };
+
+  // 检查帧参数是否变化
+  private checkFrameParamsChanged(frame: VideoFrame): boolean {
+    const { width, height, yStride, uStride, vStride, rotation } = frame;
+
+    const changed =
+      width !== this.lastFrameParams.width ||
+      height !== this.lastFrameParams.height ||
+      yStride !== this.lastFrameParams.yStride ||
+      uStride !== this.lastFrameParams.uStride ||
+      vStride !== this.lastFrameParams.vStride ||
+      rotation !== this.lastFrameParams.rotation;
+
+    if (changed) {
+      this.lastFrameParams = {
+        width: width!,
+        height: height!,
+        yStride: yStride!,
+        uStride: uStride!,
+        vStride: vStride!,
+        rotation: rotation!,
+      };
+    }
+
+    return changed;
+  }
+
   public override drawFrame(
     uid: number,
     {
@@ -176,6 +212,16 @@ export class WebGLRenderer extends IRenderer {
     let lastTime = startTime;
     let currentTime;
 
+    // 检查帧参数是否变化
+    const frameParamsChanged = this.checkFrameParamsChanged({
+      width,
+      height,
+      yStride,
+      uStride,
+      vStride,
+      rotation,
+    } as VideoFrame);
+
     logInfo(
       `[FPS_INFO][WEBGL][UID:${uid}] 开始渲染帧:`,
       '宽度:',
@@ -183,19 +229,22 @@ export class WebGLRenderer extends IRenderer {
       '高度:',
       height,
       '旋转:',
-      rotation
+      rotation,
+      '参数变化:',
+      frameParamsChanged
     );
 
-    // 步骤1: 旋转画布
+    // 步骤1: 旋转画布 - 只在必要时执行
     const rotateCanvasStartTime = performance.now();
-    logInfo(`[FPS_INFO][WEBGL][UID:${uid}] 旋转画布函数调用开始`);
-    this.rotateCanvas({ width, height, rotation });
-    const rotateCanvasEndTime = performance.now();
-    logInfo(
-      `[FPS_PERF][UID:${uid}] 旋转画布函数调用结束: ${(
-        rotateCanvasEndTime - rotateCanvasStartTime
-      ).toFixed(2)}ms`
-    );
+    if (frameParamsChanged) {
+      logInfo(`[FPS_INFO][WEBGL][UID:${uid}] 旋转画布函数调用开始`);
+      this.rotateCanvas({ width, height, rotation });
+      logInfo(
+        `[FPS_PERF][UID:${uid}] 旋转画布函数调用结束: ${(
+          performance.now() - rotateCanvasStartTime
+        ).toFixed(2)}ms`
+      );
+    }
     currentTime = performance.now();
     logInfo(
       `[FPS_PERF][UID:${uid}] 步骤1-旋转画布: ${(
@@ -204,8 +253,10 @@ export class WebGLRenderer extends IRenderer {
     );
     lastTime = currentTime;
 
-    // 步骤2: 更新渲染模式
-    this.updateRenderMode();
+    // 步骤2: 更新渲染模式 - 只在必要时执行
+    if (frameParamsChanged) {
+      this.updateRenderMode();
+    }
     currentTime = performance.now();
     logInfo(
       `[FPS_PERF][UID:${uid}] 步骤2-更新渲染模式: ${(
@@ -225,67 +276,79 @@ export class WebGLRenderer extends IRenderer {
       bottom = 0;
 
     // 步骤3: 设置纹理坐标
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texCoordBuffer);
     const xWidth = width! + left + right;
     const xHeight = height! + top + bottom;
 
-    // 步骤3.1: 创建Float32Array
+    // 步骤3.1: 创建/更新纹理坐标
     const texCoordStartTime = performance.now();
+
+    // 检查是否需要更新纹理坐标 - 使用帧参数变化或首次创建作为条件
+    const texCoordsNeedUpdate = frameParamsChanged || !this.texCoordArray;
+
+    if (texCoordsNeedUpdate) {
+      // 绑定缓冲区 - 只在需要更新时绑定
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texCoordBuffer);
+
+      // 如果纹理尺寸变化或首次创建，才更新纹理坐标
+      if (!this.texCoordArray) {
+        this.texCoordArray = new Float32Array(12); // 6个顶点，每个顶点2个坐标
+      }
+
+      // 更新纹理坐标数据
+      this.texCoordArray[0] = left / xWidth;
+      this.texCoordArray[1] = bottom / xHeight;
+      this.texCoordArray[2] = 1 - right / xWidth;
+      this.texCoordArray[3] = bottom / xHeight;
+      this.texCoordArray[4] = left / xWidth;
+      this.texCoordArray[5] = 1 - top / xHeight;
+      this.texCoordArray[6] = left / xWidth;
+      this.texCoordArray[7] = 1 - top / xHeight;
+      this.texCoordArray[8] = 1 - right / xWidth;
+      this.texCoordArray[9] = bottom / xHeight;
+      this.texCoordArray[10] = 1 - right / xWidth;
+      this.texCoordArray[11] = 1 - top / xHeight;
+    }
+
     currentTime = performance.now();
     logInfo(
-      `[FPS_PERF][UID:${uid}] 步骤3.1-创建Float32Array: ${(
+      `[FPS_PERF][UID:${uid}] 步骤3.1-创建/更新纹理坐标: ${(
         currentTime - texCoordStartTime
       ).toFixed(2)}ms`
     );
     lastTime = currentTime;
 
     // 步骤3.2: 上传顶点数据
-    this.gl.bufferData(
-      this.gl.ARRAY_BUFFER,
-      new Float32Array([
-        left / xWidth,
-        bottom / xHeight,
-        1 - right / xWidth,
-        bottom / xHeight,
-        left / xWidth,
-        1 - top / xHeight,
-        left / xWidth,
-        1 - top / xHeight,
-        1 - right / xWidth,
-        bottom / xHeight,
-        1 - right / xWidth,
-        1 - top / xHeight,
-      ]),
-      this.gl.STATIC_DRAW
-    );
+    if (texCoordsNeedUpdate) {
+      // 只有在纹理坐标变化时才上传数据
+      this.gl.bufferData(
+        this.gl.ARRAY_BUFFER,
+        this.texCoordArray,
+        this.gl.STATIC_DRAW
+      );
+
+      // 步骤3.3: 设置顶点属性 - 只在更新纹理坐标时设置
+      this.gl.enableVertexAttribArray(this.texCoordLocation!);
+      this.gl.vertexAttribPointer(
+        this.texCoordLocation!,
+        2,
+        this.gl.FLOAT,
+        false,
+        0,
+        0
+      );
+    }
     currentTime = performance.now();
     logInfo(
-      `[FPS_PERF][UID:${uid}] 步骤3.2-上传顶点数据: ${(
+      `[FPS_PERF][UID:${uid}] 步骤3.2-3.3-上传顶点数据和设置属性: ${(
         currentTime - lastTime
       ).toFixed(2)}ms`
     );
     lastTime = currentTime;
 
-    // 步骤3.3: 设置顶点属性
-    this.gl.enableVertexAttribArray(this.texCoordLocation!);
-    this.gl.vertexAttribPointer(
-      this.texCoordLocation!,
-      2,
-      this.gl.FLOAT,
-      false,
-      0,
-      0
-    );
-    currentTime = performance.now();
-    logInfo(
-      `[FPS_PERF][UID:${uid}] 步骤3.3-设置顶点属性: ${(
-        currentTime - lastTime
-      ).toFixed(2)}ms`
-    );
-    lastTime = currentTime;
-
-    // 步骤4: 设置像素存储模式
-    this.gl.pixelStorei(this.gl.UNPACK_ALIGNMENT, 1);
+    // 步骤4: 设置像素存储模式 - 只在首次渲染或参数变化时设置
+    if (frameParamsChanged || this.frameCount === 0) {
+      this.gl.pixelStorei(this.gl.UNPACK_ALIGNMENT, 1);
+    }
     currentTime = performance.now();
     logInfo(
       `[FPS_PERF][UID:${uid}] 步骤4-设置像素存储模式: ${(
@@ -294,21 +357,49 @@ export class WebGLRenderer extends IRenderer {
     );
     lastTime = currentTime;
 
+    // 检查纹理尺寸是否变化
+    const yTextureSizeChanged =
+      this.lastYTexWidth !== xWidth || this.lastYTexHeight !== height;
+    const uTextureSizeChanged =
+      this.lastUTexWidth !== uStride || this.lastUTexHeight !== height! / 2;
+    const vTextureSizeChanged =
+      this.lastVTexWidth !== vStride || this.lastVTexHeight !== height! / 2;
+
     // 步骤5: 上传Y纹理
     this.gl.activeTexture(this.gl.TEXTURE0);
     this.gl.bindTexture(this.gl.TEXTURE_2D, this.yTexture);
-    this.gl.texImage2D(
-      this.gl.TEXTURE_2D,
-      0,
-      this.gl.LUMINANCE,
-      // Should use xWidth instead of width here (yStide)
-      xWidth,
-      height!,
-      0,
-      this.gl.LUMINANCE,
-      this.gl.UNSIGNED_BYTE,
-      yBuffer!
-    );
+
+    if (yTextureSizeChanged) {
+      // 如果尺寸变化，重新分配纹理
+      this.gl.texImage2D(
+        this.gl.TEXTURE_2D,
+        0,
+        this.gl.LUMINANCE,
+        xWidth,
+        height!,
+        0,
+        this.gl.LUMINANCE,
+        this.gl.UNSIGNED_BYTE,
+        yBuffer!
+      );
+      // 缓存新的纹理尺寸
+      this.lastYTexWidth = xWidth;
+      this.lastYTexHeight = height!;
+    } else {
+      // 尺寸不变，使用texSubImage2D更新内容
+      this.gl.texSubImage2D(
+        this.gl.TEXTURE_2D,
+        0,
+        0,
+        0, // xoffset, yoffset
+        xWidth,
+        height!,
+        this.gl.LUMINANCE,
+        this.gl.UNSIGNED_BYTE,
+        yBuffer!
+      );
+    }
+
     currentTime = performance.now();
     logInfo(
       `[FPS_PERF][UID:${uid}] 步骤5-上传Y纹理: ${(
@@ -320,17 +411,38 @@ export class WebGLRenderer extends IRenderer {
     // 步骤6: 上传U纹理
     this.gl.activeTexture(this.gl.TEXTURE1);
     this.gl.bindTexture(this.gl.TEXTURE_2D, this.uTexture);
-    this.gl.texImage2D(
-      this.gl.TEXTURE_2D,
-      0,
-      this.gl.LUMINANCE,
-      uStride!,
-      height! / 2,
-      0,
-      this.gl.LUMINANCE,
-      this.gl.UNSIGNED_BYTE,
-      uBuffer!
-    );
+
+    if (uTextureSizeChanged) {
+      // 如果尺寸变化，重新分配纹理
+      this.gl.texImage2D(
+        this.gl.TEXTURE_2D,
+        0,
+        this.gl.LUMINANCE,
+        uStride!,
+        height! / 2,
+        0,
+        this.gl.LUMINANCE,
+        this.gl.UNSIGNED_BYTE,
+        uBuffer!
+      );
+      // 缓存新的纹理尺寸
+      this.lastUTexWidth = uStride!;
+      this.lastUTexHeight = height! / 2;
+    } else {
+      // 尺寸不变，使用texSubImage2D更新内容
+      this.gl.texSubImage2D(
+        this.gl.TEXTURE_2D,
+        0,
+        0,
+        0, // xoffset, yoffset
+        uStride!,
+        height! / 2,
+        this.gl.LUMINANCE,
+        this.gl.UNSIGNED_BYTE,
+        uBuffer!
+      );
+    }
+
     currentTime = performance.now();
     logInfo(
       `[FPS_PERF][UID:${uid}] 步骤6-上传U纹理: ${(
@@ -342,17 +454,38 @@ export class WebGLRenderer extends IRenderer {
     // 步骤7: 上传V纹理
     this.gl.activeTexture(this.gl.TEXTURE2);
     this.gl.bindTexture(this.gl.TEXTURE_2D, this.vTexture);
-    this.gl.texImage2D(
-      this.gl.TEXTURE_2D,
-      0,
-      this.gl.LUMINANCE,
-      vStride!,
-      height! / 2,
-      0,
-      this.gl.LUMINANCE,
-      this.gl.UNSIGNED_BYTE,
-      vBuffer!
-    );
+
+    if (vTextureSizeChanged) {
+      // 如果尺寸变化，重新分配纹理
+      this.gl.texImage2D(
+        this.gl.TEXTURE_2D,
+        0,
+        this.gl.LUMINANCE,
+        vStride!,
+        height! / 2,
+        0,
+        this.gl.LUMINANCE,
+        this.gl.UNSIGNED_BYTE,
+        vBuffer!
+      );
+      // 缓存新的纹理尺寸
+      this.lastVTexWidth = vStride!;
+      this.lastVTexHeight = height! / 2;
+    } else {
+      // 尺寸不变，使用texSubImage2D更新内容
+      this.gl.texSubImage2D(
+        this.gl.TEXTURE_2D,
+        0,
+        0,
+        0, // xoffset, yoffset
+        vStride!,
+        height! / 2,
+        this.gl.LUMINANCE,
+        this.gl.UNSIGNED_BYTE,
+        vBuffer!
+      );
+    }
+
     currentTime = performance.now();
     logInfo(
       `[FPS_PERF][UID:${uid}] 步骤7-上传V纹理: ${(
@@ -412,7 +545,38 @@ export class WebGLRenderer extends IRenderer {
     }
   }
 
+  // 缓存参数和缓冲区
+  private lastRotation: number = -1;
+  private lastWidth: number = 0;
+  private lastHeight: number = 0;
+
+  // 纹理尺寸缓存
+  private lastYTexWidth: number = 0;
+  private lastYTexHeight: number = 0;
+  private lastUTexWidth: number = 0;
+  private lastUTexHeight: number = 0;
+  private lastVTexWidth: number = 0;
+  private lastVTexHeight: number = 0;
+
+  // 缓冲区
+  private vertexBuffer: Float32Array | null = null;
+  private texCoordArray: Float32Array | null = null;
+
   protected override rotateCanvas({ width, height, rotation }: VideoFrame) {
+    // 只在尺寸或旋转角度变化时执行
+    const sizeChanged = width !== this.lastWidth || height !== this.lastHeight;
+    const rotationChanged = rotation !== this.lastRotation;
+
+    if (!sizeChanged && !rotationChanged) {
+      // 如果尺寸和旋转角度都没变，直接返回
+      return;
+    }
+
+    // 更新缓存的参数
+    this.lastWidth = width!;
+    this.lastHeight = height!;
+    this.lastRotation = rotation!;
+
     super.rotateCanvas({ width, height, rotation });
 
     if (!this.gl) return;
@@ -467,22 +631,29 @@ export class WebGLRenderer extends IRenderer {
         break;
       default:
     }
+
+    // 创建或重用顶点缓冲区
+    if (!this.vertexBuffer) {
+      this.vertexBuffer = new Float32Array(12); // 6个顶点，每个顶点2个坐标
+    }
+
+    // 更新顶点数据
+    this.vertexBuffer[0] = pp1.x;
+    this.vertexBuffer[1] = pp1.y;
+    this.vertexBuffer[2] = pp2.x;
+    this.vertexBuffer[3] = pp2.y;
+    this.vertexBuffer[4] = pp4.x;
+    this.vertexBuffer[5] = pp4.y;
+    this.vertexBuffer[6] = pp4.x;
+    this.vertexBuffer[7] = pp4.y;
+    this.vertexBuffer[8] = pp2.x;
+    this.vertexBuffer[9] = pp2.y;
+    this.vertexBuffer[10] = pp3.x;
+    this.vertexBuffer[11] = pp3.y;
+
     this.gl.bufferData(
       this.gl.ARRAY_BUFFER,
-      new Float32Array([
-        pp1.x,
-        pp1.y,
-        pp2.x,
-        pp2.y,
-        pp4.x,
-        pp4.y,
-        pp4.x,
-        pp4.y,
-        pp2.x,
-        pp2.y,
-        pp3.x,
-        pp3.y,
-      ]),
+      this.vertexBuffer,
       this.gl.STATIC_DRAW
     );
 

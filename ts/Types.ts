@@ -123,6 +123,4 @@ export interface AgoraElectronBridge {
     buffer?: Uint8Array[],
     bufferCount?: number
   ) => Result;
-
-  SetAddonLogFile(logFilePath: string): void;
 }

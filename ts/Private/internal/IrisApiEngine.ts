@@ -489,9 +489,7 @@ export function callIrisApi(funcName: string, params: any): any {
     } else if (funcName.startsWith('RtcEngine_')) {
       switch (funcName) {
         case 'RtcEngine_initialize_0320339':
-          // 设置日志文件路径
-          const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-          AgoraRtcNg.SetAddonLogFile(`agora_electron_sdk_${timestamp}.log`);
+          AgoraRtcNg.InitializeEnv();
           break;
         case 'RtcEngine_release':
           AgoraRtcNg.CallApi(
