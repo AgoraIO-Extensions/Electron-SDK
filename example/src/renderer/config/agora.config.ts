@@ -1,7 +1,7 @@
 let localAppId = window.localStorage.getItem('appId') || '';
 
 const config = {
-  enableSDKLogging: true,
+  enableSDKLogging: false,
   enableSDKDebugLogging: false,
   // Get your own App ID at https://dashboard.agora.io/
   appId: localAppId,
