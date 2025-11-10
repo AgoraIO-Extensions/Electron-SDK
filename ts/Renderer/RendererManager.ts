@@ -89,10 +89,6 @@ export class RendererManager extends IRendererManager {
     return renderer;
   }
 
-  public override doRendering(rendererCache: RendererCache): void {
-    rendererCache.draw();
-  }
-
   private handleWebGLFallback(context: RendererContext): WebGLFallback {
     return (renderer: WebGLRenderer) => {
       const {

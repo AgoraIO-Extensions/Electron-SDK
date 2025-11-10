@@ -212,6 +212,19 @@ export class WebGLRenderer extends IRenderer {
     let lastTime = startTime;
     let currentTime;
 
+    // 验证旋转值，只接受 0, 90, 180, 270
+    if (
+      rotation !== 0 &&
+      rotation !== 90 &&
+      rotation !== 180 &&
+      rotation !== 270
+    ) {
+      logInfo(
+        `[FPS_INFO][WEBGL][UID:${uid}] 警告: 无效的旋转值 ${rotation}，已修正为 0`
+      );
+      rotation = 0; // 将无效的旋转值重置为0
+    }
+
     // 检查帧参数是否变化
     const frameParamsChanged = this.checkFrameParamsChanged({
       width,

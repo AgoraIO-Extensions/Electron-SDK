@@ -50,8 +50,15 @@ export abstract class IRendererManager {
     if (this._renderingFps !== fps) {
       logInfo('[FPS_INFO] 帧率设置变更:', this._renderingFps, '->', fps);
       this._renderingFps = fps;
+
+      // 更新所有渲染缓存的帧率
+      for (const rendererCache of this._rendererCaches) {
+        rendererCache.renderingFps = fps;
+      }
+
+      // 如果数据获取循环正在运行，重启它以应用新帧率
       if (this._renderingTimer) {
-        logInfo('[FPS_INFO] 重启渲染循环以应用新帧率');
+        logInfo('[FPS_INFO] 重启数据获取循环以应用新帧率');
         this.stopRendering();
         this.startRendering();
       }
@@ -153,6 +160,15 @@ export abstract class IRendererManager {
     if (!rendererCache) {
       rendererCache = new RendererCache(checkedContext);
       this._rendererCaches.push(rendererCache);
+
+      // 设置新渲染缓存的帧率
+      rendererCache.renderingFps = this._renderingFps;
+
+      // 如果主数据获取循环已经在运行，则启动这个新渲染缓存的独立渲染循环
+      if (this._renderingTimer) {
+        rendererCache.startRendering();
+      }
+
       logInfo(
         '[FPS_INFO] 创建新的渲染器:',
         '类型:',
@@ -193,6 +209,10 @@ export abstract class IRendererManager {
         rendererCache.removeRenderer();
       }
       if (rendererCache.renderers.length === 0) {
+        // 停止独立渲染循环
+        rendererCache.stopRendering();
+
+        // 从渲染缓存列表中移除
         this._rendererCaches.splice(
           this._rendererCaches.indexOf(rendererCache),
           1
@@ -211,6 +231,10 @@ export abstract class IRendererManager {
 
   public clearRendererCache(): void {
     for (const rendererCache of this._rendererCaches) {
+      // 停止独立渲染循环
+      rendererCache.stopRendering();
+
+      // 移除所有渲染器
       rendererCache.removeRenderer();
     }
     this._rendererCaches.splice(0);
@@ -242,9 +266,16 @@ export abstract class IRendererManager {
   public startRendering(): void {
     if (this._renderingTimer) return;
 
-    logInfo('[FPS_INFO] 开始渲染循环，目标帧率:', this._renderingFps);
+    logInfo('[FPS_INFO] 开始数据获取循环，目标帧率:', this._renderingFps);
 
-    const renderingLooper = () => {
+    // 首先为所有渲染缓存启动独立的渲染循环
+    for (const rendererCache of this._rendererCaches) {
+      rendererCache.renderingFps = this._renderingFps;
+      rendererCache.startRendering();
+    }
+
+    // 数据获取循环
+    const dataFetchLooper = () => {
       const loopStartTime = performance.now();
 
       if (this._previousFirstFrameTime === 0) {
@@ -272,8 +303,6 @@ export abstract class IRendererManager {
       // 详细的帧率调试信息
       logInfo(
         '[FPS_INFO]',
-        '时间:',
-        new Date().toLocaleTimeString(),
         '帧数:',
         this._currentFrameCount,
         '目标帧率:',
@@ -288,29 +317,30 @@ export abstract class IRendererManager {
 
       if (this._rendererCaches.length === 0) {
         // If there is no renderer, stop rendering
-        logInfo('[FPS_INFO] 没有渲染器，停止渲染循环');
+        logInfo('[FPS_INFO] 没有渲染器，停止数据获取循环');
         this.stopRendering();
         return;
       }
 
-      // Render all renderers
-      const renderStartTime = performance.now();
-      let renderedCount = 0;
+      // 只获取数据，不渲染
+      const fetchStartTime = performance.now();
+      let fetchedCount = 0;
 
       for (const rendererCache of this._rendererCaches) {
-        this.doRendering(rendererCache);
-        renderedCount += rendererCache.renderers.length;
+        // 只获取数据，渲染由每个rendererCache自己的循环负责
+        rendererCache.fetchVideoFrame();
+        fetchedCount++;
       }
 
-      const renderEndTime = performance.now();
-      const renderTime = renderEndTime - renderStartTime;
+      const fetchEndTime = performance.now();
+      const fetchTime = fetchEndTime - fetchStartTime;
 
       logInfo(
-        '[FPS_INFO] 渲染性能:',
-        '渲染器总数:',
-        renderedCount,
-        '渲染耗时:',
-        renderTime.toFixed(2) + 'ms'
+        '[FPS_INFO] 数据获取性能:',
+        '渲染缓存数量:',
+        fetchedCount,
+        '获取耗时:',
+        fetchTime.toFixed(2) + 'ms'
       );
 
       if (this._currentFrameCount >= this.renderingFps) {
@@ -321,32 +351,31 @@ export abstract class IRendererManager {
       if (deltaTime < expectedTime) {
         // If the time difference between the current frame and the previous frame is less than the expected time, then wait for the difference
         const waitTime = expectedTime - deltaTime;
-        logInfo('[FPS_INFO] 等待下一帧:', waitTime.toFixed(2) + 'ms');
+        logInfo('[FPS_INFO] 等待下一次数据获取:', waitTime.toFixed(2) + 'ms');
 
-        this._renderingTimer = window.setTimeout(renderingLooper, waitTime);
+        this._renderingTimer = window.setTimeout(dataFetchLooper, waitTime);
       } else {
-        // If the time difference between the current frame and the previous frame is greater than the expected time, then render immediately
-        logInfo('[FPS_INFO] 帧延迟，立即渲染下一帧');
-        renderingLooper();
+        // If the time difference between the current frame and the previous frame is greater than the expected time, then fetch immediately
+        logInfo('[FPS_INFO] 数据获取延迟，立即获取下一帧');
+        dataFetchLooper();
       }
     };
-    renderingLooper();
+    dataFetchLooper();
   }
 
-  public abstract doRendering(rendererCache: RendererCache): void;
-
   public stopRendering(): void {
+    // 停止主数据获取循环
     if (this._renderingTimer) {
       window.clearTimeout(this._renderingTimer);
       this._renderingTimer = undefined;
-      logInfo('[FPS_INFO] 停止渲染循环，清除定时器');
+      logInfo('[FPS_INFO] 停止数据获取循环，清除定时器');
 
       // 记录最终帧率统计
       const totalTime = performance.now() - this._previousFirstFrameTime;
       if (totalTime > 0 && this._currentFrameCount > 0) {
         const actualFps = (this._currentFrameCount * 1000) / totalTime;
         logInfo(
-          '[FPS_INFO] 渲染循环统计:',
+          '[FPS_INFO] 数据获取循环统计:',
           '总帧数:',
           this._currentFrameCount,
           '总时间:',
@@ -359,6 +388,11 @@ export abstract class IRendererManager {
           (actualFps - this._renderingFps).toFixed(2)
         );
       }
+    }
+
+    // 停止所有渲染缓存的独立渲染循环
+    for (const rendererCache of this._rendererCaches) {
+      rendererCache.stopRendering();
     }
   }
 
