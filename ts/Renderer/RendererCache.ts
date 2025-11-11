@@ -19,12 +19,28 @@ export class RendererCache {
   private _enabled: boolean;
 
   // 渲染相关属性
+  private _renderingFps: number = 0;
   private _renderingTimer?: number;
-  private _renderingFps: number = 30;
   private _isRendering: boolean = false;
   private _hasNewFrame: boolean = false;
   private _lastRenderTime: number = 0;
-  private _frameCount: number = 0;
+
+  // 性能监控相关属性
+  private _frameTimes: number[] = []; // 存储最近100帧的渲染时间
+  private _frameIntervals: number[] = []; // 存储最近100帧的帧间隔
+  private _lastFrameTimestamp: number = 0; // 上一帧的时间戳
+  private _longIntervals: number = 0; // 长帧间隔计数
+  private _statsInterval: number = 100; // 每100帧输出一次统计
+  private _frameTimeHistogram = {
+    // 帧时间直方图
+    '0-1ms': 0,
+    '1-2ms': 0,
+    '2-5ms': 0,
+    '5-10ms': 0,
+    '10-16ms': 0,
+    '16-33ms': 0,
+    '33+ms': 0,
+  };
 
   constructor({ channelId, uid, sourceType }: RendererContext) {
     this._renderers = [];
@@ -41,6 +57,10 @@ export class RendererCache {
     };
     this._context = { channelId, uid, sourceType };
     this._enabled = false;
+    if (AgoraEnv.AgoraRendererManager) {
+      this._renderingFps = AgoraEnv.AgoraRendererManager.renderingFps;
+    }
+    this.startRendering();
   }
 
   public get key(): string {
@@ -102,12 +122,10 @@ export class RendererCache {
    * @returns 是否获取到新帧
    */
   public fetchVideoFrame(): boolean {
-    logInfo(`[FPS_INFO][UID:${this.context.uid}]fetchVideoFrame start`);
     let { ret, isNewFrame } = this.bridge.GetVideoFrame(
       this.context,
       this.videoFrame
     );
-    logInfo(`[FPS_INFO][UID:${this.context.uid}]fetchVideoFrame end`);
 
     switch (ret) {
       case 0: // GET_VIDEO_FRAME_CACHE_RETURN_TYPE::OK = 0
@@ -141,30 +159,133 @@ export class RendererCache {
     return isNewFrame;
   }
 
-  /**
-   * 仅渲染当前帧，不从C++获取新数据
-   */
   public renderFrame() {
     if (this._hasNewFrame && this.renderers.length > 0) {
-      logInfo(`[FPS_INFO][UID:${this.context.uid}]renderFrame start`);
+      // 记录当前时间戳，用于计算帧间隔
+      const now = performance.now();
 
+      // 计算帧间隔并记录
+      if (this._lastFrameTimestamp > 0) {
+        const interval = now - this._lastFrameTimestamp;
+        this._frameIntervals.push(interval);
+
+        const targetInterval = 1000 / this._renderingFps;
+        if (interval > targetInterval) {
+          this._longIntervals++;
+          logInfo(
+            `[FPS_WARN][UID:${this.context.uid}] 检测到长帧间隔:`,
+            `${interval.toFixed(2)}ms`,
+            `目标间隔=${targetInterval.toFixed(2)}ms`,
+            `累计长间隔=${this._longIntervals}`
+          );
+        }
+      }
+      this._lastFrameTimestamp = now;
+
+      // 使用高精度计数器测量渲染时间
       const renderStartTime = performance.now();
+
+      // 执行渲染
       this.renderers.forEach((renderer) => {
         renderer.drawFrame(this.context.uid!, this.videoFrame);
       });
-      const renderEndTime = performance.now();
 
-      this._frameCount++;
+      // 计算渲染耗时
+      const renderEndTime = performance.now();
+      const frameTime = renderEndTime - renderStartTime;
+
+      // 更新帧时间统计
+      this._frameTimes.push(frameTime);
+
+      // 更新帧时间直方图
+      if (frameTime < 1) this._frameTimeHistogram['0-1ms']++;
+      else if (frameTime < 2) this._frameTimeHistogram['1-2ms']++;
+      else if (frameTime < 5) this._frameTimeHistogram['2-5ms']++;
+      else if (frameTime < 10) this._frameTimeHistogram['5-10ms']++;
+      else if (frameTime < 16) this._frameTimeHistogram['10-16ms']++;
+      else if (frameTime < 33) this._frameTimeHistogram['16-33ms']++;
+      else this._frameTimeHistogram['33+ms']++;
+
       this._hasNewFrame = false; // 标记帧已渲染
 
+      // 每statsInterval帧输出一次统计信息
+      if (this._frameTimes.length >= this._statsInterval) {
+        this._outputPerformanceStats();
+      }
+    }
+  }
+
+  /**
+   * 输出性能统计信息
+   * 包括帧时间和帧间隔的统计数据
+   */
+  private _outputPerformanceStats(): void {
+    if (this._frameTimes.length === 0) return;
+
+    // 记录当前长间隔计数，用于统计输出
+    const longIntervalCount = this._longIntervals;
+
+    // 计算帧时间统计
+    const avgFrameTime =
+      this._frameTimes.reduce((a, b) => a + b, 0) / this._frameTimes.length;
+    const maxFrameTime = Math.max(...this._frameTimes);
+    const minFrameTime = Math.min(...this._frameTimes);
+
+    // 计算帧间隔统计
+    let avgFrameInterval = 0;
+    let maxFrameInterval = 0;
+    let minFrameInterval = Number.MAX_VALUE;
+
+    if (this._frameIntervals.length > 0) {
+      avgFrameInterval =
+        this._frameIntervals.reduce((a, b) => a + b, 0) /
+        this._frameIntervals.length;
+      maxFrameInterval = Math.max(...this._frameIntervals);
+      minFrameInterval = Math.min(...this._frameIntervals);
+    }
+
+    // 计算实际帧率
+    const actualFps =
+      this._frameIntervals.length > 0
+        ? 1000 / avgFrameInterval
+        : this._renderingFps;
+
+    // 输出帧时间统计
+    logInfo(
+      `[FPS_STATS][UID:${this.context.uid}] 帧时间统计(${this._frameTimes.length}帧):`,
+      `平均=${avgFrameTime.toFixed(2)}ms`,
+      `最大=${maxFrameTime.toFixed(2)}ms`,
+      `最小=${minFrameTime.toFixed(2)}ms`,
+      `直方图=${JSON.stringify(this._frameTimeHistogram)}`
+    );
+
+    // 输出帧间隔统计
+    if (this._frameIntervals.length > 0) {
       logInfo(
-        `[FPS_INFO][UID:${this.context.uid}]renderFrame end:`,
-        '耗时:',
-        (renderEndTime - renderStartTime).toFixed(2) + 'ms',
-        '帧ID:',
-        this._frameCount
+        `[FPS_STATS][UID:${this.context.uid}] 帧间隔统计(${this._frameIntervals.length}帧):`,
+        `平均=${avgFrameInterval.toFixed(2)}ms`,
+        `最大=${maxFrameInterval.toFixed(2)}ms`,
+        `最小=${minFrameInterval.toFixed(2)}ms`,
+        `实际帧率=${actualFps.toFixed(2)}fps`,
+        `目标帧率=${this._renderingFps}fps`,
+        `长间隔次数=${longIntervalCount}`
       );
     }
+
+    // 重置统计数据
+    this._frameTimes = [];
+    this._frameIntervals = [];
+    this._longIntervals = 0; // 重置长间隔计数器
+
+    this._frameTimeHistogram = {
+      '0-1ms': 0,
+      '1-2ms': 0,
+      '2-5ms': 0,
+      '5-10ms': 0,
+      '10-16ms': 0,
+      '16-33ms': 0,
+      '33+ms': 0,
+    };
   }
 
   public draw() {
@@ -197,13 +318,16 @@ export class RendererCache {
       // 如果距离上次渲染的时间不足一帧间隔，等待
       if (this._lastRenderTime && timeSinceLastRender < frameInterval) {
         const waitTime = frameInterval - timeSinceLastRender;
-        logInfo(
-          `[FPS_INFO][UID:${this.context.uid}] 等待下一帧:`,
-          waitTime.toFixed(2) + 'ms'
-        );
-
         this._renderingTimer = window.setTimeout(renderingLooper, waitTime);
         return;
+      }
+
+      // 首先获取新帧
+      const isNewFrame = this.fetchVideoFrame();
+      if (!isNewFrame) {
+        logInfo(
+          `[FPS_WARN][UID:${this.context.uid}] 获取帧失败, 没有新帧, 等待下一帧`
+        );
       }
 
       // 执行渲染
@@ -218,9 +342,6 @@ export class RendererCache {
     this._renderingTimer = window.setTimeout(renderingLooper, 0);
   }
 
-  /**
-   * 停止独立渲染循环
-   */
   public stopRendering() {
     if (!this._isRendering) return;
 
@@ -230,35 +351,6 @@ export class RendererCache {
     }
 
     this._isRendering = false;
-    logInfo(`[FPS_INFO][UID:${this.context.uid}] 停止独立渲染循环`);
-  }
-
-  /**
-   * 设置渲染帧率
-   */
-  public set renderingFps(fps: number) {
-    if (this._renderingFps !== fps) {
-      logInfo(
-        `[FPS_INFO][UID:${this.context.uid}] 帧率设置变更:`,
-        this._renderingFps,
-        '->',
-        fps
-      );
-      this._renderingFps = fps;
-
-      // 如果正在渲染，重启渲染循环以应用新帧率
-      if (this._isRendering) {
-        this.stopRendering();
-        this.startRendering();
-      }
-    }
-  }
-
-  /**
-   * 获取渲染帧率
-   */
-  public get renderingFps(): number {
-    return this._renderingFps;
   }
 
   public findRenderer(view: Element): IRenderer | undefined {

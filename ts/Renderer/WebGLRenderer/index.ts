@@ -55,6 +55,38 @@ export class WebGLRenderer extends IRenderer {
   fallback?: WebGLFallback;
   frameCount: number = 0; // 用于跟踪渲染的帧数
 
+  // 性能监控相关属性
+  private _perfStats = {
+    // 各阶段耗时统计（累计值）
+    rotateCanvasTime: 0,
+    updateRenderModeTime: 0,
+    setupTextureCoordTime: 0,
+    uploadTextureTime: 0,
+    drawArraysTime: 0,
+    totalRenderTime: 0,
+
+    // 帧计数
+    frameCount: 0,
+
+    // 纹理上传统计
+    texImageCount: 0, // texImage2D调用次数
+    texSubImageCount: 0, // texSubImage2D调用次数
+
+    // 直方图统计
+    renderTimeHistogram: {
+      '0-1ms': 0,
+      '1-2ms': 0,
+      '2-5ms': 0,
+      '5-10ms': 0,
+      '10-16ms': 0,
+      '16-33ms': 0,
+      '33+ms': 0,
+    },
+
+    // 最后一次统计输出时间
+    lastStatsTime: 0,
+  };
+
   constructor(fallback?: WebGLFallback) {
     super();
     this.gl = undefined;
@@ -126,18 +158,12 @@ export class WebGLRenderer extends IRenderer {
     );
 
     // Setup GLSL program
-    try {
-      this.program = createProgramFromSources(this.gl, [
-        vertexShaderSource,
-        yuvShaderSource,
-      ]) as WebGLProgram;
-      this.gl.useProgram(this.program);
-      logInfo(`[FPS_INFO][WEBGL] 着色器程序创建成功`);
-
-      this.initTextures();
-    } catch (error) {
-      logInfo(`[FPS_INFO][WEBGL] 着色器程序创建失败:`, error);
-    }
+    this.program = createProgramFromSources(this.gl, [
+      vertexShaderSource,
+      yuvShaderSource,
+    ]) as WebGLProgram;
+    this.gl.useProgram(this.program);
+    this.initTextures();
   }
 
   public override unbind() {
@@ -208,9 +234,11 @@ export class WebGLRenderer extends IRenderer {
       rotation,
     }: VideoFrame
   ) {
+    // 使用高精度计数器测量总渲染时间
     const startTime = performance.now();
-    let lastTime = startTime;
-    let currentTime;
+
+    // 更新性能统计的帧计数
+    this._perfStats.frameCount++;
 
     // 验证旋转值，只接受 0, 90, 180, 270
     if (
@@ -219,9 +247,6 @@ export class WebGLRenderer extends IRenderer {
       rotation !== 180 &&
       rotation !== 270
     ) {
-      logInfo(
-        `[FPS_INFO][WEBGL][UID:${uid}] 警告: 无效的旋转值 ${rotation}，已修正为 0`
-      );
       rotation = 0; // 将无效的旋转值重置为0
     }
 
@@ -235,51 +260,25 @@ export class WebGLRenderer extends IRenderer {
       rotation,
     } as VideoFrame);
 
-    logInfo(
-      `[FPS_INFO][WEBGL][UID:${uid}] 开始渲染帧:`,
-      '宽度:',
-      width,
-      '高度:',
-      height,
-      '旋转:',
-      rotation,
-      '参数变化:',
-      frameParamsChanged
-    );
-
     // 步骤1: 旋转画布 - 只在必要时执行
     const rotateCanvasStartTime = performance.now();
     if (frameParamsChanged) {
-      logInfo(`[FPS_INFO][WEBGL][UID:${uid}] 旋转画布函数调用开始`);
       this.rotateCanvas({ width, height, rotation });
-      logInfo(
-        `[FPS_PERF][UID:${uid}] 旋转画布函数调用结束: ${(
-          performance.now() - rotateCanvasStartTime
-        ).toFixed(2)}ms`
-      );
+      // 记录旋转画布耗时
+      this._perfStats.rotateCanvasTime +=
+        performance.now() - rotateCanvasStartTime;
     }
-    currentTime = performance.now();
-    logInfo(
-      `[FPS_PERF][UID:${uid}] 步骤1-旋转画布: ${(
-        currentTime - lastTime
-      ).toFixed(2)}ms`
-    );
-    lastTime = currentTime;
 
     // 步骤2: 更新渲染模式 - 只在必要时执行
+    const updateRenderModeStartTime = performance.now();
     if (frameParamsChanged) {
       this.updateRenderMode();
+      // 记录更新渲染模式耗时
+      this._perfStats.updateRenderModeTime +=
+        performance.now() - updateRenderModeStartTime;
     }
-    currentTime = performance.now();
-    logInfo(
-      `[FPS_PERF][UID:${uid}] 步骤2-更新渲染模式: ${(
-        currentTime - lastTime
-      ).toFixed(2)}ms`
-    );
-    lastTime = currentTime;
 
     if (!this.gl || !this.program) {
-      logInfo(`[FPS_INFO][WEBGL][UID:${uid}] 渲染失败: 上下文或程序未初始化`);
       return;
     }
 
@@ -322,13 +321,9 @@ export class WebGLRenderer extends IRenderer {
       this.texCoordArray[11] = 1 - top / xHeight;
     }
 
-    currentTime = performance.now();
-    logInfo(
-      `[FPS_PERF][UID:${uid}] 步骤3.1-创建/更新纹理坐标: ${(
-        currentTime - texCoordStartTime
-      ).toFixed(2)}ms`
-    );
-    lastTime = currentTime;
+    // 记录设置纹理坐标耗时
+    this._perfStats.setupTextureCoordTime +=
+      performance.now() - texCoordStartTime;
 
     // 步骤3.2: 上传顶点数据
     if (texCoordsNeedUpdate) {
@@ -350,25 +345,11 @@ export class WebGLRenderer extends IRenderer {
         0
       );
     }
-    currentTime = performance.now();
-    logInfo(
-      `[FPS_PERF][UID:${uid}] 步骤3.2-3.3-上传顶点数据和设置属性: ${(
-        currentTime - lastTime
-      ).toFixed(2)}ms`
-    );
-    lastTime = currentTime;
 
     // 步骤4: 设置像素存储模式 - 只在首次渲染或参数变化时设置
     if (frameParamsChanged || this.frameCount === 0) {
       this.gl.pixelStorei(this.gl.UNPACK_ALIGNMENT, 1);
     }
-    currentTime = performance.now();
-    logInfo(
-      `[FPS_PERF][UID:${uid}] 步骤4-设置像素存储模式: ${(
-        currentTime - lastTime
-      ).toFixed(2)}ms`
-    );
-    lastTime = currentTime;
 
     // 检查纹理尺寸是否变化
     const yTextureSizeChanged =
@@ -377,6 +358,9 @@ export class WebGLRenderer extends IRenderer {
       this.lastUTexWidth !== uStride || this.lastUTexHeight !== height! / 2;
     const vTextureSizeChanged =
       this.lastVTexWidth !== vStride || this.lastVTexHeight !== height! / 2;
+
+    // 开始记录纹理上传时间
+    const textureUploadStartTime = performance.now();
 
     // 步骤5: 上传Y纹理
     this.gl.activeTexture(this.gl.TEXTURE0);
@@ -398,6 +382,8 @@ export class WebGLRenderer extends IRenderer {
       // 缓存新的纹理尺寸
       this.lastYTexWidth = xWidth;
       this.lastYTexHeight = height!;
+      // 统计texImage2D调用次数
+      this._perfStats.texImageCount++;
     } else {
       // 尺寸不变，使用texSubImage2D更新内容
       this.gl.texSubImage2D(
@@ -411,15 +397,9 @@ export class WebGLRenderer extends IRenderer {
         this.gl.UNSIGNED_BYTE,
         yBuffer!
       );
+      // 统计texSubImage2D调用次数
+      this._perfStats.texSubImageCount++;
     }
-
-    currentTime = performance.now();
-    logInfo(
-      `[FPS_PERF][UID:${uid}] 步骤5-上传Y纹理: ${(
-        currentTime - lastTime
-      ).toFixed(2)}ms`
-    );
-    lastTime = currentTime;
 
     // 步骤6: 上传U纹理
     this.gl.activeTexture(this.gl.TEXTURE1);
@@ -441,6 +421,8 @@ export class WebGLRenderer extends IRenderer {
       // 缓存新的纹理尺寸
       this.lastUTexWidth = uStride!;
       this.lastUTexHeight = height! / 2;
+      // 统计texImage2D调用次数
+      this._perfStats.texImageCount++;
     } else {
       // 尺寸不变，使用texSubImage2D更新内容
       this.gl.texSubImage2D(
@@ -454,15 +436,9 @@ export class WebGLRenderer extends IRenderer {
         this.gl.UNSIGNED_BYTE,
         uBuffer!
       );
+      // 统计texSubImage2D调用次数
+      this._perfStats.texSubImageCount++;
     }
-
-    currentTime = performance.now();
-    logInfo(
-      `[FPS_PERF][UID:${uid}] 步骤6-上传U纹理: ${(
-        currentTime - lastTime
-      ).toFixed(2)}ms`
-    );
-    lastTime = currentTime;
 
     // 步骤7: 上传V纹理
     this.gl.activeTexture(this.gl.TEXTURE2);
@@ -484,6 +460,8 @@ export class WebGLRenderer extends IRenderer {
       // 缓存新的纹理尺寸
       this.lastVTexWidth = vStride!;
       this.lastVTexHeight = height! / 2;
+      // 统计texImage2D调用次数
+      this._perfStats.texImageCount++;
     } else {
       // 尺寸不变，使用texSubImage2D更新内容
       this.gl.texSubImage2D(
@@ -497,62 +475,47 @@ export class WebGLRenderer extends IRenderer {
         this.gl.UNSIGNED_BYTE,
         vBuffer!
       );
+      // 统计texSubImage2D调用次数
+      this._perfStats.texSubImageCount++;
     }
 
-    currentTime = performance.now();
-    logInfo(
-      `[FPS_PERF][UID:${uid}] 步骤7-上传V纹理: ${(
-        currentTime - lastTime
-      ).toFixed(2)}ms`
-    );
-    lastTime = currentTime;
+    // 记录纹理上传总耗时
+    this._perfStats.uploadTextureTime +=
+      performance.now() - textureUploadStartTime;
 
     try {
       // 步骤8: 绘制三角形
+      const drawStartTime = performance.now();
       this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
-      currentTime = performance.now();
-      logInfo(
-        `[FPS_PERF][UID:${uid}] 步骤8-绘制三角形: ${(
-          currentTime - lastTime
-        ).toFixed(2)}ms`
-      );
-      lastTime = currentTime;
+      // 记录绘制耗时
+      this._perfStats.drawArraysTime += performance.now() - drawStartTime;
 
       // 步骤9: 调用父类drawFrame
       super.drawFrame(uid);
-      currentTime = performance.now();
-      logInfo(
-        `[FPS_PERF][UID:${uid}] 步骤9-调用父类drawFrame: ${(
-          currentTime - lastTime
-        ).toFixed(2)}ms`
-      );
 
       // 总结
       const endTime = performance.now();
       const renderTime = endTime - startTime;
       this.frameCount++;
 
-      // 输出每个步骤的耗时占比
-      logInfo(
-        `[FPS_INFO][WEBGL][UID:${uid}] 渲染完成:`,
-        '总耗时:',
-        renderTime.toFixed(2) + 'ms',
-        'YUV纹理大小:',
-        `${xWidth}x${height!}`,
-        '帧ID:',
-        this.frameCount
-      );
+      // 更新性能统计数据
+      this._perfStats.totalRenderTime += renderTime;
 
-      // 性能分析总结
-      logInfo(
-        `[FPS_PERF_SUMMARY][UID:${uid}] 帧${this.frameCount} 性能分布:`,
-        `总耗时=${renderTime.toFixed(2)}ms`,
-        `纹理上传总耗时=${(
-          currentTime -
-          texCoordStartTime -
-          (currentTime - lastTime)
-        ).toFixed(2)}ms`
-      );
+      // 更新渲染时间直方图
+      if (renderTime < 1) this._perfStats.renderTimeHistogram['0-1ms']++;
+      else if (renderTime < 2) this._perfStats.renderTimeHistogram['1-2ms']++;
+      else if (renderTime < 5) this._perfStats.renderTimeHistogram['2-5ms']++;
+      else if (renderTime < 10) this._perfStats.renderTimeHistogram['5-10ms']++;
+      else if (renderTime < 16)
+        this._perfStats.renderTimeHistogram['10-16ms']++;
+      else if (renderTime < 33)
+        this._perfStats.renderTimeHistogram['16-33ms']++;
+      else this._perfStats.renderTimeHistogram['33+ms']++;
+
+      // 每100帧输出一次WebGL性能统计
+      if (this._perfStats.frameCount >= 100) {
+        this._outputWebGLPerformanceStats(uid);
+      }
     } catch (error) {
       logInfo(`[FPS_INFO][WEBGL][UID:${uid}] 渲染错误:`, error);
     }
@@ -783,4 +746,74 @@ export class WebGLRenderer extends IRenderer {
 
     this.initTextures();
   };
+
+  /**
+   * 输出WebGL渲染性能统计信息
+   * 包括各阶段耗时、纹理上传次数等
+   */
+  private _outputWebGLPerformanceStats(uid: number): void {
+    // 计算平均耗时
+    const frameCount = this._perfStats.frameCount;
+    if (frameCount === 0) return;
+
+    const avgRotateCanvasTime = this._perfStats.rotateCanvasTime / frameCount;
+    const avgUpdateRenderModeTime =
+      this._perfStats.updateRenderModeTime / frameCount;
+    const avgSetupTextureCoordTime =
+      this._perfStats.setupTextureCoordTime / frameCount;
+    const avgUploadTextureTime = this._perfStats.uploadTextureTime / frameCount;
+    const avgDrawArraysTime = this._perfStats.drawArraysTime / frameCount;
+    const avgTotalRenderTime = this._perfStats.totalRenderTime / frameCount;
+
+    // 输出各阶段平均耗时
+    logInfo(
+      `[FPS_PERF_WEBGL][UID:${uid}] WebGL性能统计(${frameCount}帧):`,
+      `总耗时=${avgTotalRenderTime.toFixed(2)}ms`,
+      `旋转画布=${avgRotateCanvasTime.toFixed(2)}ms`,
+      `更新渲染模式=${avgUpdateRenderModeTime.toFixed(2)}ms`,
+      `设置纹理坐标=${avgSetupTextureCoordTime.toFixed(2)}ms`,
+      `上传纹理=${avgUploadTextureTime.toFixed(2)}ms`,
+      `绘制=${avgDrawArraysTime.toFixed(2)}ms`
+    );
+
+    // 输出纹理上传统计
+    logInfo(
+      `[FPS_PERF_WEBGL][UID:${uid}] 纹理上传统计:`,
+      `texImage2D调用次数=${this._perfStats.texImageCount}`,
+      `texSubImage2D调用次数=${this._perfStats.texSubImageCount}`,
+      `平均每帧=${(
+        (this._perfStats.texImageCount + this._perfStats.texSubImageCount) /
+        frameCount
+      ).toFixed(2)}`
+    );
+
+    // 输出渲染时间直方图
+    logInfo(
+      `[FPS_PERF_WEBGL][UID:${uid}] 渲染时间直方图:`,
+      JSON.stringify(this._perfStats.renderTimeHistogram)
+    );
+
+    // 重置统计数据
+    this._perfStats = {
+      rotateCanvasTime: 0,
+      updateRenderModeTime: 0,
+      setupTextureCoordTime: 0,
+      uploadTextureTime: 0,
+      drawArraysTime: 0,
+      totalRenderTime: 0,
+      frameCount: 0,
+      texImageCount: 0,
+      texSubImageCount: 0,
+      renderTimeHistogram: {
+        '0-1ms': 0,
+        '1-2ms': 0,
+        '2-5ms': 0,
+        '5-10ms': 0,
+        '10-16ms': 0,
+        '16-33ms': 0,
+        '33+ms': 0,
+      },
+      lastStatsTime: performance.now(),
+    };
+  }
 }
