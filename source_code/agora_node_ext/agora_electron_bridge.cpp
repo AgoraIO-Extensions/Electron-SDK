@@ -433,7 +433,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   videoFrame.metadata_size = 0;
   videoFrame.alphaBuffer = nullptr;
 
-  bool isNewFrame = false;
+  bool hasMoreFrame = false;
   napi_value retObj;
   int32_t ret = ERR_NOT_INITIALIZED;
   status = napi_create_object(env, &retObj);
@@ -445,10 +445,10 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   }
 
   ret = agoraElectronBridge->_iris_rendering->GetVideoFrameCache(
-      config, &videoFrame, isNewFrame);
+      config, &videoFrame, hasMoreFrame);
 
   napi_obj_set_property(env, retObj, "ret", ret);
-  napi_obj_set_property(env, retObj, "isNewFrame", isNewFrame);
+  napi_obj_set_property(env, retObj, "hasMoreFrame", hasMoreFrame);
 
   napi_obj_set_property(env, obj1, "type", videoFrame.type);
   napi_obj_set_property(env, obj1, "width", videoFrame.width);

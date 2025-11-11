@@ -28,7 +28,6 @@ export class RendererCache {
   private _frameTimes: number[] = []; // 存储最近100帧的渲染时间
   private _frameIntervals: number[] = []; // 存储最近100帧的帧间隔
   private _lastFrameTimestamp: number = 0; // 上一帧的时间戳
-  private _longIntervals: number = 0; // 长帧间隔计数
   private _statsInterval: number = 100; // 每100帧输出一次统计
   private _frameTimeHistogram = {
     // 帧时间直方图
@@ -118,10 +117,11 @@ export class RendererCache {
 
   /**
    * 获取视频帧数据但不渲染
-   * @returns 是否获取到新帧
+   * @returns 是否还有视频帧需要渲染
    */
-  public fetchVideoFrame(): boolean {
-    let { ret, isNewFrame } = this.bridge.GetVideoFrame(
+  public fetchVideoFrame(): { hasMoreFrame: boolean; needRender: boolean } {
+    let needRender = false;
+    let { ret, hasMoreFrame } = this.bridge.GetVideoFrame(
       this.context,
       this.videoFrame
     );
@@ -129,8 +129,12 @@ export class RendererCache {
     switch (ret) {
       case 0: // GET_VIDEO_FRAME_CACHE_RETURN_TYPE::OK = 0
         //
+        needRender = true;
         break;
       case 1: // GET_VIDEO_FRAME_CACHE_RETURN_TYPE::RESIZED = 1
+        logInfo(
+          `[FPS_INFO][UID:${this.context.uid}] 视频帧大小发生变化，重新分配缓冲区`
+        );
         const { yStride, uStride, vStride, height } = this.videoFrame;
         this.videoFrame.yBuffer = Buffer.alloc(
           yStride! * height!
@@ -144,14 +148,15 @@ export class RendererCache {
 
         const result = this.bridge.GetVideoFrame(this.context, this.videoFrame);
         ret = result.ret;
-        isNewFrame = result.isNewFrame;
+        hasMoreFrame = result.hasMoreFrame;
+        needRender = false;
         break;
       case 2: // GET_VIDEO_FRAME_CACHE_RETURN_TYPE::NO_CACHE = 2
         logDebug('No renderer cache, please enable cache first');
-        return false;
+        return { hasMoreFrame: false, needRender: false };
     }
 
-    return isNewFrame;
+    return { hasMoreFrame, needRender };
   }
 
   /**
@@ -168,17 +173,6 @@ export class RendererCache {
     if (this._lastFrameTimestamp > 0) {
       const interval = now - this._lastFrameTimestamp;
       this._frameIntervals.push(interval);
-
-      const targetInterval = 1000 / this._renderingFps;
-      if (interval > targetInterval) {
-        this._longIntervals++;
-        logInfo(
-          `[FPS_WARN][UID:${this.context.uid}] 检测到长帧间隔:`,
-          `${interval.toFixed(2)}ms`,
-          `目标间隔=${targetInterval.toFixed(2)}ms`,
-          `累计长间隔=${this._longIntervals}`
-        );
-      }
     }
     this._lastFrameTimestamp = now;
 
@@ -218,9 +212,6 @@ export class RendererCache {
    */
   private _outputPerformanceStats(): void {
     if (this._frameTimes.length === 0) return;
-
-    // 记录当前长间隔计数，用于统计输出
-    const longIntervalCount = this._longIntervals;
 
     // 计算帧时间统计
     const avgFrameTime =
@@ -264,15 +255,13 @@ export class RendererCache {
         `最大=${maxFrameInterval.toFixed(2)}ms`,
         `最小=${minFrameInterval.toFixed(2)}ms`,
         `实际帧率=${actualFps.toFixed(2)}fps`,
-        `目标帧率=${this._renderingFps}fps`,
-        `长间隔次数=${longIntervalCount}`
+        `目标帧率=${this._renderingFps}fps`
       );
     }
 
     // 重置统计数据
     this._frameTimes = [];
     this._frameIntervals = [];
-    this._longIntervals = 0; // 重置长间隔计数器
 
     this._frameTimeHistogram = {
       '0-1ms': 0,
@@ -316,31 +305,23 @@ export class RendererCache {
       // 记录当前时间作为本次循环的开始时间
       this._lastRenderTime = currentTime;
 
-      // 不断获取并渲染帧，直到没有更多新帧
-      let frameCount = 0;
-      let hasMoreFrames = true;
-
-      while (hasMoreFrames) {
-        // 获取下一帧
-        hasMoreFrames = this.fetchVideoFrame();
-
-        if (hasMoreFrames) {
-          // 有新帧，立即渲染
-          frameCount++;
-          this.renderFrame();
-        } else if (frameCount === 0) {
-          // 一帧也没有获取到
-          logInfo(
-            `[FPS_WARN][UID:${this.context.uid}] 没有新帧可渲染，等待下一次循环`
-          );
-        }
+      // 获取第一帧并渲染
+      // 无论hasMoreFrame是true还是false，都渲染当前帧
+      // 因为fetchVideoFrame总是会获取一帧数据（如果有的话）
+      let { hasMoreFrame, needRender } = this.fetchVideoFrame();
+      if (needRender) {
+        this.renderFrame();
       }
 
-      // 记录本次循环获取的帧数
-      if (frameCount > 1) {
-        logInfo(
-          `[FPS_INFO][UID:${this.context.uid}] 本次循环获取并渲染了 ${frameCount} 帧`
-        );
+      // 如果hasMoreFrame为true，表示还有更多帧需要获取
+      while (hasMoreFrame) {
+        // 获取下一帧
+        let { hasMoreFrame: nextHasMoreFrame, needRender } =
+          this.fetchVideoFrame();
+        hasMoreFrame = nextHasMoreFrame;
+        if (needRender) {
+          this.renderFrame();
+        }
       }
 
       // 安排下一帧

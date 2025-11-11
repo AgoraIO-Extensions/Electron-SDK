@@ -114,7 +114,7 @@ export interface AgoraElectronBridge {
     videoFrame: VideoFrame
   ): {
     ret: number;
-    isNewFrame: boolean;
+    hasMoreFrame: boolean;
   };
 
   sendMsg: (
