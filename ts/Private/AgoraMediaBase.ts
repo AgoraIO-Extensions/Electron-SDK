@@ -166,6 +166,40 @@ export class AudioParameters {
 }
 
 /**
+ * The AudioDeviceInfo class that contains the ID, name and type of the audio devices.
+ */
+export class AudioDeviceInfo {
+  /**
+   * The device name.
+   */
+  deviceName?: string;
+  /**
+   * Output parameter; indicates the type of audio devices, such as built-in, USB and HDMI.
+   */
+  deviceTypeName?: string;
+  /**
+   * The device ID.
+   */
+  deviceId?: string;
+  /**
+   * @ignore
+   */
+  vendorId?: string;
+  /**
+   * @ignore
+   */
+  productId?: string;
+  /**
+   * @ignore
+   */
+  isCurrentSelected?: boolean;
+  /**
+   * @ignore
+   */
+  isPlayoutDevice?: boolean;
+}
+
+/**
  * The use mode of the audio data.
  */
 export enum RawAudioFrameOpModeType {
@@ -736,7 +770,7 @@ export enum ContentInspectType {
 }
 
 /**
- * ContentInspectModule A structure used to configure the frequency of video screenshot and upload.
+ * ContentInspectModule class, a structure used to configure the frequency of video screenshot and upload.
  */
 export class ContentInspectModule {
   /**
@@ -1186,15 +1220,15 @@ export enum MediaRecorderContainerFormat {
  */
 export enum MediaRecorderStreamType {
   /**
-   * Only audio.
+   * 1: Only audio.
    */
   StreamTypeAudio = 0x01,
   /**
-   * Only video.
+   * 2: Only video.
    */
   StreamTypeVideo = 0x02,
   /**
-   * (Default) Audio and video.
+   * 3: (Default) Audio and video.
    */
   StreamTypeBoth = 0x01 | 0x02,
 }
