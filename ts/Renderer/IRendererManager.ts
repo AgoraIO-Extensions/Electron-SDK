@@ -24,7 +24,7 @@ export abstract class IRendererManager {
   private _context: RendererContext;
 
   constructor() {
-    this._renderingFps = 60;
+    this._renderingFps = 30;
     this._rendererCaches = [];
     this._context = {
       renderMode: RenderModeType.RenderModeHidden,
