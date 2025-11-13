@@ -22,19 +22,13 @@ export class AudioDeviceManagerInternal extends IAudioDeviceManagerImpl {
     const apiType = this.getApiTypeFromGetPlaybackDefaultDevice();
     const jsonParams = {};
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return {
-      deviceId: jsonResults.deviceId,
-      deviceName: jsonResults.deviceName,
-    };
+    return jsonResults.deviceInfo;
   }
 
   override getRecordingDefaultDevice(): AudioDeviceInfo {
     const apiType = this.getApiTypeFromGetRecordingDefaultDevice();
     const jsonParams = {};
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return {
-      deviceId: jsonResults.deviceId,
-      deviceName: jsonResults.deviceName,
-    };
+    return jsonResults.deviceInfo;
   }
 }
