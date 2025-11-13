@@ -17,7 +17,6 @@ import {
   AgoraDivider,
   AgoraList,
   AgoraStyle,
-  AgoraText,
   AgoraTextInput,
   AgoraView,
   RtcSurfaceView,
@@ -225,22 +224,20 @@ export abstract class BaseComponent<
   protected renderUser(user: VideoCanvas): ReactElement | undefined {
     const { enableVideo } = this.state;
     return (
-      <AgoraCard
-        key={`${user.uid} - ${user.sourceType}`}
-        title={`${user.uid} - ${user.sourceType}`}
-      >
-        {enableVideo ? (
-          <>
-            <AgoraText>Click view to mirror</AgoraText>
-            {this.renderVideo(user)}
-          </>
-        ) : undefined}
+      <AgoraCard key={`${user.uid} - ${user.sourceType}`}>
+        {enableVideo ? <>{this.renderVideo(user)}</> : undefined}
       </AgoraCard>
     );
   }
 
   protected renderVideo(user: VideoCanvas): ReactElement | undefined {
-    return <RtcSurfaceView canvas={user} />;
+    return (
+      <RtcSurfaceView
+        containerClass={AgoraStyle.meetSurfaceViewContainer}
+        videoClass={AgoraStyle.meetSurfaceViewVideo}
+        canvas={user}
+      />
+    );
   }
 
   protected renderConfiguration(): ReactElement | undefined {

@@ -251,11 +251,11 @@ export class RendererCache {
     if (this._frameIntervals.length > 0) {
       logInfo(
         `[FPS_STATS][UID:${this.context.uid}] 帧间隔统计(${this._frameIntervals.length}帧):`,
+        `实际帧率=${actualFps.toFixed(2)}fps`,
+        `目标帧率=${this._renderingFps}fps`,
         `平均=${avgFrameInterval.toFixed(2)}ms`,
         `最大=${maxFrameInterval.toFixed(2)}ms`,
-        `最小=${minFrameInterval.toFixed(2)}ms`,
-        `实际帧率=${actualFps.toFixed(2)}fps`,
-        `目标帧率=${this._renderingFps}fps`
+        `最小=${minFrameInterval.toFixed(2)}ms`
       );
     }
 

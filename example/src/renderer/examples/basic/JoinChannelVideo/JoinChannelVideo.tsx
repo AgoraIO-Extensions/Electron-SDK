@@ -21,8 +21,8 @@ import {
 import {
   AgoraButton,
   AgoraDropdown,
-  AgoraList,
   AgoraView,
+  RtcSurfaceView,
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { arrayToItems } from '../../../utils';
@@ -46,6 +46,7 @@ export default class JoinChannelVideo
       joinChannelSuccess: false,
       remoteUsers: [],
       startPreview: false,
+      hideRightBar: true,
     };
   }
 
@@ -82,6 +83,10 @@ export default class JoinChannelVideo
       },
     });
     this.setState({ startPreview: true });
+
+    setTimeout(() => {
+      this.joinChannel();
+    }, 1000);
   }
 
   /**
@@ -186,22 +191,21 @@ export default class JoinChannelVideo
     return (
       <>
         {joinChannelSuccess ? (
-          <AgoraList
-            data={remoteUsers ?? []}
-            renderItem={(item) =>
+          <>
+            {remoteUsers.map((item) =>
               this.renderUser({
                 uid: item,
                 sourceType: VideoSourceType.VideoSourceRemote,
               })
-            }
-          />
+            )}
+          </>
         ) : undefined}
       </>
     );
   }
 
-  protected renderVideo(user: VideoCanvas): ReactElement | undefined {
-    return super.renderVideo(user);
+  protected renderUser(user: VideoCanvas): ReactElement | undefined {
+    return <RtcSurfaceView canvas={user} />;
   }
 
   protected renderConfiguration(): ReactElement | undefined {
