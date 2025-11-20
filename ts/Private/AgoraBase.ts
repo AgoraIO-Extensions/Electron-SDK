@@ -14,11 +14,11 @@ export enum ChannelProfileType {
    */
   ChannelProfileCommunication = 0,
   /**
-   * 1: Live streaming. Live streaming. Use this profile when there are more than two users in the channel.
+   * 1: Live streaming. Use this profile when there are more than two users in the channel.
    */
   ChannelProfileLiveBroadcasting = 1,
   /**
-   * 2: Gaming. This profile is deprecated.
+   * 2: Gaming.
    */
   ChannelProfileGame = 2,
   /**
@@ -483,23 +483,23 @@ export enum LicenseErrorType {
  */
 export enum AudioSessionOperationRestriction {
   /**
-   * No restriction, the SDK can change the audio session.
+   * 0: No restriction, the SDK can change the audio session.
    */
   AudioSessionOperationRestrictionNone = 0,
   /**
-   * The SDK cannot change the audio session category.
+   * 1: The SDK cannot change the audio session category.
    */
   AudioSessionOperationRestrictionSetCategory = 1,
   /**
-   * The SDK cannot change the audio session category, mode, or categoryOptions.
+   * 2: The SDK cannot change the audio session category, mode, or categoryOptions.
    */
   AudioSessionOperationRestrictionConfigureSession = 1 << 1,
   /**
-   * The SDK keeps the audio session active when the user leaves the channel, for example, to play an audio file in the background.
+   * 4: The SDK keeps the audio session active when the user leaves the channel, for example, to play an audio file in the background.
    */
   AudioSessionOperationRestrictionDeactivateSession = 1 << 2,
   /**
-   * Completely restricts the operation permissions of the SDK on the audio session; the SDK cannot change the audio session.
+   * 128: Completely restricts the operation permissions of the SDK on the audio session; the SDK cannot change the audio session.
    */
   AudioSessionOperationRestrictionAll = 1 << 7,
 }
@@ -621,7 +621,7 @@ export enum QualityType {
    */
   QualityUnsupported = 7,
   /**
-   * 8: Detecting the network quality.
+   * 8: The last-mile network probe test is in progress.
    */
   QualityDetecting = 8,
 }
@@ -667,31 +667,31 @@ export enum VideoOrientation {
  */
 export enum FrameRate {
   /**
-   * 1: 1 fps
+   * 1: 1 fps.
    */
   FrameRateFps1 = 1,
   /**
-   * 7: 7 fps
+   * 7: 7 fps.
    */
   FrameRateFps7 = 7,
   /**
-   * 10: 10 fps
+   * 10: 10 fps.
    */
   FrameRateFps10 = 10,
   /**
-   * 15: 15 fps
+   * 15: 15 fps.
    */
   FrameRateFps15 = 15,
   /**
-   * 24: 24 fps
+   * 24: 24 fps.
    */
   FrameRateFps24 = 24,
   /**
-   * 30: 30 fps
+   * 30: 30 fps.
    */
   FrameRateFps30 = 30,
   /**
-   * 60: 60 fps
+   * 60: 60 fps.
    */
   FrameRateFps60 = 60,
 }
@@ -771,7 +771,7 @@ export enum OrientationMode {
  */
 export enum DegradationPreference {
   /**
-   * 0: (Default) Prefers to reduce the video frame rate while maintaining video resolution during video encoding under limited bandwidth. This degradation preference is suitable for scenarios where video quality is prioritized.
+   * 0: Prefers to reduce the video frame rate while maintaining video resolution during video encoding under limited bandwidth. This degradation preference is suitable for scenarios where video quality is prioritized. Deprecated: This enumerator is deprecated. Use other enumerations instead.
    */
   MaintainQuality = 0,
   /**
@@ -997,47 +997,47 @@ export enum AudioCodecType {
  */
 export enum AudioEncodingType {
   /**
-   * AAC encoding format, 16000 Hz sampling rate, bass quality. A file with an audio duration of 10 minutes is approximately 1.2 MB after encoding.
+   * 0x010101: AAC encoding format, 16000 Hz sampling rate, bass quality. A file with an audio duration of 10 minutes is approximately 1.2 MB after encoding.
    */
   AudioEncodingTypeAac16000Low = 0x010101,
   /**
-   * AAC encoding format, 16000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
+   * 0x010102: AAC encoding format, 16000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
    */
   AudioEncodingTypeAac16000Medium = 0x010102,
   /**
-   * AAC encoding format, 32000 Hz sampling rate, bass quality. A file with an audio duration of 10 minutes is approximately 1.2 MB after encoding.
+   * 0x010201: AAC encoding format, 32000 Hz sampling rate, bass quality. A file with an audio duration of 10 minutes is approximately 1.2 MB after encoding.
    */
   AudioEncodingTypeAac32000Low = 0x010201,
   /**
-   * AAC encoding format, 32000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
+   * 0x010202: AAC encoding format, 32000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
    */
   AudioEncodingTypeAac32000Medium = 0x010202,
   /**
-   * AAC encoding format, 32000 Hz sampling rate, high sound quality. A file with an audio duration of 10 minutes is approximately 3.5 MB after encoding.
+   * 0x010203: AAC encoding format, 32000 Hz sampling rate, high sound quality. A file with an audio duration of 10 minutes is approximately 3.5 MB after encoding.
    */
   AudioEncodingTypeAac32000High = 0x010203,
   /**
-   * AAC encoding format, 48000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
+   * 0x010302: AAC encoding format, 48000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
    */
   AudioEncodingTypeAac48000Medium = 0x010302,
   /**
-   * AAC encoding format, 48000 Hz sampling rate, high sound quality. A file with an audio duration of 10 minutes is approximately 3.5 MB after encoding.
+   * 0x010303: AAC encoding format, 48000 Hz sampling rate, high sound quality. A file with an audio duration of 10 minutes is approximately 3.5 MB after encoding.
    */
   AudioEncodingTypeAac48000High = 0x010303,
   /**
-   * OPUS encoding format, 16000 Hz sampling rate, bass quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
+   * 0x020101: OPUS encoding format, 16000 Hz sampling rate, bass quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
    */
   AudioEncodingTypeOpus16000Low = 0x020101,
   /**
-   * OPUS encoding format, 16000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
+   * 0x020102: OPUS encoding format, 16000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
    */
   AudioEncodingTypeOpus16000Medium = 0x020102,
   /**
-   * OPUS encoding format, 48000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
+   * 0x020302: OPUS encoding format, 48000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
    */
   AudioEncodingTypeOpus48000Medium = 0x020302,
   /**
-   * OPUS encoding format, 48000 Hz sampling rate, high sound quality. A file with an audio duration of 10 minutes is approximately 3.5 MB after encoding.
+   * 0x020303: OPUS encoding format, 48000 Hz sampling rate, high sound quality. A file with an audio duration of 10 minutes is approximately 3.5 MB after encoding.
    */
   AudioEncodingTypeOpus48000High = 0x020303,
 }
@@ -1047,11 +1047,11 @@ export enum AudioEncodingType {
  */
 export enum WatermarkFitMode {
   /**
-   * Use the positionInLandscapeMode and positionInPortraitMode values you set in WatermarkOptions. The settings in WatermarkRatio are invalid.
+   * 0: Use the positionInLandscapeMode and positionInPortraitMode values you set in WatermarkOptions. The settings in WatermarkRatio are invalid.
    */
   FitModeCoverPosition = 0,
   /**
-   * Use the value you set in WatermarkRatio. The settings in positionInLandscapeMode and positionInPortraitMode in WatermarkOptions are invalid.
+   * 1: Use the value you set in WatermarkRatio. The settings in positionInLandscapeMode and positionInPortraitMode in WatermarkOptions are invalid.
    */
   FitModeUseImageRatio = 1,
 }
@@ -1145,11 +1145,11 @@ export enum H264PacketizeMode {
  */
 export enum VideoStreamType {
   /**
-   * 0: High-quality video stream.
+   * 0: High-quality video stream, that is, a video stream with the highest resolution and bitrate.
    */
   VideoStreamHigh = 0,
   /**
-   * 1: Low-quality video stream.
+   * 1: Low-quality video stream, that is, a video stream with the lowest resolution and bitrate.
    */
   VideoStreamLow = 1,
   /**
@@ -1265,7 +1265,7 @@ export enum CompressionPreference {
    */
   PreferLowLatency = 0,
   /**
-   * 1: (Default) High quality preference. The SDK compresses video frames while maintaining video quality. This preference is suitable for scenarios where video quality is prioritized.
+   * 1: High quality preference. The SDK compresses video frames while maintaining video quality. This preference is suitable for scenarios where video quality is prioritized.
    */
   PreferQuality = 1,
 }
@@ -1497,7 +1497,7 @@ export class SimulcastStreamConfig {
    */
   dimensions?: VideoDimensions;
   /**
-   * Video receive bitrate (Kbps), represented by an instantaneous value. This parameter does not need to be set. The SDK automatically matches the most suitable bitrate based on the video resolution and frame rate you set.
+   * Video bitrate (Kbps). The default value is -1. This parameter does not need to be set. The SDK automatically matches the most suitable bitrate based on the video resolution and frame rate you set.
    */
   kBitrate?: number;
   /**
@@ -1617,7 +1617,9 @@ export class WatermarkRatio {
 }
 
 /**
- * Configurations of the watermark image.
+ * Watermark image configurations.
+ *
+ * Configuration options for setting the watermark image to be added.
  */
 export class WatermarkOptions {
   /**
@@ -1928,7 +1930,7 @@ export enum AudioProfileType {
    */
   AudioProfileMusicHighQualityStereo = 5,
   /**
-   * 6: A sample rate of 16 kHz, audio encoding, mono, and Acoustic Echo Cancellation (AES) enabled.
+   * 6: A sample rate of 16 kHz, audio encoding, mono, and Acoustic Echo Cancellation (AEC) enabled.
    */
   AudioProfileIot = 6,
   /**
@@ -2051,7 +2053,7 @@ export enum VideoApplicationScenarioType {
    */
   ApplicationScenarioMeeting = 1,
   /**
-   * ApplicationScenario1v1 (2) is suitable for 1v1 video call scenarios. To meet the requirements for low latency and high-quality video in this scenario, the SDK optimizes its strategies, improving performance in terms of video quality, first frame rendering, latency on mid-to-low-end devices, and smoothness under weak network conditions. 2: 1v1 video call scenario.
+   * ApplicationScenario1v1 (2) This is applicable to the scenario. To meet the requirements for low latency and high-quality video in this scenario, the SDK optimizes its strategies, improving performance in terms of video quality, first frame rendering, latency on mid-to-low-end devices, and smoothness under weak network conditions. This enumeration value is only applicable to the broadcaster vs. broadcaster scenario. 2: 1v1 video call scenario.
    */
   ApplicationScenario1v1 = 2,
 }
@@ -2265,11 +2267,11 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonDeviceNotFound = 8,
   /**
-   * 9: (macOS only) The video capture device currently in use is disconnected (such as being unplugged).
+   * 9: The video capture device currently in use is disconnected (such as being unplugged).
    */
   LocalVideoStreamReasonDeviceDisconnected = 9,
   /**
-   * 10: (macOS and Windows only) The SDK cannot find the video device in the video device list. Check whether the ID of the video device is valid.
+   * 10: The SDK cannot find the video device in the video device list. Check whether the ID of the video device is valid.
    */
   LocalVideoStreamReasonDeviceInvalidId = 10,
   /**
@@ -2285,11 +2287,11 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonDeviceSystemPressure = 101,
   /**
-   * 11: (macOS and Windows only) The shared window is minimized when you call the startScreenCaptureByWindowId method to share a window. The SDK cannot share a minimized window. Please prompt the user to unminimize the shared window.
+   * 11: The shared window is minimized when you call the startScreenCaptureByWindowId method to share a window. The SDK cannot share a minimized window. Please prompt the user to unminimize the shared window.
    */
   LocalVideoStreamReasonScreenCaptureWindowMinimized = 11,
   /**
-   * 12: (macOS and Windows only) The error code indicates that a window shared by the window ID has been closed or a full-screen window shared by the window ID has exited full-screen mode. After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a black screen, Agora recommends that you immediately stop screen sharing. Common scenarios reporting this error code:
+   * 12: The error code indicates that a window shared by the window ID has been closed or a full-screen window shared by the window ID has exited full-screen mode. After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a black screen, Agora recommends that you immediately stop screen sharing. Common scenarios reporting this error code:
    *  The local user closes the shared window.
    *  The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After the user exits full-screen mode, the SDK reports this error code.
    *  The local user watches a web video or reads a web document in full-screen mode first, and then shares the window of the web video or document. After the user exits full-screen mode, the SDK reports this error code.
@@ -2304,7 +2306,7 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonScreenCaptureWindowNotSupported = 20,
   /**
-   * 21: (Windows only) The screen has not captured any data available for window sharing.
+   * 21: (Windows and Android only) The currently captured window has no data.
    */
   LocalVideoStreamReasonScreenCaptureFailure = 21,
   /**
@@ -2312,7 +2314,7 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonScreenCaptureNoPermission = 22,
   /**
-   * 24: (Windows only) An unexpected error occurred during screen sharing (possibly due to window blocking failure), resulting in decreased performance, but the screen sharing process itself was not affected.
+   * 24: (Windows only) An unexpected error occurred during screen sharing (possibly due to window blocking failure), resulting in decreased performance, but the screen sharing process itself was not affected. During screen sharing, if blocking a specific window fails due to device driver issues, the SDK will report this event and automatically fall back to sharing the entire screen. If your use case requires masking specific windows to protect privacy, we recommend listening for this event and implementing additional privacy protection mechanisms when it is triggered.
    */
   LocalVideoStreamReasonScreenCaptureAutoFallback = 24,
   /**
@@ -2336,7 +2338,7 @@ export enum LocalVideoStreamReason {
    */
   LocalVideoStreamReasonScreenCaptureResumed = 29,
   /**
-   * 30: The displayer used for screen capture is disconnected.
+   * 30: The displayer used for screen capture is disconnected. The current screen sharing has been paused. Prompt the user to restart the screen sharing.
    */
   LocalVideoStreamReasonScreenCaptureDisplayDisconnected = 30,
 }
@@ -3095,7 +3097,7 @@ export class LiveTranscoding {
   audioBitrate?: number;
   /**
    * The number of audio channels for Media Push. Agora recommends choosing 1 (mono), or 2 (stereo) audio channels. Special players are required if you choose 3, 4, or 5.
-   *  1: (Default) Mono
+   *  1: (Default) Mono.
    *  2: Stereo.
    *  3: Three audio channels.
    *  4: Four audio channels.
@@ -3129,7 +3131,9 @@ export class TranscodingVideoStream {
    */
   remoteUserUid?: number;
   /**
-   * The URL of the image. Use this parameter only when the source type is the image for local video mixing.
+   * The file path of local images. Use this parameter only when the source type is the image for local video mixing. Examples:
+   *  macOS: ~/Pictures/image.png
+   *  Windows: C:\\Users\\{username}\\Pictures\\image.png
    */
   imageUrl?: string;
   /**
@@ -3351,7 +3355,7 @@ export enum ConnectionChangedReasonType {
    */
   ConnectionChangedInvalidToken = 8,
   /**
-   * (9): The token currently being used has expired. You need to generate a new token on your server and rejoin the channel with the new token.
+   * 9: The token currently being used has expired. You need to generate a new token on your server and rejoin the channel with the new token.
    */
   ConnectionChangedTokenExpired = 9,
   /**
@@ -3369,7 +3373,7 @@ export enum ConnectionChangedReasonType {
    */
   ConnectionChangedRenewToken = 12,
   /**
-   * (13): Client IP address changed. If you receive this code multiple times, You need to prompt the user to switch networks and try joining the channel again.
+   * 13: Client IP address changed. If you receive this code multiple times, You need to prompt the user to switch networks and try joining the channel again.
    */
   ConnectionChangedClientIpAddressChanged = 13,
   /**
@@ -3545,7 +3549,7 @@ export enum VideoViewSetupMode {
    */
   VideoViewSetupAdd = 1,
   /**
-   * 2: Deletes a view.
+   * 2: Deletes a view. When you no longer need to use a certain view, it is recommended to delete the view by setting setupMode to VideoViewSetupRemove, otherwise it may lead to leak of rendering resources.
    */
   VideoViewSetupRemove = 2,
 }
@@ -3567,7 +3571,7 @@ export class VideoCanvas {
    */
   view?: any;
   /**
-   * The background color of the video canvas in RGBA format. The default value is 0x00000000, which represents completely transparent black.
+   * The background color of the video canvas in RGBA format. The default value is 0x00000000, which represents black.
    */
   backgroundColor?: number;
   /**
@@ -3809,7 +3813,7 @@ export enum VideoDenoiserMode {
 }
 
 /**
- * The video noise reduction level.
+ * Video noise reduction level.
  */
 export enum VideoDenoiserLevel {
   /**
@@ -3817,11 +3821,11 @@ export enum VideoDenoiserLevel {
    */
   VideoDenoiserLevelHighQuality = 0,
   /**
-   * 1: Promotes reducing performance consumption during video noise reduction. prioritizes reducing performance consumption over video noise reduction quality. The performance consumption is lower, and the video noise reduction speed is faster. To avoid a noticeable shadowing effect (shadows trailing behind moving objects) in the processed video, Agora recommends that you use this settinging when the camera is fixed.
+   * 1: Promotes reducing performance consumption during video noise reduction. It prioritizes reducing performance consumption over video noise reduction quality. The performance consumption is lower, and the video noise reduction speed is faster. To avoid a noticeable shadowing effect (shadows trailing behind moving objects) in the processed video, Agora recommends that you use this setting when the camera is fixed.
    */
   VideoDenoiserLevelFast = 1,
   /**
-   * 2: Enhanced video noise reduction. prioritizes video noise reduction quality over reducing performance consumption. The performance consumption is higher, the video noise reduction speed is slower, and the video noise reduction quality is better. If VideoDenoiserLevelHighQuality is not enough for your video noise reduction needs, you can use this enumerator.
+   * @ignore
    */
   VideoDenoiserLevelStrength = 2,
 }
@@ -3861,7 +3865,7 @@ export class ColorEnhanceOptions {
  */
 export enum BackgroundSourceType {
   /**
-   * 0: Process the background as alpha data without replacement, only separating the portrait and the background. After setting this value, you can call startLocalVideoTranscoder to implement the picture-in-picture effect.
+   * @ignore
    */
   BackgroundNone = 0,
   /**
@@ -4424,7 +4428,7 @@ export class AudioRecordingConfiguration {
  */
 export class AudioEncodedFrameObserverConfig {
   /**
-   * Audio profile. See AudioEncodedFrameObserverPosition.
+   * Audio observer position. See AudioEncodedFrameObserverPosition.
    */
   postionType?: AudioEncodedFrameObserverPosition;
   /**
@@ -4675,7 +4679,7 @@ export class ChannelMediaRelayConfiguration {
   /**
    * The information of the target channel ChannelMediaInfo. It contains the following members: channelName : The name of the target channel. token : The token for joining the target channel. It is generated with the channelName and uid you set in destInfos.
    *  If you have not enabled the App Certificate, set this parameter as the default value null, which means the SDK applies the App ID.
-   *  If you have enabled the App Certificate, you must use the token generated with the channelName and uid. If the token of any target channel expires, the whole media relay stops; hence Agora recommends that you specify the same expiration time for the tokens of all the target channels. uid : The unique user ID to identify the relay stream in the target channel. The value ranges from 0 to (2 32 -1). To avoid user ID conflicts, this user ID must be different from any other user ID in the target channel. The default value is 0, which means the SDK generates a random user ID.
+   *  If you have enabled the App Certificate, you must use the token generated with the channelName and uid. If the token of any target channel expires, the whole media relay stops; hence Agora recommends that you specify the same expiration time for the tokens of all the target channels. uid : The unique user ID to identify the relay stream in the target channel. The value ranges from 0 to (2 32 -1). To avoid user ID conflicts, this user ID must be different from any other user ID in the target channel. The default value is 0, which means the SDK generates a random UID.
    */
   destInfos?: ChannelMediaInfo[];
   /**

@@ -308,7 +308,7 @@ export enum ContentInspectType {
 }
 
 /**
- * ContentInspectModule A structure used to configure the frequency of video screenshot and upload.
+ * ContentInspectModule class, a structure used to configure the frequency of video screenshot and upload.
  */
 export class ContentInspectModule {
   /**
@@ -498,11 +498,11 @@ export enum VideoPixelFormat {
  */
 export enum RenderModeType {
   /**
-   * 1: Hidden mode. Uniformly scale the video until one of its dimension fits the boundary (zoomed to fit). One dimension of the video may have clipped contents.
+   * 1: Hidden mode. The priority is to fill the window. Any excess video that does not match the window size will be cropped.
    */
   RenderModeHidden = 1,
   /**
-   * 2: Fit mode. Uniformly scale the video until one of its dimension fits the boundary (zoomed to fit). Areas that are not filled due to disparity in the aspect ratio are filled with black.
+   * 2: Fit mode. The priority is to ensure that all video content is displayed. Any areas of the window that are not filled due to the mismatch between video size and window size will be filled with black.
    */
   RenderModeFit = 2,
   /**
@@ -838,27 +838,27 @@ export class Hdr10MetadataInfo {
 }
 
 /**
- * @ignore
+ * The relative position of alphaBuffer and video frames.
  */
 export enum AlphaStitchMode {
   /**
-   * @ignore
+   * 0: (Default) Only video frame, that is, alphaBuffer is not stitched with the video frame.
    */
   NoAlphaStitch = 0,
   /**
-   * @ignore
+   * 1: alphaBuffer is above the video frame.
    */
   AlphaStitchUp = 1,
   /**
-   * @ignore
+   * 2: alphaBuffer is below the video frame.
    */
   AlphaStitchBelow = 2,
   /**
-   * @ignore
+   * 3: alphaBuffer is to the left of the video frame.
    */
   AlphaStitchLeft = 3,
   /**
-   * @ignore
+   * 4: alphaBuffer is to the right of the video frame.
    */
   AlphaStitchRight = 4,
 }
@@ -986,7 +986,7 @@ export class ExternalVideoFrame {
    */
   d3d11Texture2d?: any;
   /**
-   * @ignore
+   * This parameter only applies to video data in Windows Texture format. It represents an index of an ID3D11Texture2D texture object used by the video frame in the ID3D11Texture2D array.
    */
   textureSliceIndex?: number;
   /**
@@ -994,7 +994,7 @@ export class ExternalVideoFrame {
    */
   hdr10MetadataInfo?: Hdr10MetadataInfo;
   /**
-   * @ignore
+   * By default, the color space properties of video frames will apply the Full Range and BT.709 standard configurations.
    */
   colorSpace?: ColorSpace;
 }
@@ -1070,7 +1070,9 @@ export class VideoFrame {
    */
   matrix?: number[];
   /**
-   * The alpha channel data output by using portrait segmentation algorithm. This data matches the size of the video frame, with each pixel value ranging from [0,255], where 0 represents the background and 255 represents the foreground (portrait). By setting this parameter, you can render the video background into various effects, such as transparent, solid color, image, video, etc. In custom video rendering scenarios, ensure that both the video frame and alphaBuffer are of the Full Range type; other types may cause abnormal alpha data rendering.
+   * The alpha channel data output by using portrait segmentation algorithm. This data matches the size of the video frame, with each pixel value ranging from [0,255], where 0 represents the background and 255 represents the foreground (portrait). By setting this parameter, you can render the video background into various effects, such as transparent, solid color, image, video, etc.
+   *  In custom video rendering scenarios, ensure that both the video frame and alphaBuffer are of the Full Range type; other types may cause abnormal alpha data rendering.
+   *  Make sure that alphaBuffer is exactly the same size as the video frame (width × height), otherwise it may cause the app to crash.
    */
   alphaBuffer?: Uint8Array;
   /**
@@ -1082,7 +1084,7 @@ export class VideoFrame {
    */
   pixelBuffer?: Uint8Array;
   /**
-   * The meta information in the video frame. To use this parameter, please contact.
+   * The meta information in the video frame. To use this parameter, contact.
    */
   metaInfo?: IVideoFrameMetaInfo;
   /**
@@ -1090,7 +1092,7 @@ export class VideoFrame {
    */
   hdr10MetadataInfo?: Hdr10MetadataInfo;
   /**
-   * @ignore
+   * By default, the color space properties of video frames will apply the Full Range and BT.709 standard configurations.
    */
   colorSpace?: ColorSpace;
 }
@@ -1138,15 +1140,17 @@ export enum VideoModulePosition {
 }
 
 /**
- * @ignore
+ * The snapshot configuration.
  */
 export class SnapshotConfig {
   /**
-   * @ignore
+   * The local path (including filename extensions) of the snapshot. For example:
+   *  Windows: C:\Users\<user_name>\AppData\Local\Agora\<process_name>\example.jpg
+   *  macOS: ～/Library/Logs/example.jpg Ensure that the path you specify exists and is writable.
    */
   filePath?: string;
   /**
-   * @ignore
+   * The position of the snapshot video frame in the video pipeline. See VideoModulePosition.
    */
   position?: VideoModulePosition;
 }
@@ -1402,7 +1406,7 @@ export interface IAudioSpectrumObserver {
    *
    * After successfully calling registerAudioSpectrumObserver to implement the onRemoteAudioSpectrum callback in the IAudioSpectrumObserver and calling enableAudioSpectrumMonitor to enable audio spectrum monitoring, the SDK will trigger the callback as the time interval you set to report the received remote audio data spectrum.
    *
-   * @param spectrums The audio spectrum information of the remote user, see UserAudioSpectrumInfo. The number of arrays is the number of remote users monitored by the SDK. If the array is null, it means that no audio spectrum of remote users is detected.
+   * @param spectrums The audio spectrum information of the remote user. See UserAudioSpectrumInfo. The number of arrays is the number of remote users monitored by the SDK. If the array is null, it means that no audio spectrum of remote users is detected.
    * @param spectrumNumber The number of remote users.
    */
   onRemoteAudioSpectrum?(
@@ -1546,15 +1550,15 @@ export enum MediaRecorderContainerFormat {
  */
 export enum MediaRecorderStreamType {
   /**
-   * Only audio.
+   * 1: Only audio.
    */
   StreamTypeAudio = 0x01,
   /**
-   * Only video.
+   * 2: Only video.
    */
   StreamTypeVideo = 0x02,
   /**
-   * (Default) Audio and video.
+   * 3: (Default) Audio and video.
    */
   StreamTypeBoth = 0x01 | 0x02,
 }
