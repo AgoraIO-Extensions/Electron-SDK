@@ -32,11 +32,9 @@ if [ -z "$IRIS_MAC_DEPENDENCIES" ]; then
   echo "No iris mac native dependencies need to change."
 else
   for DEP in $IRIS_MAC_DEPENDENCIES; do
-    if [[ "$DEP" == *Standalone* ]]; then
-      sed 's|"iris_sdk_mac": "\(.*\)"|"iris_sdk_mac": "'"$DEP"'"|g' $PACKAGE_JSON_PATH > tmp
-      mv tmp package.json
-      break
-    fi
+    sed 's|"iris_sdk_mac": "\(.*\)"|"iris_sdk_mac": "'"$DEP"'"|g' $PACKAGE_JSON_PATH > tmp
+    mv tmp package.json
+    break
   done
 fi
 
@@ -51,11 +49,9 @@ if [ -z "$IRIS_WINDOWS_DEPENDENCIES" ]; then
   echo "No iris windows native dependencies need to change."
 else
   for DEP in $IRIS_WINDOWS_DEPENDENCIES; do
-    if [[ "$DEP" == *Standalone* ]]; then
-      sed 's|"iris_sdk_win": "\(.*\)"|"iris_sdk_win": "'"$DEP"'"|g' $PACKAGE_JSON_PATH > tmp
-      mv tmp package.json
-      break
-    fi
+    sed 's|"iris_sdk_win": "\(.*\)"|"iris_sdk_win": "'"$DEP"'"|g' $PACKAGE_JSON_PATH > tmp
+    mv tmp package.json
+    break
   done
 fi
 
