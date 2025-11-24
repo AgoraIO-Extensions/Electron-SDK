@@ -2,7 +2,7 @@ parsers:
   - name: RTCParser
     package: '@agoraio-extensions/terra_shared_configs'
     args:
-      sdkVersion: 4.2.2.153
+      sdkVersion: 4.2.2.154
       definesMacros:
         - __ELECTRON__
       FixEnumConstantParser:
