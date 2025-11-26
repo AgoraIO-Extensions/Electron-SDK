@@ -1,4 +1,4 @@
-import { AudioDeviceInfo } from '../IAgoraRtcEngine';
+import { AudioDeviceInfo } from '../AgoraMediaBase';
 import { IAudioDeviceManager } from '../IAudioDeviceManager';
 
 // @ts-ignore
@@ -63,7 +63,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
   }
 
   protected getApiTypeFromGetPlaybackDeviceInfo(): string {
-    return 'AudioDeviceManager_getPlaybackDeviceInfo_ed3a96d';
+    return 'AudioDeviceManager_getPlaybackDeviceInfo_109b949';
   }
 
   setPlaybackDeviceVolume(volume: number): number {
@@ -134,7 +134,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
   }
 
   protected getApiTypeFromGetRecordingDeviceInfo(): string {
-    return 'AudioDeviceManager_getRecordingDeviceInfo_ed3a96d';
+    return 'AudioDeviceManager_getRecordingDeviceInfo_109b949';
   }
 
   setRecordingDeviceVolume(volume: number): number {

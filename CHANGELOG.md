@@ -1,8 +1,23 @@
 
 
-## [4.3.2-build.156-rc.3](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.3.2-build.156-rc.2...v4.3.2-build.156-rc.3) (2025-11-07)
+## [4.3.2-build.201-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.3.2-build.163-rc.3...v4.3.2-build.201-rc.2) (2025-11-25)
 
-## [4.3.2-build.156-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.3.2-build.156-rc.1...v4.3.2-build.156-rc.2) (2025-11-05)
+## [4.3.2-build.163-rc.3](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.3.2-build.201-rc.1...v4.3.2-build.163-rc.3) (2025-11-14)
+
+## [4.3.2-build.201-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.3.2-build.163-rc.1...v4.3.2-build.201-rc.1) (2025-11-13)
+
+
+### Bug Fixes
+
+* iris adm issue ([#1349](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1349)) ([f3f7b5a](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/f3f7b5af9e4173498cb2eae1e61d1e1dcebcd6d0))
+
+## [4.3.2-build.163-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.3.2-build.163-rc.1...v4.3.2-build.163-rc.2) (2025-11-13)
+
+## [4.3.2-build.163-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.3.2-build.156-rc.5...v4.3.2-build.163-rc.1) (2025-11-12)
+
+## [4.3.2-build.156-rc.5](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.3.2-build.156-rc.4...v4.3.2-build.156-rc.5) (2025-11-11)
+
+## [4.3.2-build.156-rc.4](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.3.2-build.156-rc.1...v4.3.2-build.156-rc.4) (2025-11-10)
 
 ## [4.3.2-build.156-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.3.2-build.155-rc.1...v4.3.2-build.156-rc.1) (2025-09-20)
 

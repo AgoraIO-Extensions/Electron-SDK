@@ -14,11 +14,11 @@ export enum ChannelProfileType {
    */
   ChannelProfileCommunication = 0,
   /**
-   * 1: Live streaming. Live streaming. Use this profile when there are more than two users in the channel.
+   * 1: Live streaming. Use this profile when there are more than two users in the channel.
    */
   ChannelProfileLiveBroadcasting = 1,
   /**
-   * 2: Gaming. This profile is deprecated.
+   * 2: Gaming.
    */
   ChannelProfileGame = 2,
   /**
@@ -483,23 +483,23 @@ export enum LicenseErrorType {
  */
 export enum AudioSessionOperationRestriction {
   /**
-   * No restriction, the SDK can change the audio session.
+   * 0: No restriction, the SDK can change the audio session.
    */
   AudioSessionOperationRestrictionNone = 0,
   /**
-   * The SDK cannot change the audio session category.
+   * 1: The SDK cannot change the audio session category.
    */
   AudioSessionOperationRestrictionSetCategory = 1,
   /**
-   * The SDK cannot change the audio session category, mode, or categoryOptions.
+   * 2: The SDK cannot change the audio session category, mode, or categoryOptions.
    */
   AudioSessionOperationRestrictionConfigureSession = 1 << 1,
   /**
-   * The SDK keeps the audio session active when the user leaves the channel, for example, to play an audio file in the background.
+   * 4: The SDK keeps the audio session active when the user leaves the channel, for example, to play an audio file in the background.
    */
   AudioSessionOperationRestrictionDeactivateSession = 1 << 2,
   /**
-   * Completely restricts the operation permissions of the SDK on the audio session; the SDK cannot change the audio session.
+   * 128: Completely restricts the operation permissions of the SDK on the audio session; the SDK cannot change the audio session.
    */
   AudioSessionOperationRestrictionAll = 1 << 7,
 }
@@ -667,31 +667,31 @@ export enum VideoOrientation {
  */
 export enum FrameRate {
   /**
-   * 1: 1 fps
+   * 1: 1 fps.
    */
   FrameRateFps1 = 1,
   /**
-   * 7: 7 fps
+   * 7: 7 fps.
    */
   FrameRateFps7 = 7,
   /**
-   * 10: 10 fps
+   * 10: 10 fps.
    */
   FrameRateFps10 = 10,
   /**
-   * 15: 15 fps
+   * 15: 15 fps.
    */
   FrameRateFps15 = 15,
   /**
-   * 24: 24 fps
+   * 24: 24 fps.
    */
   FrameRateFps24 = 24,
   /**
-   * 30: 30 fps
+   * 30: 30 fps.
    */
   FrameRateFps30 = 30,
   /**
-   * 60: 60 fps
+   * 60: 60 fps.
    */
   FrameRateFps60 = 60,
 }
@@ -993,47 +993,47 @@ export enum AudioCodecType {
  */
 export enum AudioEncodingType {
   /**
-   * AAC encoding format, 16000 Hz sampling rate, bass quality. A file with an audio duration of 10 minutes is approximately 1.2 MB after encoding.
+   * 0x010101: AAC encoding format, 16000 Hz sampling rate, bass quality. A file with an audio duration of 10 minutes is approximately 1.2 MB after encoding.
    */
   AudioEncodingTypeAac16000Low = 0x010101,
   /**
-   * AAC encoding format, 16000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
+   * 0x010102: AAC encoding format, 16000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
    */
   AudioEncodingTypeAac16000Medium = 0x010102,
   /**
-   * AAC encoding format, 32000 Hz sampling rate, bass quality. A file with an audio duration of 10 minutes is approximately 1.2 MB after encoding.
+   * 0x010201: AAC encoding format, 32000 Hz sampling rate, bass quality. A file with an audio duration of 10 minutes is approximately 1.2 MB after encoding.
    */
   AudioEncodingTypeAac32000Low = 0x010201,
   /**
-   * AAC encoding format, 32000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
+   * 0x010202: AAC encoding format, 32000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
    */
   AudioEncodingTypeAac32000Medium = 0x010202,
   /**
-   * AAC encoding format, 32000 Hz sampling rate, high sound quality. A file with an audio duration of 10 minutes is approximately 3.5 MB after encoding.
+   * 0x010203: AAC encoding format, 32000 Hz sampling rate, high sound quality. A file with an audio duration of 10 minutes is approximately 3.5 MB after encoding.
    */
   AudioEncodingTypeAac32000High = 0x010203,
   /**
-   * AAC encoding format, 48000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
+   * 0x010302: AAC encoding format, 48000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
    */
   AudioEncodingTypeAac48000Medium = 0x010302,
   /**
-   * AAC encoding format, 48000 Hz sampling rate, high sound quality. A file with an audio duration of 10 minutes is approximately 3.5 MB after encoding.
+   * 0x010303: AAC encoding format, 48000 Hz sampling rate, high sound quality. A file with an audio duration of 10 minutes is approximately 3.5 MB after encoding.
    */
   AudioEncodingTypeAac48000High = 0x010303,
   /**
-   * OPUS encoding format, 16000 Hz sampling rate, bass quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
+   * 0x020101: OPUS encoding format, 16000 Hz sampling rate, bass quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
    */
   AudioEncodingTypeOpus16000Low = 0x020101,
   /**
-   * OPUS encoding format, 16000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
+   * 0x020102: OPUS encoding format, 16000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
    */
   AudioEncodingTypeOpus16000Medium = 0x020102,
   /**
-   * OPUS encoding format, 48000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
+   * 0x020302: OPUS encoding format, 48000 Hz sampling rate, medium sound quality. A file with an audio duration of 10 minutes is approximately 2 MB after encoding.
    */
   AudioEncodingTypeOpus48000Medium = 0x020302,
   /**
-   * OPUS encoding format, 48000 Hz sampling rate, high sound quality. A file with an audio duration of 10 minutes is approximately 3.5 MB after encoding.
+   * 0x020303: OPUS encoding format, 48000 Hz sampling rate, high sound quality. A file with an audio duration of 10 minutes is approximately 3.5 MB after encoding.
    */
   AudioEncodingTypeOpus48000High = 0x020303,
 }
@@ -1043,11 +1043,11 @@ export enum AudioEncodingType {
  */
 export enum WatermarkFitMode {
   /**
-   * Use the positionInLandscapeMode and positionInPortraitMode values you set in WatermarkOptions. The settings in WatermarkRatio are invalid.
+   * 0: Use the positionInLandscapeMode and positionInPortraitMode values you set in WatermarkOptions. The settings in WatermarkRatio are invalid.
    */
   FitModeCoverPosition = 0,
   /**
-   * Use the value you set in WatermarkRatio. The settings in positionInLandscapeMode and positionInPortraitMode in WatermarkOptions are invalid.
+   * 1: Use the value you set in WatermarkRatio. The settings in positionInLandscapeMode and positionInPortraitMode in WatermarkOptions are invalid.
    */
   FitModeUseImageRatio = 1,
 }
@@ -2745,6 +2745,10 @@ export class LocalAudioStats {
    * @ignore
    */
   aedMusicRes?: number;
+  /**
+   * @ignore
+   */
+  edThpState?: number;
 }
 
 /**
@@ -3093,7 +3097,7 @@ export class LiveTranscoding {
   audioBitrate?: number;
   /**
    * The number of audio channels for Media Push. Agora recommends choosing 1 (mono), or 2 (stereo) audio channels. Special players are required if you choose 3, 4, or 5.
-   *  1: (Default) Mono
+   *  1: (Default) Mono.
    *  2: Stereo.
    *  3: Three audio channels.
    *  4: Four audio channels.
@@ -3351,7 +3355,7 @@ export enum ConnectionChangedReasonType {
    */
   ConnectionChangedInvalidToken = 8,
   /**
-   * (9): The token currently being used has expired. You need to generate a new token on your server and rejoin the channel with the new token.
+   * 9: The token currently being used has expired. You need to generate a new token on your server and rejoin the channel with the new token.
    */
   ConnectionChangedTokenExpired = 9,
   /**
@@ -3369,7 +3373,7 @@ export enum ConnectionChangedReasonType {
    */
   ConnectionChangedRenewToken = 12,
   /**
-   * (13): Client IP address changed. If you receive this code multiple times, You need to prompt the user to switch networks and try joining the channel again.
+   * 13: Client IP address changed. If you receive this code multiple times, You need to prompt the user to switch networks and try joining the channel again.
    */
   ConnectionChangedClientIpAddressChanged = 13,
   /**
@@ -3925,7 +3929,7 @@ export class AudioTrackConfig {
    */
   enableLocalPlayback?: boolean;
   /**
-   * Whether to enable audio processing module: true Enable the audio processing module to apply the Automatic Echo Cancellation (AEC), Automatic Noise Suppression (ANS), and Automatic Gain Control (AGC) effects. false : (Default) Do not enable the audio processing module. This parameter only takes effect on AudioTrackDirect in custom audio capturing.
+   * Whether to enable audio processing module: true : Enable the audio processing module to apply the Automatic Echo Cancellation (AEC), Automatic Noise Suppression (ANS), and Automatic Gain Control (AGC) effects. false : (Default) Do not enable the audio processing module. This parameter only takes effect on AudioTrackDirect in custom audio capturing.
    */
   enableAudioProcessing?: boolean;
   /**
@@ -4334,7 +4338,7 @@ export class AudioRecordingConfiguration {
  */
 export class AudioEncodedFrameObserverConfig {
   /**
-   * Audio profile. See AudioEncodedFrameObserverPosition.
+   * Audio observer position. See AudioEncodedFrameObserverPosition.
    */
   postionType?: AudioEncodedFrameObserverPosition;
   /**
