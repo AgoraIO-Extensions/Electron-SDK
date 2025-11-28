@@ -291,7 +291,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Set the blocklist of subscriptions for audio streams.
+   * Sets the blocklist of subscriptions for audio streams.
    *
    * You can call this method to specify the audio streams of a user that you do not want to subscribe to.
    *  You can call this method either before or after joining a channel.
@@ -337,7 +337,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Set the blocklist of subscriptions for video streams.
+   * Sets the blocklist of subscriptions for video streams.
    *
    * You can call this method to specify the video streams of a user that you do not want to subscribe to.
    *  If a user is added in the allowlist and blocklist at the same time, only the blocklist takes effect.
@@ -360,7 +360,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Set the allowlist of subscriptions for video streams.
+   * Sets the allowlist of subscriptions for video streams.
    *
    * You can call this method to specify the video streams of a user that you want to subscribe to.
    *  If a user is added in the allowlist and blocklist at the same time, only the blocklist takes effect.
@@ -383,7 +383,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Options for subscribing to remote video streams.
+   * Sets options for subscribing to remote video streams.
    *
    * When a remote user has enabled dual-stream mode, you can call this method to choose the option for subscribing to the video streams sent by the remote user.
    *
@@ -734,6 +734,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    * Agora recommends that you use the server-side Media Push function. You can call this method to stop the live stream on the specified CDN address. This method can stop pushing media streams to only one CDN address at a time, so if you need to stop pushing streams to multiple addresses, call this method multiple times. After you call this method, the SDK triggers the onRtmpStreamingStateChanged callback on the local client to report the state of the streaming.
    *
    * @param url The address of Media Push. The format is RTMP or RTMPS. The character length cannot exceed 1024 bytes. Special characters such as Chinese characters are not supported.
+   * @param connection The connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
@@ -976,6 +977,31 @@ export abstract class IRtcEngineEx extends IRtcEngine {
     enable: boolean,
     options: ImageTrackOptions,
     connection: RtcConnection
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract preloadEffectEx(
+    connection: RtcConnection,
+    soundId: number,
+    filePath: string,
+    startPos?: number
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract playEffectEx(
+    connection: RtcConnection,
+    soundId: number,
+    filePath: string,
+    loopCount: number,
+    pitch: number,
+    pan: number,
+    gain: number,
+    publish?: boolean,
+    startPos?: number
   ): number;
 
   /**
