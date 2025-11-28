@@ -94,6 +94,7 @@ import {
   IRtcEngine,
   IRtcEngineEventHandler,
   IVideoDeviceManager,
+  IVideoEffectObject,
   ImageTrackOptions,
   LeaveChannelOptions,
   Metadata,
@@ -106,6 +107,7 @@ import {
   Size,
   StreamFallbackOptions,
   VideoDeviceInfo,
+  VideoEffectAction,
 } from '../IAgoraRtcEngine';
 import { ILocalSpatialAudioEngine } from '../IAgoraSpatialAudio';
 import { IAudioDeviceManager } from '../IAudioDeviceManager';
@@ -1091,6 +1093,241 @@ export class IVideoDeviceManagerImpl implements IVideoDeviceManager {
   }
 }
 
+// @ts-ignore
+export class IVideoEffectObjectImpl implements IVideoEffectObject {
+  addOrUpdateVideoEffect(nodeId: number, templateName: string): number {
+    const apiType = this.getApiTypeFromAddOrUpdateVideoEffect(
+      nodeId,
+      templateName
+    );
+    const jsonParams = {
+      nodeId: nodeId,
+      templateName: templateName,
+      toJSON: () => {
+        return {
+          nodeId: nodeId,
+          templateName: templateName,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromAddOrUpdateVideoEffect(
+    nodeId: number,
+    templateName: string
+  ): string {
+    return 'VideoEffectObject_addOrUpdateVideoEffect_303a98c';
+  }
+
+  removeVideoEffect(nodeId: number): number {
+    const apiType = this.getApiTypeFromRemoveVideoEffect(nodeId);
+    const jsonParams = {
+      nodeId: nodeId,
+      toJSON: () => {
+        return {
+          nodeId: nodeId,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromRemoveVideoEffect(nodeId: number): string {
+    return 'VideoEffectObject_removeVideoEffect_b48de50';
+  }
+
+  performVideoEffectAction(
+    nodeId: number,
+    actionId: VideoEffectAction
+  ): number {
+    const apiType = this.getApiTypeFromPerformVideoEffectAction(
+      nodeId,
+      actionId
+    );
+    const jsonParams = {
+      nodeId: nodeId,
+      actionId: actionId,
+      toJSON: () => {
+        return {
+          nodeId: nodeId,
+          actionId: actionId,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromPerformVideoEffectAction(
+    nodeId: number,
+    actionId: VideoEffectAction
+  ): string {
+    return 'VideoEffectObject_performVideoEffectAction_eddb1a6';
+  }
+
+  setVideoEffectFloatParam(option: string, key: string, param: number): number {
+    const apiType = this.getApiTypeFromSetVideoEffectFloatParam(
+      option,
+      key,
+      param
+    );
+    const jsonParams = {
+      option: option,
+      key: key,
+      param: param,
+      toJSON: () => {
+        return {
+          option: option,
+          key: key,
+          param: param,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSetVideoEffectFloatParam(
+    option: string,
+    key: string,
+    param: number
+  ): string {
+    return 'VideoEffectObject_setVideoEffectFloatParam_e8dfcf8';
+  }
+
+  setVideoEffectIntParam(option: string, key: string, param: number): number {
+    const apiType = this.getApiTypeFromSetVideoEffectIntParam(
+      option,
+      key,
+      param
+    );
+    const jsonParams = {
+      option: option,
+      key: key,
+      param: param,
+      toJSON: () => {
+        return {
+          option: option,
+          key: key,
+          param: param,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSetVideoEffectIntParam(
+    option: string,
+    key: string,
+    param: number
+  ): string {
+    return 'VideoEffectObject_setVideoEffectIntParam_3b77680';
+  }
+
+  setVideoEffectBoolParam(option: string, key: string, param: boolean): number {
+    const apiType = this.getApiTypeFromSetVideoEffectBoolParam(
+      option,
+      key,
+      param
+    );
+    const jsonParams = {
+      option: option,
+      key: key,
+      param: param,
+      toJSON: () => {
+        return {
+          option: option,
+          key: key,
+          param: param,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSetVideoEffectBoolParam(
+    option: string,
+    key: string,
+    param: boolean
+  ): string {
+    return 'VideoEffectObject_setVideoEffectBoolParam_918930f';
+  }
+
+  getVideoEffectFloatParam(option: string, key: string): number {
+    const apiType = this.getApiTypeFromGetVideoEffectFloatParam(option, key);
+    const jsonParams = {
+      option: option,
+      key: key,
+      toJSON: () => {
+        return {
+          option: option,
+          key: key,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromGetVideoEffectFloatParam(
+    option: string,
+    key: string
+  ): string {
+    return 'VideoEffectObject_getVideoEffectFloatParam_ccad422';
+  }
+
+  getVideoEffectIntParam(option: string, key: string): number {
+    const apiType = this.getApiTypeFromGetVideoEffectIntParam(option, key);
+    const jsonParams = {
+      option: option,
+      key: key,
+      toJSON: () => {
+        return {
+          option: option,
+          key: key,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromGetVideoEffectIntParam(
+    option: string,
+    key: string
+  ): string {
+    return 'VideoEffectObject_getVideoEffectIntParam_ccad422';
+  }
+
+  getVideoEffectBoolParam(option: string, key: string): boolean {
+    const apiType = this.getApiTypeFromGetVideoEffectBoolParam(option, key);
+    const jsonParams = {
+      option: option,
+      key: key,
+      toJSON: () => {
+        return {
+          option: option,
+          key: key,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromGetVideoEffectBoolParam(
+    option: string,
+    key: string
+  ): string {
+    return 'VideoEffectObject_getVideoEffectBoolParam_ccad422';
+  }
+}
+
 export function processIMetadataObserver(
   handler: IMetadataObserver,
   event: string,
@@ -1769,6 +2006,54 @@ export class IRtcEngineImpl implements IRtcEngine {
     type: MediaSourceType = MediaSourceType.PrimaryCameraSource
   ): string {
     return 'RtcEngine_setFilterEffectOptions_53b4be3';
+  }
+
+  createVideoEffectObject(
+    bundlePath: string,
+    type: MediaSourceType = MediaSourceType.PrimaryCameraSource
+  ): IVideoEffectObject {
+    const apiType = this.getApiTypeFromCreateVideoEffectObject(
+      bundlePath,
+      type
+    );
+    const jsonParams = {
+      bundlePath: bundlePath,
+      type: type,
+      toJSON: () => {
+        return {
+          bundlePath: bundlePath,
+          type: type,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromCreateVideoEffectObject(
+    bundlePath: string,
+    type: MediaSourceType = MediaSourceType.PrimaryCameraSource
+  ): string {
+    return 'RtcEngine_createVideoEffectObject_65bd50d';
+  }
+
+  destroyVideoEffectObject(videoEffectObject: IVideoEffectObject): number {
+    const apiType =
+      this.getApiTypeFromDestroyVideoEffectObject(videoEffectObject);
+    const jsonParams = {
+      videoEffectObject: videoEffectObject,
+      toJSON: () => {
+        return {};
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromDestroyVideoEffectObject(
+    videoEffectObject: IVideoEffectObject
+  ): string {
+    return 'RtcEngine_destroyVideoEffectObject_66d092b';
   }
 
   setLowlightEnhanceOptions(
