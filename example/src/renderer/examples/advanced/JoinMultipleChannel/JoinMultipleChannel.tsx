@@ -45,6 +45,10 @@ interface State extends BaseVideoComponentState {
   publishCameraRelayTrack2: boolean;
   publishCameraTrack: boolean;
   publishCameraTrack2: boolean;
+  muteLocalAudioStreamEx1: boolean;
+  muteLocalAudioStreamEx2: boolean;
+  muteLocalVideoStreamEx1: boolean;
+  muteLocalVideoStreamEx2: boolean;
 }
 
 export default class JoinMultipleChannel
@@ -81,6 +85,10 @@ export default class JoinMultipleChannel
       publishCameraRelayTrack2: false,
       publishCameraTrack: false,
       publishCameraTrack2: false,
+      muteLocalAudioStreamEx1: false,
+      muteLocalAudioStreamEx2: false,
+      muteLocalVideoStreamEx1: false,
+      muteLocalVideoStreamEx2: false,
     };
   }
 
@@ -325,6 +333,66 @@ export default class JoinMultipleChannel
     );
   };
 
+  muteLocalAudioStreamEx1 = () => {
+    const { channelId, uid } = this.state;
+    this.engine?.muteLocalAudioStreamEx(true, { channelId, localUid: uid });
+    this.setState({ muteLocalAudioStreamEx1: true });
+  };
+
+  unmuteLocalAudioStreamEx1 = () => {
+    const { channelId, uid } = this.state;
+    this.engine?.muteLocalAudioStreamEx(false, { channelId, localUid: uid });
+    this.setState({ muteLocalAudioStreamEx1: false });
+  };
+
+  muteLocalVideoStreamEx1 = () => {
+    const { channelId, uid } = this.state;
+    this.engine?.muteLocalVideoStreamEx(true, { channelId, localUid: uid });
+    this.setState({ muteLocalVideoStreamEx1: true });
+  };
+
+  unmuteLocalVideoStreamEx1 = () => {
+    const { channelId, uid } = this.state;
+    this.engine?.muteLocalVideoStreamEx(false, { channelId, localUid: uid });
+    this.setState({ muteLocalVideoStreamEx1: false });
+  };
+
+  muteLocalAudioStreamEx2 = () => {
+    const { channelId2, uid2 } = this.state;
+    this.engine?.muteLocalAudioStreamEx(true, {
+      channelId: channelId2,
+      localUid: uid2,
+    });
+    this.setState({ muteLocalAudioStreamEx2: true });
+  };
+
+  unmuteLocalAudioStreamEx2 = () => {
+    const { channelId2, uid2 } = this.state;
+    this.engine?.muteLocalAudioStreamEx(false, {
+      channelId: channelId2,
+      localUid: uid2,
+    });
+    this.setState({ muteLocalAudioStreamEx2: false });
+  };
+
+  muteLocalVideoStreamEx2 = () => {
+    const { channelId2, uid2 } = this.state;
+    this.engine?.muteLocalVideoStreamEx(true, {
+      channelId: channelId2,
+      localUid: uid2,
+    });
+    this.setState({ muteLocalVideoStreamEx2: true });
+  };
+
+  unmuteLocalVideoStreamEx2 = () => {
+    const { channelId2, uid2 } = this.state;
+    this.engine?.muteLocalVideoStreamEx(false, {
+      channelId: channelId2,
+      localUid: uid2,
+    });
+    this.setState({ muteLocalVideoStreamEx2: false });
+  };
+
   protected renderChannel(): ReactElement | undefined {
     const {
       channelId,
@@ -434,6 +502,22 @@ export default class JoinMultipleChannel
             joinChannelSuccess ? this.leaveChannelEx1() : this.joinChannelEx1();
           }}
         />
+        <AgoraButton
+          title={`muteLocalAudioStreamEx1`}
+          onPress={this.muteLocalAudioStreamEx1}
+        />
+        <AgoraButton
+          title={`unmuteLocalAudioStreamEx1`}
+          onPress={this.unmuteLocalAudioStreamEx1}
+        />
+        <AgoraButton
+          title={`muteLocalVideoStreamEx1`}
+          onPress={this.muteLocalVideoStreamEx1}
+        />
+        <AgoraButton
+          title={`unmuteLocalVideoStreamEx1`}
+          onPress={this.unmuteLocalVideoStreamEx1}
+        />
         <AgoraTextInput
           onChangeText={(text) => {
             this.setState({ channelId2: text });
@@ -529,6 +613,22 @@ export default class JoinMultipleChannel
               ? this.leaveChannelEx2()
               : this.joinChannelEx2();
           }}
+        />
+        <AgoraButton
+          title={`muteLocalAudioStreamEx2`}
+          onPress={this.muteLocalAudioStreamEx2}
+        />
+        <AgoraButton
+          title={`unmuteLocalAudioStreamEx2`}
+          onPress={this.unmuteLocalAudioStreamEx2}
+        />
+        <AgoraButton
+          title={`muteLocalVideoStreamEx2`}
+          onPress={this.muteLocalVideoStreamEx2}
+        />
+        <AgoraButton
+          title={`unmuteLocalVideoStreamEx2`}
+          onPress={this.unmuteLocalVideoStreamEx2}
         />
       </>
     );
