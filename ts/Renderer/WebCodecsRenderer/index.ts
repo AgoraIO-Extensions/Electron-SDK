@@ -1,5 +1,5 @@
 import { VideoFrame } from '../../Private/AgoraMediaBase';
-import { CodecConfigInfo, RendererType } from '../../Types';
+import { CodecConfigInfo, RendererContext, RendererType } from '../../Types';
 import { getContextByCanvas } from '../../Utils';
 import { IRenderer } from '../IRenderer';
 
@@ -31,11 +31,11 @@ export class WebCodecsRenderer extends IRenderer {
     }
   `;
 
-  bind(element: HTMLElement) {
-    super.bind(element);
+  bind(context: RendererContext) {
+    super.bind(context);
     if (!this.canvas) return;
     this.offscreenCanvas = this.canvas.transferControlToOffscreen();
-    this.gl = getContextByCanvas(this.offscreenCanvas);
+    this.gl = getContextByCanvas(this.offscreenCanvas, this.context.enableAlphaMask);
     if (!this.gl) return;
     const vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
     if (!vertexShader) return;

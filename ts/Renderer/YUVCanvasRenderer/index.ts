@@ -1,5 +1,6 @@
 import { VideoFrame } from '../../Private/AgoraMediaBase';
 import { IRenderer } from '../IRenderer';
+import { RendererContext } from '../../Types';
 
 const YUVBuffer = require('yuv-buffer');
 const YUVCanvas = require('yuv-canvas');
@@ -7,8 +8,8 @@ const YUVCanvas = require('yuv-canvas');
 export class YUVCanvasRenderer extends IRenderer {
   private frameSink?: any;
 
-  public override bind(element: HTMLElement) {
-    super.bind(element);
+  public override bind(context: RendererContext) {
+    super.bind(context);
     this.frameSink = YUVCanvas.attach(this.canvas, {
       webGL: false,
     });

@@ -4,7 +4,7 @@ import {
   RangeID,
   VideoFrame,
 } from '../../Private/AgoraMediaBase';
-import { RendererType } from '../../Types';
+import { RendererContext, RendererType } from '../../Types';
 import { AgoraEnv, logWarn } from '../../Utils';
 import { IRenderer } from '../IRenderer';
 
@@ -120,8 +120,8 @@ export class WebGLRenderer extends IRenderer {
     this.fallback = fallback;
   }
 
-  public override bind(view: HTMLElement) {
-    super.bind(view);
+  public override bind(context: RendererContext) {
+    super.bind(context);
 
     this.canvas?.addEventListener(
       'webglcontextlost',
@@ -139,18 +139,20 @@ export class WebGLRenderer extends IRenderer {
     ): WebGLRenderingContext | WebGLRenderingContext | null => {
       for (let i = 0; i < contextNames.length; i++) {
         const contextName = contextNames[i]!;
-        const context = this.canvas?.getContext(contextName, {
+        const canvasContext = this.canvas?.getContext(contextName, {
           depth: true,
           stencil: true,
-          alpha: true,
+          alpha: context.enableAlphaMask || AgoraEnv.encodeAlpha,
           antialias: false,
           premultipliedAlpha: true,
-          preserveDrawingBuffer: !AgoraEnv.encodeAlpha,
+          preserveDrawingBuffer: !(
+            context.enableAlphaMask || AgoraEnv.encodeAlpha
+          ),
           powerPreference: 'default',
           failIfMajorPerformanceCaveat: false,
         });
-        if (context) {
-          return context as WebGLRenderingContext | WebGLRenderingContext;
+        if (canvasContext) {
+          return canvasContext as WebGLRenderingContext | WebGLRenderingContext;
         }
       }
       return null;
@@ -318,7 +320,11 @@ export class WebGLRenderer extends IRenderer {
         pixels: vBuffer!,
       },
     };
-    if (alphaBuffer && alphaBuffer.length > 0) {
+    if (
+      alphaBuffer &&
+      alphaBuffer.length > 0 &&
+      (this.context.enableAlphaMask || AgoraEnv.encodeAlpha)
+    ) {
       textures[this.gl.TEXTURE3] = {
         texture: this.aTexture,
         stride: width!,

@@ -12,6 +12,7 @@ const CHANNEL_ID_STRING = 'channel-id';
 const POSITION_STRING = 'position';
 const RENDERER_CONTENT_MODE_STRING = 'renderer-content-mode';
 const RENDERER_MIRROR_STRING = 'renderer-mirror';
+const ENABLE_ALPHA_MASK_STRING = 'enable-alpha-mask';
 
 const observedAttributes = [
   VIDEO_SOURCE_TYPE_STRING,
@@ -20,6 +21,7 @@ const observedAttributes = [
   POSITION_STRING,
   RENDERER_CONTENT_MODE_STRING,
   RENDERER_MIRROR_STRING,
+  ENABLE_ALPHA_MASK_STRING,
 ];
 
 declare global {
@@ -61,6 +63,10 @@ declare global {
      * The inline style of elements. See style .
      */
     'style': any;
+    /**
+     * Whether to enable alpha mask rendering: true : Enable alpha mask rendering. false : (Default) Disable alpha mask rendering. Alpha mask rendering can create images with transparent effects and extract portraits from videos. When used in combination with other methods, you can implement effects such as portrait-in-picture and watermarking.
+     */
+    'enable-alpha-mask': boolean;
   }
   namespace JSX {
     /**
@@ -163,12 +169,24 @@ export default class AgoraView extends HTMLElement {
     }
   }
 
+  get enableAlphaMask(): boolean {
+    return this.getAttribute(ENABLE_ALPHA_MASK_STRING) === 'true';
+  }
+
+  set enableAlphaMask(val) {
+    if (val) {
+      this.setAttribute(ENABLE_ALPHA_MASK_STRING, String(val));
+    } else {
+      this.removeAttribute(ENABLE_ALPHA_MASK_STRING);
+    }
+  }
+
   constructor() {
     super();
   }
 
   initializeRender = () => {
-    const { channelId, uid, sourceType, position, renderMode, renderMirror } =
+    const { channelId, uid, sourceType, position, renderMode, renderMirror, enableAlphaMask } =
       this;
     AgoraEnv.AgoraRendererManager?.addOrRemoveRenderer({
       sourceType,
@@ -181,17 +199,19 @@ export default class AgoraView extends HTMLElement {
         ? VideoMirrorModeType.VideoMirrorModeEnabled
         : VideoMirrorModeType.VideoMirrorModeDisabled,
       setupMode: VideoViewSetupMode.VideoViewSetupReplace,
+      enableAlphaMask,
     });
   };
 
   destroyRender = () => {
-    const { channelId, uid, sourceType, position } = this;
+    const { channelId, uid, sourceType, position, enableAlphaMask } = this;
     AgoraEnv.AgoraRendererManager?.removeRendererFromCache({
       channelId,
       position,
       uid,
       sourceType,
       view: this,
+      enableAlphaMask,
     });
   };
 
@@ -207,6 +227,7 @@ export default class AgoraView extends HTMLElement {
     const isSetRenderOption = [
       RENDERER_CONTENT_MODE_STRING,
       RENDERER_MIRROR_STRING,
+      ENABLE_ALPHA_MASK_STRING,
     ].includes(attrName);
 
     if (isSetRenderOption) {
@@ -216,6 +237,7 @@ export default class AgoraView extends HTMLElement {
         mirrorMode: this.renderMirror
           ? VideoMirrorModeType.VideoMirrorModeEnabled
           : VideoMirrorModeType.VideoMirrorModeDisabled,
+        enableAlphaMask: this.enableAlphaMask,
       });
       return;
     }

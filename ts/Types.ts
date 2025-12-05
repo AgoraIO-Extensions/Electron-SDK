@@ -104,6 +104,7 @@ export type RendererCacheContext = Pick<
   | 'useWebCodecsDecoder'
   | 'enableFps'
   | 'position'
+  | 'enableAlphaMask'
 >;
 
 /**

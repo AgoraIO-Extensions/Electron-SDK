@@ -57,11 +57,14 @@ export class RendererCache extends IRendererCache {
   }
 
   override draw() {
+
+    const renderAlpha = AgoraEnv.encodeAlpha || this.cacheContext.enableAlphaMask;
+
     let { ret, isNewFrame } = AgoraElectronBridge.GetVideoFrame(
       this.cacheContext,
       this.videoFrame,
       {
-        encodeAlpha: AgoraEnv.encodeAlpha,
+        encodeAlpha: renderAlpha,
       }
     );
 
@@ -74,7 +77,7 @@ export class RendererCache extends IRendererCache {
         this.videoFrame.yBuffer = Buffer.alloc(yStride! * height!);
         this.videoFrame.uBuffer = Buffer.alloc(uStride! * height!);
         this.videoFrame.vBuffer = Buffer.alloc(vStride! * height!);
-        if (AgoraEnv.encodeAlpha) {
+        if (renderAlpha) {
           this.videoFrame.alphaBuffer = Buffer.alloc(
             this.videoFrame.width! * this.videoFrame.height!
           );
@@ -84,7 +87,7 @@ export class RendererCache extends IRendererCache {
           this.cacheContext,
           this.videoFrame,
           {
-            encodeAlpha: AgoraEnv.encodeAlpha,
+            encodeAlpha: renderAlpha,
           }
         );
         ret = result.ret;
@@ -95,7 +98,7 @@ export class RendererCache extends IRendererCache {
         return;
     }
 
-    if (!AgoraEnv.encodeAlpha) {
+    if (!renderAlpha) {
       if (
         this.videoFrame.alphaBuffer &&
         this.videoFrame.alphaBuffer.length > 0

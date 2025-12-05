@@ -33,6 +33,7 @@ export abstract class IRendererCache {
     sourceType,
     localUid,
     position,
+    enableAlphaMask,
   }: RendererContext) {
     this.renderers = [];
     this.cacheContext = {
@@ -43,6 +44,7 @@ export abstract class IRendererCache {
       sourceType,
       localUid,
       position,
+      enableAlphaMask,
     };
   }
 

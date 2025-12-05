@@ -513,8 +513,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
                         videoFrame.colorSpace.transfer);
   napi_obj_set_property(env, colorSpace, "matrix",
                         videoFrame.colorSpace.matrix);
-  napi_obj_set_property(env, colorSpace, "range",
-                        videoFrame.colorSpace.range);
+  napi_obj_set_property(env, colorSpace, "range", videoFrame.colorSpace.range);
   napi_obj_set_property(env, obj1, "colorSpace", colorSpace);
   // napi_obj_set_property(env, obj1, "textureId", videoFrame.textureId);
 
