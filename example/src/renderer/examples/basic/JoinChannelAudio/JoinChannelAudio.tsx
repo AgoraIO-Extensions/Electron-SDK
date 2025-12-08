@@ -5,8 +5,6 @@ import {
   IRtcEngineEventHandler,
   LocalAudioStreamError,
   LocalAudioStreamState,
-  LoopbackAudioTrackConfig,
-  LoopbackAudioTrackType,
   MediaDeviceType,
   RtcConnection,
   RtcStats,
@@ -28,14 +26,6 @@ interface State extends BaseAudioComponentState {
   muteLocalAudioStream: boolean;
   recordingSignalVolume: number;
   playbackSignalVolume: number;
-  // Loopback audio track related states
-  loopbackTrackId: number | null;
-  loopbackAppName: string;
-  loopbackVolume: number;
-  loopbackType: LoopbackAudioTrackType;
-  loopbackDeviceName: string;
-  loopbackProcessId: number;
-  forceUseALD: boolean;
 }
 
 export default class JoinChannelAudio
@@ -55,14 +45,6 @@ export default class JoinChannelAudio
       muteLocalAudioStream: false,
       recordingSignalVolume: 100,
       playbackSignalVolume: 100,
-      // Loopback audio track related states
-      loopbackTrackId: null,
-      loopbackAppName: 'System Audio',
-      loopbackVolume: 100,
-      loopbackType: LoopbackAudioTrackType.LoopbackSystem,
-      loopbackDeviceName: 'AgoraALD',
-      loopbackProcessId: 0,
-      forceUseALD: false,
     };
   }
 
@@ -83,9 +65,6 @@ export default class JoinChannelAudio
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
-
-    // this will disable AEC in loopback audio track
-    this.engine?.setParameters('{"che.audio.loopback.enable_aec":false}');
 
     // Need granted the microphone permission
     await askMediaAccess(['microphone']);
@@ -117,7 +96,6 @@ export default class JoinChannelAudio
     this.engine?.joinChannel(token, channelId, uid, {
       // Make myself as the broadcaster to send stream to remote
       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-      publishMicrophoneTrack: true,
     });
   }
 
@@ -170,221 +148,9 @@ export default class JoinChannelAudio
   };
 
   /**
-   * Handle Force use ALD checkbox change
-   */
-  handleForceUseALDChange = (checked: boolean) => {
-    this.setState({ forceUseALD: checked });
-
-    // Set catap parameter based on checkbox state
-    const catapValue = checked ? 'false' : 'true';
-    this.engine?.setParameters(
-      `{"che.audio.loopback.allow_loopback_with_catap":${catapValue}}`
-    );
-    this.engine?.setParameters(
-      `{"che.audio.loopback.allow_loopback_with_sck":${catapValue}}`
-    );
-
-    this.info(
-      `Force use ALD: ${checked ? 'enabled' : 'disabled'}, catap: ${catapValue}`
-    );
-  };
-
-  /**
-   * Create Loopback audio track
-   */
-  createLoopbackAudioTrack = () => {
-    const {
-      loopbackAppName,
-      loopbackVolume,
-      loopbackType,
-      loopbackDeviceName,
-      loopbackProcessId,
-    } = this.state;
-
-    // Validate processId is required
-    if (
-      loopbackType === LoopbackAudioTrackType.LoopbackProcess &&
-      loopbackProcessId <= 0
-    ) {
-      this.error(
-        'Process ID cannot be empty or less than or equal to 0 in Process Loopback mode'
-      );
-      return;
-    }
-
-    const config: LoopbackAudioTrackConfig = {
-      appName: loopbackAppName,
-      volume: loopbackVolume,
-      loopbackType: loopbackType,
-      deviceName: loopbackDeviceName,
-      processId: loopbackProcessId,
-    };
-
-    try {
-      const mediaEngine = this.engine?.getMediaEngine();
-      if (mediaEngine) {
-        const trackId = mediaEngine.createLoopbackAudioTrack(config);
-        if (trackId >= 0) {
-          this.setState({ loopbackTrackId: trackId });
-          this.engine?.updateChannelMediaOptions({
-            clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-            publishMicrophoneTrack: true,
-            publishLoopbackAudioTrack: true,
-            publishLoopbackAudioTrackId: trackId,
-          });
-          this.info(
-            `Loopback audio track created successfully, Track ID: ${trackId}`
-          );
-        } else {
-          this.error(
-            `Failed to create Loopback audio track, error code: ${trackId}`
-          );
-        }
-      } else {
-        this.error('Unable to get MediaEngine instance');
-      }
-    } catch (error) {
-      this.error(
-        `Error occurred while creating Loopback audio track: ${error}`
-      );
-    }
-  };
-
-  /**
-   * Destroy Loopback audio track
-   */
-  destroyLoopbackAudioTrack = () => {
-    const { loopbackTrackId } = this.state;
-
-    if (loopbackTrackId === null) {
-      this.error('No Loopback audio track to destroy');
-      return;
-    }
-
-    try {
-      const mediaEngine = this.engine?.getMediaEngine();
-      if (mediaEngine) {
-        this.engine?.updateChannelMediaOptions({
-          publishLoopbackAudioTrack: false,
-          publishLoopbackAudioTrackId: loopbackTrackId,
-        });
-
-        const result = mediaEngine.destroyLoopbackAudioTrack(loopbackTrackId);
-        if (result === 0) {
-          this.setState({ loopbackTrackId: null });
-          this.info(
-            `Loopback audio track destroyed successfully, Track ID: ${loopbackTrackId}`
-          );
-        } else {
-          this.error(
-            `Failed to destroy Loopback audio track, error code: ${result}`
-          );
-        }
-      } else {
-        this.error('Unable to get MediaEngine instance');
-      }
-    } catch (error) {
-      this.error(
-        `Error occurred while destroying Loopback audio track: ${error}`
-      );
-    }
-  };
-
-  /**
-   * Update Loopback audio track configuration
-   */
-  updateLoopbackAudioTrackConfig = () => {
-    const {
-      loopbackTrackId,
-      loopbackAppName,
-      loopbackVolume,
-      loopbackType,
-      loopbackDeviceName,
-      loopbackProcessId,
-    } = this.state;
-
-    if (loopbackTrackId === null) {
-      this.error('No Loopback audio track to update');
-      return;
-    }
-
-    // Validate processId is required
-    if (
-      loopbackType === LoopbackAudioTrackType.LoopbackProcess &&
-      loopbackProcessId <= 0
-    ) {
-      this.error(
-        'Process ID cannot be empty or less than or equal to 0 in Process Loopback mode'
-      );
-      return;
-    }
-
-    const config: LoopbackAudioTrackConfig = {
-      appName: loopbackAppName,
-      volume: loopbackVolume,
-      loopbackType: loopbackType,
-      deviceName: loopbackDeviceName,
-      processId: loopbackProcessId,
-    };
-
-    try {
-      const mediaEngine = this.engine?.getMediaEngine();
-      if (mediaEngine) {
-        const result = mediaEngine.updateLoopbackAudioTrackConfig(
-          loopbackTrackId,
-          config
-        );
-        if (result === 0) {
-          this.info(`Loopback audio track configuration updated successfully`);
-        } else {
-          this.error(
-            `Failed to update Loopback audio track configuration, error code: ${result}`
-          );
-        }
-      } else {
-        this.error('Unable to get MediaEngine instance');
-      }
-    } catch (error) {
-      this.error(
-        `Error occurred while updating Loopback audio track configuration: ${error}`
-      );
-    }
-  };
-
-  /**
    * Step 4: leaveChannel
    */
   protected leaveChannel() {
-    // Destroy loopback audio track before leaving channel
-    const { loopbackTrackId } = this.state;
-    if (loopbackTrackId !== null) {
-      try {
-        const mediaEngine = this.engine?.getMediaEngine();
-        if (mediaEngine) {
-          this.engine?.updateChannelMediaOptions({
-            publishLoopbackAudioTrack: false,
-            publishLoopbackAudioTrackId: loopbackTrackId,
-          });
-
-          const result = mediaEngine.destroyLoopbackAudioTrack(loopbackTrackId);
-          if (result === 0) {
-            this.setState({ loopbackTrackId: null });
-            this.info(
-              `Loopback audio track destroyed before leaving channel, Track ID: ${loopbackTrackId}`
-            );
-          } else {
-            this.error(
-              `Failed to destroy Loopback audio track before leaving channel, error code: ${result}`
-            );
-          }
-        }
-      } catch (error) {
-        this.error(
-          `Error occurred while destroying Loopback audio track before leaving channel: ${error}`
-        );
-      }
-    }
-
     this.engine?.leaveChannel();
   }
 
@@ -511,33 +277,12 @@ export default class JoinChannelAudio
           title={'adjust Playback Signal Volume'}
           onPress={this.adjustPlaybackSignalVolume}
         />
-
-        <AgoraDivider />
       </>
     );
   }
 
   protected renderAction(): ReactElement | undefined {
-    const {
-      enableLocalAudio,
-      muteLocalAudioStream,
-      loopbackTrackId,
-      loopbackAppName,
-      loopbackVolume,
-      loopbackType,
-      loopbackDeviceName,
-      loopbackProcessId,
-    } = this.state;
-
-    // Determine whether to show deviceName input field
-    const shouldShowDeviceName =
-      loopbackType === LoopbackAudioTrackType.LoopbackSystem ||
-      loopbackType === LoopbackAudioTrackType.LoopbackSystemExcludeSelf;
-
-    // Determine whether to show processId input field
-    const shouldShowProcessId =
-      loopbackType === LoopbackAudioTrackType.LoopbackProcess;
-
+    const { enableLocalAudio, muteLocalAudioStream } = this.state;
     return (
       <>
         <AgoraButton
@@ -555,126 +300,6 @@ export default class JoinChannelAudio
               ? this.unmuteLocalAudioStream
               : this.muteLocalAudioStream
           }
-        />
-
-        <AgoraDivider />
-        <h3>Loopback Audio Track Configuration</h3>
-
-        <div style={{ marginBottom: 10 }}>
-          <label>App Name:</label>
-          <input
-            type="text"
-            value={loopbackAppName}
-            onChange={(e) => this.setState({ loopbackAppName: e.target.value })}
-            style={{ marginLeft: 10, padding: 5, width: 200 }}
-          />
-        </div>
-
-        <div style={{ marginBottom: 10 }}>
-          <label>Volume:</label>
-          <AgoraSlider
-            title={`Volume ${loopbackVolume}`}
-            minimumValue={0}
-            maximumValue={400}
-            step={1}
-            value={loopbackVolume}
-            onSlidingComplete={(value) => {
-              this.setState({ loopbackVolume: value });
-            }}
-          />
-        </div>
-
-        <div style={{ marginBottom: 10 }}>
-          <label>Loopback Type:</label>
-          <select
-            value={loopbackType}
-            onChange={(e) =>
-              this.setState({ loopbackType: Number(e.target.value) })
-            }
-            style={{ marginLeft: 10, padding: 5 }}
-          >
-            <option value={LoopbackAudioTrackType.LoopbackSystem}>
-              System Audio
-            </option>
-            <option value={LoopbackAudioTrackType.LoopbackSystemExcludeSelf}>
-              System Audio (Exclude Self)
-            </option>
-            <option value={LoopbackAudioTrackType.LoopbackApplication}>
-              Application Audio
-            </option>
-            <option value={LoopbackAudioTrackType.LoopbackProcess}>
-              Process Audio
-            </option>
-          </select>
-        </div>
-
-        {shouldShowDeviceName && (
-          <div style={{ marginBottom: 10 }}>
-            <label>Device Name:</label>
-            <input
-              type="text"
-              value={loopbackDeviceName}
-              onChange={(e) =>
-                this.setState({ loopbackDeviceName: e.target.value })
-              }
-              placeholder="Default: AgoraALD"
-              style={{ marginLeft: 10, padding: 5, width: 200 }}
-            />
-          </div>
-        )}
-
-        {shouldShowProcessId && (
-          <div style={{ marginBottom: 10 }}>
-            <label>Process ID:</label>
-            <input
-              type="number"
-              value={loopbackProcessId}
-              onChange={(e) =>
-                this.setState({ loopbackProcessId: Number(e.target.value) })
-              }
-              placeholder="Required"
-              min="1"
-              style={{ marginLeft: 10, padding: 5, width: 200 }}
-            />
-            <span style={{ color: 'red', marginLeft: 10 }}>* Required</span>
-          </div>
-        )}
-
-        <div style={{ marginBottom: 10 }}>
-          <span>
-            Current Track ID:{' '}
-            {loopbackTrackId !== null ? loopbackTrackId : 'None'}
-          </span>
-        </div>
-
-        <div style={{ marginBottom: 10 }}>
-          <label>
-            <input
-              type="checkbox"
-              checked={this.state.forceUseALD}
-              onChange={(e) => this.handleForceUseALDChange(e.target.checked)}
-              style={{ marginRight: 8 }}
-            />
-            Force use ALD
-          </label>
-        </div>
-
-        <AgoraButton
-          title="Create Loopback Audio Track"
-          onPress={this.createLoopbackAudioTrack}
-          disabled={loopbackTrackId !== null}
-        />
-
-        <AgoraButton
-          title="Destroy Loopback Audio Track"
-          onPress={this.destroyLoopbackAudioTrack}
-          disabled={loopbackTrackId === null}
-        />
-
-        <AgoraButton
-          title="Update Loopback Audio Track Configuration"
-          onPress={this.updateLoopbackAudioTrackConfig}
-          disabled={loopbackTrackId === null}
         />
       </>
     );

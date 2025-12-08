@@ -1,6 +1,7 @@
 import JoinChannelAudio from './JoinChannelAudio/JoinChannelAudio';
 import JoinChannelVideo from './JoinChannelVideo/JoinChannelVideo';
 import StringUid from './StringUid/StringUid';
+import LoopbackAudio from './LoopbackAudio/LoopbackAudio';
 
 const Basic = {
   title: 'Basic',
@@ -16,6 +17,10 @@ const Basic = {
     {
       name: 'StringUid',
       component: StringUid,
+    },
+    {
+      name: 'Loopback',
+      component: LoopbackAudio,
     },
   ],
 };
