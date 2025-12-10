@@ -5189,26 +5189,6 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
-   * Sets the format of the raw audio playback data before mixing.
-   *
-   * The SDK triggers the onPlaybackAudioFrameBeforeMixing callback according to the sampling interval.
-   *
-   * @param sampleRate The sample rate returned in the callback, which can be set as 8000, 16000, 32000, 44100, or 48000 Hz.
-   * @param channel The number of audio channels. You can set the value as 1 or 2.
-   *  1: Mono.
-   *  2: Stereo.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
-   */
-  abstract setPlaybackAudioFrameBeforeMixingParameters(
-    sampleRate: number,
-    channel: number,
-    samplesPerCall: number
-  ): number;
-
-  /**
    * Turns on audio spectrum monitoring.
    *
    * If you want to obtain the audio spectrum data of local or remote users, you can register the audio spectrum observer and enable audio spectrum monitoring. You can call this method either before or after joining a channel.

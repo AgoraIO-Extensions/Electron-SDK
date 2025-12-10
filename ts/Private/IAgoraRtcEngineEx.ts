@@ -16,7 +16,6 @@ import {
   VideoMirrorModeType,
   VideoStreamType,
   VideoSubscriptionOptions,
-  WatermarkConfig,
   WatermarkOptions,
 } from './AgoraBase';
 import {
@@ -634,32 +633,6 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   abstract addVideoWatermarkEx(
     watermarkUrl: string,
     options: WatermarkOptions,
-    connection: RtcConnection
-  ): number;
-
-  /**
-   * Adds a watermark image to the local video.
-   *
-   * This method adds a PNG watermark image to the local video in the live streaming. Once the watermark image is added, all the audience in the channel (CDN audience included), and the capturing device can see and capture it. The Agora SDK supports adding only one watermark image onto a live video stream. The newly added watermark image replaces the previous one. The watermark coordinates are dependent on the settings in the setVideoEncoderConfigurationEx method:
-   *  If the orientation mode of the encoding video (OrientationMode) is fixed landscape mode or the adaptive landscape mode, the watermark uses the landscape orientation.
-   *  If the orientation mode of the encoding video (OrientationMode) is fixed portrait mode or the adaptive portrait mode, the watermark uses the portrait orientation.
-   *  When setting the watermark position, the region must be less than the dimensions set in the setVideoEncoderConfigurationEx method; otherwise, the watermark image will be cropped.
-   *  Ensure that you have called enableVideo before calling this method.
-   *  This method supports adding a watermark image in the PNG file format only. Supported pixel formats of the PNG image are RGBA, RGB, Palette, Gray, and Alpha_gray.
-   *  If the dimensions of the PNG image differ from your settings in this method, the image will be cropped or zoomed to conform to your settings.
-   *  If you have enabled the local video preview by calling the startPreview method, you can use the visibleInPreview member to set whether or not the watermark is visible in the preview.
-   *  If you have enabled the mirror mode for the local video, the watermark on the local video is also mirrored. To avoid mirroring the watermark, Agora recommends that you do not use the mirror and watermark functions for the local video at the same time. You can implement the watermark function in your application layer.
-   *
-   * @param watermarkUrl The local file path of the watermark image to be added. This method supports adding a watermark image from the local absolute or relative file path.
-   * @param options The options of the watermark image to be added. See WatermarkOptions.
-   * @param connection The connection information. See RtcConnection.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
-   */
-  abstract addVideoWatermarkEx(
-    config: WatermarkConfig,
     connection: RtcConnection
   ): number;
 

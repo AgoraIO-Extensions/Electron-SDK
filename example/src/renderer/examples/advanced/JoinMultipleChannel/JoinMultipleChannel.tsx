@@ -1,14 +1,10 @@
 import {
   ChannelProfileType,
   ClientRoleType,
-  EncodingPreference,
   IRtcEngineEventHandler,
   IRtcEngineEx,
-  RemoteVideoState,
-  RemoteVideoStateReason,
   RtcConnection,
   RtcStats,
-  UserOfflineReasonType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
 import React, { ReactElement } from 'react';
@@ -126,13 +122,7 @@ export default class JoinMultipleChannel
    * Step 2-1: joinChannelEx1
    */
   protected joinChannelEx1() {
-    const {
-      channelId,
-      token,
-      uid,
-      publishCameraRelayTrack,
-      publishCameraTrack,
-    } = this.state;
+    const { channelId, token, uid, publishCameraTrack } = this.state;
     if (!channelId) {
       this.error('channelId is invalid');
       return;
@@ -160,7 +150,6 @@ export default class JoinMultipleChannel
         autoSubscribeAudio: false,
         autoSubscribeVideo: false,
         publishCameraTrack: publishCameraTrack,
-        publishCameraRelayTrack: publishCameraRelayTrack,
       }
     );
   }
@@ -169,13 +158,7 @@ export default class JoinMultipleChannel
    * Step 2-2: joinChannelEx2
    */
   protected joinChannelEx2() {
-    const {
-      channelId2,
-      token2,
-      uid2,
-      publishCameraRelayTrack2,
-      publishCameraTrack2,
-    } = this.state;
+    const { channelId2, token2, uid2, publishCameraTrack2 } = this.state;
     if (!channelId2) {
       this.error('channelId2 is invalid');
       return;
@@ -200,7 +183,6 @@ export default class JoinMultipleChannel
       {
         // Make myself as the broadcaster to send stream to remote
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-        publishCameraRelayTrack: publishCameraRelayTrack2,
         publishCameraTrack: publishCameraTrack2,
         autoSubscribeAudio: false,
         autoSubscribeVideo: false,

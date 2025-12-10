@@ -15,7 +15,6 @@ import {
   VideoMirrorModeType,
   VideoStreamType,
   VideoSubscriptionOptions,
-  WatermarkConfig,
   WatermarkOptions,
 } from '../AgoraBase';
 import {
@@ -1051,32 +1050,6 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     connection: RtcConnection
   ): string {
     return 'RtcEngineEx_addVideoWatermarkEx_ad7daa3';
-  }
-
-  addVideoWatermarkEx(
-    config: WatermarkConfig,
-    connection: RtcConnection
-  ): number {
-    const apiType = this.getApiTypeFromAddVideoWatermarkEx(config, connection);
-    const jsonParams = {
-      config: config,
-      connection: connection,
-      toJSON: () => {
-        return {
-          config: config,
-          connection: connection,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromAddVideoWatermarkEx(
-    config: WatermarkConfig,
-    connection: RtcConnection
-  ): string {
-    return 'RtcEngineEx_addVideoWatermarkEx_985f23a';
   }
 
   removeVideoWatermarkEx(id: string, connection: RtcConnection): number {

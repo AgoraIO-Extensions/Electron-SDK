@@ -5918,5 +5918,3 @@ export class VideoLayout {
    */
   videoState?: number;
 }
-
-export abstract class {}

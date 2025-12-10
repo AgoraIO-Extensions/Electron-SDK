@@ -39,5 +39,3 @@ export function processIAudioEncodedFrameObserver(
 
 // @ts-ignore
 export class Impl {}
-
-import { callIrisApi } from '../internal/IrisApiEngine';
