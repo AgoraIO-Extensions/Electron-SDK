@@ -250,6 +250,7 @@ interface State extends BaseAudioComponentState {
   loopbackDeviceName: string;
   loopbackProcessId: number;
   forceUseALD: boolean;
+  loopbackAECAggressiveness: number;
   externalAECFarin: boolean;
   enableAEC: boolean;
   allowLoopbackWithSCK: boolean;
@@ -283,6 +284,7 @@ export default class LoopbackAudioTrack
       loopbackDeviceName: 'AgoraALD',
       loopbackProcessId: 0,
       forceUseALD: false,
+      loopbackAECAggressiveness: -1,
       externalAECFarin: true,
       enableAEC: true,
       allowLoopbackWithSCK: false,
@@ -445,6 +447,22 @@ export default class LoopbackAudioTrack
     this.info(
       `Force use ALD: ${checked ? 'enabled' : 'disabled'}, catap: ${catapValue}, sck: ${sckValue}`
     );
+  };
+
+  handleLoopbackAECAggressivenessChange = (value: number) => {
+    this.setState({ loopbackAECAggressiveness: value });
+    this.engine?.setParameters(
+      `{"che.audio.loopback.apm_aec_aggressiveness":${value}}`
+    );
+    const valueNames: { [key: number]: string } = {
+      [-1]: 'Not Specified',
+      [0]: 'Mild',
+      [1]: 'Normal',
+      [2]: 'Aggressive',
+      [3]: 'Super Aggressive',
+      [4]: 'Extreme',
+    };
+    this.info(`LOOPBACK AEC Aggressiveness: ${valueNames[value] || value}`);
   };
 
   handleExternalAECFarinChange = (checked: boolean) => {
@@ -1097,6 +1115,25 @@ export default class LoopbackAudioTrack
             </label>
           </div>
         )}
+        <div style={{ marginBottom: 10 }}>
+          <label>
+            LOOPBACK AEC:
+            <select
+              value={this.state.loopbackAECAggressiveness}
+              onChange={(e) =>
+                this.handleLoopbackAECAggressivenessChange(Number(e.target.value))
+              }
+              style={{ marginLeft: 10, padding: 5 }}
+            >
+              <option value={-1}>Not Specified -1 (Default)</option>
+              <option value={0}>Mild 0</option>
+              <option value={1}>Normal 1</option>
+              <option value={2}>Aggressive 2</option>
+              <option value={3}>Super Aggressive 3</option>
+              <option value={4}>Extreme 4</option>
+            </select>
+          </label>
+        </div>
         <div style={{ marginBottom: 10 }}>
           <label>
             <input
