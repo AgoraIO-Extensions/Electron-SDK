@@ -130,6 +130,12 @@
       }
     }
   },
+  "resolutions": {
+    "color": "^3.2.1"
+  },
+  "overrides": {
+    "color": "^3.2.1"
+  },
   "dependencies": {
     "buffer": "^6.0.3",
     "cross-env": "^7.0.3",
