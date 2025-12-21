@@ -12,7 +12,9 @@
     "dist:win": "npm run dist -- --win",
     "dist:linux": "npm run dist -- --linux",
     "dist:win32": "npm run dist:win -- --ia32",
-    "dist:win64": "npm run dist:win -- --x64"
+    "dist:win64": "npm run dist:win -- --x64",
+    "dist:linux:x64": "npm run dist:linux -- --linux --x64",
+    "dist:linux:arm64": "npm run dist:linux -- --linux --arm64"
   },
   "build": {
     "appId": "agora.io.ElectronApiExample",

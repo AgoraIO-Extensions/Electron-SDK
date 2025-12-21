@@ -8,16 +8,16 @@ on:
   workflow_call:
     inputs:
       type:
-        description: 'Build type'
+        description: "Build type"
         required: true
-        default: 'sdk'
+        default: "sdk"
         type: string
   workflow_dispatch:
     inputs:
       type:
-        description: 'Build type'
+        description: "Build type"
         required: true
-        default: 'demo'
+        default: "demo"
         type: choice
         options:
           - demo
@@ -109,12 +109,12 @@ jobs:
           path: |
             example/dist/Agora-Electron-API-Example-*-mac.zip
           if-no-files-found: error
-  
+
   build-linux:
     if: ${{ inputs.type == 'demo' || contains(github.event.pull_request.labels.*.name, 'ci:dep-update') }}
     strategy:
       matrix:
-        arch: [x64]
+        arch: [x64, arm64]
     runs-on: ubuntu-latest
     container:
       image: ubuntu:20.04
@@ -172,7 +172,7 @@ jobs:
 
       - name: Build Example
         run: |
-          yarn dist:linux
+          yarn dist:linux:${{ matrix.arch }}
         working-directory: example
 
       - uses: actions/upload-artifact@v4

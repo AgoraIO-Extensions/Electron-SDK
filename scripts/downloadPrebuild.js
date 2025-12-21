@@ -78,7 +78,15 @@ const matchNativeFile = (path) => {
         /^libs\/.*\.xcframework\/macos-arm64_x86_64\//.test(path);
       break;
     case 'linux':
-      result = path.startsWith('rtc/sdk/') && path.endsWith('.so');
+      switch (arch) {
+        case 'x64':
+          result = path.startsWith('rtc/sdk/x86_64/') && path.endsWith('.so');
+          break;
+        case 'arm64':
+          result =
+            path.startsWith('rtc/sdk/arm64-v8a/') && path.endsWith('.so');
+          break;
+      }
       break;
   }
   return result;
@@ -211,7 +219,14 @@ module.exports = async () => {
               }
               break;
             case 'linux':
-              file.path = file.path.replace(/^rtc\/sdk\//, '');
+              switch (arch) {
+                case 'x64':
+                  file.path = file.path.replace(/^rtc\/sdk\/x86_64\//, '');
+                  break;
+                case 'arm64':
+                  file.path = file.path.replace(/^rtc\/sdk\/arm64-v8a\//, '');
+                  break;
+              }
               if (fs.exists(`${nativeLibDir}/${file.path}`)) {
                 fs.remove(`${nativeLibDir}/${file.path}`);
               }

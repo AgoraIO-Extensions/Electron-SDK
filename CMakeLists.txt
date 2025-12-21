@@ -127,18 +127,24 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   if(${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86")
     set(AGORA_RTC_PROJECT_ARCH "x86")
     set(AGORA_IRIS_PROJECT_ARCH "x86")
+    set(AGORA_RTC_SDK_ARCH_DIR "x86")
   elseif(${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86_64")
     set(AGORA_RTC_PROJECT_ARCH "x86_64")
     set(AGORA_IRIS_PROJECT_ARCH "x86_64")
+    set(AGORA_RTC_SDK_ARCH_DIR "x86_64")
+  elseif(${CMAKE_OSX_ARCHITECTURES} STREQUAL "arm64")
+    set(AGORA_RTC_PROJECT_ARCH "arm64")
+    set(AGORA_IRIS_PROJECT_ARCH "arm64")
+    set(AGORA_RTC_SDK_ARCH_DIR "arm64-v8a")
   endif()
 
   # native rtc sdk path
   set(AGORA_RTC_SDK_PATH
           ${CMAKE_CURRENT_SOURCE_DIR}/native
           )
-  
+
   file(GLOB AGORA_RTC_SDK_LIBRARY
-          ${AGORA_RTC_SDK_PATH}/*_Native_SDK_for_Linux_FULL/rtc/sdk/*.so
+          ${AGORA_RTC_SDK_PATH}/*_Native_SDK_for_Linux_FULL/rtc/sdk/${AGORA_RTC_SDK_ARCH_DIR}/*.so
           )
 
   # iris sdk path

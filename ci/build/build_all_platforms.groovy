@@ -1,8 +1,8 @@
 properties([
     buildDiscarder(logRotator(
-        artifactDaysToKeepStr: '', 
-        artifactNumToKeepStr: '', 
-        daysToKeepStr: '7', 
+        artifactDaysToKeepStr: '',
+        artifactNumToKeepStr: '',
+        daysToKeepStr: '7',
         numToKeepStr: '100'
     )),
     parameters([
@@ -54,9 +54,14 @@ timestamps {
                 string(name: 'arch', value: "x64"),
             ]
         },
-        "electron_linux_build": {
+        "electron_linux_x64_build": {
             build job: 'ELECTRON/build_linux', parameters: commonBuildParams + [
                 string(name: 'arch', value: "x64")
+            ]
+        },
+        "electron_linux_arm64_build": {
+            build job: 'ELECTRON/build_linux', parameters: commonBuildParams + [
+                string(name: 'arch', value: "arm64")
             ]
         }
     ]
