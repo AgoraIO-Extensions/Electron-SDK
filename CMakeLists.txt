@@ -234,7 +234,7 @@ function(build_target_agora_node_ext)
     set(CMAKE_INSTALL_RPATH "\${ORIGIN}")
     message(=======CMAKE_JS_LIB=${CMAKE_JS_LIB} =====origin_path==== ${ORIGIN} === RTC === ${AGORA_RTC_SDK_LIB} == IRIs == ${AGORA_IRIS_SDK_LIB})
 
-    # Get absolute path to libAgoraRtcWrapper.so for verification
+    # Get absolute path to libAgoraRtcWrapper.so for linking
     get_filename_component(AGORA_IRIS_SDK_SO_ABS_PATH
             ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/libAgoraRtcWrapper.so
             ABSOLUTE
@@ -242,11 +242,17 @@ function(build_target_agora_node_ext)
     if(NOT EXISTS ${AGORA_IRIS_SDK_SO_ABS_PATH})
       message(FATAL_ERROR "libAgoraRtcWrapper.so not found at ${AGORA_IRIS_SDK_SO_ABS_PATH}")
     endif()
-
-    # Get directory of the library for -L flag
-    get_filename_component(AGORA_IRIS_SDK_SO_DIR ${AGORA_IRIS_SDK_SO_ABS_PATH} DIRECTORY)
     message(STATUS "Using libAgoraRtcWrapper.so at: ${AGORA_IRIS_SDK_SO_ABS_PATH}")
-    message(STATUS "Library directory: ${AGORA_IRIS_SDK_SO_DIR}")
+
+    # Create IMPORTED library with IMPORTED_NO_SONAME to make linker use library name only
+    # This ensures DT_NEEDED contains "libAgoraRtcWrapper.so" instead of full/relative path
+    add_library(libagora_iris_sdk SHARED IMPORTED)
+    set_target_properties(
+            libagora_iris_sdk
+            PROPERTIES
+            IMPORTED_LOCATION ${AGORA_IRIS_SDK_SO_ABS_PATH}
+            IMPORTED_NO_SONAME TRUE
+    )
 
     add_library(${AGORA_NODE_EXT_NAME} SHARED
             ${COMMON_FILE2}
@@ -255,16 +261,15 @@ function(build_target_agora_node_ext)
             ${TARGET_AGORA_NODE_EXT_FILE}
             ${CMAKE_JS_SRC}
             )
-    # Use -L to specify library search path and -l to link by name (without lib prefix and .so suffix)
-    # This ensures DT_NEEDED only contains the library name (libAgoraRtcWrapper.so) instead of full/relative path
     # Set RPATH to $ORIGIN so runtime can find the library in the same directory as .node file
     set_target_properties(${AGORA_NODE_EXT_NAME} PROPERTIES
             INSTALL_RPATH "\$ORIGIN"
             BUILD_WITH_INSTALL_RPATH TRUE
-            LINK_FLAGS "-Wl,-rpath,\$ORIGIN -Wl,--disable-new-dtags -L${AGORA_IRIS_SDK_SO_DIR} -lAgoraRtcWrapper"
+            LINK_FLAGS "-Wl,-rpath,\$ORIGIN -Wl,--disable-new-dtags"
     )
     target_link_libraries(${AGORA_NODE_EXT_NAME}
             PRIVATE
+            libagora_iris_sdk
             ${CMAKE_JS_LIB}
             )
   endif ()
