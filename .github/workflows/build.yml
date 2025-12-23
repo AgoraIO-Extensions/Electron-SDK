@@ -120,6 +120,9 @@ jobs:
       image: ubuntu:20.04
       env:
         DEBIAN_FRONTEND: noninteractive
+        npm_config_arch: ${{ matrix.arch }}
+        npm_config_agora_electron_arch: ${{ matrix.arch }}
+        npm_config_agora_electron_sdk_arch: ${{ matrix.arch }}
     steps:
       - name: Install system dependencies
         run: |
