@@ -162,6 +162,15 @@ jobs:
             libgtk-3-0 \
             libgbm1
 
+          # Install cross-compilation toolchain for ARM64
+          if [ "${{ matrix.arch }}" = "arm64" ]; then
+            apt-get install -y \
+              gcc-aarch64-linux-gnu \
+              g++-aarch64-linux-gnu \
+              binutils-aarch64-linux-gnu
+            echo "ARM64 cross-compilation toolchain installed"
+          fi
+
       - uses: actions/checkout@v4
 
       - name: Setup
