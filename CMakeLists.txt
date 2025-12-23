@@ -186,8 +186,7 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   set(AGORA_IRIS_SDK_PATH
           ${CMAKE_CURRENT_SOURCE_DIR}/iris
           )
-  # Use file(GLOB) to get the actual .so file path for copying
-  file(GLOB AGORA_IRIS_SDK_LIBRARY
+  set(AGORA_IRIS_SDK_LIBRARY
           ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/*.so
           )
   # iris sdk include file
@@ -235,23 +234,11 @@ function(build_target_agora_node_ext)
     set(CMAKE_INSTALL_RPATH "\${ORIGIN}")
     message(=======CMAKE_JS_LIB=${CMAKE_JS_LIB} =====origin_path==== ${ORIGIN} === RTC === ${AGORA_RTC_SDK_LIB} == IRIs == ${AGORA_IRIS_SDK_LIB})
 
-    # Get the actual path to libAgoraRtcWrapper.so for linking
-    # This will be copied to the output directory by copy_library function
-    file(GLOB AGORA_IRIS_SDK_SO_FILE
-            ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/libAgoraRtcWrapper.so
-            )
-    if(NOT AGORA_IRIS_SDK_SO_FILE)
-      message(FATAL_ERROR "libAgoraRtcWrapper.so not found at ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/libAgoraRtcWrapper.so")
-    endif()
-
     add_library(libagora_iris_sdk SHARED IMPORTED)
-    # Use absolute path for IMPORTED_LOCATION during build
-    # The library will be copied to the same directory as .node file by copy_library
-    # At runtime, RPATH will make it look in the same directory as the .node file
     set_target_properties(
             libagora_iris_sdk
             PROPERTIES IMPORTED_LOCATION
-            ${AGORA_IRIS_SDK_SO_FILE}
+            ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/libAgoraRtcWrapper.so
     )
 
     add_library(${AGORA_NODE_EXT_NAME} SHARED
@@ -261,14 +248,6 @@ function(build_target_agora_node_ext)
             ${TARGET_AGORA_NODE_EXT_FILE}
             ${CMAKE_JS_SRC}
             )
-    # Set RPATH to look for libraries in the same directory as the .node file
-    # This ensures libAgoraRtcWrapper.so is found in the same directory as agora_node_ext.node
-    # Use -Wl,-rpath,\$ORIGIN to set RPATH at link time
-    set_target_properties(${AGORA_NODE_EXT_NAME} PROPERTIES
-            INSTALL_RPATH "\$ORIGIN"
-            BUILD_WITH_INSTALL_RPATH TRUE
-            LINK_FLAGS "-Wl,-rpath,\$ORIGIN"
-    )
     target_link_libraries(${AGORA_NODE_EXT_NAME}
             PRIVATE
             libagora_iris_sdk
@@ -305,41 +284,16 @@ endfunction(build_target_agora_node_ext)
 
 function(copy_library)
   if (WIN32 OR (UNIX AND NOT APPLE))
-    # For Linux, file(GLOB) returns a list, need to copy each file
-    if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-      # Copy RTC SDK libraries
-      foreach(RTC_LIB ${AGORA_RTC_SDK_LIBRARY})
-        add_custom_command(
-                TARGET ${AGORA_NODE_EXT_NAME}
-                POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy
-                "${RTC_LIB}"
-                "$<TARGET_FILE_DIR:${AGORA_NODE_EXT_NAME}>/"
-        )
-      endforeach()
-      # Copy IRIS SDK libraries
-      foreach(IRIS_LIB ${AGORA_IRIS_SDK_LIBRARY})
-        add_custom_command(
-                TARGET ${AGORA_NODE_EXT_NAME}
-                POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy
-                "${IRIS_LIB}"
-                "$<TARGET_FILE_DIR:${AGORA_NODE_EXT_NAME}>/"
-        )
-      endforeach()
-    else()
-      # For Windows, use original method
-      add_custom_command(
-              TARGET ${AGORA_NODE_EXT_NAME}
-              POST_BUILD
-              COMMAND ${CMAKE_COMMAND} -E copy
-              ${AGORA_RTC_SDK_LIBRARY}
-              "$<TARGET_FILE_DIR:${AGORA_NODE_EXT_NAME}>/"
-              COMMAND ${CMAKE_COMMAND} -E copy
-              ${AGORA_IRIS_SDK_LIBRARY}
-              "$<TARGET_FILE_DIR:${AGORA_NODE_EXT_NAME}>/"
-      )
-    endif()
+    add_custom_command(
+            TARGET ${AGORA_NODE_EXT_NAME}
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            ${AGORA_RTC_SDK_LIBRARY}
+            "$<TARGET_FILE_DIR:${AGORA_NODE_EXT_NAME}>/"
+            COMMAND ${CMAKE_COMMAND} -E copy
+            ${AGORA_IRIS_SDK_LIBRARY}
+            "$<TARGET_FILE_DIR:${AGORA_NODE_EXT_NAME}>/"
+    )
   else ()
     add_custom_command(
             TARGET ${AGORA_NODE_EXT_NAME}
