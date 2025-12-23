@@ -160,7 +160,8 @@ jobs:
             libgtk2.0-0 \
             libgdk-pixbuf2.0-0 \
             libgtk-3-0 \
-            libgbm1
+            libgbm1 \
+            patchelf
 
           # Install cross-compilation toolchain for ARM64
           if [ "${{ matrix.arch }}" = "arm64" ]; then
