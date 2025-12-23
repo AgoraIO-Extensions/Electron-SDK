@@ -234,22 +234,11 @@ function(build_target_agora_node_ext)
     set(CMAKE_INSTALL_RPATH "\${ORIGIN}")
     message(=======CMAKE_JS_LIB=${CMAKE_JS_LIB} =====origin_path==== ${ORIGIN} === RTC === ${AGORA_RTC_SDK_LIB} == IRIs == ${AGORA_IRIS_SDK_LIB})
 
-    # Get absolute path to libAgoraRtcWrapper.so for linking
-    # This ensures the library path is correctly resolved
-    get_filename_component(AGORA_IRIS_SDK_SO_ABS_PATH
-            ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/libAgoraRtcWrapper.so
-            ABSOLUTE
-    )
-    if(NOT EXISTS ${AGORA_IRIS_SDK_SO_ABS_PATH})
-      message(FATAL_ERROR "libAgoraRtcWrapper.so not found at ${AGORA_IRIS_SDK_SO_ABS_PATH}")
-    endif()
-    message(STATUS "Using libAgoraRtcWrapper.so at: ${AGORA_IRIS_SDK_SO_ABS_PATH}")
-
     add_library(libagora_iris_sdk SHARED IMPORTED)
     set_target_properties(
             libagora_iris_sdk
             PROPERTIES IMPORTED_LOCATION
-            ${AGORA_IRIS_SDK_SO_ABS_PATH}
+            ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/libAgoraRtcWrapper.so
     )
 
     add_library(${AGORA_NODE_EXT_NAME} SHARED
@@ -259,13 +248,6 @@ function(build_target_agora_node_ext)
             ${TARGET_AGORA_NODE_EXT_FILE}
             ${CMAKE_JS_SRC}
             )
-    # Set RPATH to look for libraries in the same directory as the .node file
-    # This ensures libAgoraRtcWrapper.so is found in the same directory as agora_node_ext.node at runtime
-    set_target_properties(${AGORA_NODE_EXT_NAME} PROPERTIES
-            INSTALL_RPATH "\$ORIGIN"
-            BUILD_WITH_INSTALL_RPATH TRUE
-            LINK_FLAGS "-Wl,-rpath,\$ORIGIN"
-    )
     target_link_libraries(${AGORA_NODE_EXT_NAME}
             PRIVATE
             libagora_iris_sdk
