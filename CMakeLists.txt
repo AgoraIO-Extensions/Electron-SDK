@@ -25,6 +25,23 @@ elseif (UNIX)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -fPIC")
 endif ()
 
+if (LINUX)
+  if (${CMAKE_OSX_ARCHITECTURES} STREQUAL "arm64")
+    set(CROSS aarch64-linux-gnu-)
+  else()
+    set(CROSS x86_64-linux-gnu-)
+  endif ()
+  # Force set compilers before CMake tries to detect them
+  set(CMAKE_C_COMPILER ${CROSS}gcc CACHE FILEPATH "C compiler" FORCE)
+  set(CMAKE_CXX_COMPILER ${CROSS}g++ CACHE FILEPATH "C++ compiler" FORCE)
+  set(CMAKE_ASM_COMPILER ${CROSS}as CACHE FILEPATH "ASM compiler" FORCE)
+
+  # Force set linker executables for cross-compilation
+  set(CMAKE_C_LINKER_EXECUTABLE ${CROSS}gcc CACHE FILEPATH "C linker executable" FORCE)
+  set(CMAKE_CXX_LINKER_EXECUTABLE ${CROSS}g++ CACHE FILEPATH "C++ linker executable" FORCE)
+  set(CMAKE_LINKER ${CROSS}ld CACHE FILEPATH "Linker" FORCE)
+endif ()
+
 include_directories(${CMAKE_JS_INC})
 set(BUILD_TYPE ${CMAKE_BUILD_TYPE})
 
@@ -124,15 +141,15 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
           ${AGORA_IRIS_SDK_PATH}/${AGORA_DCG_SDK_ARCH_FILE_NAME}/AgoraRtcWrapper.lib
           )
 elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-  if(${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86")
+  if (${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86")
     set(AGORA_RTC_PROJECT_ARCH "x86")
     set(AGORA_IRIS_PROJECT_ARCH "x86")
-  elseif(${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86_64")
+  elseif (${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86_64")
     set(AGORA_RTC_PROJECT_ARCH "x86_64")
     set(AGORA_IRIS_PROJECT_ARCH "x86_64")
-  elseif(${CMAKE_OSX_ARCHITECTURES} STREQUAL "arm64")
+  elseif (${CMAKE_OSX_ARCHITECTURES} STREQUAL "arm64")
     set(AGORA_RTC_PROJECT_ARCH "arm64-v8a")
-    set(AGORA_IRIS_PROJECT_ARCH "aarch64")
+    set(AGORA_IRIS_PROJECT_ARCH "aarch64_gnu")
   endif()
 
   # native rtc sdk path
