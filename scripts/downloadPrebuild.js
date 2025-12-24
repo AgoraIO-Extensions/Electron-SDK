@@ -29,10 +29,10 @@ const getDownloadURL = () => {
     downloadUrl = `https://download.agora.io/sdk/release/Electron-win64-${packageVersion}-napi.zip`;
   }
   if (platform === 'linux' && arch === 'x64') {
-    downloadUrl = `https://download.agora.io/sdk/release/Electron-linux-${packageVersion}-napi.zip`;
+    downloadUrl = `https://download.agora.io/sdk/release/Electron-linux_x64-${packageVersion}-napi.zip`;
   }
   if (platform === 'linux' && arch === 'arm64') {
-    downloadUrl = `https://download.agora.io/sdk/release/Electron-linux-${packageVersion}-napi.zip`;
+    downloadUrl = `https://download.agora.io/sdk/release/Electron-linux_arm64-${packageVersion}-napi.zip`;
   }
   return downloadUrl;
 };
