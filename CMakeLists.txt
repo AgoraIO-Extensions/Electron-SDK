@@ -25,7 +25,7 @@ elseif (UNIX)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -fPIC")
 endif ()
 
-if (LINUX)
+if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   if (${CMAKE_OSX_ARCHITECTURES} STREQUAL "arm64")
     set(CROSS aarch64-linux-gnu-)
   else()
