@@ -209,9 +209,6 @@ function(build_target_agora_node_ext)
             ${CMAKE_JS_LIB}
             )
   elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    set(CMAKE_BUILD_WITH_INSTALL_RPATH true)
-    set(CMAKE_INSTALL_RPATH "\${ORIGIN}")
-
     add_library(libagora_iris_sdk SHARED IMPORTED)
     set_target_properties(
             libagora_iris_sdk
@@ -227,7 +224,7 @@ function(build_target_agora_node_ext)
             ${CMAKE_JS_SRC}
             )
     set_target_properties(${AGORA_NODE_EXT_NAME} PROPERTIES
-            LINK_FLAGS "-Wl,--as-needed"
+            LINK_FLAGS "-Wl,-rpath,$ORIGIN:."
             )
     target_link_libraries(${AGORA_NODE_EXT_NAME}
             PRIVATE
