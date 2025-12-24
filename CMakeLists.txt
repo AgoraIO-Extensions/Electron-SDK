@@ -226,6 +226,9 @@ function(build_target_agora_node_ext)
             ${TARGET_AGORA_NODE_EXT_FILE}
             ${CMAKE_JS_SRC}
             )
+    set_target_properties(${AGORA_NODE_EXT_NAME} PROPERTIES
+            LINK_FLAGS "-Wl,--as-needed"
+            )
     target_link_libraries(${AGORA_NODE_EXT_NAME}
             PRIVATE
             libagora_iris_sdk
