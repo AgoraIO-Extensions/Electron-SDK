@@ -1,41 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 set(CMAKE_CXX_STANDARD 14)
 
-# Set cross-compilation toolchain for ARM64 before project()
-# This must be done before project() is called
-# Check if CMAKE_OSX_ARCHITECTURES is set to arm64 (passed via cmake-js --CDCMAKE_OSX_ARCHITECTURES)
-if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
-  set(CMAKE_SYSTEM_PROCESSOR "aarch64")
-  # Try to find cross-compilation toolchain
-  # Only set if not already defined (allows override from command line via --CDCMAKE_C_COMPILER)
-  if(NOT DEFINED CMAKE_C_COMPILER)
-    find_program(ARM64_C_COMPILER NAMES aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc-9 aarch64-linux-gnu-gcc-10 aarch64-linux-gnu-gcc-11)
-    if(ARM64_C_COMPILER)
-      set(CMAKE_C_COMPILER ${ARM64_C_COMPILER} CACHE FILEPATH "C compiler" FORCE)
-      message(STATUS "Found ARM64 cross-compiler: ${CMAKE_C_COMPILER}")
-    else()
-      message(WARNING "ARM64 cross-compiler not found. Please install aarch64-linux-gnu-gcc")
-    endif()
-  endif()
-  if(NOT DEFINED CMAKE_CXX_COMPILER)
-    find_program(ARM64_CXX_COMPILER NAMES aarch64-linux-gnu-g++ aarch64-linux-gnu-g++-9 aarch64-linux-gnu-g++-10 aarch64-linux-gnu-g++-11)
-    if(ARM64_CXX_COMPILER)
-      set(CMAKE_CXX_COMPILER ${ARM64_CXX_COMPILER} CACHE FILEPATH "CXX compiler" FORCE)
-      message(STATUS "Found ARM64 cross-compiler: ${CMAKE_CXX_COMPILER}")
-    else()
-      message(WARNING "ARM64 cross-compiler not found. Please install aarch64-linux-gnu-g++")
-    endif()
-  endif()
-  # Set linker to use ARM64 version
-  if(NOT DEFINED CMAKE_LINKER)
-    find_program(ARM64_LINKER NAMES aarch64-linux-gnu-ld)
-    if(ARM64_LINKER)
-      set(CMAKE_LINKER ${ARM64_LINKER} CACHE FILEPATH "Linker" FORCE)
-      message(STATUS "Found ARM64 linker: ${CMAKE_LINKER}")
-    endif()
-  endif()
-endif()
-
 project(agora-electron-sdk)
 
 if (WIN32)
@@ -162,24 +127,21 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   if(${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86")
     set(AGORA_RTC_PROJECT_ARCH "x86")
     set(AGORA_IRIS_PROJECT_ARCH "x86")
-    set(AGORA_RTC_SDK_ARCH_DIR "x86")
   elseif(${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86_64")
     set(AGORA_RTC_PROJECT_ARCH "x86_64")
     set(AGORA_IRIS_PROJECT_ARCH "x86_64")
-    set(AGORA_RTC_SDK_ARCH_DIR "x86_64")
   elseif(${CMAKE_OSX_ARCHITECTURES} STREQUAL "arm64")
-    set(AGORA_RTC_PROJECT_ARCH "arm64")
-    set(AGORA_IRIS_PROJECT_ARCH "arm64")
-    set(AGORA_RTC_SDK_ARCH_DIR "arm64-v8a")
+    set(AGORA_RTC_PROJECT_ARCH "arm64-v8a")
+    set(AGORA_IRIS_PROJECT_ARCH "aarch64")
   endif()
 
   # native rtc sdk path
   set(AGORA_RTC_SDK_PATH
           ${CMAKE_CURRENT_SOURCE_DIR}/native
           )
-
+  
   file(GLOB AGORA_RTC_SDK_LIBRARY
-          ${AGORA_RTC_SDK_PATH}/*_Native_SDK_for_Linux_FULL/rtc/sdk/${AGORA_RTC_SDK_ARCH_DIR}/*.so
+          ${AGORA_RTC_SDK_PATH}/*_Native_SDK_for_Linux_FULL/rtc/sdk/${AGORA_RTC_PROJECT_ARCH}/*.so
           )
 
   # iris sdk path
@@ -234,24 +196,11 @@ function(build_target_agora_node_ext)
     set(CMAKE_INSTALL_RPATH "\${ORIGIN}")
     message(=======CMAKE_JS_LIB=${CMAKE_JS_LIB} =====origin_path==== ${ORIGIN} === RTC === ${AGORA_RTC_SDK_LIB} == IRIs == ${AGORA_IRIS_SDK_LIB})
 
-    # Get absolute path to libAgoraRtcWrapper.so for linking
-    get_filename_component(AGORA_IRIS_SDK_SO_ABS_PATH
-            ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/libAgoraRtcWrapper.so
-            ABSOLUTE
-    )
-    if(NOT EXISTS ${AGORA_IRIS_SDK_SO_ABS_PATH})
-      message(FATAL_ERROR "libAgoraRtcWrapper.so not found at ${AGORA_IRIS_SDK_SO_ABS_PATH}")
-    endif()
-    message(STATUS "Using libAgoraRtcWrapper.so at: ${AGORA_IRIS_SDK_SO_ABS_PATH}")
-
-    # Create IMPORTED library with IMPORTED_NO_SONAME to make linker use library name only
-    # This ensures DT_NEEDED contains "libAgoraRtcWrapper.so" instead of full/relative path
     add_library(libagora_iris_sdk SHARED IMPORTED)
     set_target_properties(
             libagora_iris_sdk
-            PROPERTIES
-            IMPORTED_LOCATION ${AGORA_IRIS_SDK_SO_ABS_PATH}
-            IMPORTED_NO_SONAME TRUE
+            PROPERTIES IMPORTED_LOCATION
+            ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/libAgoraRtcWrapper.so
     )
 
     add_library(${AGORA_NODE_EXT_NAME} SHARED
@@ -261,16 +210,9 @@ function(build_target_agora_node_ext)
             ${TARGET_AGORA_NODE_EXT_FILE}
             ${CMAKE_JS_SRC}
             )
-    # Set RPATH to $ORIGIN so runtime can find the library in the same directory as .node file
-    set_target_properties(${AGORA_NODE_EXT_NAME} PROPERTIES
-            INSTALL_RPATH "\$ORIGIN"
-            BUILD_WITH_INSTALL_RPATH TRUE
-            LINK_FLAGS "-Wl,-rpath,\$ORIGIN -Wl,--disable-new-dtags"
-    )
     target_link_libraries(${AGORA_NODE_EXT_NAME}
             PRIVATE
             libagora_iris_sdk
-            ${CMAKE_JS_LIB}
             )
   endif ()
   target_include_directories(${AGORA_NODE_EXT_NAME} PUBLIC
