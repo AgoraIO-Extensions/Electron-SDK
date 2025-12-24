@@ -211,7 +211,6 @@ function(build_target_agora_node_ext)
   elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set(CMAKE_BUILD_WITH_INSTALL_RPATH true)
     set(CMAKE_INSTALL_RPATH "\${ORIGIN}")
-    message(=======CMAKE_JS_LIB=${CMAKE_JS_LIB} =====origin_path==== ${ORIGIN} === RTC === ${AGORA_RTC_SDK_LIB} == IRIs == ${AGORA_IRIS_SDK_LIB})
 
     add_library(libagora_iris_sdk SHARED IMPORTED)
     set_target_properties(
@@ -230,6 +229,7 @@ function(build_target_agora_node_ext)
     target_link_libraries(${AGORA_NODE_EXT_NAME}
             PRIVATE
             libagora_iris_sdk
+            ${CMAKE_JS_LIB}
             )
   endif ()
   target_include_directories(${AGORA_NODE_EXT_NAME} PUBLIC
