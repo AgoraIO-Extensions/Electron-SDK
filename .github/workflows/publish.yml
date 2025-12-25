@@ -48,7 +48,7 @@ jobs:
       - name: NPM Publish
         if: ${{ !inputs.dry-run }}
         run: |
-          git status
+          git restore yarn.lock
           git config --global user.email "${{ secrets.GIT_EMAIL }}"
           git config --global user.name "${{ secrets.GIT_USERNAME }}"
           yarn release ${{ inputs.increment }} --ci --no-git.tag --no-github.release --npm.allowSameVersion
