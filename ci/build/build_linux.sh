@@ -116,7 +116,7 @@ then
   # electron.zip
   # 执行上传到artifactory
   echo 执行上传electron.zip到artifactory
-  cp -f electron.zip $WORKSPACE/${build_time}_${package_version}_linux_${arch}.zip
+  cp -f electron.zip $WORKSPACE/${build_time}_linux_${package_version}_${arch}.zip
   if [ "$Upload_CDN" = true ]
   then
     # electron.zip
