@@ -35,7 +35,10 @@ export class WebCodecsRenderer extends IRenderer {
     super.bind(context);
     if (!this.canvas) return;
     this.offscreenCanvas = this.canvas.transferControlToOffscreen();
-    this.gl = getContextByCanvas(this.offscreenCanvas, this.context.enableAlphaMask);
+    this.gl = getContextByCanvas(
+      this.offscreenCanvas,
+      this.context.enableAlphaMask
+    );
     if (!this.gl) return;
     const vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
     if (!vertexShader) return;

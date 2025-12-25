@@ -5,6 +5,7 @@ import {
   DataStreamConfig,
   EncryptionConfig,
   LiveTranscoding,
+  RdtStreamType,
   SimulcastConfig,
   SimulcastStreamConfig,
   SimulcastStreamMode,
@@ -15,6 +16,7 @@ import {
   VideoMirrorModeType,
   VideoStreamType,
   VideoSubscriptionOptions,
+  WatermarkConfig,
   WatermarkOptions,
 } from './AgoraBase';
 import {
@@ -25,7 +27,6 @@ import {
 import {
   ChannelMediaOptions,
   IRtcEngine,
-  ImageTrackOptions,
   LeaveChannelOptions,
   StreamFallbackOptions,
 } from './IAgoraRtcEngine';
@@ -589,6 +590,27 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
+   * @ignore
+   */
+  abstract sendRdtMessageEx(
+    uid: number,
+    type: RdtStreamType,
+    data: string,
+    length: number,
+    connection: RtcConnection
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract sendMediaControlMessageEx(
+    uid: number,
+    data: string,
+    length: number,
+    connection: RtcConnection
+  ): number;
+
+  /**
    * Adds a watermark image to the local video.
    *
    * This method adds a PNG watermark image to the local video in the live streaming. Once the watermark image is added, all the audience in the channel (CDN audience included), and the capturing device can see and capture it. The Agora SDK supports adding only one watermark image onto a live video stream. The newly added watermark image replaces the previous one. The watermark coordinates are dependent on the settings in the setVideoEncoderConfigurationEx method:
@@ -612,6 +634,14 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   abstract addVideoWatermarkEx(
     watermarkUrl: string,
     options: WatermarkOptions,
+    connection: RtcConnection
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract removeVideoWatermarkEx(
+    id: string,
     connection: RtcConnection
   ): number;
 
@@ -973,15 +1003,6 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * @ignore
    */
-  abstract enableVideoImageSourceEx(
-    enable: boolean,
-    options: ImageTrackOptions,
-    connection: RtcConnection
-  ): number;
-
-  /**
-   * @ignore
-   */
   abstract preloadEffectEx(
     connection: RtcConnection,
     soundId: number,
@@ -1021,5 +1042,13 @@ export abstract class IRtcEngineEx extends IRtcEngine {
     connection: RtcConnection,
     uid: number,
     config: SnapshotConfig
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract addVideoWatermarkWithConfigEx(
+    config: WatermarkConfig,
+    connection: RtcConnection
   ): number;
 }
