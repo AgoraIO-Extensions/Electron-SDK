@@ -15,12 +15,11 @@ npm config set agora_electron_sdk_pre_built false
 
 echo "arch: $1"
 
-if [ "$1" == "x64" ]; then
+if [ "$1" = "x64" ]; then
     # 安装依赖
     npm install --agora_electron_sdk_arch=x64
     npm run totalBuild --agora_electron_sdk_arch=x64
-fi
-if [ "$1" == "arm64" ]; then
+elif [ "$1" = "arm64" ]; then
     # 安装依赖
     npm install --agora_electron_sdk_arch=arm64
     npm run totalBuild --agora_electron_sdk_arch=arm64
