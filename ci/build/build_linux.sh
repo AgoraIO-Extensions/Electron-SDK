@@ -111,7 +111,7 @@ rm -rf example/dist || true
 
 if [ "$isBuildSdk" = true ]
 then
-  sh /tmp/jenkins/electron-sdk/ci/electron-sdk-build-linux-release.sh
+  sh /tmp/jenkins/electron-sdk/ci/electron-sdk-build-linux-release.sh $arch
 
   # electron.zip
   # 执行上传到artifactory
