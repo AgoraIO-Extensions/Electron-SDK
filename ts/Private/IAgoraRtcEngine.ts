@@ -27,7 +27,6 @@ import {
   ConnectionStateType,
   DataStreamConfig,
   DeviceInfo,
-  DownlinkNetworkInfo,
   EarMonitoringFilterType,
   EchoTestConfiguration,
   EncryptionConfig,
@@ -51,20 +50,27 @@ import {
   LocalAudioStreamReason,
   LocalAudioStreamState,
   LocalTranscoderConfiguration,
+  LocalVideoEventType,
   LocalVideoStreamReason,
   LocalVideoStreamState,
   LowlightEnhanceOptions,
   MediaTraceEvent,
+  MultipathMode,
+  MultipathStats,
+  MultipathType,
   NetworkType,
   PermissionType,
   QualityAdaptIndication,
   QualityType,
+  RdtState,
+  RdtStreamType,
   RecorderStreamInfo,
   Rectangle,
   RemoteAudioState,
   RemoteAudioStateReason,
   RemoteVideoState,
   RemoteVideoStateReason,
+  RenewTokenErrorCode,
   RtcStats,
   RtmpStreamPublishReason,
   RtmpStreamPublishState,
@@ -107,10 +113,8 @@ import {
   VoiceAiTunerType,
   VoiceBeautifierPreset,
   VoiceConversionPreset,
+  WatermarkConfig,
   WatermarkOptions,
-  WlAccStats,
-  WlaccMessageReason,
-  WlaccSuggestAction,
 } from './AgoraBase';
 import {
   ContentInspectConfig,
@@ -516,6 +520,10 @@ export class LocalVideoStats {
    * @ignore
    */
   simulcastDimensions?: VideoDimensions[];
+  /**
+   * @ignore
+   */
+  encodedFrameDepth?: number;
 }
 
 /**
@@ -574,6 +582,14 @@ export class RemoteAudioStats {
    * @ignore
    */
   plcCount?: number;
+  /**
+   * @ignore
+   */
+  frozenCntByCustom?: number;
+  /**
+   * @ignore
+   */
+  frozenTimeByCustom?: number;
   /**
    * The total active time (ms) between the start of the audio call and the callback of the remote user. The active time refers to the total duration of the remote user without the mute state.
    */
@@ -1187,10 +1203,6 @@ export class ChannelMediaOptions {
    */
   publishLipSyncTrack?: boolean;
   /**
-   * @ignore
-   */
-  publishCameraRelayTrack?: boolean;
-  /**
    * Whether to automatically subscribe to all remote audio streams when the user joins a channel: true : Subscribe to all remote audio streams. false : Do not automatically subscribe to any remote audio streams.
    */
   autoSubscribeAudio?: boolean;
@@ -1262,6 +1274,22 @@ export class ChannelMediaOptions {
    * @ignore
    */
   parameters?: string;
+  /**
+   * @ignore
+   */
+  enableMultipath?: boolean;
+  /**
+   * @ignore
+   */
+  uplinkMultipathMode?: MultipathMode;
+  /**
+   * @ignore
+   */
+  downlinkMultipathMode?: MultipathMode;
+  /**
+   * @ignore
+   */
+  preferMultipathType?: MultipathType;
 }
 
 /**
@@ -1324,10 +1352,6 @@ export class LeaveChannelOptions {
    * Whether to stop playing all audio effects when a user leaves the channel. true : (Default) Stop playing all audio effects. false : Do not stop playing any audio effect.
    */
   stopAllEffect?: boolean;
-  /**
-   * @ignore
-   */
-  unloadAllEffect?: boolean;
   /**
    * Whether to stop microphone recording when a user leaves the channel. true : (Default) Stop microphone recording. false : Do not stop microphone recording.
    */
@@ -1547,11 +1571,6 @@ export interface IRtcEngineEventHandler {
   onUplinkNetworkInfoUpdated?(info: UplinkNetworkInfo): void;
 
   /**
-   * @ignore
-   */
-  onDownlinkNetworkInfoUpdated?(info: DownlinkNetworkInfo): void;
-
-  /**
    * Reports the last-mile network quality of the local user.
    *
    * This callback reports the last-mile network conditions of the local user before the user joins the channel. Last mile refers to the connection between the local device and Agora's edge server. Before the user joins the channel, this callback is triggered by the SDK once startLastmileProbeTest is called and reports the last-mile network conditions of the local user.
@@ -1635,6 +1654,11 @@ export interface IRtcEngineEventHandler {
     height: number,
     rotation: number
   ): void;
+
+  /**
+   * @ignore
+   */
+  onLocalVideoEvent?(source: VideoSourceType, event: LocalVideoEventType): void;
 
   /**
    * Occurs when the local video stream state changes.
@@ -1819,7 +1843,11 @@ export interface IRtcEngineEventHandler {
    * @param connection The connection information. See RtcConnection.
    * @param stats The statistics of the local video stream. See LocalVideoStats.
    */
-  onLocalVideoStats?(connection: RtcConnection, stats: LocalVideoStats): void;
+  onLocalVideoStats?(
+    connection: RtcConnection,
+    sourceType: VideoSourceType,
+    stats: LocalVideoStats
+  ): void;
 
   /**
    * Reports the statistics of the video stream sent by each remote users.
@@ -1971,6 +1999,36 @@ export interface IRtcEngineEventHandler {
     code: ErrorCodeType,
     missed: number,
     cached: number
+  ): void;
+
+  /**
+   * @ignore
+   */
+  onRdtMessage?(
+    connection: RtcConnection,
+    userId: number,
+    type: RdtStreamType,
+    data: string,
+    length: number
+  ): void;
+
+  /**
+   * @ignore
+   */
+  onRdtStateChanged?(
+    connection: RtcConnection,
+    userId: number,
+    state: RdtState
+  ): void;
+
+  /**
+   * @ignore
+   */
+  onMediaControlMessage?(
+    connection: RtcConnection,
+    userId: number,
+    data: string,
+    length: number
   ): void;
 
   /**
@@ -2242,11 +2300,6 @@ export interface IRtcEngineEventHandler {
   ): void;
 
   /**
-   * @ignore
-   */
-  onLocalPublishFallbackToAudioOnly?(isFallbackOrRecover: boolean): void;
-
-  /**
    * Occurs when the remote media stream falls back to the audio-only stream due to poor network conditions or switches back to the video stream after the network conditions improve.
    *
    * If you call setRemoteSubscribeFallbackOption and set option to StreamFallbackOptionAudioOnly, the SDK triggers this callback in the following situations:
@@ -2315,25 +2368,6 @@ export interface IRtcEngineEventHandler {
   ): void;
 
   /**
-   * @ignore
-   */
-  onWlAccMessage?(
-    connection: RtcConnection,
-    reason: WlaccMessageReason,
-    action: WlaccSuggestAction,
-    wlAccMsg: string
-  ): void;
-
-  /**
-   * @ignore
-   */
-  onWlAccStats?(
-    connection: RtcConnection,
-    currentStats: WlAccStats,
-    averageStats: WlAccStats
-  ): void;
-
-  /**
    * Occurs when the local network type changes.
    *
    * This callback occurs when the connection state of the local user changes. You can get the connection state and reason for the state change in this callback. When the network connection is interrupted, this callback indicates whether the interruption is caused by a network type change or poor network conditions.
@@ -2364,6 +2398,11 @@ export interface IRtcEngineEventHandler {
    * @param permissionType The type of the device permission. See PermissionType.
    */
   onPermissionError?(permissionType: PermissionType): void;
+
+  /**
+   * @ignore
+   */
+  onPermissionGranted?(permissionType: PermissionType): void;
 
   /**
    * Occurs when the local user registers a user account.
@@ -2574,6 +2613,20 @@ export interface IRtcEngineEventHandler {
    * @ignore
    */
   onSetRtmFlagResult?(connection: RtcConnection, code: number): void;
+
+  /**
+   * @ignore
+   */
+  onMultipathStats?(connection: RtcConnection, stats: MultipathStats): void;
+
+  /**
+   * @ignore
+   */
+  onRenewTokenResult?(
+    connection: RtcConnection,
+    token: string,
+    code: RenewTokenErrorCode
+  ): void;
 }
 
 /**
@@ -2671,10 +2724,6 @@ export enum VideoEffectNodeId {
    * @ignore
    */
   Filter = 1 << 2,
-  /**
-   * @ignore
-   */
-  Sticker = 1 << 3,
 }
 
 /**
@@ -5126,10 +5175,10 @@ export abstract class IRtcEngine {
    *
    * The SDK triggers the onPlaybackAudioFrameBeforeMixing callback according to the sampling interval.
    *
-   * @param sampleRate The sample rate returned in the callback, which can be set as 8000, 16000, 32000, 44100, or 48000 Hz.
    * @param channel The number of audio channels. You can set the value as 1 or 2.
    *  1: Mono.
    *  2: Stereo.
+   * @param sampleRate The sample rate returned in the callback, which can be set as 8000, 16000, 32000, 44100, or 48000 Hz.
    *
    * @returns
    * 0: Success.
@@ -5137,7 +5186,8 @@ export abstract class IRtcEngine {
    */
   abstract setPlaybackAudioFrameBeforeMixingParameters(
     sampleRate: number,
-    channel: number
+    channel: number,
+    samplesPerCall: number
   ): number;
 
   /**
@@ -5255,11 +5305,6 @@ export abstract class IRtcEngine {
    *  < 0: Failure.
    */
   abstract adjustUserPlaybackSignalVolume(uid: number, volume: number): number;
-
-  /**
-   * @ignore
-   */
-  abstract setLocalPublishFallbackOption(option: StreamFallbackOptions): number;
 
   /**
    * Sets the fallback option for the subscribed video stream based on the network conditions.
@@ -6207,6 +6252,25 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
+   * @ignore
+   */
+  abstract sendRdtMessage(
+    uid: number,
+    type: RdtStreamType,
+    data: string,
+    length: number
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract sendMediaControlMessage(
+    uid: number,
+    data: string,
+    length: number
+  ): number;
+
+  /**
    * Adds a watermark image to the local video.
    *
    * This method adds a PNG watermark image to the local video in the live streaming. Once the watermark image is added, all the audience in the channel (CDN audience included), and the capturing device can see and capture it. The Agora SDK supports adding only one watermark image onto a live video stream. The newly added watermark image replaces the previous one. The watermark coordinates are dependent on the settings in the setVideoEncoderConfiguration method:
@@ -6230,6 +6294,11 @@ export abstract class IRtcEngine {
     watermarkUrl: string,
     options: WatermarkOptions
   ): number;
+
+  /**
+   * @ignore
+   */
+  abstract removeVideoWatermark(id: string): number;
 
   /**
    * Removes the watermark image from the video stream.
@@ -6774,11 +6843,6 @@ export abstract class IRtcEngine {
   abstract getCurrentMonotonicTimeInMs(): number;
 
   /**
-   * @ignore
-   */
-  abstract enableWirelessAccelerate(enabled: boolean): number;
-
-  /**
    * Gets the type of the local network connection.
    *
    * You can use this method to get the type of network in use at any stage. You can call this method either before or after joining a channel.
@@ -6865,6 +6929,11 @@ export abstract class IRtcEngine {
    * @ignore
    */
   abstract queryHDRCapability(videoModule: VideoModuleType): HdrCapability;
+
+  /**
+   * @ignore
+   */
+  abstract addVideoWatermarkWithConfig(configs: WatermarkConfig): number;
 
   /**
    * Starts screen capture from the specified video source.

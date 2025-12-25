@@ -4,6 +4,7 @@ import {
   DataStreamConfig,
   EncryptionConfig,
   LiveTranscoding,
+  RdtStreamType,
   SimulcastConfig,
   SimulcastStreamConfig,
   SimulcastStreamMode,
@@ -14,6 +15,7 @@ import {
   VideoMirrorModeType,
   VideoStreamType,
   VideoSubscriptionOptions,
+  WatermarkConfig,
   WatermarkOptions,
 } from '../AgoraBase';
 import {
@@ -23,7 +25,6 @@ import {
 } from '../AgoraMediaBase';
 import {
   ChannelMediaOptions,
-  ImageTrackOptions,
   LeaveChannelOptions,
   StreamFallbackOptions,
 } from '../IAgoraRtcEngine';
@@ -935,6 +936,89 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     return 'RtcEngineEx_sendStreamMessageEx_0c34857';
   }
 
+  sendRdtMessageEx(
+    uid: number,
+    type: RdtStreamType,
+    data: string,
+    length: number,
+    connection: RtcConnection
+  ): number {
+    const apiType = this.getApiTypeFromSendRdtMessageEx(
+      uid,
+      type,
+      data,
+      length,
+      connection
+    );
+    const jsonParams = {
+      uid: uid,
+      type: type,
+      data: data,
+      length: length,
+      connection: connection,
+      toJSON: () => {
+        return {
+          uid: uid,
+          type: type,
+          data: data,
+          length: length,
+          connection: connection,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSendRdtMessageEx(
+    uid: number,
+    type: RdtStreamType,
+    data: string,
+    length: number,
+    connection: RtcConnection
+  ): string {
+    return 'RtcEngineEx_sendRdtMessageEx_3a2998e';
+  }
+
+  sendMediaControlMessageEx(
+    uid: number,
+    data: string,
+    length: number,
+    connection: RtcConnection
+  ): number {
+    const apiType = this.getApiTypeFromSendMediaControlMessageEx(
+      uid,
+      data,
+      length,
+      connection
+    );
+    const jsonParams = {
+      uid: uid,
+      data: data,
+      length: length,
+      connection: connection,
+      toJSON: () => {
+        return {
+          uid: uid,
+          data: data,
+          length: length,
+          connection: connection,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSendMediaControlMessageEx(
+    uid: number,
+    data: string,
+    length: number,
+    connection: RtcConnection
+  ): string {
+    return 'RtcEngineEx_sendMediaControlMessageEx_907822a';
+  }
+
   addVideoWatermarkEx(
     watermarkUrl: string,
     options: WatermarkOptions,
@@ -967,6 +1051,29 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     connection: RtcConnection
   ): string {
     return 'RtcEngineEx_addVideoWatermarkEx_ad7daa3';
+  }
+
+  removeVideoWatermarkEx(id: string, connection: RtcConnection): number {
+    const apiType = this.getApiTypeFromRemoveVideoWatermarkEx(id, connection);
+    const jsonParams = {
+      id: id,
+      connection: connection,
+      toJSON: () => {
+        return {
+          id: id,
+          connection: connection,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromRemoveVideoWatermarkEx(
+    id: string,
+    connection: RtcConnection
+  ): string {
+    return 'RtcEngineEx_removeVideoWatermarkEx_e405325';
   }
 
   clearVideoWatermarkEx(connection: RtcConnection): number {
@@ -1635,40 +1742,6 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     return 'RtcEngineEx_sendAudioMetadataEx_e2bf1c4';
   }
 
-  enableVideoImageSourceEx(
-    enable: boolean,
-    options: ImageTrackOptions,
-    connection: RtcConnection
-  ): number {
-    const apiType = this.getApiTypeFromEnableVideoImageSourceEx(
-      enable,
-      options,
-      connection
-    );
-    const jsonParams = {
-      enable: enable,
-      options: options,
-      connection: connection,
-      toJSON: () => {
-        return {
-          enable: enable,
-          options: options,
-          connection: connection,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromEnableVideoImageSourceEx(
-    enable: boolean,
-    options: ImageTrackOptions,
-    connection: RtcConnection
-  ): string {
-    return 'RtcEngineEx_enableVideoImageSourceEx_b63f346';
-  }
-
   preloadEffectEx(
     connection: RtcConnection,
     soundId: number,
@@ -1804,6 +1877,35 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     config: SnapshotConfig
   ): string {
     return 'RtcEngineEx_takeSnapshotEx_b856417';
+  }
+
+  addVideoWatermarkWithConfigEx(
+    config: WatermarkConfig,
+    connection: RtcConnection
+  ): number {
+    const apiType = this.getApiTypeFromAddVideoWatermarkWithConfigEx(
+      config,
+      connection
+    );
+    const jsonParams = {
+      config: config,
+      connection: connection,
+      toJSON: () => {
+        return {
+          config: config,
+          connection: connection,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromAddVideoWatermarkWithConfigEx(
+    config: WatermarkConfig,
+    connection: RtcConnection
+  ): string {
+    return 'RtcEngineEx_addVideoWatermarkEx_985f23a';
   }
 }
 

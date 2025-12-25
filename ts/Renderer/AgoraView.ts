@@ -186,8 +186,15 @@ export default class AgoraView extends HTMLElement {
   }
 
   initializeRender = () => {
-    const { channelId, uid, sourceType, position, renderMode, renderMirror, enableAlphaMask } =
-      this;
+    const {
+      channelId,
+      uid,
+      sourceType,
+      position,
+      renderMode,
+      renderMirror,
+      enableAlphaMask,
+    } = this;
     AgoraEnv.AgoraRendererManager?.addOrRemoveRenderer({
       sourceType,
       view: this,

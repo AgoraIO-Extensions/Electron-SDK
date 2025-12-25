@@ -1,6 +1,6 @@
 import { VideoFrame } from '../../Private/AgoraMediaBase';
-import { IRenderer } from '../IRenderer';
 import { RendererContext } from '../../Types';
+import { IRenderer } from '../IRenderer';
 
 const YUVBuffer = require('yuv-buffer');
 const YUVCanvas = require('yuv-canvas');

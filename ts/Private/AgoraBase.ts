@@ -3,6 +3,7 @@ import {
   AudioSourceType,
   RenderModeType,
   VideoModulePosition,
+  VideoPixelFormat,
   VideoSourceType,
 } from './AgoraMediaBase';
 
@@ -270,6 +271,10 @@ export enum ErrorCodeType {
    */
   ErrResourceLimited = 22,
   /**
+   * @ignore
+   */
+  ErrFuncIsProhibited = 23,
+  /**
    * 101: The specified App ID is invalid. Rejoin the channel with a valid App ID.
    */
   ErrInvalidAppId = 101,
@@ -411,6 +416,30 @@ export enum ErrorCodeType {
    * @ignore
    */
   ErrPcmsendBufferoverflow = 201,
+  /**
+   * @ignore
+   */
+  ErrRdtUserNotExist = 250,
+  /**
+   * @ignore
+   */
+  ErrRdtUserNotReady = 251,
+  /**
+   * @ignore
+   */
+  ErrRdtDataBlocked = 252,
+  /**
+   * @ignore
+   */
+  ErrRdtCmdExceedLimit = 253,
+  /**
+   * @ignore
+   */
+  ErrRdtDataExceedLimit = 254,
+  /**
+   * @ignore
+   */
+  ErrRdtEncryption = 255,
   /**
    * @ignore
    */
@@ -1216,10 +1245,6 @@ export enum MaxUserAccountLengthType {
  */
 export class EncodedVideoFrameInfo {
   /**
-   * The user ID to push the externally encoded video frame.
-   */
-  uid?: number;
-  /**
    * The codec type of the local video stream. See VideoCodecType. The default value is VideoCodecH264 (2).
    */
   codecType?: VideoCodecType;
@@ -1631,6 +1656,10 @@ export class SimulcastConfig {
    * @ignore
    */
   configs?: StreamLayerConfig[];
+  /**
+   * @ignore
+   */
+  publish_fallback_enable?: boolean;
 }
 
 /**
@@ -1703,6 +1732,228 @@ export class WatermarkOptions {
    * The adaptation mode of the watermark. See WatermarkFitMode.
    */
   mode?: WatermarkFitMode;
+  /**
+   * @ignore
+   */
+  zOrder?: number;
+}
+
+/**
+ * @ignore
+ */
+export enum WatermarkSourceType {
+  /**
+   * @ignore
+   */
+  Image = 0,
+  /**
+   * @ignore
+   */
+  Buffer = 1,
+  /**
+   * @ignore
+   */
+  Literal = 2,
+  /**
+   * @ignore
+   */
+  Timestamps = 3,
+}
+
+/**
+ * @ignore
+ */
+export class WatermarkTimestamp {
+  /**
+   * @ignore
+   */
+  fontSize?: number;
+  /**
+   * @ignore
+   */
+  fontFilePath?: string;
+  /**
+   * @ignore
+   */
+  strokeWidth?: number;
+  /**
+   * @ignore
+   */
+  format?: string;
+}
+
+/**
+ * @ignore
+ */
+export class WatermarkLiteral {
+  /**
+   * @ignore
+   */
+  fontSize?: number;
+  /**
+   * @ignore
+   */
+  strokeWidth?: number;
+  /**
+   * @ignore
+   */
+  wmLiteral?: string;
+  /**
+   * @ignore
+   */
+  fontFilePath?: string;
+}
+
+/**
+ * @ignore
+ */
+export class WatermarkBuffer {
+  /**
+   * @ignore
+   */
+  width?: number;
+  /**
+   * @ignore
+   */
+  height?: number;
+  /**
+   * @ignore
+   */
+  length?: number;
+  /**
+   * @ignore
+   */
+  format?: VideoPixelFormat;
+  /**
+   * @ignore
+   */
+  buffer?: Uint8Array;
+}
+
+/**
+ * @ignore
+ */
+export class WatermarkConfig {
+  /**
+   * @ignore
+   */
+  id?: string;
+  /**
+   * @ignore
+   */
+  type?: WatermarkSourceType;
+  /**
+   * @ignore
+   */
+  buffer?: WatermarkBuffer;
+  /**
+   * @ignore
+   */
+  timestamp?: WatermarkTimestamp;
+  /**
+   * @ignore
+   */
+  literal?: WatermarkLiteral;
+  /**
+   * @ignore
+   */
+  imageUrl?: string;
+  /**
+   * @ignore
+   */
+  options?: WatermarkOptions;
+}
+
+/**
+ * @ignore
+ */
+export enum MultipathMode {
+  /**
+   * @ignore
+   */
+  Duplicate = 0,
+  /**
+   * @ignore
+   */
+  Dynamic = 1,
+}
+
+/**
+ * @ignore
+ */
+export enum MultipathType {
+  /**
+   * @ignore
+   */
+  Lan = 0,
+  /**
+   * @ignore
+   */
+  Wifi = 1,
+  /**
+   * @ignore
+   */
+  Mobile = 2,
+  /**
+   * @ignore
+   */
+  Unknown = 99,
+}
+
+/**
+ * @ignore
+ */
+export class PathStats {
+  /**
+   * @ignore
+   */
+  type?: MultipathType;
+  /**
+   * @ignore
+   */
+  txKBitRate?: number;
+  /**
+   * @ignore
+   */
+  rxKBitRate?: number;
+}
+
+/**
+ * @ignore
+ */
+export class MultipathStats {
+  /**
+   * @ignore
+   */
+  lanTxBytes?: number;
+  /**
+   * @ignore
+   */
+  lanRxBytes?: number;
+  /**
+   * @ignore
+   */
+  wifiTxBytes?: number;
+  /**
+   * @ignore
+   */
+  wifiRxBytes?: number;
+  /**
+   * @ignore
+   */
+  mobileTxBytes?: number;
+  /**
+   * @ignore
+   */
+  mobileRxBytes?: number;
+  /**
+   * @ignore
+   */
+  activePathNum?: number;
+  /**
+   * @ignore
+   */
+  pathStats?: PathStats[];
 }
 
 /**
@@ -1843,6 +2094,10 @@ export class RtcStats {
    * The packet loss rate (%) from the Agora server to the client before using the anti-packet-loss method.
    */
   rxPacketLossRate?: number;
+  /**
+   * @ignore
+   */
+  lanAccelerateState?: number;
 }
 
 /**
@@ -2039,24 +2294,6 @@ export enum AudioScenarioType {
 }
 
 /**
- * The format of the video frame.
- */
-export class VideoFormat {
-  /**
-   * The width (px) of the video frame. The default value is 960.
-   */
-  width?: number;
-  /**
-   * The height (px) of the video frame. The default value is 540.
-   */
-  height?: number;
-  /**
-   * The video frame rate (fps). The default value is 15.
-   */
-  fps?: number;
-}
-
-/**
  * The content hint for screen sharing.
  */
 export enum VideoContentHint {
@@ -2072,6 +2309,24 @@ export enum VideoContentHint {
    * Motionless content. Choose this option if you prefer sharpness or when you are sharing a picture, PowerPoint slides, or texts.
    */
   ContentHintDetails = 2,
+}
+
+/**
+ * The format of the video frame.
+ */
+export class VideoFormat {
+  /**
+   * The width (px) of the video frame. The default value is 960.
+   */
+  width?: number;
+  /**
+   * The height (px) of the video frame. The default value is 540.
+   */
+  height?: number;
+  /**
+   * The video frame rate (fps). The default value is 15.
+   */
+  fps?: number;
 }
 
 /**
@@ -2300,6 +2555,28 @@ export enum LocalVideoStreamState {
 }
 
 /**
+ * @ignore
+ */
+export enum LocalVideoEventType {
+  /**
+   * @ignore
+   */
+  LocalVideoEventTypeScreenCaptureWindowHidden = 1,
+  /**
+   * @ignore
+   */
+  LocalVideoEventTypeScreenCaptureWindowRecoverFromHidden = 2,
+  /**
+   * @ignore
+   */
+  LocalVideoEventTypeScreenCaptureStoppedByUser = 3,
+  /**
+   * @ignore
+   */
+  LocalVideoEventTypeScreenCaptureSystemInternalError = 4,
+}
+
+/**
  * Reasons for local video state changes.
  */
 export enum LocalVideoStreamReason {
@@ -2414,6 +2691,22 @@ export enum LocalVideoStreamReason {
    * 30: The displayer used for screen capture is disconnected. The current screen sharing has been paused. Prompt the user to restart the screen sharing.
    */
   LocalVideoStreamReasonScreenCaptureDisplayDisconnected = 30,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamReasonScreenCaptureStoppedByUser = 31,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamReasonScreenCaptureInterruptedByOther = 32,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamReasonScreenCaptureStoppedByCall = 33,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamReasonScreenCaptureExcludeWindowFailed = 34,
 }
 
 /**
@@ -2701,20 +2994,6 @@ export class DeviceInfo {
 }
 
 /**
- * @ignore
- */
-export class Packet {
-  /**
-   * @ignore
-   */
-  buffer?: Uint8Array;
-  /**
-   * @ignore
-   */
-  size?: number;
-}
-
-/**
  * The audio sampling rate of the stream to be pushed to the CDN.
  */
 export enum AudioSampleRateType {
@@ -2730,6 +3009,20 @@ export enum AudioSampleRateType {
    * 48000: (Default) 48 kHz
    */
   AudioSampleRate48000 = 48000,
+}
+
+/**
+ * @ignore
+ */
+export class Packet {
+  /**
+   * @ignore
+   */
+  buffer?: Uint8Array;
+  /**
+   * @ignore
+   */
+  size?: number;
 }
 
 /**
@@ -3562,60 +3855,6 @@ export enum ClientRoleChangeFailedReason {
 }
 
 /**
- * @ignore
- */
-export enum WlaccMessageReason {
-  /**
-   * @ignore
-   */
-  WlaccMessageReasonWeakSignal = 0,
-  /**
-   * @ignore
-   */
-  WlaccMessageReasonChannelCongestion = 1,
-}
-
-/**
- * @ignore
- */
-export enum WlaccSuggestAction {
-  /**
-   * @ignore
-   */
-  WlaccSuggestActionCloseToWifi = 0,
-  /**
-   * @ignore
-   */
-  WlaccSuggestActionConnectSsid = 1,
-  /**
-   * @ignore
-   */
-  WlaccSuggestActionCheck5g = 2,
-  /**
-   * @ignore
-   */
-  WlaccSuggestActionModifySsid = 3,
-}
-
-/**
- * @ignore
- */
-export class WlAccStats {
-  /**
-   * @ignore
-   */
-  e2eDelayPercent?: number;
-  /**
-   * @ignore
-   */
-  frozenRatioPercent?: number;
-  /**
-   * @ignore
-   */
-  lossRatePercent?: number;
-}
-
-/**
  * Network type.
  */
 export enum NetworkType {
@@ -3748,32 +3987,6 @@ export enum LighteningContrastLevel {
 }
 
 /**
- * Image enhancement options.
- */
-export class BeautyOptions {
-  /**
-   * The contrast level, used with the lighteningLevel parameter. The larger the value, the greater the contrast between light and dark. See LighteningContrastLevel.
-   */
-  lighteningContrastLevel?: LighteningContrastLevel;
-  /**
-   * The brightening level, in the range [0.0,1.0], where 0.0 means the original brightening. The default value is 0.0. The higher the value, the greater the degree of brightening.
-   */
-  lighteningLevel?: number;
-  /**
-   * The smoothness level, in the range [0.0,1.0], where 0.0 means the original smoothness. The default value is 0.0. The greater the value, the greater the smoothness level.
-   */
-  smoothnessLevel?: number;
-  /**
-   * The redness level, in the range [0.0,1.0], where 0.0 means the original redness. The default value is 0.0. The larger the value, the greater the redness level.
-   */
-  rednessLevel?: number;
-  /**
-   * The sharpness level, in the range [0.0,1.0], where 0.0 means the original sharpness. The default value is 0.0. The larger the value, the greater the sharpness level.
-   */
-  sharpnessLevel?: number;
-}
-
-/**
  * @ignore
  */
 export enum FaceShapeArea {
@@ -3900,17 +4113,29 @@ export enum FaceShapeArea {
 }
 
 /**
- * @ignore
+ * Image enhancement options.
  */
-export class FaceShapeAreaOptions {
+export class BeautyOptions {
   /**
-   * @ignore
+   * The contrast level, used with the lighteningLevel parameter. The larger the value, the greater the contrast between light and dark. See LighteningContrastLevel.
    */
-  shapeArea?: FaceShapeArea;
+  lighteningContrastLevel?: LighteningContrastLevel;
   /**
-   * @ignore
+   * The brightening level, in the range [0.0,1.0], where 0.0 means the original brightening. The default value is 0.0. The higher the value, the greater the degree of brightening.
    */
-  shapeIntensity?: number;
+  lighteningLevel?: number;
+  /**
+   * The smoothness level, in the range [0.0,1.0], where 0.0 means the original smoothness. The default value is 0.0. The greater the value, the greater the smoothness level.
+   */
+  smoothnessLevel?: number;
+  /**
+   * The redness level, in the range [0.0,1.0], where 0.0 means the original redness. The default value is 0.0. The larger the value, the greater the redness level.
+   */
+  rednessLevel?: number;
+  /**
+   * The sharpness level, in the range [0.0,1.0], where 0.0 means the original sharpness. The default value is 0.0. The larger the value, the greater the sharpness level.
+   */
+  sharpnessLevel?: number;
 }
 
 /**
@@ -3934,15 +4159,15 @@ export enum FaceShapeBeautyStyle {
 /**
  * @ignore
  */
-export class FaceShapeBeautyOptions {
+export class FaceShapeAreaOptions {
   /**
    * @ignore
    */
-  shapeStyle?: FaceShapeBeautyStyle;
+  shapeArea?: FaceShapeArea;
   /**
    * @ignore
    */
-  styleIntensity?: number;
+  shapeIntensity?: number;
 }
 
 /**
@@ -3967,6 +4192,20 @@ export class FilterEffectOptions {
 }
 
 /**
+ * @ignore
+ */
+export class FaceShapeBeautyOptions {
+  /**
+   * @ignore
+   */
+  shapeStyle?: FaceShapeBeautyStyle;
+  /**
+   * @ignore
+   */
+  styleIntensity?: number;
+}
+
+/**
  * The low-light enhancement mode.
  */
 export enum LowLightEnhanceMode {
@@ -3978,6 +4217,20 @@ export enum LowLightEnhanceMode {
    * 1: Manual mode. Users need to enable or disable the low-light enhancement feature manually.
    */
   LowLightEnhanceManual = 1,
+}
+
+/**
+ * Video noise reduction mode.
+ */
+export enum VideoDenoiserMode {
+  /**
+   * 0: (Default) Automatic mode. The SDK automatically enables or disables the video noise reduction feature according to the ambient light.
+   */
+  VideoDenoiserAuto = 0,
+  /**
+   * 1: Manual mode. Users need to enable or disable the video noise reduction feature manually.
+   */
+  VideoDenoiserManual = 1,
 }
 
 /**
@@ -4009,17 +4262,19 @@ export class LowlightEnhanceOptions {
 }
 
 /**
- * Video noise reduction mode.
+ * The color enhancement options.
  */
-export enum VideoDenoiserMode {
+export class ColorEnhanceOptions {
   /**
-   * 0: (Default) Automatic mode. The SDK automatically enables or disables the video noise reduction feature according to the ambient light.
+   * The level of color enhancement. The value range is [0.0, 1.0]. 0.0 is the default value, which means no color enhancement is applied to the video. The higher the value, the higher the level of color enhancement. The default value is 0.5.
    */
-  VideoDenoiserAuto = 0,
+  strengthLevel?: number;
   /**
-   * 1: Manual mode. Users need to enable or disable the video noise reduction feature manually.
+   * The level of skin tone protection. The value range is [0.0, 1.0]. 0.0 means no skin tone protection. The higher the value, the higher the level of skin tone protection. The default value is 1.0.
+   *  When the level of color enhancement is higher, the portrait skin tone can be significantly distorted, so you need to set the level of skin tone protection.
+   *  When the level of skin tone protection is higher, the color enhancement effect can be slightly reduced. Therefore, to get the best color enhancement effect, Agora recommends that you adjust strengthLevel and skinProtectLevel to get the most appropriate values.
    */
-  VideoDenoiserManual = 1,
+  skinProtectLevel?: number;
 }
 
 /**
@@ -4051,22 +4306,6 @@ export class VideoDenoiserOptions {
 }
 
 /**
- * The color enhancement options.
- */
-export class ColorEnhanceOptions {
-  /**
-   * The level of color enhancement. The value range is [0.0, 1.0]. 0.0 is the default value, which means no color enhancement is applied to the video. The higher the value, the higher the level of color enhancement. The default value is 0.5.
-   */
-  strengthLevel?: number;
-  /**
-   * The level of skin tone protection. The value range is [0.0, 1.0]. 0.0 means no skin tone protection. The higher the value, the higher the level of skin tone protection. The default value is 1.0.
-   *  When the level of color enhancement is higher, the portrait skin tone can be significantly distorted, so you need to set the level of skin tone protection.
-   *  When the level of skin tone protection is higher, the color enhancement effect can be slightly reduced. Therefore, to get the best color enhancement effect, Agora recommends that you adjust strengthLevel and skinProtectLevel to get the most appropriate values.
-   */
-  skinProtectLevel?: number;
-}
-
-/**
  * The custom background.
  */
 export enum BackgroundSourceType {
@@ -4090,6 +4329,20 @@ export enum BackgroundSourceType {
    * 4: The background is a local video in MP4, AVI, MKV, FLV, or other supported formats.
    */
   BackgroundVideo = 4,
+}
+
+/**
+ * The type of algorithms to user for background processing.
+ */
+export enum SegModelType {
+  /**
+   * 1: (Default) Use the algorithm suitable for all scenarios.
+   */
+  SegModelAi = 1,
+  /**
+   * 2: Use the algorithm designed specifically for scenarios with a green screen background.
+   */
+  SegModelGreen = 2,
 }
 
 /**
@@ -4133,34 +4386,6 @@ export class VirtualBackgroundSource {
 }
 
 /**
- * The type of algorithms to user for background processing.
- */
-export enum SegModelType {
-  /**
-   * 1: (Default) Use the algorithm suitable for all scenarios.
-   */
-  SegModelAi = 1,
-  /**
-   * 2: Use the algorithm designed specifically for scenarios with a green screen background.
-   */
-  SegModelGreen = 2,
-}
-
-/**
- * Processing properties for background images.
- */
-export class SegmentationProperty {
-  /**
-   * The type of algorithms to user for background processing. See SegModelType.
-   */
-  modelType?: SegModelType;
-  /**
-   * The accuracy range for recognizing background colors in the image. The value range is [0,1], and the default value is 0.5. The larger the value, the wider the range of identifiable shades of pure color. When the value of this parameter is too large, the edge of the portrait and the pure color in the portrait range are also detected. Agora recommends that you dynamically adjust the value of this parameter according to the actual effect. This parameter only takes effect when modelType is set to SegModelGreen.
-   */
-  greenCapacity?: number;
-}
-
-/**
  * The type of the audio track.
  */
 export enum AudioTrackType {
@@ -4176,6 +4401,42 @@ export enum AudioTrackType {
    * 1: Direct audio tracks. This type of audio track will replace the audio streams captured by the microphone and does not support mixing with other audio streams. The latency of direct audio tracks is lower than that of mixable audio tracks. If AudioTrackDirect is specified for this parameter, you must set publishMicrophoneTrack to false in ChannelMediaOptions when calling joinChannel to join the channel; otherwise, joining the channel fails and returns the error code -2.
    */
   AudioTrackDirect = 1,
+}
+
+/**
+ * @ignore
+ */
+export enum ScreenColorType {
+  /**
+   * @ignore
+   */
+  ScreenColorAuto = 0,
+  /**
+   * @ignore
+   */
+  ScreenColorGreen = 1,
+  /**
+   * @ignore
+   */
+  ScreenColorBlue = 2,
+}
+
+/**
+ * Processing properties for background images.
+ */
+export class SegmentationProperty {
+  /**
+   * The type of algorithms to user for background processing. See SegModelType.
+   */
+  modelType?: SegModelType;
+  /**
+   * The accuracy range for recognizing background colors in the image. The value range is [0,1], and the default value is 0.5. The larger the value, the wider the range of identifiable shades of pure color. When the value of this parameter is too large, the edge of the portrait and the pure color in the portrait range are also detected. Agora recommends that you dynamically adjust the value of this parameter according to the actual effect. This parameter only takes effect when modelType is set to SegModelGreen.
+   */
+  greenCapacity?: number;
+  /**
+   * @ignore
+   */
+  screenColorType?: ScreenColorType;
 }
 
 /**
@@ -4680,6 +4941,40 @@ export class AudioEncodedFrameObserverConfig {
 }
 
 /**
+ * The region for connection, which is the region where the server the SDK connects to is located.
+ */
+export enum AreaCode {
+  /**
+   * Mainland China.
+   */
+  AreaCodeCn = 0x00000001,
+  /**
+   * North America.
+   */
+  AreaCodeNa = 0x00000002,
+  /**
+   * Europe.
+   */
+  AreaCodeEu = 0x00000004,
+  /**
+   * Asia, excluding Mainland China.
+   */
+  AreaCodeAs = 0x00000008,
+  /**
+   * Japan.
+   */
+  AreaCodeJp = 0x00000010,
+  /**
+   * India.
+   */
+  AreaCodeIn = 0x00000020,
+  /**
+   * Global.
+   */
+  AreaCodeGlob = 0xffffffff,
+}
+
+/**
  * The encoded audio observer.
  */
 export interface IAudioEncodedFrameObserver {
@@ -4740,40 +5035,6 @@ export interface IAudioEncodedFrameObserver {
     length: number,
     audioEncodedFrameInfo: EncodedAudioFrameInfo
   ): void;
-}
-
-/**
- * The region for connection, which is the region where the server the SDK connects to is located.
- */
-export enum AreaCode {
-  /**
-   * Mainland China.
-   */
-  AreaCodeCn = 0x00000001,
-  /**
-   * North America.
-   */
-  AreaCodeNa = 0x00000002,
-  /**
-   * Europe.
-   */
-  AreaCodeEu = 0x00000004,
-  /**
-   * Asia, excluding Mainland China.
-   */
-  AreaCodeAs = 0x00000008,
-  /**
-   * Japan.
-   */
-  AreaCodeJp = 0x00000010,
-  /**
-   * India.
-   */
-  AreaCodeIn = 0x00000020,
-  /**
-   * Global.
-   */
-  AreaCodeGlob = 0xffffffff,
 }
 
 /**
@@ -4963,32 +5224,6 @@ export class PeerDownlinkInfo {
 }
 
 /**
- * @ignore
- */
-export class DownlinkNetworkInfo {
-  /**
-   * @ignore
-   */
-  lastmile_buffer_delay_time_ms?: number;
-  /**
-   * @ignore
-   */
-  bandwidth_estimation_bps?: number;
-  /**
-   * @ignore
-   */
-  total_downscale_level_count?: number;
-  /**
-   * @ignore
-   */
-  peer_downlink_info?: PeerDownlinkInfo[];
-  /**
-   * @ignore
-   */
-  total_received_video_count?: number;
-}
-
-/**
  * The built-in encryption mode.
  *
  * Agora recommends using Aes128Gcm2 or Aes256Gcm2 encrypted mode. These two modes support the use of salt for higher security.
@@ -5030,6 +5265,32 @@ export enum EncryptionMode {
    * Enumerator boundary.
    */
   ModeEnd = 9,
+}
+
+/**
+ * @ignore
+ */
+export class DownlinkNetworkInfo {
+  /**
+   * @ignore
+   */
+  lastmile_buffer_delay_time_ms?: number;
+  /**
+   * @ignore
+   */
+  bandwidth_estimation_bps?: number;
+  /**
+   * @ignore
+   */
+  total_downscale_level_count?: number;
+  /**
+   * @ignore
+   */
+  peer_downlink_info?: PeerDownlinkInfo[];
+  /**
+   * @ignore
+   */
+  total_received_video_count?: number;
 }
 
 /**
@@ -5096,6 +5357,40 @@ export enum UploadErrorReason {
    * @ignore
    */
   UploadServerError = 2,
+}
+
+/**
+ * @ignore
+ */
+export enum RenewTokenErrorCode {
+  /**
+   * @ignore
+   */
+  RenewTokenSuccess = 0,
+  /**
+   * @ignore
+   */
+  RenewTokenFailure = 1,
+  /**
+   * @ignore
+   */
+  RenewTokenTokenExpired = 2,
+  /**
+   * @ignore
+   */
+  RenewTokenInvalidToken = 3,
+  /**
+   * @ignore
+   */
+  RenewTokenInvalidChannelName = 4,
+  /**
+   * @ignore
+   */
+  RenewTokenInconsistentAppid = 5,
+  /**
+   * @ignore
+   */
+  RenewTokenCanceledByNewRequest = 6,
 }
 
 /**
@@ -5505,6 +5800,50 @@ export class RecorderStreamInfo {
 }
 
 /**
+ * @ignore
+ */
+export enum RdtStreamType {
+  /**
+   * @ignore
+   */
+  RdtStreamCmd = 0,
+  /**
+   * @ignore
+   */
+  RdtStreamData = 1,
+  /**
+   * @ignore
+   */
+  RdtStreamCount = 2,
+}
+
+/**
+ * @ignore
+ */
+export enum RdtState {
+  /**
+   * @ignore
+   */
+  RdtStateClosed = 0,
+  /**
+   * @ignore
+   */
+  RdtStateOpened = 1,
+  /**
+   * @ignore
+   */
+  RdtStateBlocked = 2,
+  /**
+   * @ignore
+   */
+  RdtStatePending = 3,
+  /**
+   * @ignore
+   */
+  RdtStateBroken = 4,
+}
+
+/**
  * The spatial audio parameters.
  */
 export class SpatialAudioParams {
@@ -5595,3 +5934,5 @@ export class VideoLayout {
    */
   videoState?: number;
 }
+
+export abstract class {}
