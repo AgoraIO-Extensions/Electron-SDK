@@ -24,7 +24,13 @@ const build = async (cb) => {
       }
       break;
     case 'linux':
-      scriptStr = debug ? 'build_linux_debug' : 'build_linux_release';
+      if (arch === 'x64') {
+        scriptStr = debug ? 'build_linux_x64_debug' : 'build_linux_x64_release';
+      } else {
+        scriptStr = debug
+          ? 'build_linux_arm64_debug'
+          : 'build_linux_arm64_release';
+      }
       break;
     default:
       break;

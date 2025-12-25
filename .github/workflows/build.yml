@@ -8,16 +8,16 @@ on:
   workflow_call:
     inputs:
       type:
-        description: 'Build type'
+        description: "Build type"
         required: true
-        default: 'sdk'
+        default: "sdk"
         type: string
   workflow_dispatch:
     inputs:
       type:
-        description: 'Build type'
+        description: "Build type"
         required: true
-        default: 'demo'
+        default: "demo"
         type: choice
         options:
           - demo
@@ -109,17 +109,20 @@ jobs:
           path: |
             example/dist/Agora-Electron-API-Example-*-mac.zip
           if-no-files-found: error
-  
+
   build-linux:
     if: ${{ inputs.type == 'demo' || contains(github.event.pull_request.labels.*.name, 'ci:dep-update') }}
     strategy:
       matrix:
-        arch: [x64]
+        arch: [x64, arm64]
     runs-on: ubuntu-latest
     container:
       image: ubuntu:20.04
       env:
         DEBIAN_FRONTEND: noninteractive
+        npm_config_arch: ${{ matrix.arch }}
+        npm_config_agora_electron_arch: ${{ matrix.arch }}
+        npm_config_agora_electron_sdk_arch: ${{ matrix.arch }}
     steps:
       - name: Install system dependencies
         run: |
@@ -159,6 +162,15 @@ jobs:
             libgtk-3-0 \
             libgbm1
 
+          # Install cross-compilation toolchain for ARM64
+          if [ "${{ matrix.arch }}" = "arm64" ]; then
+            apt-get install -y \
+              gcc-aarch64-linux-gnu \
+              g++-aarch64-linux-gnu \
+              binutils-aarch64-linux-gnu
+            echo "ARM64 cross-compilation toolchain installed"
+          fi
+
       - uses: actions/checkout@v4
 
       - name: Setup
@@ -172,7 +184,7 @@ jobs:
 
       - name: Build Example
         run: |
-          yarn dist:linux
+          yarn dist:linux:${{ matrix.arch }}
         working-directory: example
 
       - uses: actions/upload-artifact@v4
