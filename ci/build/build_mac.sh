@@ -90,9 +90,9 @@ echo package_version: $package_version
 
 export https_proxy=http://10.15.67.1:18080 http_proxy=http://110.15.67.1:18080 all_proxy=http://10.15.67.1:18080
 source ~/.nvm/nvm.sh --install
-nvm ls-remote 14.17.3
-nvm install 14.17.3
-nvm use 14.17.3
+nvm ls-remote 16.18.1
+nvm install 16.18.1
+nvm use 16.18.1
 export -n https_proxy http_proxy all_proxy
 
 pushd /tmp/jenkins/Electron-SDK

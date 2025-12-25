@@ -6,12 +6,16 @@ on:
       increment:
         description: 'Increment "major", "minor", "patch", or "pre*" version; or specify version [default: "patch"]'
         required: true
-        default: 'patch'
+        default: "patch"
         type: string
       dry-run:
-        description: 'Do not touch or write anything, but show the commands'
-        default: true
+        description: "Do not touch or write anything, but show the commands"
+        default: false
         type: boolean
+
+permissions:
+  id-token: write # Required for OIDC
+  contents: read
 
 jobs:
   release-it:
@@ -27,9 +31,14 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Setup NPM auth token
+      - name: Update Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 23.7.0
+
+      - name: Update NPM
         run: |
-          npm set "//registry.npmjs.org/:_authToken" ${{ secrets.NPM_TOKEN }}
+          npm install -g npm@11.5.1
 
       - name: Dry Run Release
         if: ${{ inputs.dry-run }}
@@ -39,6 +48,7 @@ jobs:
       - name: NPM Publish
         if: ${{ !inputs.dry-run }}
         run: |
+          git restore yarn.lock
           git config --global user.email "${{ secrets.GIT_EMAIL }}"
           git config --global user.name "${{ secrets.GIT_USERNAME }}"
           yarn release ${{ inputs.increment }} --ci --no-git.tag --no-github.release --npm.allowSameVersion
@@ -61,3 +71,13 @@ jobs:
         if: ${{ !inputs.dry-run }}
         run: |
           yarn release ${{ inputs.increment }} --ci --no-npm --no-git.commit
+
+      - name: print publish info
+        run: |
+          echo "[publish info][tag]: https://github.com/AgoraIO-Extensions/Electron-SDK/releases/tag/v${{ inputs.increment }}"
+          echo "[publish info][url]: https://www.npmjs.com/package/agora-electron-sdk/v/${{ inputs.increment }}"
+          echo "[publish info][url]: https://download.agora.io/sdk/release/Electron-mac-${{ inputs.increment }}-napi.zip"
+          echo "[publish info][url]: https://download.agora.io/sdk/release/Electron-win32-${{ inputs.increment }}-napi.zip"
+          echo "[publish info][url]: https://download.agora.io/sdk/release/Electron-win64-${{ inputs.increment }}-napi.zip"
+          echo "[publish info][url]: https://download.agora.io/sdk/release/Electron-linux_x64-${{ inputs.increment }}-napi.zip"
+          echo "[publish info][url]: https://download.agora.io/sdk/release/Electron-linux_arm64-${{ inputs.increment }}-napi.zip"

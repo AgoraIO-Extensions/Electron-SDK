@@ -13,12 +13,17 @@ rm -rf tmp
 # 设置预构建选项为false以进行本地构建
 npm config set agora_electron_sdk_pre_built false
 
-# 安装依赖
-npm install
+echo "arch: $1"
 
-# 执行完整构建
-npm run totalBuild
-
+if [ "$1" = "x64" ]; then
+    # 安装依赖
+    npm install --agora_electron_sdk_arch=x64
+    npm run totalBuild --agora_electron_sdk_arch=x64
+elif [ "$1" = "arm64" ]; then
+    # 安装依赖
+    npm install --agora_electron_sdk_arch=arm64
+    npm run totalBuild --agora_electron_sdk_arch=arm64
+fi
 # 打包构建产物
 npm run zipBuild
 

@@ -95,9 +95,9 @@ export https_proxy=http://10.15.67.1:18080 http_proxy=http://110.15.67.1:18080 a
 # 安装Node.js (Linux使用nvm)
 if [ -f ~/.nvm/nvm.sh ]; then
     source ~/.nvm/nvm.sh --install
-    nvm ls-remote 14.17.3
-    nvm install 14.17.3
-    nvm use 14.17.3
+    nvm ls-remote 16.18.1
+    nvm install 16.18.1
+    nvm use 16.18.1
 fi
 
 # 取消代理设置
@@ -111,12 +111,12 @@ rm -rf example/dist || true
 
 if [ "$isBuildSdk" = true ]
 then
-  sh /tmp/jenkins/electron-sdk/ci/electron-sdk-build-linux-release.sh
+  sh /tmp/jenkins/electron-sdk/ci/electron-sdk-build-linux-release.sh $arch
 
   # electron.zip
   # 执行上传到artifactory
   echo 执行上传electron.zip到artifactory
-  cp -f electron.zip $WORKSPACE/${build_time}_${package_version}_linux.zip
+  cp -f electron.zip $WORKSPACE/${build_time}_linux_${package_version}_${arch}.zip
   if [ "$Upload_CDN" = true ]
   then
     # electron.zip
@@ -136,7 +136,7 @@ then
   # electronDemo.zip
   # 执行上传到artifactory
   echo 执行上传electronDemo.zip到artifactory
-  cp -f electronDemo.zip $WORKSPACE/${build_time}_linux_${package_version}_electron_demo.zip
+  cp -f electronDemo.zip $WORKSPACE/${build_time}_linux_${package_version}_electron_demo_${arch}.zip
 fi
 
 popd

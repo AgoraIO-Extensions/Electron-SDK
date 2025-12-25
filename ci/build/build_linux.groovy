@@ -43,8 +43,8 @@ def doPublish(buildVariables) { // buildVariables parameter is required by pipel
     def archiveInfos = [
         [
           'type': 'ARTIFACTORY',
-          'archivePattern': '*.zip',
-          'serverPath': "ELECTRON/${params.network_path}/${env.platform}",
+          'archivePattern': '*_linux_*.zip',
+          'serverPath': "ELECTRON/${params.network_path}/${env.platform}/${params.arch}",
           'serverRepo': 'CSDC_repo' // ATTENTIONS: Update the artifactoryRepo if needed.
         ]
     ]
@@ -58,8 +58,8 @@ def doPublish(buildVariables) { // buildVariables parameter is required by pipel
                     {
                         "msgtype": "text",
                         "text": {
-                            "content": \"${env.NOTIFICATION_CONTENT}\n${artifactoryUrls.find { 
-                                it.startsWith('http') && it.contains('demo') 
+                            "content": \"${env.NOTIFICATION_CONTENT}\n${artifactoryUrls.find {
+                                it.startsWith('http') && it.contains('demo')
                             }}\"
                         }
                     }
@@ -79,8 +79,8 @@ def doUploadCDN(artifactoryUrls) {
     if (!artifactoryUrls) {
         return
     }
-    def cdnUrl = artifactoryUrls.find { 
-        it.startsWith('http') && !it.contains('demo') 
+    def cdnUrl = artifactoryUrls.find {
+        it.startsWith('http') && !it.contains('demo')
     }.replace('artifactory-api.bj2.agoralab.co', 'artifactory.agoralab.co')
     build job: 'AD/Agora-Electron-Upload-CDN', propagate: false, parameters: [
         string(name: 'electron_sdk_url', value: cdnUrl),
