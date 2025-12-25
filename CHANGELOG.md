@@ -1,5 +1,29 @@
 
 
+## [4.5.40-rc.3](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.40-rc.2...v4.5.40-rc.3) (2025-12-25)
+
+
+### Bug Fixes
+
+* add LINK_FLAGS property to Agora node extension target in CMakeLists.txt ([13c63a0](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/13c63a0795433e52a4d6f8ec3682a0f9cfebb2b3))
+* remove debug message from CMakeLists.txt and ensure CMAKE_JS_LIB is linked ([2113ce4](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/2113ce4e3d347954797a66e1bd6d2c0265fd054b))
+* remove unnecessary RPATH settings and update LINK_FLAGS for Agora node extension ([752d23e](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/752d23eada57faa02498fd81d5a6b5f3cf463a02))
+* update CMakeLists.txt to use CMAKE_SYSTEM_NAME for Linux detection ([e85734a](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/e85734a5db03795e14ed86d204e1421ac60ef65e))
+* update LINK_FLAGS for Agora node extension to disable new dynamic tags ([6864259](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/6864259b93d112acb3dc0613915ca18d407d2658))
+
+
+### Features
+
+* add support for ARM64 cross-compilation in CMakeLists.txt and update build scripts ([d008283](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/d008283b92797aa6e49e42e40ed67e2561e10b23))
+* arm64 ([33a2ea5](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/33a2ea577b45b2aee1e813d7c9c0d8beb94d6193))
+
+
+### Reverts
+
+* Revert "chore: optimize" ([0be4b6e](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/0be4b6ed8385561b9dec988854ce0ae14d0f52ce))
+* Revert "chore: optimize" ([edbd4cd](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/edbd4cd9212ba4b194203eea1893ab0d95ff8e28))
+* Revert "chore: optimize" ([24a715f](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/24a715f0a8f8095eb5551285c233eef040cdfc14))
+
 ## [4.5.40-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.40-rc.1...v4.5.40-rc.2) (2025-09-28)
 
 
