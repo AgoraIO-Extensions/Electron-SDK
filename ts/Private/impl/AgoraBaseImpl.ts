@@ -1,4 +1,5 @@
 import { IAudioEncodedFrameObserver } from '../AgoraBase';
+
 export function processIAudioEncodedFrameObserver(
   handler: IAudioEncodedFrameObserver,
   event: string,
@@ -36,8 +37,3 @@ export function processIAudioEncodedFrameObserver(
       break;
   }
 }
-
-// @ts-ignore
-export class Impl {}
-
-import { callIrisApi } from '../internal/IrisApiEngine';

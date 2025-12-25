@@ -2294,24 +2294,6 @@ export enum AudioScenarioType {
 }
 
 /**
- * The content hint for screen sharing.
- */
-export enum VideoContentHint {
-  /**
-   * (Default) No content hint.
-   */
-  ContentHintNone = 0,
-  /**
-   * Motion-intensive content. Choose this option if you prefer smoothness or when you are sharing a video clip, movie, or video game.
-   */
-  ContentHintMotion = 1,
-  /**
-   * Motionless content. Choose this option if you prefer sharpness or when you are sharing a picture, PowerPoint slides, or texts.
-   */
-  ContentHintDetails = 2,
-}
-
-/**
  * The format of the video frame.
  */
 export class VideoFormat {
@@ -2327,6 +2309,24 @@ export class VideoFormat {
    * The video frame rate (fps). The default value is 15.
    */
   fps?: number;
+}
+
+/**
+ * The content hint for screen sharing.
+ */
+export enum VideoContentHint {
+  /**
+   * (Default) No content hint.
+   */
+  ContentHintNone = 0,
+  /**
+   * Motion-intensive content. Choose this option if you prefer smoothness or when you are sharing a video clip, movie, or video game.
+   */
+  ContentHintMotion = 1,
+  /**
+   * Motionless content. Choose this option if you prefer sharpness or when you are sharing a picture, PowerPoint slides, or texts.
+   */
+  ContentHintDetails = 2,
 }
 
 /**
@@ -2994,6 +2994,20 @@ export class DeviceInfo {
 }
 
 /**
+ * @ignore
+ */
+export class Packet {
+  /**
+   * @ignore
+   */
+  buffer?: Uint8Array;
+  /**
+   * @ignore
+   */
+  size?: number;
+}
+
+/**
  * The audio sampling rate of the stream to be pushed to the CDN.
  */
 export enum AudioSampleRateType {
@@ -3009,20 +3023,6 @@ export enum AudioSampleRateType {
    * 48000: (Default) 48 kHz
    */
   AudioSampleRate48000 = 48000,
-}
-
-/**
- * @ignore
- */
-export class Packet {
-  /**
-   * @ignore
-   */
-  buffer?: Uint8Array;
-  /**
-   * @ignore
-   */
-  size?: number;
 }
 
 /**
@@ -3987,6 +3987,32 @@ export enum LighteningContrastLevel {
 }
 
 /**
+ * Image enhancement options.
+ */
+export class BeautyOptions {
+  /**
+   * The contrast level, used with the lighteningLevel parameter. The larger the value, the greater the contrast between light and dark. See LighteningContrastLevel.
+   */
+  lighteningContrastLevel?: LighteningContrastLevel;
+  /**
+   * The brightening level, in the range [0.0,1.0], where 0.0 means the original brightening. The default value is 0.0. The higher the value, the greater the degree of brightening.
+   */
+  lighteningLevel?: number;
+  /**
+   * The smoothness level, in the range [0.0,1.0], where 0.0 means the original smoothness. The default value is 0.0. The greater the value, the greater the smoothness level.
+   */
+  smoothnessLevel?: number;
+  /**
+   * The redness level, in the range [0.0,1.0], where 0.0 means the original redness. The default value is 0.0. The larger the value, the greater the redness level.
+   */
+  rednessLevel?: number;
+  /**
+   * The sharpness level, in the range [0.0,1.0], where 0.0 means the original sharpness. The default value is 0.0. The larger the value, the greater the sharpness level.
+   */
+  sharpnessLevel?: number;
+}
+
+/**
  * @ignore
  */
 export enum FaceShapeArea {
@@ -4113,29 +4139,17 @@ export enum FaceShapeArea {
 }
 
 /**
- * Image enhancement options.
+ * @ignore
  */
-export class BeautyOptions {
+export class FaceShapeAreaOptions {
   /**
-   * The contrast level, used with the lighteningLevel parameter. The larger the value, the greater the contrast between light and dark. See LighteningContrastLevel.
+   * @ignore
    */
-  lighteningContrastLevel?: LighteningContrastLevel;
+  shapeArea?: FaceShapeArea;
   /**
-   * The brightening level, in the range [0.0,1.0], where 0.0 means the original brightening. The default value is 0.0. The higher the value, the greater the degree of brightening.
+   * @ignore
    */
-  lighteningLevel?: number;
-  /**
-   * The smoothness level, in the range [0.0,1.0], where 0.0 means the original smoothness. The default value is 0.0. The greater the value, the greater the smoothness level.
-   */
-  smoothnessLevel?: number;
-  /**
-   * The redness level, in the range [0.0,1.0], where 0.0 means the original redness. The default value is 0.0. The larger the value, the greater the redness level.
-   */
-  rednessLevel?: number;
-  /**
-   * The sharpness level, in the range [0.0,1.0], where 0.0 means the original sharpness. The default value is 0.0. The larger the value, the greater the sharpness level.
-   */
-  sharpnessLevel?: number;
+  shapeIntensity?: number;
 }
 
 /**
@@ -4159,15 +4173,15 @@ export enum FaceShapeBeautyStyle {
 /**
  * @ignore
  */
-export class FaceShapeAreaOptions {
+export class FaceShapeBeautyOptions {
   /**
    * @ignore
    */
-  shapeArea?: FaceShapeArea;
+  shapeStyle?: FaceShapeBeautyStyle;
   /**
    * @ignore
    */
-  shapeIntensity?: number;
+  styleIntensity?: number;
 }
 
 /**
@@ -4192,20 +4206,6 @@ export class FilterEffectOptions {
 }
 
 /**
- * @ignore
- */
-export class FaceShapeBeautyOptions {
-  /**
-   * @ignore
-   */
-  shapeStyle?: FaceShapeBeautyStyle;
-  /**
-   * @ignore
-   */
-  styleIntensity?: number;
-}
-
-/**
  * The low-light enhancement mode.
  */
 export enum LowLightEnhanceMode {
@@ -4217,20 +4217,6 @@ export enum LowLightEnhanceMode {
    * 1: Manual mode. Users need to enable or disable the low-light enhancement feature manually.
    */
   LowLightEnhanceManual = 1,
-}
-
-/**
- * Video noise reduction mode.
- */
-export enum VideoDenoiserMode {
-  /**
-   * 0: (Default) Automatic mode. The SDK automatically enables or disables the video noise reduction feature according to the ambient light.
-   */
-  VideoDenoiserAuto = 0,
-  /**
-   * 1: Manual mode. Users need to enable or disable the video noise reduction feature manually.
-   */
-  VideoDenoiserManual = 1,
 }
 
 /**
@@ -4262,19 +4248,17 @@ export class LowlightEnhanceOptions {
 }
 
 /**
- * The color enhancement options.
+ * Video noise reduction mode.
  */
-export class ColorEnhanceOptions {
+export enum VideoDenoiserMode {
   /**
-   * The level of color enhancement. The value range is [0.0, 1.0]. 0.0 is the default value, which means no color enhancement is applied to the video. The higher the value, the higher the level of color enhancement. The default value is 0.5.
+   * 0: (Default) Automatic mode. The SDK automatically enables or disables the video noise reduction feature according to the ambient light.
    */
-  strengthLevel?: number;
+  VideoDenoiserAuto = 0,
   /**
-   * The level of skin tone protection. The value range is [0.0, 1.0]. 0.0 means no skin tone protection. The higher the value, the higher the level of skin tone protection. The default value is 1.0.
-   *  When the level of color enhancement is higher, the portrait skin tone can be significantly distorted, so you need to set the level of skin tone protection.
-   *  When the level of skin tone protection is higher, the color enhancement effect can be slightly reduced. Therefore, to get the best color enhancement effect, Agora recommends that you adjust strengthLevel and skinProtectLevel to get the most appropriate values.
+   * 1: Manual mode. Users need to enable or disable the video noise reduction feature manually.
    */
-  skinProtectLevel?: number;
+  VideoDenoiserManual = 1,
 }
 
 /**
@@ -4306,6 +4290,22 @@ export class VideoDenoiserOptions {
 }
 
 /**
+ * The color enhancement options.
+ */
+export class ColorEnhanceOptions {
+  /**
+   * The level of color enhancement. The value range is [0.0, 1.0]. 0.0 is the default value, which means no color enhancement is applied to the video. The higher the value, the higher the level of color enhancement. The default value is 0.5.
+   */
+  strengthLevel?: number;
+  /**
+   * The level of skin tone protection. The value range is [0.0, 1.0]. 0.0 means no skin tone protection. The higher the value, the higher the level of skin tone protection. The default value is 1.0.
+   *  When the level of color enhancement is higher, the portrait skin tone can be significantly distorted, so you need to set the level of skin tone protection.
+   *  When the level of skin tone protection is higher, the color enhancement effect can be slightly reduced. Therefore, to get the best color enhancement effect, Agora recommends that you adjust strengthLevel and skinProtectLevel to get the most appropriate values.
+   */
+  skinProtectLevel?: number;
+}
+
+/**
  * The custom background.
  */
 export enum BackgroundSourceType {
@@ -4329,20 +4329,6 @@ export enum BackgroundSourceType {
    * 4: The background is a local video in MP4, AVI, MKV, FLV, or other supported formats.
    */
   BackgroundVideo = 4,
-}
-
-/**
- * The type of algorithms to user for background processing.
- */
-export enum SegModelType {
-  /**
-   * 1: (Default) Use the algorithm suitable for all scenarios.
-   */
-  SegModelAi = 1,
-  /**
-   * 2: Use the algorithm designed specifically for scenarios with a green screen background.
-   */
-  SegModelGreen = 2,
 }
 
 /**
@@ -4386,21 +4372,17 @@ export class VirtualBackgroundSource {
 }
 
 /**
- * The type of the audio track.
+ * The type of algorithms to user for background processing.
  */
-export enum AudioTrackType {
+export enum SegModelType {
   /**
-   * @ignore
+   * 1: (Default) Use the algorithm suitable for all scenarios.
    */
-  AudioTrackInvalid = -1,
+  SegModelAi = 1,
   /**
-   * 0: Mixable audio tracks. This type of audio track supports mixing with other audio streams (such as audio streams captured by microphone) and playing locally or publishing to channels after mixing. The latency of mixable audio tracks is higher than that of direct audio tracks.
+   * 2: Use the algorithm designed specifically for scenarios with a green screen background.
    */
-  AudioTrackMixable = 0,
-  /**
-   * 1: Direct audio tracks. This type of audio track will replace the audio streams captured by the microphone and does not support mixing with other audio streams. The latency of direct audio tracks is lower than that of mixable audio tracks. If AudioTrackDirect is specified for this parameter, you must set publishMicrophoneTrack to false in ChannelMediaOptions when calling joinChannel to join the channel; otherwise, joining the channel fails and returns the error code -2.
-   */
-  AudioTrackDirect = 1,
+  SegModelGreen = 2,
 }
 
 /**
@@ -4437,6 +4419,24 @@ export class SegmentationProperty {
    * @ignore
    */
   screenColorType?: ScreenColorType;
+}
+
+/**
+ * The type of the audio track.
+ */
+export enum AudioTrackType {
+  /**
+   * @ignore
+   */
+  AudioTrackInvalid = -1,
+  /**
+   * 0: Mixable audio tracks. This type of audio track supports mixing with other audio streams (such as audio streams captured by microphone) and playing locally or publishing to channels after mixing. The latency of mixable audio tracks is higher than that of direct audio tracks.
+   */
+  AudioTrackMixable = 0,
+  /**
+   * 1: Direct audio tracks. This type of audio track will replace the audio streams captured by the microphone and does not support mixing with other audio streams. The latency of direct audio tracks is lower than that of mixable audio tracks. If AudioTrackDirect is specified for this parameter, you must set publishMicrophoneTrack to false in ChannelMediaOptions when calling joinChannel to join the channel; otherwise, joining the channel fails and returns the error code -2.
+   */
+  AudioTrackDirect = 1,
 }
 
 /**
@@ -4941,40 +4941,6 @@ export class AudioEncodedFrameObserverConfig {
 }
 
 /**
- * The region for connection, which is the region where the server the SDK connects to is located.
- */
-export enum AreaCode {
-  /**
-   * Mainland China.
-   */
-  AreaCodeCn = 0x00000001,
-  /**
-   * North America.
-   */
-  AreaCodeNa = 0x00000002,
-  /**
-   * Europe.
-   */
-  AreaCodeEu = 0x00000004,
-  /**
-   * Asia, excluding Mainland China.
-   */
-  AreaCodeAs = 0x00000008,
-  /**
-   * Japan.
-   */
-  AreaCodeJp = 0x00000010,
-  /**
-   * India.
-   */
-  AreaCodeIn = 0x00000020,
-  /**
-   * Global.
-   */
-  AreaCodeGlob = 0xffffffff,
-}
-
-/**
  * The encoded audio observer.
  */
 export interface IAudioEncodedFrameObserver {
@@ -5035,6 +5001,40 @@ export interface IAudioEncodedFrameObserver {
     length: number,
     audioEncodedFrameInfo: EncodedAudioFrameInfo
   ): void;
+}
+
+/**
+ * The region for connection, which is the region where the server the SDK connects to is located.
+ */
+export enum AreaCode {
+  /**
+   * Mainland China.
+   */
+  AreaCodeCn = 0x00000001,
+  /**
+   * North America.
+   */
+  AreaCodeNa = 0x00000002,
+  /**
+   * Europe.
+   */
+  AreaCodeEu = 0x00000004,
+  /**
+   * Asia, excluding Mainland China.
+   */
+  AreaCodeAs = 0x00000008,
+  /**
+   * Japan.
+   */
+  AreaCodeJp = 0x00000010,
+  /**
+   * India.
+   */
+  AreaCodeIn = 0x00000020,
+  /**
+   * Global.
+   */
+  AreaCodeGlob = 0xffffffff,
 }
 
 /**
@@ -5224,6 +5224,32 @@ export class PeerDownlinkInfo {
 }
 
 /**
+ * @ignore
+ */
+export class DownlinkNetworkInfo {
+  /**
+   * @ignore
+   */
+  lastmile_buffer_delay_time_ms?: number;
+  /**
+   * @ignore
+   */
+  bandwidth_estimation_bps?: number;
+  /**
+   * @ignore
+   */
+  total_downscale_level_count?: number;
+  /**
+   * @ignore
+   */
+  peer_downlink_info?: PeerDownlinkInfo[];
+  /**
+   * @ignore
+   */
+  total_received_video_count?: number;
+}
+
+/**
  * The built-in encryption mode.
  *
  * Agora recommends using Aes128Gcm2 or Aes256Gcm2 encrypted mode. These two modes support the use of salt for higher security.
@@ -5265,32 +5291,6 @@ export enum EncryptionMode {
    * Enumerator boundary.
    */
   ModeEnd = 9,
-}
-
-/**
- * @ignore
- */
-export class DownlinkNetworkInfo {
-  /**
-   * @ignore
-   */
-  lastmile_buffer_delay_time_ms?: number;
-  /**
-   * @ignore
-   */
-  bandwidth_estimation_bps?: number;
-  /**
-   * @ignore
-   */
-  total_downscale_level_count?: number;
-  /**
-   * @ignore
-   */
-  peer_downlink_info?: PeerDownlinkInfo[];
-  /**
-   * @ignore
-   */
-  total_received_video_count?: number;
 }
 
 /**
@@ -5934,5 +5934,3 @@ export class VideoLayout {
    */
   videoState?: number;
 }
-
-export abstract class {}
