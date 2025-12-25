@@ -95,9 +95,9 @@ export https_proxy=http://10.15.67.1:18080 http_proxy=http://110.15.67.1:18080 a
 # 安装Node.js (Linux使用nvm)
 if [ -f ~/.nvm/nvm.sh ]; then
     source ~/.nvm/nvm.sh --install
-    nvm ls-remote 14.17.3
-    nvm install 14.17.3
-    nvm use 14.17.3
+    nvm ls-remote 16.18.1
+    nvm install 16.18.1
+    nvm use 16.18.1
 fi
 
 # 取消代理设置
