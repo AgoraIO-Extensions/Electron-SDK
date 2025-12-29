@@ -1187,10 +1187,6 @@ export class ChannelMediaOptions {
    */
   publishLipSyncTrack?: boolean;
   /**
-   * @ignore
-   */
-  publishCameraRelayTrack?: boolean;
-  /**
    * Whether to automatically subscribe to all remote audio streams when the user joins a channel: true : Subscribe to all remote audio streams. false : Do not automatically subscribe to any remote audio streams.
    */
   autoSubscribeAudio?: boolean;
