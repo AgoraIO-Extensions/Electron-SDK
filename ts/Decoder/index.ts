@@ -64,7 +64,11 @@ export class WebCodecsDecoder {
       if (renderer.rendererType !== RendererType.WEBCODECSRENDERER) {
         continue;
       }
-      renderer.drawFrame(this.pendingFrame, this._currentCodecConfig!);
+      renderer.drawFrame(
+        this._cacheContext.uid!,
+        this.pendingFrame,
+        this._currentCodecConfig!
+      );
       this.pendingFrame = null;
     }
   }

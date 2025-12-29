@@ -55,7 +55,7 @@ void NodeIrisEventHandler::removeEvent(const std::string &eventName) {
 
 void NodeIrisEventHandler::OnEvent(EventParam *param) {
   const char *event =
-      "VideoEncodedFrameObserver_onEncodedVideoFrameReceived_6922697";
+      "VideoEncodedFrameObserver_onEncodedVideoFrameReceived_5f183eb";
 
   if (strcmp(event, param->event) == 0) {
     onEncodedVideoFrameReceived(param->data, param->buffer[0], param->length);

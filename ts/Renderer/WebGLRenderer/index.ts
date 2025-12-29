@@ -213,19 +213,22 @@ export class WebGLRenderer extends IRenderer {
     super.unbind();
   }
 
-  public override drawFrame({
-    width,
-    height,
-    yStride,
-    uStride,
-    vStride,
-    yBuffer,
-    uBuffer,
-    vBuffer,
-    rotation,
-    alphaBuffer,
-    colorSpace,
-  }: VideoFrame) {
+  public override drawFrame(
+    uid: number,
+    {
+      width,
+      height,
+      yStride,
+      uStride,
+      vStride,
+      yBuffer,
+      uBuffer,
+      vBuffer,
+      rotation,
+      alphaBuffer,
+      colorSpace,
+    }: VideoFrame
+  ) {
     this.rotateCanvas({ width, height, rotation });
     this.updateRenderMode();
 
@@ -344,7 +347,7 @@ export class WebGLRenderer extends IRenderer {
 
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
 
-    super.drawFrame();
+    super.drawFrame(uid);
   }
 
   protected override rotateCanvas({ width, height, rotation }: VideoFrame) {

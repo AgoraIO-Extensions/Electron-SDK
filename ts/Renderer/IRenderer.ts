@@ -45,6 +45,7 @@ export abstract class IRenderer {
   }
 
   public drawFrame(
+    uid: number,
     _videoFrame?: VideoFrame,
     _codecConfig?: CodecConfigInfo
   ): void {

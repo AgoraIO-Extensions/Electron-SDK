@@ -102,7 +102,7 @@ export class WebCodecsRenderer extends IRenderer {
     );
   }
 
-  drawFrame(frame: any, _codecConfig: CodecConfigInfo) {
+  drawFrame(uid: number, frame: any, _codecConfig: CodecConfigInfo) {
     if (!this.offscreenCanvas || !frame) return;
 
     this.offscreenCanvas.width = _codecConfig.codedWidth!;
@@ -137,7 +137,7 @@ export class WebCodecsRenderer extends IRenderer {
       // Draw the frame.
       this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, 4);
     }
-    super.drawFrame();
+    super.drawFrame(uid);
     this.getFps();
   }
 

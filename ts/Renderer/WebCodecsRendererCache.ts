@@ -94,6 +94,7 @@ export class WebCodecsRendererCache extends IRendererCache {
       `call_back_with_encoded_video_frame_${this.cacheContext.uid}`,
       (...params: any) => {
         try {
+          console.log('onEncodedVideoFrameReceived', params);
           this.onEncodedVideoFrameReceived(...params);
         } catch (e) {
           console.error(e);
@@ -133,5 +134,21 @@ export class WebCodecsRendererCache extends IRendererCache {
     this._decoder?.release();
     this._decoder = null;
     super.release();
+  }
+
+  public fetchVideoFrame(): { hasMoreFrame: boolean; needRender: boolean } {
+    return { hasMoreFrame: false, needRender: false };
+  }
+
+  public renderFrame(): void {
+    return;
+  }
+
+  public startRendering(): void {
+    return;
+  }
+
+  public stopRendering(): void {
+    return;
   }
 }

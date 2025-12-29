@@ -232,17 +232,15 @@ export default class VirtualBackground
             color={`#${color?.toString(16)}`}
           />
         ) : undefined}
-        {background_source_type === BackgroundSourceType.BackgroundImg ? (
-          <AgoraTextInput
-            onChangeText={(text) => {
-              this.setState({
-                source: text,
-              });
-            }}
-            placeholder={'source'}
-            value={source}
-          />
-        ) : null}
+        <AgoraTextInput
+          onChangeText={(text) => {
+            this.setState({
+              source: text,
+            });
+          }}
+          placeholder={'source'}
+          value={source}
+        />
         {background_source_type === BackgroundSourceType.BackgroundBlur ? (
           <AgoraDropdown
             title={'blurDegree'}

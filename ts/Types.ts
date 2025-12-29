@@ -166,7 +166,7 @@ export interface IAgoraElectronBridge {
     advanceOptions: AdvanceOptions
   ): {
     ret: number;
-    isNewFrame: boolean;
+    hasMoreFrame: boolean;
   };
 
   sendMsg: (

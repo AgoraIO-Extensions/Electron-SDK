@@ -92,6 +92,14 @@ export abstract class IRendererCache {
     }
   }
 
+  public abstract fetchVideoFrame(): {
+    hasMoreFrame: boolean;
+    needRender: boolean;
+  };
+  public abstract renderFrame(): void;
+  public abstract startRendering(): void;
+  public abstract stopRendering(): void;
+
   public release(): void {
     this.removeRenderer();
   }
