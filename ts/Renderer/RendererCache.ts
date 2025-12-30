@@ -85,14 +85,13 @@ export class RendererCache extends IRendererCache {
   override draw(): void {}
 
   public fetchVideoFrame(): { hasMoreFrame: boolean; needRender: boolean } {
-    const renderAlpha =
-      AgoraEnv.encodeAlpha || this.cacheContext.enableAlphaMask;
+    const renderAlpha = this.cacheContext.enableAlphaMask ?? false;
     let needRender = false;
     let { ret, hasMoreFrame } = AgoraElectronBridge.GetVideoFrame(
       this.cacheContext,
       this.videoFrame,
       {
-        encodeAlpha: renderAlpha,
+        renderAlpha: renderAlpha,
       }
     );
 
@@ -116,7 +115,7 @@ export class RendererCache extends IRendererCache {
           this.cacheContext,
           this.videoFrame,
           {
-            encodeAlpha: renderAlpha,
+            renderAlpha: renderAlpha,
           }
         );
         ret = result.ret;

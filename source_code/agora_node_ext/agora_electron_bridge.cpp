@@ -438,7 +438,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   int yStride;
   int uStride;
   int vStride;
-  bool encodeAlpha;
+  bool renderAlpha;
 
   napi_obj_get_property(env, obj1, "yBuffer", y_buffer_obj);
   napi_get_buffer_info(env, y_buffer_obj, &y_buffer, &y_length);
@@ -457,7 +457,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_obj_get_property(env, obj1, "uStride", uStride);
   napi_obj_get_property(env, obj1, "vStride", vStride);
 
-  napi_obj_get_property(env, obj2, "encodeAlpha", encodeAlpha);
+  napi_obj_get_property(env, obj2, "renderAlpha", renderAlpha);
 
   IrisCVideoFrame videoFrame;
   videoFrame.yBuffer = (uint8_t *) y_buffer;
@@ -470,7 +470,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   videoFrame.vStride = vStride;
   videoFrame.metadata_buffer = nullptr;
   videoFrame.metadata_size = 0;
-  if (encodeAlpha) {
+  if (renderAlpha) {
     napi_get_buffer_info(env, alpha_buffer_obj, &alpha_buffer, &alpha_length);
     videoFrame.alphaBuffer = (uint8_t *) alpha_buffer;
   } else {

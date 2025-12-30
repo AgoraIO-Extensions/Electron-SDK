@@ -5,7 +5,7 @@ import {
   VideoFrame,
 } from '../../Private/AgoraMediaBase';
 import { RendererContext, RendererType } from '../../Types';
-import { AgoraEnv, logWarn } from '../../Utils';
+import { logWarn } from '../../Utils';
 import { IRenderer } from '../IRenderer';
 
 export type WebGLFallback = (renderer: WebGLRenderer, error: Error) => void;
@@ -142,12 +142,10 @@ export class WebGLRenderer extends IRenderer {
         const canvasContext = this.canvas?.getContext(contextName, {
           depth: true,
           stencil: true,
-          alpha: context.enableAlphaMask || AgoraEnv.encodeAlpha,
+          alpha: context.enableAlphaMask,
           antialias: false,
           premultipliedAlpha: true,
-          preserveDrawingBuffer: !(
-            context.enableAlphaMask || AgoraEnv.encodeAlpha
-          ),
+          preserveDrawingBuffer: !context.enableAlphaMask,
           powerPreference: 'default',
           failIfMajorPerformanceCaveat: false,
         });
@@ -323,11 +321,7 @@ export class WebGLRenderer extends IRenderer {
         pixels: vBuffer!,
       },
     };
-    if (
-      alphaBuffer &&
-      alphaBuffer.length > 0 &&
-      (this.context.enableAlphaMask || AgoraEnv.encodeAlpha)
-    ) {
+    if (alphaBuffer && alphaBuffer.length > 0 && this.context.enableAlphaMask) {
       textures[this.gl.TEXTURE3] = {
         texture: this.aTexture,
         stride: width!,

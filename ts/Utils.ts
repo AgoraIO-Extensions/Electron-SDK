@@ -192,7 +192,6 @@ export const AgoraEnv: AgoraEnvType = {
   enableDebugLogging: false,
   webEnvReady: true,
   enableWebCodecsDecoder: false,
-  encodeAlpha: false,
   videoFallbackStrategy: VideoFallbackStrategy.PerformancePriority,
   maxDecodeRetryCount: 50,
 };

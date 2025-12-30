@@ -1,8 +1,4 @@
-import {
-  AdvanceOptions,
-  VideoCanvas,
-  VideoCodecType,
-} from './Private/AgoraBase';
+import { VideoCanvas, VideoCodecType } from './Private/AgoraBase';
 import { VideoFrame } from './Private/AgoraMediaBase';
 import { RtcConnection } from './Private/IAgoraRtcEngineEx';
 import { CapabilityManager } from './Renderer/CapabilityManager';
@@ -48,10 +44,6 @@ export interface AgoraEnvOptions {
    * @ignore
    */
   videoFallbackStrategy: VideoFallbackStrategy;
-  /**
-   * @ignore
-   */
-  encodeAlpha: boolean;
   /**
    * @ignore
    */
@@ -163,7 +155,9 @@ export interface IAgoraElectronBridge {
   GetVideoFrame(
     context: RendererCacheContext,
     videoFrame: VideoFrame,
-    advanceOptions: AdvanceOptions
+    advanceOptions: {
+      renderAlpha: boolean;
+    }
   ): {
     ret: number;
     hasMoreFrame: boolean;
