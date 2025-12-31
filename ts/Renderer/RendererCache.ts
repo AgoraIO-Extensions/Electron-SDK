@@ -22,16 +22,6 @@ export class RendererCache extends IRendererCache {
   private _frameIntervals: number[] = []; // 存储最近100帧的帧间隔
   private _lastFrameTimestamp: number = 0; // 上一帧的时间戳
   private _statsInterval: number = 100; // 每100帧输出一次统计
-  private _frameTimeHistogram = {
-    // 帧时间直方图
-    '0-1ms': 0,
-    '1-2ms': 0,
-    '2-5ms': 0,
-    '5-10ms': 0,
-    '10-16ms': 0,
-    '16-33ms': 0,
-    '33+ms': 0,
-  };
 
   constructor(context: RendererContext) {
     super(context);
@@ -191,15 +181,6 @@ export class RendererCache extends IRendererCache {
     // 更新帧时间统计
     this._frameTimes.push(frameTime);
 
-    // 更新帧时间直方图
-    if (frameTime < 1) this._frameTimeHistogram['0-1ms']++;
-    else if (frameTime < 2) this._frameTimeHistogram['1-2ms']++;
-    else if (frameTime < 5) this._frameTimeHistogram['2-5ms']++;
-    else if (frameTime < 10) this._frameTimeHistogram['5-10ms']++;
-    else if (frameTime < 16) this._frameTimeHistogram['10-16ms']++;
-    else if (frameTime < 33) this._frameTimeHistogram['16-33ms']++;
-    else this._frameTimeHistogram['33+ms']++;
-
     // 每statsInterval帧输出一次统计信息
     if (this._frameTimes.length >= this._statsInterval) {
       this._outputPerformanceStats();
@@ -243,8 +224,7 @@ export class RendererCache extends IRendererCache {
       `[FPS_STATS][UID:${this.cacheContext.uid}] 帧时间统计(${this._frameTimes.length}帧):`,
       `平均=${avgFrameTime.toFixed(2)}ms`,
       `最大=${maxFrameTime.toFixed(2)}ms`,
-      `最小=${minFrameTime.toFixed(2)}ms`,
-      `直方图=${JSON.stringify(this._frameTimeHistogram)}`
+      `最小=${minFrameTime.toFixed(2)}ms`
     );
 
     // 输出帧间隔统计
@@ -262,16 +242,6 @@ export class RendererCache extends IRendererCache {
     // 重置统计数据
     this._frameTimes = [];
     this._frameIntervals = [];
-
-    this._frameTimeHistogram = {
-      '0-1ms': 0,
-      '1-2ms': 0,
-      '2-5ms': 0,
-      '5-10ms': 0,
-      '10-16ms': 0,
-      '16-33ms': 0,
-      '33+ms': 0,
-    };
   }
 
   /**
