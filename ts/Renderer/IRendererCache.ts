@@ -1,3 +1,5 @@
+import { RtcConnection, VideoSourceType } from 'agora-electron-sdk';
+
 import { RendererCacheContext, RendererContext } from '../Types';
 
 import { IRenderer } from './IRenderer';
@@ -24,6 +26,16 @@ export function isUseConnection(context: RendererCacheContext): boolean {
 export abstract class IRendererCache {
   renderers: IRenderer[];
   cacheContext: RendererCacheContext;
+  callbackContext: { connection: RtcConnection; sourceType: VideoSourceType };
+
+  // 性能统计数据
+  public actualFps: number = 0;
+  public avgFrameTime: number = 0;
+  public maxFrameTime: number = 0;
+  public minFrameTime: number = 0;
+  public avgFrameInterval: number = 0;
+  public maxFrameInterval: number = 0;
+  public minFrameInterval: number = 0;
 
   constructor({
     channelId,
@@ -46,6 +58,17 @@ export abstract class IRendererCache {
       position,
       enableAlphaMask,
     };
+    this.callbackContext = {
+      connection: { channelId, localUid },
+      sourceType: sourceType!,
+    };
+  }
+
+  public setCallbackContext(
+    connection: RtcConnection,
+    sourceType: VideoSourceType
+  ): void {
+    this.callbackContext = { connection, sourceType };
   }
 
   public get key(): string {

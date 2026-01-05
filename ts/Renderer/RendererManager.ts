@@ -214,6 +214,18 @@ export class RendererManager {
     );
   }
 
+  public getRendererCachesBySourceType(
+    sourceType: VideoSourceType
+  ): RendererCacheType[] {
+    return this._rendererCaches.filter(
+      (cache) => cache.cacheContext.sourceType === sourceType
+    );
+  }
+
+  public getRendererCaches(): RendererCacheType[] {
+    return this._rendererCaches;
+  }
+
   public getRenderers(context: RendererContext): IRenderer[] {
     return this.getRendererCache(context)?.renderers || [];
   }

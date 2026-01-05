@@ -2,7 +2,7 @@ import { VideoFrame } from '../Private/AgoraMediaBase';
 import { AgoraElectronBridge } from '../Private/internal/IrisApiEngine';
 
 import { RendererContext } from '../Types';
-import { AgoraEnv, logDebug, logInfo } from '../Utils';
+import { AgoraEnv, logDebug } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 import { IRendererCache } from './IRendererCache';
@@ -195,47 +195,47 @@ export class RendererCache extends IRendererCache {
     if (this._frameTimes.length === 0) return;
 
     // 计算帧时间统计
-    const avgFrameTime =
+    this.avgFrameTime =
       this._frameTimes.reduce((a, b) => a + b, 0) / this._frameTimes.length;
-    const maxFrameTime = Math.max(...this._frameTimes);
-    const minFrameTime = Math.min(...this._frameTimes);
+    this.maxFrameTime = Math.max(...this._frameTimes);
+    this.minFrameTime = Math.min(...this._frameTimes);
 
     // 计算帧间隔统计
-    let avgFrameInterval = 0;
-    let maxFrameInterval = 0;
-    let minFrameInterval = Number.MAX_VALUE;
+    this.avgFrameInterval = 0;
+    this.maxFrameInterval = 0;
+    this.minFrameInterval = Number.MAX_VALUE;
 
     if (this._frameIntervals.length > 0) {
-      avgFrameInterval =
+      this.avgFrameInterval =
         this._frameIntervals.reduce((a, b) => a + b, 0) /
         this._frameIntervals.length;
-      maxFrameInterval = Math.max(...this._frameIntervals);
-      minFrameInterval = Math.min(...this._frameIntervals);
+      this.maxFrameInterval = Math.max(...this._frameIntervals);
+      this.minFrameInterval = Math.min(...this._frameIntervals);
     }
 
     // 计算实际帧率
-    const actualFps =
+    this.actualFps =
       this._frameIntervals.length > 0
-        ? 1000 / avgFrameInterval
+        ? 1000 / this.avgFrameInterval
         : this._renderingFps;
 
     // 输出帧时间统计
-    logInfo(
-      `[FPS_STATS][UID:${this.cacheContext.uid}] 帧时间统计(${this._frameTimes.length}帧):`,
-      `平均=${avgFrameTime.toFixed(2)}ms`,
-      `最大=${maxFrameTime.toFixed(2)}ms`,
-      `最小=${minFrameTime.toFixed(2)}ms`
+    logDebug(
+      `[FPS_STATS][UID:${this.callbackContext.connection.localUid}] 帧时间统计(${this._frameTimes.length}帧):`,
+      `平均=${this.avgFrameTime.toFixed(2)}ms`,
+      `最大=${this.maxFrameTime.toFixed(2)}ms`,
+      `最小=${this.minFrameTime.toFixed(2)}ms`
     );
 
     // 输出帧间隔统计
     if (this._frameIntervals.length > 0) {
-      logInfo(
-        `[FPS_STATS][UID:${this.cacheContext.uid}] 帧间隔统计(${this._frameIntervals.length}帧):`,
-        `实际帧率=${actualFps.toFixed(2)}fps`,
+      logDebug(
+        `[FPS_STATS][UID:${this.callbackContext.connection.localUid}] 帧间隔统计(${this._frameIntervals.length}帧):`,
+        `实际帧率=${this.actualFps.toFixed(2)}fps`,
         `目标帧率=${this._renderingFps}fps`,
-        `平均=${avgFrameInterval.toFixed(2)}ms`,
-        `最大=${maxFrameInterval.toFixed(2)}ms`,
-        `最小=${minFrameInterval.toFixed(2)}ms`
+        `平均=${this.avgFrameInterval.toFixed(2)}ms`,
+        `最大=${this.maxFrameInterval.toFixed(2)}ms`,
+        `最小=${this.minFrameInterval.toFixed(2)}ms`
       );
     }
 
@@ -251,10 +251,6 @@ export class RendererCache extends IRendererCache {
     if (this._renderingTimer || this._isRendering) return;
 
     this._isRendering = true;
-    logInfo(
-      `[FPS_INFO][UID:${this.cacheContext.uid}] 开始独立渲染循环，目标帧率:`,
-      this._renderingFps
-    );
 
     const renderingLooper = () => {
       if (!this._isRendering) return;

@@ -48,6 +48,10 @@ export interface AgoraEnvOptions {
    * @ignore
    */
   maxDecodeRetryCount: number;
+  /**
+   * @ignore
+   */
+  enableArgusCounters: boolean;
 }
 
 /**
