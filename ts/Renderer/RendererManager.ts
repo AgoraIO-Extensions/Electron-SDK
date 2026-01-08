@@ -15,7 +15,7 @@ import {
   RendererContext,
   RendererType,
 } from '../Types';
-import { AgoraEnv, isSupportWebGL, logInfo } from '../Utils';
+import { AgoraEnv, isSupportWebGL } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 import { generateRendererCacheKey, isUseConnection } from './IRendererCache';
@@ -69,7 +69,6 @@ export class RendererManager {
   }
 
   public setRenderingFps(fps: number) {
-    logInfo('[FPS_INFO] set rendering fps:', this.renderingFps, '->', fps);
     this.renderingFps = fps;
   }
 

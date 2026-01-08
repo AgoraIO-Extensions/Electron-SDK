@@ -94,7 +94,6 @@ export class WebCodecsRendererCache extends IRendererCache {
       `call_back_with_encoded_video_frame_${this.cacheContext.uid}`,
       (...params: any) => {
         try {
-          console.log('onEncodedVideoFrameReceived', params);
           this.onEncodedVideoFrameReceived(...params);
         } catch (e) {
           console.error(e);
