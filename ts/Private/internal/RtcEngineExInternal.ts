@@ -136,11 +136,12 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
             }[] = [];
             if (rendererManager) {
               rendererManager.getRendererCaches().forEach((cache) => {
+                const isRemote =
+                  cache.callbackContext.sourceType ===
+                  VideoSourceType.VideoSourceRemote;
                 if (
                   cache.callbackContext.connection?.channelId &&
-                  (cache.callbackContext.connection?.localUid ||
-                    cache.callbackContext.sourceType ===
-                      VideoSourceType.VideoSourceRemote)
+                  (cache.callbackContext.connection?.localUid || isRemote)
                 ) {
                   let counter = counters.find(
                     (counter) =>
@@ -152,27 +153,19 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
                   let data: PerformanceCounter = {
                     counters: [
                       {
-                        counterId:
-                          cache.callbackContext.sourceType ===
-                          VideoSourceType.VideoSourceRemote
-                            ? this.VideoRemoteRenderMeanFpsCounterId
-                            : this.VideoLocalRenderMeanFpsCounterId,
+                        counterId: isRemote
+                          ? this.VideoRemoteRenderMeanFpsCounterId
+                          : this.VideoLocalRenderMeanFpsCounterId,
                         value: Math.floor(cache.actualFps),
                       },
                       {
-                        counterId:
-                          cache.callbackContext.sourceType ===
-                          VideoSourceType.VideoSourceRemote
-                            ? this.VideoRemoteRenderDrawCostCounterId
-                            : this.VideoLocalRenderDrawCostCounterId,
+                        counterId: isRemote
+                          ? this.VideoRemoteRenderDrawCostCounterId
+                          : this.VideoLocalRenderDrawCostCounterId,
                         value: Math.floor(cache.avgFrameInterval),
                       },
                     ],
-                    uid:
-                      cache.callbackContext.sourceType ===
-                      VideoSourceType.VideoSourceRemote
-                        ? cache.cacheContext.uid!
-                        : 0,
+                    uid: isRemote ? cache.cacheContext.uid! : 0,
                   };
                   if (!counter) {
                     counters.push({
