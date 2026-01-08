@@ -1,4 +1,5 @@
 import { VideoFrame } from '../../Private/AgoraMediaBase';
+import { RendererContext } from '../../Types';
 import { IRenderer } from '../IRenderer';
 
 const YUVBuffer = require('yuv-buffer');
@@ -7,25 +8,28 @@ const YUVCanvas = require('yuv-canvas');
 export class YUVCanvasRenderer extends IRenderer {
   private frameSink?: any;
 
-  public override bind(element: HTMLElement) {
-    super.bind(element);
+  public override bind(context: RendererContext) {
+    super.bind(context);
     this.frameSink = YUVCanvas.attach(this.canvas, {
       webGL: false,
     });
   }
 
-  public override drawFrame({
-    width,
-    height,
-    yStride,
-    uStride,
-    vStride,
-    yBuffer,
-    uBuffer,
-    vBuffer,
-    rotation,
-    alphaBuffer,
-  }: VideoFrame) {
+  public override drawFrame(
+    uid: number,
+    {
+      width,
+      height,
+      yStride,
+      uStride,
+      vStride,
+      yBuffer,
+      uBuffer,
+      vBuffer,
+      rotation,
+      alphaBuffer,
+    }: VideoFrame
+  ) {
     this.rotateCanvas({ width, height, rotation });
     this.updateRenderMode();
 
@@ -55,7 +59,7 @@ export class YUVCanvasRenderer extends IRenderer {
     frame.a = alphaBuffer;
     this.frameSink.drawFrame(frame);
 
-    super.drawFrame();
+    super.drawFrame(uid);
   }
 
   protected override rotateCanvas({ width, height, rotation }: VideoFrame) {

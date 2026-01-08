@@ -158,7 +158,8 @@ export function isSupportWebGL(): boolean {
  */
 export function getContextByCanvas(
   // eslint-disable-next-line auto-import/auto-import
-  canvas: OffscreenCanvas
+  canvas: OffscreenCanvas,
+  enableAlphaMask: boolean = false
 ): WebGLRenderingContext | WebGL2RenderingContext | null {
   const contextNames = ['webgl2', 'webgl', 'experimental-webgl'];
 
@@ -167,10 +168,10 @@ export function getContextByCanvas(
     const context = canvas.getContext(contextName, {
       depth: true,
       stencil: true,
-      alpha: false,
+      alpha: enableAlphaMask,
       antialias: false,
       premultipliedAlpha: true,
-      preserveDrawingBuffer: true,
+      preserveDrawingBuffer: !enableAlphaMask,
       powerPreference: 'default',
       failIfMajorPerformanceCaveat: false,
     }) as WebGLRenderingContext | WebGL2RenderingContext | null;
@@ -191,7 +192,6 @@ export const AgoraEnv: AgoraEnvType = {
   enableDebugLogging: false,
   webEnvReady: true,
   enableWebCodecsDecoder: false,
-  encodeAlpha: false,
   videoFallbackStrategy: VideoFallbackStrategy.PerformancePriority,
   maxDecodeRetryCount: 50,
 };

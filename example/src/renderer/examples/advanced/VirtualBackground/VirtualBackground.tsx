@@ -5,7 +5,6 @@ import {
   ClientRoleType,
   IRtcEngineEventHandler,
   RenderModeType,
-  VideoModulePosition,
   VideoSourceType,
   createAgoraRtcEngine,
 } from 'agora-electron-sdk';
@@ -32,9 +31,8 @@ interface State extends BaseVideoComponentState {
   color: number;
   source: string;
   blur_degree: BackgroundBlurDegree;
-  encodeAlpha: boolean;
-  video_module_position: VideoModulePosition;
   enableVirtualBackground?: boolean;
+  enableAlphaMask: boolean;
 }
 
 export default class VirtualBackground
@@ -51,12 +49,11 @@ export default class VirtualBackground
       joinChannelSuccess: false,
       remoteUsers: [],
       startPreview: false,
-      encodeAlpha: false,
-      video_module_position: VideoModulePosition.PositionPreEncoder,
       background_source_type: BackgroundSourceType.BackgroundNone,
       color: 0xff0000,
       source: getResourcePath('agora-logo.png'),
       blur_degree: BackgroundBlurDegree.BlurDegreeMedium,
+      enableAlphaMask: false,
     };
   }
 
@@ -85,8 +82,12 @@ export default class VirtualBackground
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();
 
-    // if you want to use the alpha channel, you need to set the following parameters to let remoteView support alpha channel
-    this.engine?.setParameters('{"rtc.video.dec_split_alpha":true}');
+    this.engine.setParameters(
+      JSON.stringify({ 'rtc.video.send_alpha_data': true })
+    );
+    this.engine.setParameters(
+      JSON.stringify({ 'rtc.video.alpha_data_codec_type': 3 })
+    );
   }
 
   handleStartPreview = () => {
@@ -175,18 +176,13 @@ export default class VirtualBackground
   }
 
   protected renderUsers(): ReactElement | undefined {
-    const {
-      startPreview,
-      joinChannelSuccess,
-      remoteUsers,
-      video_module_position,
-    } = this.state;
+    const { startPreview, joinChannelSuccess, remoteUsers, enableAlphaMask } =
+      this.state;
     return (
       <>
         {!!startPreview || joinChannelSuccess
           ? this.renderUser({
-              position:
-                video_module_position | VideoModulePosition.PositionPreRenderer,
+              enableAlphaMask: enableAlphaMask,
               sourceType: VideoSourceType.VideoSourceCamera,
               renderMode: RenderModeType.RenderModeFit,
             })
@@ -196,9 +192,7 @@ export default class VirtualBackground
             data={remoteUsers ?? []}
             renderItem={(item) =>
               this.renderUser({
-                position:
-                  video_module_position |
-                  VideoModulePosition.PositionPreRenderer,
+                enableAlphaMask: enableAlphaMask,
                 uid: item,
                 sourceType: VideoSourceType.VideoSourceRemote,
               })
@@ -215,10 +209,7 @@ export default class VirtualBackground
       color,
       source,
       blur_degree,
-      encodeAlpha,
-      startPreview,
-      joinChannelSuccess,
-      video_module_position,
+      enableAlphaMask,
     } = this.state;
     return (
       <>
@@ -227,17 +218,6 @@ export default class VirtualBackground
           items={enumToItems(BackgroundSourceType)}
           value={background_source_type}
           onValueChange={(value) => {
-            if (value !== BackgroundSourceType.BackgroundNone) {
-              this.engine?.setVideoEncoderConfiguration({
-                advanceOptions: {
-                  encodeAlpha: false,
-                },
-              });
-              this.setState({
-                video_module_position: VideoModulePosition.PositionPreEncoder,
-                encodeAlpha: false,
-              });
-            }
             this.disableVirtualBackground();
             this.setState({ background_source_type: value });
           }}
@@ -252,17 +232,15 @@ export default class VirtualBackground
             color={`#${color?.toString(16)}`}
           />
         ) : undefined}
-        {background_source_type === BackgroundSourceType.BackgroundImg ? (
-          <AgoraTextInput
-            onChangeText={(text) => {
-              this.setState({
-                source: text,
-              });
-            }}
-            placeholder={'source'}
-            value={source}
-          />
-        ) : null}
+        <AgoraTextInput
+          onChangeText={(text) => {
+            this.setState({
+              source: text,
+            });
+          }}
+          placeholder={'source'}
+          value={source}
+        />
         {background_source_type === BackgroundSourceType.BackgroundBlur ? (
           <AgoraDropdown
             title={'blurDegree'}
@@ -273,37 +251,13 @@ export default class VirtualBackground
             }}
           />
         ) : null}
-        {background_source_type === BackgroundSourceType.BackgroundNone ? (
-          <AgoraSwitch
-            title={'PositionPostCapturer'}
-            disabled={startPreview || joinChannelSuccess}
-            value={
-              video_module_position === VideoModulePosition.PositionPostCapturer
-            }
-            onValueChange={(value) => {
-              this.setState({
-                video_module_position: value
-                  ? VideoModulePosition.PositionPostCapturer
-                  : VideoModulePosition.PositionPreEncoder,
-              });
-            }}
-          />
-        ) : null}
-        {background_source_type === BackgroundSourceType.BackgroundNone ? (
-          <AgoraSwitch
-            title={'encodeAlpha'}
-            disabled={startPreview || joinChannelSuccess}
-            value={encodeAlpha}
-            onValueChange={(value) => {
-              this.setState({ encodeAlpha: value });
-              this.engine?.setVideoEncoderConfiguration({
-                advanceOptions: {
-                  encodeAlpha: value,
-                },
-              });
-            }}
-          />
-        ) : null}
+        <AgoraSwitch
+          title={'enableAlphaMask'}
+          value={enableAlphaMask}
+          onValueChange={(value) => {
+            this.setState({ enableAlphaMask: value });
+          }}
+        />
       </>
     );
   }

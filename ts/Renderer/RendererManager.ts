@@ -118,6 +118,7 @@ export class RendererManager {
     context.useWebCodecsDecoder = context.useWebCodecsDecoder || false;
     context.enableFps = context.enableFps || false;
     context.position = context.position || this.defaultObservedFramePosition;
+    context.enableAlphaMask = context.enableAlphaMask || false;
 
     if (!AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
       context.useWebCodecsDecoder = false;
@@ -256,12 +257,12 @@ export class RendererManager {
           renderer = new WebGLRenderer(
             this.handleWebGLFallback(context).bind(this)
           );
-          renderer.bind(context.view);
+          renderer.bind(context);
         }
         break;
       case RendererType.SOFTWARE:
         renderer = new YUVCanvasRenderer();
-        renderer.bind(context.view);
+        renderer.bind(context);
         break;
       default:
         throw new Error('Unknown renderer type');

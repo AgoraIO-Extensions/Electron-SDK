@@ -2,7 +2,7 @@ import { VideoFrame } from '../Private/AgoraMediaBase';
 import { AgoraElectronBridge } from '../Private/internal/IrisApiEngine';
 
 import { RendererContext } from '../Types';
-import { AgoraEnv, logDebug } from '../Utils';
+import { logDebug } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 import { IRendererCache } from './IRendererCache';
@@ -57,11 +57,12 @@ export class RendererCache extends IRendererCache {
   }
 
   override draw() {
+    const renderAlpha = this.cacheContext.enableAlphaMask ?? false;
     let { ret, isNewFrame } = AgoraElectronBridge.GetVideoFrame(
       this.cacheContext,
       this.videoFrame,
       {
-        encodeAlpha: AgoraEnv.encodeAlpha,
+        renderAlpha: renderAlpha,
       }
     );
 
@@ -74,7 +75,7 @@ export class RendererCache extends IRendererCache {
         this.videoFrame.yBuffer = Buffer.alloc(yStride! * height!);
         this.videoFrame.uBuffer = Buffer.alloc(uStride! * height!);
         this.videoFrame.vBuffer = Buffer.alloc(vStride! * height!);
-        if (AgoraEnv.encodeAlpha) {
+        if (renderAlpha) {
           this.videoFrame.alphaBuffer = Buffer.alloc(
             this.videoFrame.width! * this.videoFrame.height!
           );
@@ -84,7 +85,7 @@ export class RendererCache extends IRendererCache {
           this.cacheContext,
           this.videoFrame,
           {
-            encodeAlpha: AgoraEnv.encodeAlpha,
+            renderAlpha: renderAlpha,
           }
         );
         ret = result.ret;
@@ -95,7 +96,7 @@ export class RendererCache extends IRendererCache {
         return;
     }
 
-    if (!AgoraEnv.encodeAlpha) {
+    if (!renderAlpha) {
       if (
         this.videoFrame.alphaBuffer &&
         this.videoFrame.alphaBuffer.length > 0
@@ -115,7 +116,7 @@ export class RendererCache extends IRendererCache {
 
     if (isNewFrame) {
       this.renderers.forEach((renderer) => {
-        renderer.drawFrame(this.videoFrame);
+        renderer.drawFrame(this.cacheContext.uid!, this.videoFrame);
       });
     }
   }
