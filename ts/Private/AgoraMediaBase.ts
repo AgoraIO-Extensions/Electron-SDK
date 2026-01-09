@@ -155,8 +155,17 @@ export enum BytesPerSample {
  * @ignore
  */
 export class AudioParameters {
+  /**
+   * @ignore
+   */
   sample_rate?: number;
+  /**
+   * @ignore
+   */
   channels?: number;
+  /**
+   * @ignore
+   */
   frames_per_buffer?: number;
 }
 
@@ -192,10 +201,25 @@ export enum TrackAudioMixedPolicyType {
  * The AudioDeviceInfo class that contains the ID, name and type of the audio devices.
  */
 export class AudioDeviceInfo {
+  /**
+   * The device name.
+   */
   deviceName?: string;
+  /**
+   * The device ID.
+   */
   deviceId?: string;
+  /**
+   * @ignore
+   */
   isCurrentSelected?: boolean;
+  /**
+   * @ignore
+   */
   isPlayoutDevice?: boolean;
+  /**
+   * @ignore
+   */
   routing?: AudioRoute;
 }
 
@@ -306,10 +330,16 @@ export enum ContentInspectType {
 }
 
 /**
- * ContentInspectModule A structure used to configure the frequency of video screenshot and upload.
+ * ContentInspectModule class, a structure used to configure the frequency of video screenshot and upload.
  */
 export class ContentInspectModule {
+  /**
+   * Types of functional module. See ContentInspectType.
+   */
   type?: ContentInspectType;
+  /**
+   * The frequency (s) of video screenshot and upload. The value should be set as larger than 0. The default value is 0, the SDK does not take screenshots. Agora recommends that you set the value as 10; you can also adjust it according to your business needs.
+   */
   interval?: number;
 }
 
@@ -317,9 +347,21 @@ export class ContentInspectModule {
  * Screenshot and upload configuration.
  */
 export class ContentInspectConfig {
+  /**
+   * Additional information on the video content (maximum length: 1024 Bytes). The SDK sends the screenshots and additional information on the video content to the Agora server. Once the video screenshot and upload process is completed, the Agora server sends the additional information and the callback notification to your server.
+   */
   extraInfo?: string;
+  /**
+   * @ignore
+   */
   serverConfig?: string;
+  /**
+   * Functional module. See ContentInspectModule. A maximum of 32 ContentInspectModule instances can be configured, and the value range of MAX_CONTENT_INSPECT_MODULE_COUNT is an integer in [1,32]. A function module can only be configured with one instance at most. Currently only the video screenshot and upload function is supported.
+   */
   modules?: ContentInspectModule[];
+  /**
+   * The number of functional modules, that is,the number of configured ContentInspectModule instances, must be the same as the number of instances configured in modules. The maximum number is 32.
+   */
   moduleCount?: number;
 }
 
@@ -327,7 +369,13 @@ export class ContentInspectConfig {
  * @ignore
  */
 export class PacketOptions {
+  /**
+   * @ignore
+   */
   timestamp?: number;
+  /**
+   * @ignore
+   */
   audioLevelIndication?: number;
 }
 
@@ -335,7 +383,13 @@ export class PacketOptions {
  * @ignore
  */
 export class AudioEncodedFrameInfo {
+  /**
+   * @ignore
+   */
   sendTs?: number;
+  /**
+   * @ignore
+   */
   codec?: number;
 }
 
@@ -343,11 +397,29 @@ export class AudioEncodedFrameInfo {
  * The parameters of the audio frame in PCM format.
  */
 export class AudioPcmFrame {
+  /**
+   * The timestamp (ms) of the audio frame.
+   */
   capture_timestamp?: number;
+  /**
+   * The number of samples per channel in the audio frame.
+   */
   samples_per_channel_?: number;
+  /**
+   * Audio sample rate (Hz).
+   */
   sample_rate_hz_?: number;
+  /**
+   * The number of audio channels.
+   */
   num_channels_?: number;
+  /**
+   * The number of bytes per sample.
+   */
   bytes_per_sample?: BytesPerSample;
+  /**
+   * The audio frame.
+   */
   data_?: number[];
 }
 
@@ -527,24 +599,83 @@ export enum VideoBufferType {
  * The external video frame.
  */
 export class ExternalVideoFrame {
+  /**
+   * The video type. See VideoBufferType.
+   */
   type?: VideoBufferType;
+  /**
+   * The pixel format. See VideoPixelFormat.
+   */
   format?: VideoPixelFormat;
+  /**
+   * Video frame buffer.
+   */
   buffer?: Uint8Array;
+  /**
+   * Line spacing of the incoming video frame, which must be in pixels instead of bytes. For textures, it is the width of the texture.
+   */
   stride?: number;
+  /**
+   * Height of the incoming video frame.
+   */
   height?: number;
+  /**
+   * Raw data related parameter. The number of pixels trimmed from the left. The default value is 0.
+   */
   cropLeft?: number;
+  /**
+   * Raw data related parameter. The number of pixels trimmed from the top. The default value is 0.
+   */
   cropTop?: number;
+  /**
+   * Raw data related parameter. The number of pixels trimmed from the right. The default value is 0.
+   */
   cropRight?: number;
+  /**
+   * Raw data related parameter. The number of pixels trimmed from the bottom. The default value is 0.
+   */
   cropBottom?: number;
+  /**
+   * Raw data related parameter. The clockwise rotation of the video frame. You can set the rotation angle as 0, 90, 180, or 270. The default value is 0.
+   */
   rotation?: number;
+  /**
+   * Timestamp (ms) of the incoming video frame. An incorrect timestamp results in frame loss or unsynchronized audio and video.
+   */
   timestamp?: number;
+  /**
+   * This parameter only applies to video data in Texture format. Texture ID of the video frame.
+   */
   eglType?: EglContextType;
+  /**
+   * This parameter only applies to video data in Texture format. Incoming 4 × 4 transformational matrix. The typical value is a unit matrix.
+   */
   textureId?: number;
+  /**
+   * This parameter only applies to video data in Texture format. Incoming 4 × 4 transformational matrix. The typical value is a unit matrix.
+   */
   matrix?: number[];
+  /**
+   * @ignore
+   */
   metadata_buffer?: Uint8Array;
+  /**
+   * @ignore
+   */
   metadata_size?: number;
+  /**
+   * The alpha channel data output by using portrait segmentation algorithm. This data matches the size of the video frame, with each pixel value ranging from [0,255], where 0 represents the background and 255 represents the foreground (portrait). By setting this parameter, you can render the video background into various effects, such as transparent, solid color, image, video, etc. In custom video rendering scenarios, ensure that both the video frame and alphaBuffer are of the Full Range type; other types may cause abnormal alpha data rendering.
+   */
   alphaBuffer?: Uint8Array;
+  /**
+   * This parameter only applies to video data in BGRA or RGBA format. Whether to extract the alpha channel data from the video frame and automatically fill it into alphaBuffer : true ：Extract and fill the alpha channel data. false : (Default) Do not extract and fill the Alpha channel data. For video data in BGRA or RGBA format, you can set the Alpha channel data in either of the following ways:
+   *  Automatically by setting this parameter to true.
+   *  Manually through the alphaBuffer parameter.
+   */
   fillAlphaBuffer?: boolean;
+  /**
+   * @ignore
+   */
   texture_slice_index?: number;
 }
 
@@ -554,24 +685,83 @@ export class ExternalVideoFrame {
  * Note that the buffer provides a pointer to a pointer. This interface cannot modify the pointer of the buffer, but it can modify the content of the buffer.
  */
 export class VideoFrame {
+  /**
+   * The pixel format. See VideoPixelFormat.
+   */
   type?: VideoPixelFormat;
+  /**
+   * The width of the video, in pixels.
+   */
   width?: number;
+  /**
+   * The height of the video, in pixels.
+   */
   height?: number;
+  /**
+   * For YUV data, the line span of the Y buffer; for RGBA data, the total data length. When dealing with video data, it is necessary to process the offset between each line of pixel data based on this parameter, otherwise it may result in image distortion.
+   */
   yStride?: number;
+  /**
+   * For YUV data, the line span of the U buffer; for RGBA data, the value is 0. When dealing with video data, it is necessary to process the offset between each line of pixel data based on this parameter, otherwise it may result in image distortion.
+   */
   uStride?: number;
+  /**
+   * For YUV data, the line span of the V buffer; for RGBA data, the value is 0. When dealing with video data, it is necessary to process the offset between each line of pixel data based on this parameter, otherwise it may result in image distortion.
+   */
   vStride?: number;
+  /**
+   * For YUV data, the pointer to the Y buffer; for RGBA data, the data buffer.
+   */
   yBuffer?: Uint8Array;
+  /**
+   * For YUV data, the pointer to the U buffer; for RGBA data, the value is 0.
+   */
   uBuffer?: Uint8Array;
+  /**
+   * For YUV data, the pointer to the V buffer; for RGBA data, the value is 0.
+   */
   vBuffer?: Uint8Array;
+  /**
+   * The clockwise rotation of the video frame before rendering. Supported values include 0, 90, 180, and 270 degrees.
+   */
   rotation?: number;
+  /**
+   * The Unix timestamp (ms) when the video frame is rendered. This timestamp can be used to guide the rendering of the video frame. This parameter is required.
+   */
   renderTimeMs?: number;
+  /**
+   * Reserved for future use.
+   */
   avsync_type?: number;
+  /**
+   * This parameter only applies to video data in Texture format. The MetaData buffer. The default value is NULL.
+   */
   metadata_buffer?: Uint8Array;
+  /**
+   * This parameter only applies to video data in Texture format. The MetaData size. The default value is 0.
+   */
   metadata_size?: number;
+  /**
+   * This parameter only applies to video data in Texture format. Texture ID.
+   */
   textureId?: number;
+  /**
+   * This parameter only applies to video data in Texture format. Incoming 4 × 4 transformational matrix. The typical value is a unit matrix.
+   */
   matrix?: number[];
+  /**
+   * The alpha channel data output by using portrait segmentation algorithm. This data matches the size of the video frame, with each pixel value ranging from [0,255], where 0 represents the background and 255 represents the foreground (portrait). By setting this parameter, you can render the video background into various effects, such as transparent, solid color, image, video, etc.
+   *  In custom video rendering scenarios, ensure that both the video frame and alphaBuffer are of the Full Range type; other types may cause abnormal alpha data rendering.
+   *  Make sure that alphaBuffer is exactly the same size as the video frame (width × height), otherwise it may cause the app to crash.
+   */
   alphaBuffer?: Uint8Array;
+  /**
+   * @ignore
+   */
   pixelBuffer?: Uint8Array;
+  /**
+   * The meta information in the video frame. To use this parameter, contact.
+   */
   metaInfo?: IVideoFrameMetaInfo;
 }
 
@@ -643,16 +833,51 @@ export enum AudioFrameType {
  * Raw audio data.
  */
 export class AudioFrame {
+  /**
+   * The type of the audio frame. See AudioFrameType.
+   */
   type?: AudioFrameType;
+  /**
+   * The number of samples per channel in the audio frame.
+   */
   samplesPerChannel?: number;
+  /**
+   * The number of bytes per sample. For PCM, this parameter is generally set to 16 bits (2 bytes).
+   */
   bytesPerSample?: BytesPerSample;
+  /**
+   * The number of audio channels (the data are interleaved if it is stereo).
+   *  1: Mono.
+   *  2: Stereo.
+   */
   channels?: number;
+  /**
+   * The number of samples per channel in the audio frame.
+   */
   samplesPerSec?: number;
+  /**
+   * The data buffer of the audio frame. When the audio frame uses a stereo channel, the data buffer is interleaved. The size of the data buffer is as follows: buffer = samples × channels × bytesPerSample.
+   */
   buffer?: Uint8Array;
+  /**
+   * The timestamp (ms) of the external audio frame. You can use this timestamp to restore the order of the captured audio frame, and synchronize audio and video frames in video scenarios, including scenarios where external video sources are used.
+   */
   renderTimeMs?: number;
+  /**
+   * Reserved for future use.
+   */
   avsync_type?: number;
+  /**
+   * @ignore
+   */
   presentationMs?: number;
+  /**
+   * @ignore
+   */
   audioTrackNumber?: number;
+  /**
+   * @ignore
+   */
   rtpTimestamp?: number;
 }
 
@@ -694,9 +919,28 @@ export enum AudioFramePosition {
  *  Ensure that the sample interval ≥ 0.01 (s).
  */
 export class AudioParams {
+  /**
+   * The audio sample rate (Hz), which can be set as one of the following values:
+   *  8000.
+   *  (Default) 16000.
+   *  32000.
+   *  44100
+   *  48000
+   */
   sample_rate?: number;
+  /**
+   * The number of audio channels, which can be set as either of the following values:
+   *  1: (Default) Mono.
+   *  2: Stereo.
+   */
   channels?: number;
+  /**
+   * The use mode of the audio data. See RawAudioFrameOpModeType.
+   */
   mode?: RawAudioFrameOpModeType;
+  /**
+   * The number of samples, such as 1024 for the media push.
+   */
   samples_per_call?: number;
 }
 
@@ -768,7 +1012,13 @@ export interface IAudioFrameObserver extends IAudioFrameObserverBase {
  * The audio spectrum data.
  */
 export class AudioSpectrumData {
+  /**
+   * The audio spectrum data. Agora divides the audio frequency into 256 frequency domains, and reports the energy value of each frequency domain through this parameter. The value range of each energy type is [-300, 1] and the unit is dBFS.
+   */
   audioSpectrumData?: number[];
+  /**
+   * The audio spectrum data length is 256.
+   */
   dataLength?: number;
 }
 
@@ -776,7 +1026,13 @@ export class AudioSpectrumData {
  * Audio spectrum information of the remote user.
  */
 export class UserAudioSpectrumInfo {
+  /**
+   * The user ID of the remote user.
+   */
   uid?: number;
+  /**
+   * Audio spectrum information of the remote user. See AudioSpectrumData.
+   */
   spectrumData?: AudioSpectrumData;
 }
 
@@ -942,15 +1198,15 @@ export enum MediaRecorderContainerFormat {
  */
 export enum MediaRecorderStreamType {
   /**
-   * Only audio.
+   * 1: Only audio.
    */
   StreamTypeAudio = 0x01,
   /**
-   * Only video.
+   * 2: Only video.
    */
   StreamTypeVideo = 0x02,
   /**
-   * (Default) Audio and video.
+   * 3: (Default) Audio and video.
    */
   StreamTypeBoth = 0x01 | 0x02,
 }
@@ -1003,10 +1259,25 @@ export enum RecorderErrorCode {
  * @ignore
  */
 export class MediaRecorderConfiguration {
+  /**
+   * @ignore
+   */
   storagePath?: string;
+  /**
+   * @ignore
+   */
   containerFormat?: MediaRecorderContainerFormat;
+  /**
+   * @ignore
+   */
   streamType?: MediaRecorderStreamType;
+  /**
+   * @ignore
+   */
   maxDurationMs?: number;
+  /**
+   * @ignore
+   */
   recorderInfoUpdateInterval?: number;
 }
 
@@ -1033,15 +1304,24 @@ export interface IFaceInfoObserver {
    * @returns
    * true : Facial information JSON parsing successful. false : Facial information JSON parsing failed.
    */
-  onFaceInfo?(outFaceInfo: string): boolean;
+  onFaceInfo?(outFaceInfo: string): void;
 }
 
 /**
  * @ignore
  */
 export class RecorderInfo {
+  /**
+   * @ignore
+   */
   fileName?: string;
+  /**
+   * @ignore
+   */
   durationMs?: number;
+  /**
+   * @ignore
+   */
   fileSize?: number;
 }
 

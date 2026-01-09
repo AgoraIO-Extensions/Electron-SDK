@@ -1,7 +1,7 @@
 import JoinChannelAudio from './JoinChannelAudio/JoinChannelAudio';
 import JoinChannelVideo from './JoinChannelVideo/JoinChannelVideo';
-import StringUid from './StringUid/StringUid';
 import LoopbackAudio from './LoopbackAudio/LoopbackAudio';
+import StringUid from './StringUid/StringUid';
 
 const Basic = {
   title: 'Basic',

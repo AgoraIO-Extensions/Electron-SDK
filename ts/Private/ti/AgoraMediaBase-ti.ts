@@ -37,7 +37,7 @@ export const IVideoFrameObserver = t.iface([], {
 });
 
 export const IFaceInfoObserver = t.iface([], {
-  "onFaceInfo": t.opt(t.func("boolean", t.param("outFaceInfo", "string"))),
+  "onFaceInfo": t.opt(t.func("void", t.param("outFaceInfo", "string"))),
 });
 
 export const IMediaRecorderObserver = t.iface([], {

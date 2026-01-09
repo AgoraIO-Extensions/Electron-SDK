@@ -111,10 +111,7 @@ const LoopbackAudioTrackForm: React.FC<LoopbackAudioTrackFormProps> = ({
     track.loopbackType === LoopbackAudioTrackType.LoopbackProcess;
 
   return (
-    <AgoraCard
-      title={`Track #${track.trackId}`}
-      style={{ marginBottom: 12 }}
-    >
+    <AgoraCard title={`Track #${track.trackId}`} style={{ marginBottom: 12 }}>
       <div style={{ padding: 8 }}>
         {/* Compact info and buttons row */}
         <div
@@ -127,7 +124,15 @@ const LoopbackAudioTrackForm: React.FC<LoopbackAudioTrackFormProps> = ({
             gap: 8,
           }}
         >
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap', flex: 1 }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: 12,
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              flex: 1,
+            }}
+          >
             <span style={{ fontSize: '13px' }}>
               <strong>ID:</strong> {track.trackId}
             </span>
@@ -142,7 +147,11 @@ const LoopbackAudioTrackForm: React.FC<LoopbackAudioTrackFormProps> = ({
             </span>
             <span style={{ color: '#666', fontSize: '13px' }}>
               <strong>Source:</strong>{' '}
-              {`${getLoopbackTypeName(track.loopbackType)}${shouldShowAppName ? ` - ${track.appName}` : ''}${shouldShowDeviceName ? ` - ${track.deviceName}` : ''}${shouldShowProcessId ? ` - ${track.processId}` : ''}`}
+              {`${getLoopbackTypeName(track.loopbackType)}${
+                shouldShowAppName ? ` - ${track.appName}` : ''
+              }${shouldShowDeviceName ? ` - ${track.deviceName}` : ''}${
+                shouldShowProcessId ? ` - ${track.processId}` : ''
+              }`}
             </span>
           </div>
           {/* Compact button row */}
@@ -151,24 +160,48 @@ const LoopbackAudioTrackForm: React.FC<LoopbackAudioTrackFormProps> = ({
               <AgoraButton
                 title="Publish"
                 onPress={onPublish}
-                style={{ marginTop: 0, marginBottom: 0, fontSize: '12px', padding: '2px 8px', minHeight: '28px' }}
+                style={{
+                  marginTop: 0,
+                  marginBottom: 0,
+                  fontSize: '12px',
+                  padding: '2px 8px',
+                  minHeight: '28px',
+                }}
               />
             ) : (
               <AgoraButton
                 title="Unpublish"
                 onPress={onUnpublish}
-                style={{ marginTop: 0, marginBottom: 0, fontSize: '12px', padding: '2px 8px', minHeight: '28px' }}
+                style={{
+                  marginTop: 0,
+                  marginBottom: 0,
+                  fontSize: '12px',
+                  padding: '2px 8px',
+                  minHeight: '28px',
+                }}
               />
             )}
             <AgoraButton
               title="Update"
               onPress={handleUpdate}
-              style={{ marginTop: 0, marginBottom: 0, fontSize: '12px', padding: '2px 8px', minHeight: '28px' }}
+              style={{
+                marginTop: 0,
+                marginBottom: 0,
+                fontSize: '12px',
+                padding: '2px 8px',
+                minHeight: '28px',
+              }}
             />
             <AgoraButton
               title="Destroy"
               onPress={onDestroy}
-              style={{ marginTop: 0, marginBottom: 0, fontSize: '12px', padding: '2px 8px', minHeight: '28px' }}
+              style={{
+                marginTop: 0,
+                marginBottom: 0,
+                fontSize: '12px',
+                padding: '2px 8px',
+                minHeight: '28px',
+              }}
             />
           </div>
         </div>
@@ -260,7 +293,8 @@ interface State extends BaseAudioComponentState {
 
 export default class LoopbackAudioTrack
   extends BaseComponent<{}, State>
-  implements IRtcEngineEventHandler {
+  implements IRtcEngineEventHandler
+{
   protected createState(): State {
     return {
       appId: Config.appId,
@@ -393,7 +427,9 @@ export default class LoopbackAudioTrack
 
   enablePreDump = () => {
     this.engine?.setParameters(`{"che.audio.apm_dump":true}`);
-    this.engine?.setParameters(`{"che.audio.enable.predump":{"enable":"true","duration":"30"}}`);
+    this.engine?.setParameters(
+      `{"che.audio.enable.predump":{"enable":"true","duration":"30"}}`
+    );
     this.engine?.setParameters(`{"che.audio.start.predump":true}`);
     this.setState({ enablePreDump: true });
   };
@@ -401,7 +437,9 @@ export default class LoopbackAudioTrack
   disablePreDump = () => {
     this.engine?.setParameters(`{"che.audio.start.predump":false}`);
     this.engine?.setParameters(`{"che.audio.apm_dump":false}`);
-    this.engine?.setParameters(`{"che.audio.enable.predump":{"enable":"false","duration":"30"}}`);
+    this.engine?.setParameters(
+      `{"che.audio.enable.predump":{"enable":"false","duration":"30"}}`
+    );
     this.setState({ enablePreDump: false });
   };
 
@@ -445,7 +483,9 @@ export default class LoopbackAudioTrack
     });
 
     this.info(
-      `Force use ALD: ${checked ? 'enabled' : 'disabled'}, catap: ${catapValue}, sck: ${sckValue}`
+      `Force use ALD: ${
+        checked ? 'enabled' : 'disabled'
+      }, catap: ${catapValue}, sck: ${sckValue}`
     );
   };
 
@@ -475,9 +515,7 @@ export default class LoopbackAudioTrack
 
   handleEnableAECChange = (checked: boolean) => {
     this.setState({ enableAEC: checked });
-    this.engine?.setParameters(
-      `{"che.audio.loopback.enable_aec":${checked}}`
-    );
+    this.engine?.setParameters(`{"che.audio.loopback.enable_aec":${checked}}`);
     this.info(`Enable AEC: ${checked ? 'enabled' : 'disabled'}`);
   };
 
@@ -502,9 +540,7 @@ export default class LoopbackAudioTrack
     this.engine?.setParameters(
       `{"che.audio.loopback.allow_silence_detection":${checked}}`
     );
-    this.info(
-      `Allow silence detection: ${checked ? 'enabled' : 'disabled'}`
-    );
+    this.info(`Allow silence detection: ${checked ? 'enabled' : 'disabled'}`);
   };
 
   /**
@@ -535,9 +571,7 @@ export default class LoopbackAudioTrack
       loopbackType === LoopbackAudioTrackType.LoopbackApplication &&
       (!loopbackAppName || loopbackAppName.trim() === '')
     ) {
-      this.error(
-        'App Name cannot be empty in Application Loopback mode'
-      );
+      this.error('App Name cannot be empty in Application Loopback mode');
       return;
     }
 
@@ -653,7 +687,9 @@ export default class LoopbackAudioTrack
 
         if (successCount > 0) {
           this.info(
-            `Destroyed ${successCount} loopback audio track(s)${failCount > 0 ? `, ${failCount} failed` : ''}`
+            `Destroyed ${successCount} loopback audio track(s)${
+              failCount > 0 ? `, ${failCount} failed` : ''
+            }`
           );
         }
       } else {
@@ -736,9 +772,7 @@ export default class LoopbackAudioTrack
       loopbackType === LoopbackAudioTrackType.LoopbackApplication &&
       (!appName || appName.trim() === '')
     ) {
-      this.error(
-        'App Name cannot be empty in Application Loopback mode'
-      );
+      this.error('App Name cannot be empty in Application Loopback mode');
       return;
     }
 
@@ -755,13 +789,13 @@ export default class LoopbackAudioTrack
             loopbackTracks: prevState.loopbackTracks.map((t) =>
               t.trackId === trackId
                 ? {
-                  ...t,
-                  appName: config.appName ?? t.appName,
-                  volume: config.volume ?? t.volume,
-                  loopbackType: config.loopbackType ?? t.loopbackType,
-                  deviceName: config.deviceName ?? t.deviceName,
-                  processId: config.processId ?? t.processId,
-                }
+                    ...t,
+                    appName: config.appName ?? t.appName,
+                    volume: config.volume ?? t.volume,
+                    loopbackType: config.loopbackType ?? t.loopbackType,
+                    deviceName: config.deviceName ?? t.deviceName,
+                    processId: config.processId ?? t.processId,
+                  }
                 : t
             ),
           }));
@@ -998,10 +1032,14 @@ export default class LoopbackAudioTrack
     );
   }
 
-
-
   protected renderConfiguration(): ReactElement | undefined {
-    const { recordingSignalVolume, playbackSignalVolume, enableLocalAudio, muteLocalAudioStream, publishMicrophoneTrack, enablePreDump } = this.state;
+    const {
+      recordingSignalVolume,
+      playbackSignalVolume,
+      muteLocalAudioStream,
+      publishMicrophoneTrack,
+      enablePreDump,
+    } = this.state;
     const isMacOS = process.platform === 'darwin';
     return (
       <>
@@ -1087,17 +1125,19 @@ export default class LoopbackAudioTrack
             style={{ marginTop: 0, marginBottom: 0, flex: 1, minWidth: 150 }}
           />
           <AgoraButton
-            title={`${publishMicrophoneTrack ? 'Unpublish' : 'Publish'} Microphone`}
+            title={`${
+              publishMicrophoneTrack ? 'Unpublish' : 'Publish'
+            } Microphone`}
             onPress={
-              publishMicrophoneTrack ? this.unpublishMicrophoneTrack : this.publishMicrophoneTrack
+              publishMicrophoneTrack
+                ? this.unpublishMicrophoneTrack
+                : this.publishMicrophoneTrack
             }
             style={{ marginTop: 0, marginBottom: 0, flex: 1, minWidth: 150 }}
           />
           <AgoraButton
             title={`${enablePreDump ? 'Disable' : 'Enable'} Pre Dump`}
-            onPress={
-              enablePreDump ? this.disablePreDump : this.enablePreDump
-            }
+            onPress={enablePreDump ? this.disablePreDump : this.enablePreDump}
             style={{ marginTop: 0, marginBottom: 0, flex: 1, minWidth: 150 }}
           />
         </div>
@@ -1121,7 +1161,9 @@ export default class LoopbackAudioTrack
             <select
               value={this.state.loopbackAECAggressiveness}
               onChange={(e) =>
-                this.handleLoopbackAECAggressivenessChange(Number(e.target.value))
+                this.handleLoopbackAECAggressivenessChange(
+                  Number(e.target.value)
+                )
               }
               style={{ marginLeft: 10, padding: 5 }}
             >
@@ -1232,7 +1274,7 @@ export default class LoopbackAudioTrack
 
     return (
       <>
-      <div style={{ marginBottom: 10 }}>
+        <div style={{ marginBottom: 10 }}>
           <label>Loopback Type:</label>
           <select
             value={loopbackType}
@@ -1290,7 +1332,9 @@ export default class LoopbackAudioTrack
             <input
               type="text"
               value={loopbackAppName}
-              onChange={(e) => this.setState({ loopbackAppName: e.target.value })}
+              onChange={(e) =>
+                this.setState({ loopbackAppName: e.target.value })
+              }
               placeholder="Required"
               style={{ marginLeft: 10, padding: 5, width: 200 }}
             />
