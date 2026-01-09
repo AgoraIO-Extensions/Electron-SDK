@@ -3005,15 +3005,21 @@ export enum LoopbackAudioTrackType {
    * @ignore
    */
   LoopbackApplication = 2,
+  /**
+   * @ignore
+   */
+  LoopbackProcess = 3,
 }
 
 /**
  * @ignore
  */
 export class LoopbackAudioTrackConfig {
-  appName?: string;
-  volume?: number;
   loopbackType?: LoopbackAudioTrackType;
+  volume?: number;
+  deviceName?: string;
+  appName?: string;
+  processId?: number;
 }
 
 /**

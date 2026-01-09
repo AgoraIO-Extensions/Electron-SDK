@@ -1,5 +1,27 @@
 
 
+## [4.2.6-build.159-rc.6](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.159-rc.5...v4.2.6-build.159-rc.6) (2025-10-24)
+
+
+### Features
+
+* upgrade iris url to 4.2.6.159-test.3 for macos ([cd32d5d](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/cd32d5d2d0f98ef4f044d6bd37ed92e654f34e39))
+
+## [4.2.6-build.159-rc.5](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.159-rc.4...v4.2.6-build.159-rc.5) (2025-10-21)
+
+
+### Features
+
+* upgrade iris url to 4.2.6.159-test.3 for macos ([5848ddf](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/5848ddfa2b9c86c5fc6e2bd5eb945573395211f0))
+
+## [4.2.6-build.159-rc.4](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.159-rc.3...v4.2.6-build.159-rc.4) (2025-10-21)
+
+
+### Features
+
+* add functions for loopback ([12241f0](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/12241f0f5231653a02c0a7b4248a28b88b5852d5))
+* upgrade iris url to 4.2.6.159-test.3 ([3e7279d](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/3e7279d358432df1a1f2f225d550952dfdc474c7))
+
 ## [4.2.6-build.159-rc.3](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.159-rc.2...v4.2.6-build.159-rc.3) (2025-08-22)
 
 

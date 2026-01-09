@@ -41,7 +41,10 @@
           ]
         }
       ],
-      "type": "distribution"
+      "type": "distribution",
+      "extendInfo": {
+        "NSAudioCaptureUsageDescription": "This app needs access to the microphone for audio call and recording functionality."
+      }
     },
     "dmg": {
       "contents": [
@@ -76,7 +79,7 @@
     ]
   },
   "dependencies": {
-    "agora-electron-sdk": "4.2.6-build.159-rc.3",
+    "agora-electron-sdk": "4.2.6-build.159-rc.6",
     "antd": "^4.20.3",
     "download": "^8.0.0",
     "ffi-napi": "^4.0.3",
