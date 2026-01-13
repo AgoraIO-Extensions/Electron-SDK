@@ -1,5 +1,6 @@
 import './extension/AgoraBaseExtension';
 import {
+  AlphaStitchMode,
   AudioSourceType,
   RenderModeType,
   VideoModulePosition,
@@ -132,6 +133,10 @@ export enum WarnCodeType {
    * @ignore
    */
   WarnAdmPlayoutAudioLowlevel = 1032,
+  /**
+   * @ignore
+   */
+  WarnAdmRecordIsOccupied = 1033,
   /**
    * @ignore
    */
@@ -4567,6 +4572,14 @@ export class ScreenCaptureParameters {
    * Whether to place a border around the shared window or screen: true : Place a border. false : (Default) Do not place a border. When you share a part of a window or screen, the SDK places a border around the entire window or screen if you set this parameter to true.
    */
   enableHighLight?: boolean;
+  /**
+   * @ignore
+   */
+  enableAlpha?: boolean;
+  /**
+   * @ignore
+   */
+  alphaStitchMode?: AlphaStitchMode;
 }
 
 /**

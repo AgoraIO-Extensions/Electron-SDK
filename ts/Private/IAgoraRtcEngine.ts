@@ -2712,6 +2712,15 @@ export abstract class IVideoEffectObject {
   /**
    * @ignore
    */
+  abstract setVideoEffectStringParam(
+    option: string,
+    key: string,
+    param: string
+  ): number;
+
+  /**
+   * @ignore
+   */
   abstract setVideoEffectFloatParam(
     option: string,
     key: string,
