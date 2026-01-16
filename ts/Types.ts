@@ -161,9 +161,15 @@ export interface IAgoraElectronBridge {
     videoFrame: VideoFrame,
     advanceOptions: {
       renderAlpha: boolean;
+      /**
+       * @ignore
+       */
     }
   ): {
     ret: number;
+    /**
+     * @ignore
+     */
     hasMoreFrame: boolean;
   };
 
