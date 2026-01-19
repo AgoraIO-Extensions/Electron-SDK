@@ -1099,6 +1099,14 @@ export class ChannelMediaOptions {
    */
   publishCustomAudioTrackId?: number;
   /**
+   * @ignore
+   */
+  publishLoopbackAudioTrack?: boolean;
+  /**
+   * @ignore
+   */
+  publishLoopbackAudioTrackId?: number;
+  /**
    * Whether to publish the video captured from a custom source: true : Publish the video captured from the custom source. false : Do not publish the captured video from a custom source.
    */
   publishCustomVideoTrack?: boolean;
@@ -4630,32 +4638,6 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
-   * Sets the maximum frame rate for rendering local video.
-   *
-   * @param sourceType The type of the video source. See VideoSourceType.
-   * @param targetFps The capture frame rate (fps) of the local video. Sopported values are: 1, 7, 10, 15, 24, 30, 60. Set this parameter to a value lower than the actual video frame rate; otherwise, the settings do not take effect.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
-   */
-  abstract setLocalRenderTargetFps(
-    sourceType: VideoSourceType,
-    targetFps: number
-  ): number;
-
-  /**
-   * Sets the maximum frame rate for rendering remote video.
-   *
-   * @param targetFps The capture frame rate (fps) of the local video. Sopported values are: 1, 7, 10, 15, 24, 30, 60. Set this parameter to a value lower than the actual video frame rate; otherwise, the settings do not take effect.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
-   */
-  abstract setRemoteRenderTargetFps(targetFps: number): number;
-
-  /**
    * Sets the local video mirror mode.
    *
    * Deprecated: This method is deprecated. Use setupLocalVideo or setLocalRenderMode instead.
@@ -6752,6 +6734,10 @@ export enum MediaDeviceStateType {
    * 8: The device is unplugged.
    */
   MediaDeviceStateUnplugged = 8,
+  /**
+   * @ignore
+   */
+  MediaDeviceStateDefaultDeviceChangedReady = 9,
 }
 
 /**

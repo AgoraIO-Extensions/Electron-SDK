@@ -2162,10 +2162,6 @@ export enum LocalVideoStreamError {
    * @ignore
    */
   LocalVideoStreamReasonScreenCaptureDisplayDisconnected = 30,
-  /**
-   * @ignore
-   */
-  LocalVideoStreamErrorScreenCaptureAutoFallback = 31,
 }
 
 /**
@@ -3685,6 +3681,42 @@ export class AudioTrackConfig {
    * Whether to enable the local audio-playback device: true : (Default) Enable the local audio-playback device. false : Do not enable the local audio-playback device.
    */
   enableLocalPlayback?: boolean;
+}
+
+/**
+ * @ignore
+ */
+export enum LoopbackAudioTrackType {
+  /**
+   * @ignore
+   */
+  LoopbackSystem = 0,
+  /**
+   * @ignore
+   */
+  LoopbackSystemExcludeSelf = 1,
+  /**
+   * @ignore
+   */
+  LoopbackApplication = 2,
+}
+
+/**
+ * @ignore
+ */
+export class LoopbackAudioTrackConfig {
+  /**
+   * @ignore
+   */
+  appName?: string;
+  /**
+   * @ignore
+   */
+  volume?: number;
+  /**
+   * @ignore
+   */
+  loopbackType?: LoopbackAudioTrackType;
 }
 
 /**

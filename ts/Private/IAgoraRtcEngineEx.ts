@@ -21,7 +21,6 @@ import { ContentInspectConfig, RenderModeType } from './AgoraMediaBase';
 import {
   ChannelMediaOptions,
   IRtcEngine,
-  ImageTrackOptions,
   LeaveChannelOptions,
   StreamFallbackOptions,
 } from './IAgoraRtcEngine';
@@ -956,38 +955,4 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    *  An empty string, if the method call fails.
    */
   abstract getCallIdEx(connection: RtcConnection): string;
-
-  /**
-   * @ignore
-   */
-  abstract preloadEffectEx(
-    connection: RtcConnection,
-    soundId: number,
-    filePath: string,
-    startPos?: number
-  ): number;
-
-  /**
-   * @ignore
-   */
-  abstract playEffectEx(
-    connection: RtcConnection,
-    soundId: number,
-    filePath: string,
-    loopCount: number,
-    pitch: number,
-    pan: number,
-    gain: number,
-    publish?: boolean,
-    startPos?: number
-  ): number;
-
-  /**
-   * @ignore
-   */
-  abstract enableVideoImageSourceEx(
-    enable: boolean,
-    options: ImageTrackOptions,
-    connection: RtcConnection
-  ): number;
 }
