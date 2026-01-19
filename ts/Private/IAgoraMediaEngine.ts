@@ -57,13 +57,7 @@ export abstract class IMediaEngine {
   /**
    * Registers a raw video frame observer object.
    *
-   * If you want to obtain the original video data of some remote users (referred to as group A) and the encoded video data of other remote users (referred to as group B), you can refer to the following steps:
-   *  Call registerVideoFrameObserver to register the raw video frame observer before joining the channel.
-   *  Call registerVideoEncodedFrameObserver to register the encoded video frame observer before joining the channel.
-   *  After joining the channel, get the user IDs of group B users through onUserJoined, and then call setRemoteVideoSubscriptionOptions to set the encodedFrameOnly of this group of users to true.
-   *  Call muteAllRemoteVideoStreams (false) to start receiving the video streams of all remote users. Then:
-   *  The raw video data of group A users can be obtained through the callback in IVideoFrameObserver, and the SDK renders the data by default.
-   *  The encoded video data of group B users can be obtained through the callback in IVideoEncodedFrameObserver. If you want to observe raw video frames (such as YUV or RGBA format), Agora recommends that you implement one IVideoFrameObserver class with this method. When calling this method to register a video observer, you can register callbacks in the IVideoFrameObserver class as needed. After you successfully register the video frame observer, the SDK triggers the registered callbacks each time a video frame is received.
+   * If you want to observe raw video frames (such as YUV or RGBA format), Agora recommends that you implement one IVideoFrameObserver class with this method. When calling this method to register a video observer, you can register callbacks in the IVideoFrameObserver class as needed. After you successfully register the video frame observer, the SDK triggers the registered callbacks each time a video frame is received.
    *
    * @param observer The observer instance. See IVideoFrameObserver.
    *
@@ -76,14 +70,7 @@ export abstract class IMediaEngine {
   /**
    * Registers a receiver object for the encoded video image.
    *
-   * If you only want to observe encoded video frames (such as h.264 format) without decoding and rendering the video, Agora recommends that you implement one IVideoEncodedFrameObserver class through this method. If you want to obtain the original video data of some remote users (referred to as group A) and the encoded video data of other remote users (referred to as group B), you can refer to the following steps:
-   *  Call registerVideoFrameObserver to register the raw video frame observer before joining the channel.
-   *  Call registerVideoEncodedFrameObserver to register the encoded video frame observer before joining the channel.
-   *  After joining the channel, get the user IDs of group B users through onUserJoined, and then call setRemoteVideoSubscriptionOptions to set the encodedFrameOnly of this group of users to true.
-   *  Call muteAllRemoteVideoStreams (false) to start receiving the video streams of all remote users. Then:
-   *  The raw video data of group A users can be obtained through the callback in IVideoFrameObserver, and the SDK renders the data by default.
-   *  The encoded video data of group B users can be obtained through the callback in IVideoEncodedFrameObserver.
-   *  Call this method before joining a channel.
+   * If you only want to observe encoded video frames (such as H.264 format) without decoding and rendering the video, Agora recommends that you implement one IVideoEncodedFrameObserver class through this method. Call this method before joining a channel.
    *
    * @param observer The video frame observer object. See IVideoEncodedFrameObserver.
    *
@@ -243,14 +230,14 @@ export abstract class IMediaEngine {
    * Pushes the external raw video frame to the SDK through video tracks.
    *
    * To publish a custom video source, see the following steps:
-   *  Call createCustomVideoTrack to create a video track and get the video track ID.
+   *  Call createCustomVideoTrack to create a video track and get the video track ID. If you only need to push one custom video source to the channel, you can directly call the setExternalVideoSource method and the SDK will automatically create a video track with the videoTrackId set to 0.
    *  Call joinChannel to join the channel. In ChannelMediaOptions, set customVideoTrackId to the video track ID that you want to publish, and set publishCustomVideoTrack to true.
    *  Call this method and specify videoTrackId as the video track ID set in step 2. You can then publish the corresponding custom video source in the channel. After calling this method, even if you stop pushing external video frames to the SDK, the custom video stream will still be counted as the video duration usage and incur charges. Agora recommends that you take appropriate measures based on the actual situation to avoid such video billing.
    *  If you no longer need to capture external video data, you can call destroyCustomVideoTrack to destroy the custom video track.
    *  If you only want to use the external video data for local preview and not publish it in the channel, you can call muteLocalVideoStream to cancel sending video stream or call updateChannelMediaOptions to set publishCustomVideoTrack to false.
    *
    * @param frame The external raw video frame to be pushed. See ExternalVideoFrame.
-   * @param videoTrackId The video track ID returned by calling the createCustomVideoTrack method. The default value is 0.
+   * @param videoTrackId The video track ID returned by calling the createCustomVideoTrack method. If you only need to push one custom video source, set videoTrackId to 0.
    *
    * @returns
    * 0: Success.
@@ -321,9 +308,4 @@ export abstract class IMediaEngine {
    *  < 0: Failure.
    */
   abstract unregisterFaceInfoObserver(observer: IFaceInfoObserver): number;
-
-  /**
-   * @ignore
-   */
-  abstract setExternalRemoteEglContext(eglContext: any): number;
 }
