@@ -1773,10 +1773,10 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-agora-electron-sdk@4.5.1-build.1-rc.1:
-  version "4.5.1-build.1-rc.1"
-  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.5.1-build.1-rc.1.tgz#760f89283137acaccd4ae99e2c57444b9ff22272"
-  integrity sha512-YE1QbJ2r6OfNT8EJNq5cieBdeREf435Lt4uw6AdNn2KccCdSiAn8C1/rOOKLcKIcESH+ECmi3DIvmXRBMae88g==
+agora-electron-sdk@4.5.2:
+  version "4.5.2"
+  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.5.2.tgz#c60478e570fcfda2296a68d434e1fc4e345eed2a"
+  integrity sha512-W7Fw+5NBzEUaWVkhOVwtsUm0svbKVh++TTLTzHjWgfODSsJwX9qpBIJU4oKZz1510PdB19QtxAKu4cc7hk2kEw==
   dependencies:
     buffer "^6.0.3"
     cross-env "^7.0.3"
@@ -6669,9 +6669,9 @@ lodash.isequal@^4.5.0:
   integrity sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==
 
 lodash@^4.0.1, lodash@^4.17.11, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17.5, lodash@^4.2.0:
-  version "4.17.21"
-  resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
-  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
+  version "4.17.23"
+  resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.23.tgz#f113b0378386103be4f6893388c73d0bde7f2c5a"
+  integrity sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==
 
 log-symbols@^4.1.0:
   version "4.1.0"
