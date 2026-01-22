@@ -49,7 +49,7 @@ export class WebCodecsRendererCache extends IRendererCache {
         if (renderer.rendererType !== RendererType.WEBCODECSRENDERER) {
           continue;
         }
-        renderer.bind(renderer.context.view);
+        renderer.bind(renderer.context);
       }
 
       try {
