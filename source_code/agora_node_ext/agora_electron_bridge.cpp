@@ -318,6 +318,7 @@ napi_value AgoraElectronBridge::EnableVideoFrameCache(napi_env env,
       napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
 
   IrisRtcVideoFrameConfig config = EmptyIrisRtcVideoFrameConfig;
+  config.use_queue = false;
   napi_value obj = args[0];
 
   std::string channelId = "";
@@ -367,6 +368,7 @@ AgoraElectronBridge::DisableVideoFrameCache(napi_env env,
 
   napi_value obj = args[0];
   IrisRtcVideoFrameConfig config = EmptyIrisRtcVideoFrameConfig;
+  config.use_queue = false;
 
   std::string channelId = "";
 
@@ -408,6 +410,7 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   status =
       napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
   IrisRtcVideoFrameConfig config = EmptyIrisRtcVideoFrameConfig;
+  config.use_queue = false;
 
   napi_value obj0 = args[0];
   std::string channel_id;
