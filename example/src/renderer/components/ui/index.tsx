@@ -208,7 +208,7 @@ export function AgoraList<T>(
   return (
     <List
       style={{ width: '100%' }}
-      grid={{ column: 1 }}
+      grid={{ column: 2 }}
       {...others}
       dataSource={data}
       renderItem={(item: T, index: number) => {
