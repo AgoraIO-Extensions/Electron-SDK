@@ -9,6 +9,8 @@ import {
   VideoCanvas,
   VideoSourceType,
 } from 'agora-electron-sdk';
+// @ts-ignore
+import { ipcRenderer } from 'electron';
 import React, { Component, ReactElement } from 'react';
 
 import {
@@ -287,6 +289,22 @@ export abstract class BaseComponent<
   }
 
   protected alert(title: string, message?: string): void {
-    alert(`${title}: ${message}`);
+    try {
+      if (typeof ipcRenderer !== 'undefined') {
+        ipcRenderer
+          .invoke('IPC_SHOW_MESSAGE_BOX', {
+            type: 'info',
+            title: title,
+            message: message || '',
+          })
+          .catch((error: any) => {
+            console.log(`[ALERT] ${title}: ${message}`);
+          });
+      } else {
+        console.log(`[ALERT] ${title}: ${message}`);
+      }
+    } catch (error) {
+      console.log(`[ALERT] ${title}: ${message}`);
+    }
   }
 }
