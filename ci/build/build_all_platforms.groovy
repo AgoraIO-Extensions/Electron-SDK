@@ -7,6 +7,7 @@ properties([
     )),
     parameters([
         string(name: 'electron_sdk_branch', defaultValue: '', description: 'Electron branch', trim: true),
+        booleanParam(name: 'is_tag_fetch', defaultValue: true),
         string(name: 'network_path', defaultValue: '', description: '', trim: true),
         string(name: 'package_version', defaultValue: 'package_version', trim: true),
         string(name: 'example_sdk_mode', defaultValue: '', description: '', trim: true),
@@ -27,6 +28,7 @@ properties([
 timestamps {
     def commonBuildParams = [
         string(name: 'electron_sdk_branch', value: params.electron_sdk_branch),
+        booleanParam(name:'is_tag_fetch', value: params.is_tag_fetch),
         string(name: 'network_path', value: params.network_path),
         string(name: 'example_sdk_mode', value: params.example_sdk_mode),
         string(name: 'example_electron_version', value: params.example_electron_version),
