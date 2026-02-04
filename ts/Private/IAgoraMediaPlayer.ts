@@ -16,42 +16,42 @@ import {
 import { IMediaPlayerSourceObserver } from './IAgoraMediaPlayerSource';
 
 /**
- * This class provides media player functions and supports multiple instances.
+ * Class that provides media player functionality and supports multiple instances.
  */
 export abstract class IMediaPlayer {
   /**
-   * Gets the ID of the media player.
+   * Gets the media player ID.
    *
    * @returns
-   * Success. The ID of the media player.
-   *  < 0: Failure.
+   * On success, returns the media player ID.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract getMediaPlayerId(): number;
 
   /**
-   * Opens the media resource.
+   * Opens a media resource.
    *
-   * This method is called asynchronously.
+   * This method is asynchronous.
    *
-   * @param url The path of the media file. Both local path and online path are supported.
-   * @param startPos The starting position (ms) for playback. Default value is 0.
+   * @param url The path to the media file, supporting both local and online files.
+   * @param startPos The starting playback position in milliseconds. The default value is 0.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract open(url: string, startPos: number): number;
 
   /**
-   * Opens a media file and configures the playback scenarios.
+   * Opens a media resource and configures playback.
    *
-   * This method supports opening media files of different sources, including a custom media source, and allows you to configure the playback scenarios.
+   * This method allows you to open different types of media resources, including custom media files, and configure playback. This method is asynchronous. To play the media file, call the play method after receiving the onPlayerSourceStateChanged callback with status PlayerStateOpenCompleted.
    *
-   * @param source Media resources. See MediaSource.
+   * @param source The media resource. See MediaSource.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract openWithMediaSource(source: MediaSource): number;
 
@@ -60,155 +60,150 @@ export abstract class IMediaPlayer {
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract play(): number;
 
   /**
-   * Pauses the playback.
+   * Pauses playback.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract pause(): number;
 
   /**
-   * Stops playing the media track.
+   * Stops playback.
    *
-   * After calling this method to stop playback, if you want to play again, you need to call open or openWithMediaSource to open the media resource.
+   * After calling this method to stop playback, you need to call open or openWithMediaSource again to reopen the media resource if you want to play again.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract stop(): number;
 
   /**
-   * Resumes playing the media file.
+   * Resumes playback after pause.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract resume(): number;
 
   /**
-   * Seeks to a new playback position.
+   * Seeks to the specified playback position in the media file.
    *
-   * If you call seek after the playback has completed (upon receiving callback onPlayerSourceStateChanged reporting playback status as PlayerStatePlaybackCompleted or PlayerStatePlaybackAllLoopsCompleted), the SDK will play the media file from the specified position. At this point, you will receive callback onPlayerSourceStateChanged reporting playback status as PlayerStatePlaying.
-   *  If you call seek while the playback is paused, upon successful call of this method, the SDK will seek to the specified position. To resume playback, call resume or play .
+   * If you call seek after playback has completed (when the onPlayerSourceStateChanged callback reports the playback state as PlayerStatePlaybackCompleted or PlayerStatePlaybackAllLoopsCompleted), and the call succeeds, the SDK automatically starts playback from the specified position. In this case, you receive the onPlayerSourceStateChanged callback reporting the playback state as PlayerStatePlaying.
+   *  If you call seek while playback is paused, upon successful call, the SDK seeks to the specified position. To resume playback, call resume or play.
    *
-   * @param newPos The new playback position (ms).
+   * @param newPos The target position in milliseconds.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract seek(newPos: number): number;
 
   /**
-   * Sets the pitch of the current media resource.
+   * Adjusts the pitch of the currently playing media resource.
    *
-   * Call this method after calling open.
+   * You need to call this method after calling open.
    *
-   * @param pitch Sets the pitch of the local music file by the chromatic scale. The default value is 0, which means keeping the original pitch. The value ranges from -12 to 12, and the pitch value between consecutive values is a chromatic value. The greater the absolute value of this parameter, the higher or lower the pitch of the local music file.
+   * @param pitch Adjusts the pitch of the locally played music file in semitone scale. Default is 0, meaning no pitch adjustment. Value range is [-12,12], where each adjacent value differs by a semitone. The greater the absolute value, the more the pitch is raised or lowered.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setAudioPitch(pitch: number): number;
 
   /**
-   * Gets the duration of the media resource.
+   * Gets the total duration of the media file.
    *
    * @returns
-   * The total duration (ms) of the media file.
+   * The total duration of the media file in milliseconds.
    */
   abstract getDuration(): number;
 
   /**
-   * Gets current local playback progress.
+   * Gets the current playback position.
    *
    * @returns
-   * Returns the current playback progress (ms) if the call succeeds.
+   * On success, returns the current playback position in milliseconds.
    *  < 0: Failure. See MediaPlayerReason.
    */
   abstract getPlayPosition(): number;
 
   /**
-   * Gets the number of the media streams in the media resource.
+   * Gets the number of media streams in the current media file.
    *
-   * Call this method after you call open and receive the onPlayerSourceStateChanged callback reporting the state PlayerStateOpenCompleted.
+   * Call this method after open and after receiving the onPlayerSourceStateChanged callback reporting the playback state as PlayerStateOpenCompleted.
    *
    * @returns
-   * The number of the media streams in the media resource if the method call succeeds.
+   * On success, returns the number of media streams in the media file.
    *  < 0: Failure. See MediaPlayerReason.
    */
   abstract getStreamCount(): number;
 
   /**
-   * Gets the detailed information of the media stream.
+   * Gets media stream information by the index of the media stream.
    *
-   * @param index The index of the media stream. This parameter must be less than the return value of getStreamCount.
+   * @param index The index of the media stream. The value must be less than the return value of getStreamCount.
    *
    * @returns
-   * If the call succeeds, returns the detailed information of the media stream. See PlayerStreamInfo. null is returned, if the method call fails.
+   * If the method call succeeds, returns the media stream information. See PlayerStreamInfo.
+   *  If the method call fails, returns null.
    */
   abstract getStreamInfo(index: number): PlayerStreamInfo;
 
   /**
-   * Sets the loop playback.
+   * Sets loop playback.
    *
-   * If you want to loop, call this method and set the number of the loops. When the loop finishes, the SDK triggers onPlayerSourceStateChanged and reports the playback state as PlayerStatePlaybackAllLoopsCompleted.
+   * If you want to enable loop playback, call this method and set the number of loops.
+   * When loop playback ends, the SDK triggers the onPlayerSourceStateChanged callback to report the playback state as PlayerStatePlaybackAllLoopsCompleted.
    *
-   * @param loopCount The number of times the audio effect loops:
-   *  ≥0: Number of times for playing. For example, setting it to 0 means no loop playback, playing only once; setting it to 1 means loop playback once, playing a total of twice.
-   *  -1: Play the audio file in an infinite loop.
+   * @param loopCount Number of times to loop playback.
+   *  ≥0: Number of loops. For example, 0 means no loop, play once; 1 means loop once, play twice in total.
+   *  -1: Loop infinitely.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setLoopCount(loopCount: number): number;
 
   /**
-   * Sets the channel mode of the current audio file.
+   * Sets the playback speed of the current audio file.
    *
-   * Call this method after calling open.
+   * You need to call this method after open.
    *
-   * @param speed The playback speed. Agora recommends that you set this to a value between 30 and 400, defined as follows:
-   *  30: 0.3 times the original speed.
-   *  100: The original speed.
-   *  400: 4 times the original speed.
+   * @param speed Playback speed. Recommended range is [30,400], where:
+   *  30: 0.3x speed.
+   *  100: Original speed.
+   *  400: 4x speed.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setPlaybackSpeed(speed: number): number;
 
   /**
-   * Selects the audio track used during playback.
-   *
-   * After getting the track index of the audio file, you can call this method to specify any track to play. For example, if different tracks of a multi-track file store songs in different languages, you can call this method to set the playback language. You need to call this method after calling getStreamInfo to get the audio stream index value.
-   *
-   * @param index The index of the audio track.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
+   * @ignore
    */
   abstract selectAudioTrack(index: number): number;
 
   /**
-   * Selects the audio tracks that you want to play on your local device and publish to the channel respectively.
+   * Selects the audio tracks for local playback and remote transmission.
    *
-   * You can call this method to determine the audio track to be played on your local device and published to the channel. Before calling this method, you need to open the media file with the openWithMediaSource method and set enableMultiAudioTrack in MediaSource as true.
+   * You can call this method to separately set the audio tracks for local playback and remote transmission.
+   * Before calling this method, you need to open the media file using openWithMediaSource and set enableMultiAudioTrack to true via MediaSource.
    *
-   * @param playoutTrackIndex The index of audio tracks for local playback. You can obtain the index through getStreamInfo.
-   * @param publishTrackIndex The index of audio tracks to be published in the channel. You can obtain the index through getStreamInfo.
+   * @param playoutTrackIndex The index of the audio track used for local playback. You can get the index via getStreamInfo.
+   * @param publishTrackIndex The index of the audio track used for remote transmission. You can get the index via getStreamInfo.
    *
    * @returns
    * 0: Success.
@@ -235,137 +230,130 @@ export abstract class IMediaPlayer {
   abstract setExternalSubtitle(url: string): number;
 
   /**
-   * Gets current playback state.
+   * Gets the current state of the media player.
    *
    * @returns
-   * The current playback state. See MediaPlayerState.
+   * The current state of the media player. See MediaPlayerState.
    */
   abstract getState(): MediaPlayerState;
 
   /**
-   * Sets whether to mute the media file.
+   * Sets whether to mute.
    *
-   * @param muted Whether to mute the media file: true : Mute the media file. false : (Default) Unmute the media file.
+   * @param muted Mute option. true : Mute. false : (Default) Do not mute.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract mute(muted: boolean): number;
 
   /**
-   * Reports whether the media resource is muted.
+   * Gets whether the currently playing media file is muted.
    *
    * @returns
-   * true : Reports whether the media resource is muted. false : Reports whether the media resource is muted.
+   * true : The currently playing media file is muted. false : The currently playing media file is not muted.
    */
   abstract getMute(): boolean;
 
   /**
    * Adjusts the local playback volume.
    *
-   * @param volume The local playback volume, which ranges from 0 to 100:
+   * @param volume Local playback volume, ranging from 0 to 100:
    *  0: Mute.
-   *  100: (Default) The original volume.
+   *  100: (Default) Original playback volume of the media file.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract adjustPlayoutVolume(volume: number): number;
 
   /**
-   * Gets the local playback volume.
+   * Gets the current local playback volume.
    *
    * @returns
-   * The local playback volume, which ranges from 0 to 100.
-   *  0: Mute.
-   *  100: (Default) The original volume.
+   * Returns the current local playback volume, ranging from 0 to 100:
+   *  0: Silent.
+   *  100: (Default) Original playback volume of the media file.
    */
   abstract getPlayoutVolume(): number;
 
   /**
-   * Adjusts the volume of the media file for publishing.
+   * Adjusts the volume heard by remote users.
    *
-   * After connected to the Agora server, you can call this method to adjust the volume of the media file heard by the remote user.
+   * After connecting to the Agora server, you can call this method to adjust the volume of the media file heard by remote users.
    *
-   * @param volume The volume, which ranges from 0 to 400:
+   * @param volume Signal volume, ranging from 0 to 400:
    *  0: Mute.
-   *  100: (Default) The original volume.
-   *  400: Four times the original volume (amplifying the audio signals by four times).
+   *  100: (Default) Original volume of the media file.
+   *  400: Four times the original volume (with built-in overflow protection).
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract adjustPublishSignalVolume(volume: number): number;
 
   /**
-   * Gets the volume of the media file for publishing.
+   * Gets the volume heard by remote users.
    *
    * @returns
-   * ≥ 0: The remote playback volume.
-   *  < 0: Failure.
+   * ≥ 0: The remote playback volume of the media file.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract getPublishSignalVolume(): number;
 
   /**
-   * Sets the view.
+   * Sets the rendering view of the player.
    *
-   * @param view The render view. On Windows, this parameter sets the window handle (HWND).
+   * @param view The rendering view. On Windows, it is a window handle (HWND).
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setView(view: any): number;
 
   /**
-   * Sets the render mode of the media player.
+   * Sets the rendering mode of the player view.
    *
-   * @param renderMode Sets the render mode of the view. See RenderModeType.
+   * @param renderMode Rendering mode of the player view. See RenderModeType.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setRenderMode(renderMode: RenderModeType): number;
 
   /**
-   * Registers a media player observer.
+   * Registers a player source observer.
    *
-   * @param observer The player observer, listening for events during the playback. See IMediaPlayerSourceObserver.
+   * @param observer The player source observer that reports events during playback. See IMediaPlayerSourceObserver.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract registerPlayerSourceObserver(
     observer: IMediaPlayerSourceObserver
   ): number;
 
   /**
-   * Releases a media player observer.
+   * Unregisters the player source observer.
    *
-   * @param observer The player observer, listening for events during the playback. See IMediaPlayerSourceObserver.
+   * @param observer The player source observer that reports events during playback. See IMediaPlayerSourceObserver.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract unregisterPlayerSourceObserver(
     observer: IMediaPlayerSourceObserver
   ): number;
 
   /**
-   * Registers an audio frame observer object.
-   *
-   * @param observer The audio frame observer, reporting the reception of each audio frame. See IAudioPcmFrameSink.
-   * @param mode The use mode of the audio frame. See RawAudioFrameOpModeType.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
+   * @ignore
    */
   abstract registerAudioFrameObserver(
     observer: IAudioPcmFrameSink,
@@ -373,39 +361,19 @@ export abstract class IMediaPlayer {
   ): number;
 
   /**
-   * Unregisters an audio frame observer.
-   *
-   * @param observer The audio observer. See IAudioPcmFrameSink.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
+   * @ignore
    */
   abstract unregisterAudioFrameObserver(observer: IAudioPcmFrameSink): number;
 
   /**
-   * Registers a video frame observer object.
-   *
-   * You need to implement the IMediaPlayerVideoFrameObserver class in this method and register callbacks according to your scenarios. After you successfully register the video frame observer, the SDK triggers the registered callbacks each time a video frame is received.
-   *
-   * @param observer The video observer, reporting the reception of each video frame. See IMediaPlayerVideoFrameObserver.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
+   * @ignore
    */
   abstract registerVideoFrameObserver(
     observer: IMediaPlayerVideoFrameObserver
   ): number;
 
   /**
-   * Unregisters the video frame observer.
-   *
-   * @param observer The video observer, reporting the reception of each video frame. See IMediaPlayerVideoFrameObserver.
-   *
-   * @returns
-   * 0: Success.
-   *  < 0: Failure.
+   * @ignore
    */
   abstract unregisterVideoFrameObserver(
     observer: IMediaPlayerVideoFrameObserver
@@ -429,15 +397,15 @@ export abstract class IMediaPlayer {
   /**
    * Sets the channel mode of the current audio file.
    *
-   * In a stereo music file, the left and right channels can store different audio data. According to your needs, you can set the channel mode to original mode, left channel mode, right channel mode, or mixed channel mode. For example, in the KTV scenario, the left channel of the music file stores the musical accompaniment, and the right channel stores the singing voice. If you only need to listen to the accompaniment, call this method to set the channel mode of the music file to left channel mode; if you need to listen to the accompaniment and the singing voice at the same time, call this method to set the channel mode to mixed channel mode.
-   *  Call this method after calling open.
+   * In stereo audio files, the left and right channels can store different audio data. Depending on your needs, you can set the channel mode to original, left channel, right channel, or mixed mode. For example, in a KTV scenario, the left channel of the audio file stores the accompaniment, and the right channel stores the original vocals. If you only want to hear the accompaniment, call this method to set the channel mode to left channel; if you want to hear both accompaniment and vocals, set the mode to mixed.
+   *  You need to call this method after calling open.
    *  This method only applies to stereo audio files.
    *
-   * @param mode The channel mode. See AudioDualMonoMode.
+   * @param mode Channel mode. See AudioDualMonoMode.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setAudioDualMonoMode(mode: AudioDualMonoMode): number;
 
@@ -447,10 +415,7 @@ export abstract class IMediaPlayer {
   abstract getPlayerSdkVersion(): string;
 
   /**
-   * Gets the path of the media resource being played.
-   *
-   * @returns
-   * The path of the media resource being played.
+   * @ignore
    */
   abstract getPlaySrc(): string;
 
@@ -490,76 +455,78 @@ export abstract class IMediaPlayer {
   abstract switchAgoraCDNSrc(src: string, syncPts?: boolean): number;
 
   /**
-   * Switches the media resource being played.
+   * Switches the media source.
    *
-   * You can call this method to switch the media resource to be played according to the current network status. For example:
-   *  When the network is poor, the media resource to be played is switched to a media resource address with a lower bitrate.
-   *  When the network is good, the media resource to be played is switched to a media resource address with a higher bitrate. After calling this method, if you receive the onPlayerEvent callback report the PlayerEventSwitchComplete event, the switching is successful. If the switching fails, the SDK will automatically retry 3 times. If it still fails, you will receive the onPlayerEvent callback reporting the PlayerEventSwitchError event indicating an error occurred during media resource switching.
-   *  Ensure that you call this method after open.
+   * You can call this method to switch the bitrate of the media source being played based on the current network condition. For example:
+   *  When the network is poor, switch to a lower bitrate media source URL.
+   *  When the network is good, switch to a higher bitrate media source URL. After calling this method, if you receive the onPlayerEvent callback reporting the PlayerEventSwitchComplete event, the media source has been switched successfully. If the switch fails, the SDK automatically retries 3 times. If it still fails, you will receive the onPlayerEvent callback reporting the PlayerEventSwitchError event, indicating an error occurred during the media source switch.
+   *  Make sure to call this method after open.
    *  To ensure normal playback, pay attention to the following when calling this method:
-   *  Do not call this method when playback is paused.
-   *  Do not call the seek method during switching.
-   *  Before switching the media resource, make sure that the playback position does not exceed the total duration of the media resource to be switched.
+   *  Do not call this method while playback is paused.
+   *  Do not call seek during bitrate switching.
+   *  Ensure the playback position before switching is not greater than the total duration of the target media source.
    *
-   * @param src The URL of the media resource.
-   * @param syncPts Whether to synchronize the playback position (ms) before and after the switch: true : Synchronize the playback position before and after the switch. false : (Default) Do not synchronize the playback position before and after the switch.
+   * @param src The network path of the media source.
+   * @param syncPts Whether to synchronize the starting playback position before and after the switch: true : Synchronize. false : (Default) Do not synchronize.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract switchSrc(src: string, syncPts?: boolean): number;
 
   /**
    * Preloads a media resource.
    *
-   * You can call this method to preload a media resource into the playlist. If you need to preload multiple media resources, you can call this method multiple times. After calling this method, if you receive the PlayerPreloadEventComplete event in the onPreloadEvent callback, the preload is successful; If you receive the PlayerPreloadEventError event in the onPreloadEvent callback, the preload fails. If the preload is successful and you want to play the media resource, call playPreloadedSrc; if you want to clear the playlist, call stop.
-   *  Before calling this method, ensure that you have called open or openWithMediaSource to open the media resource successfully.
-   *  Agora does not support preloading duplicate media resources to the playlist. However, you can preload the media resources that are being played to the playlist again.
+   * You can call this method to preload a media resource into the playlist. To preload multiple media resources, call this method multiple times.
+   * After calling this method, if you receive the onPreloadEvent callback with event PlayerPreloadEventComplete, the preload is successful; if you receive the onPreloadEvent callback with event PlayerPreloadEventError, the preload has failed.
+   * After successful preload, call playPreloadedSrc to play the media resource, or call stop to clear the playlist.
+   *  Before calling this method, make sure you have successfully opened the media resource using open or openWithMediaSource.
+   *  The SDK does not support preloading duplicate media resources into the playlist, but it does support preloading the currently playing media resource again into the playlist.
    *
-   * @param src The URL of the media resource.
-   * @param startPos The starting position (ms) for playing after the media resource is preloaded to the playlist. When preloading a live stream, set this parameter to 0.
+   * @param src The network path of the media resource.
+   * @param startPos The starting position (in milliseconds) when playback begins after preloading into the playlist. For live streams, set this parameter to 0.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract preloadSrc(src: string, startPos: number): number;
 
   /**
-   * Plays preloaded media resources.
+   * Plays a preloaded media resource.
    *
-   * After calling the preloadSrc method to preload the media resource into the playlist, you can call this method to play the preloaded media resource. After calling this method, if you receive the onPlayerSourceStateChanged callback which reports the PlayerStatePlaying state, the playback is successful. If you want to change the preloaded media resource to be played, you can call this method again and specify the URL of the new media resource that you want to preload. If you want to replay the media resource, you need to call preloadSrc to preload the media resource to the playlist again before playing. If you want to clear the playlist, call the stop method. If you call this method when playback is paused, this method does not take effect until playback is resumed.
+   * After calling the preloadSrc method to preload a media resource into the playlist, you can call this method to play the preloaded media resource. If you receive the onPlayerSourceStateChanged callback reporting the status PlayerStatePlaying, it indicates that playback was successful.
+   * If you want to switch to another preloaded media resource, you can call this method again and specify a new media resource path. If you want to replay a media resource, you need to call preloadSrc again to preload it into the playlist before playback. To clear the playlist, call stop. If you call this method while playback is paused, it will take effect only after playback resumes.
    *
-   * @param src The URL of the media resource in the playlist must be consistent with the src set by the preloadSrc method; otherwise, the media resource cannot be played.
+   * @param src The URL of the media resource in the playlist. It must match the src set by the preloadSrc method, otherwise playback will fail.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract playPreloadedSrc(src: string): number;
 
   /**
-   * Unloads media resources that are preloaded.
+   * Releases the preloaded media source.
    *
-   * This method cannot release the media resource being played.
-   *
-   * @param src The URL of the media resource.
+   * @param src The network path of the media source.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract unloadSrc(src: string): number;
 
   /**
-   * Enables or disables the spatial audio effect for the media player.
+   * Enables or disables spatial audio for the media player.
    *
-   * After successfully setting the spatial audio effect parameters of the media player, the SDK enables the spatial audio effect for the media player, and the local user can hear the media resources with a sense of space. If you need to disable the spatial audio effect for the media player, set the params parameter to null.
+   * After successfully setting the spatial audio parameters for the media player, the SDK enables spatial audio for the media player, allowing the local user to hear the media content with a sense of spatiality.
+   * To disable spatial audio for the media player, set the params parameter to null.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setSpatialAudioParams(params: SpatialAudioParams): number;
 
@@ -571,40 +538,42 @@ export abstract class IMediaPlayer {
   /**
    * Sets media player options.
    *
-   * The media player supports setting options through key and value. The difference between this method and setPlayerOptionInString is that the value parameter of this method is of type Int, while the value of setPlayerOptionInString is of type String. These two methods cannot be used together.
+   * The media player supports setting options via key and value.
+   * The difference between this method and setPlayerOptionInString is that the value in this method is of type Int, while in setPlayerOptionInString it is of type String. The two cannot be used interchangeably.
    *
-   * @param key The key of the option.
-   * @param value The value of the key.
+   * @param key The key value.
+   * @param value The value.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setPlayerOptionInInt(key: string, value: number): number;
 
   /**
    * Sets media player options.
    *
-   * The media player supports setting options through key and value. The difference between this method and setPlayerOptionInInt is that the value parameter of this method is of type String, while the value of setPlayerOptionInInt is of type String. These two methods cannot be used together.
+   * The media player allows you to set options using key and value.
+   * The difference between this method and setPlayerOptionInInt is that the value in this method is of type String, while in setPlayerOptionInInt, the value is of type Int. These two methods cannot be used interchangeably.
    *
-   * @param key The key of the option.
-   * @param value The value of the key.
+   * @param key The key value.
+   * @param value The value.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setPlayerOptionInString(key: string, value: string): number;
 }
 
 /**
- * This class provides methods to manage cached media files.
+ * This class provides methods to manage cached media files in the media player.
  */
 export abstract class IMediaPlayerCacheManager {
   /**
    * Deletes all cached media files in the media player.
    *
-   * The cached media file currently being played will not be deleted.
+   * This method does not delete cached media files that are currently being played.
    *
    * @returns
    * 0: Success.
@@ -613,9 +582,9 @@ export abstract class IMediaPlayerCacheManager {
   abstract removeAllCaches(): number;
 
   /**
-   * Deletes a cached media file that is the least recently used.
+   * Deletes the least recently used cached media file in the media player.
    *
-   * You can call this method to delete a cached media file when the storage space for the cached files is about to reach its limit. After you call this method, the SDK deletes the cached media file that is least used. The cached media file currently being played will not be deleted.
+   * When cached media files occupy too much space, you can call this method to clean up the cache. After calling this method, the SDK deletes the least recently used cached media file. When you call this method to delete a cached media file, the currently playing cached media file will not be deleted.
    *
    * @returns
    * 0: Success.
@@ -624,11 +593,11 @@ export abstract class IMediaPlayerCacheManager {
   abstract removeOldCache(): number;
 
   /**
-   * Deletes a cached media file.
+   * Deletes a specified cached media file.
    *
-   * The cached media file currently being played will not be deleted.
+   * This method does not delete cached media files that are currently being played.
    *
-   * @param uri The URI (Uniform Resource Identifier) of the media file to be deleted.
+   * @param uri The URI (Uniform Resource Identifier) of the cached file to delete. Used to identify the media file.
    *
    * @returns
    * 0: Success.
@@ -637,11 +606,11 @@ export abstract class IMediaPlayerCacheManager {
   abstract removeCacheByUri(uri: string): number;
 
   /**
-   * Sets the storage path for the media files that you want to cache.
+   * Sets the storage path for media files to be cached.
    *
-   * Make sure IRtcEngine is initialized before you call this method.
+   * This method must be called after initializing IRtcEngine.
    *
-   * @param path The absolute path of the media files to be cached. Ensure that the directory for the media files exists and is writable.
+   * @param path The absolute path where cached files are stored. Ensure the specified directory exists and is writable.
    *
    * @returns
    * 0: Success.
@@ -650,9 +619,9 @@ export abstract class IMediaPlayerCacheManager {
   abstract setCacheDir(path: string): number;
 
   /**
-   * Sets the maximum number of media files that can be cached.
+   * Sets the maximum number of cached media files.
    *
-   * @param count The maximum number of media files that can be cached. The default value is 1,000.
+   * @param count The maximum number of media files that can be cached. The default value is 1000.
    *
    * @returns
    * 0: Success.
@@ -661,9 +630,9 @@ export abstract class IMediaPlayerCacheManager {
   abstract setMaxCacheFileCount(count: number): number;
 
   /**
-   * Sets the maximum size of the aggregate storage space for cached media files.
+   * Sets the maximum total cache size for media files.
    *
-   * @param cacheSize The maximum size (bytes) of the aggregate storage space for cached media files. The default value is 1 GB.
+   * @param cacheSize The maximum total cache size for media files, in bytes. The default is 1 GB.
    *
    * @returns
    * 0: Success.
@@ -672,11 +641,11 @@ export abstract class IMediaPlayerCacheManager {
   abstract setMaxCacheFileSize(cacheSize: number): number;
 
   /**
-   * Sets whether to delete cached media files automatically.
+   * Sets whether to enable the automatic cache file removal feature.
    *
-   * If you enable this function to remove cached media files automatically, when the cached media files exceed either the number or size limit you set, the SDK automatically deletes the least recently used cache file.
+   * When automatic cache file removal is enabled, if the number or size of cached media files in the player exceeds the set limit, the SDK automatically removes the least recently used cached file.
    *
-   * @param enable Whether to enable the SDK to delete cached media files automatically: true : Delete cached media files automatically. false : (Default) Do not delete cached media files automatically.
+   * @param enable Whether to automatically remove cached files: true : Enable automatic cache file removal. false : (Default) Disable automatic cache file removal.
    *
    * @returns
    * 0: Success.
@@ -685,60 +654,58 @@ export abstract class IMediaPlayerCacheManager {
   abstract enableAutoRemoveCache(enable: boolean): number;
 
   /**
-   * Gets the storage path of the cached media files.
+   * Gets the storage path of cached files.
    *
-   * If you have not called the setCacheDir method to set the storage path for the media files to be cached before calling this method, you get the default storage path used by the SDK.
+   * If you do not call the setCacheDir method to customize the cache file storage path before calling this method, it returns the SDK's default cache file storage path.
    *
-   * @param length An input parameter; the maximum length of the cache file storage path string.
+   * @param length Input parameter. The maximum length of the cache file storage path string.
    *
    * @returns
-   * The call succeeds, and the SDK returns the storage path of the cached media files.
+   * On success, returns the storage path of the cached file.
    *  < 0: Failure. See MediaPlayerReason.
    */
   abstract getCacheDir(length: number): string;
 
   /**
-   * Gets the maximum number of media files that can be cached.
+   * Gets the maximum number of cached files set.
    *
-   * By default, the maximum number of media files that can be cached is 1,000.
+   * The SDK's default maximum number of cached files is 1000.
    *
    * @returns
-   * > 0: The call succeeds and returns the maximum number of media files that can be cached.
+   * > 0: Success. Returns the maximum number of cached files.
    *  < 0: Failure. See MediaPlayerReason.
    */
   abstract getMaxCacheFileCount(): number;
 
   /**
-   * Gets the maximum size of the aggregate storage space for cached media files.
+   * Gets the upper limit of the total cache size for cached files.
    *
-   * By default, the maximum size of the aggregate storage space for cached media files is 1 GB. You can call the setMaxCacheFileSize method to set the limit according to your scenarios.
+   * The SDK's default upper limit for the total cache size of cached files is 1GB. You can call the setMaxCacheFileSize method to customize the total cache size limit.
    *
    * @returns
-   * > 0: The call succeeds and returns the maximum size (in bytes) of the aggregate storage space for cached media files.
+   * > 0: Success. Returns the total cache size limit of cached files, in bytes.
    *  < 0: Failure. See MediaPlayerReason.
    */
   abstract getMaxCacheFileSize(): number;
 
   /**
-   * Gets the number of media files that are cached.
+   * Gets the total number of currently cached media files.
    *
    * @returns
-   * ≥ 0: The call succeeds and returns the number of media files that are cached.
+   * ≥ 0: Success. Returns the total number of currently cached media files.
    *  < 0: Failure. See MediaPlayerReason.
    */
   abstract getCacheFileCount(): number;
 }
 
 /**
- * The video frame observer for the media player.
+ * Video data observer for media player.
+ *
+ * You can call registerVideoFrameObserver to register or unregister the IMediaPlayerVideoFrameObserver observer.
  */
 export interface IMediaPlayerVideoFrameObserver {
   /**
-   * Occurs each time the player receives a video frame.
-   *
-   * After registering the video frame observer, the callback occurs every time the player receives a video frame, reporting the detailed information of the video frame.
-   *
-   * @param frame Video frame information. See VideoFrame.
+   * @ignore
    */
   onFrame?(frame: VideoFrame): void;
 }
