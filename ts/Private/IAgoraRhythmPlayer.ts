@@ -1,67 +1,67 @@
 import './extension/IAgoraRhythmPlayerExtension';
 
 /**
- * Virtual metronome state.
+ * State of the virtual metronome.
  */
 export enum RhythmPlayerStateType {
   /**
-   * 810: The virtual metronome is not enabled or disabled already.
+   * 810: The virtual metronome is not started or has been stopped.
    */
   RhythmPlayerStateIdle = 810,
   /**
-   * 811: Opening the beat files.
+   * 811: Opening the beat audio file.
    */
   RhythmPlayerStateOpening = 811,
   /**
-   * 812: Decoding the beat files.
+   * 812: Decoding the beat audio file.
    */
   RhythmPlayerStateDecoding = 812,
   /**
-   * 813: The beat files are playing.
+   * 813: Playing the beat audio file.
    */
   RhythmPlayerStatePlaying = 813,
   /**
-   * 814: Failed to start virtual metronome. You can use the reported errorCode to troubleshoot the cause of the error, or you can try to start the virtual metronome again.
+   * 814: Failed to start the virtual metronome. You can troubleshoot the issue using the reported error code errorCode, or try restarting the virtual metronome.
    */
   RhythmPlayerStateFailed = 814,
 }
 
 /**
- * Virtual Metronome error message.
+ * Virtual metronome error information.
  */
 export enum RhythmPlayerReason {
   /**
-   * 0: The beat files are played normally without errors.
+   * 0: The beat audio file plays normally without error.
    */
   RhythmPlayerReasonOk = 0,
   /**
-   * 1: A general error; no specific reason.
+   * 1: General error with no specific cause.
    */
   RhythmPlayerReasonFailed = 1,
   /**
-   * 801: There is an error when opening the beat files.
+   * 801: Failed to open the beat audio file.
    */
   RhythmPlayerReasonCanNotOpen = 801,
   /**
-   * 802: There is an error when playing the beat files.
+   * 802: Failed to play the beat audio file.
    */
   RhythmPlayerReasonCanNotPlay = 802,
   /**
-   * 803: The duration of the beat file exceeds the limit. The maximum duration is 1.2 seconds.
+   * 803: The duration of the beat audio file exceeds the limit. The maximum duration is 1.2 seconds.
    */
   RhythmPlayerReasonFileOverDurationLimit = 803,
 }
 
 /**
- * The metronome configuration.
+ * Virtual metronome configuration.
  */
 export class AgoraRhythmPlayerConfig {
   /**
-   * The number of beats per measure, which ranges from 1 to 9. The default value is 4, which means that each measure contains one downbeat and three upbeats.
+   * Number of beats per measure, range [1,9]. Default is 4, meaning 1 strong beat and 3 weak beats per measure.
    */
   beatsPerMeasure?: number;
   /**
-   * The beat speed (beats/minute), which ranges from 60 to 360. The default value is 60, which means that the metronome plays 60 beats in one minute.
+   * Tempo (beats per minute), range [60,360]. Default is 60, meaning 60 beats per minute.
    */
   beatsPerMinute?: number;
 }
