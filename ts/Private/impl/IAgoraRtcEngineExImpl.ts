@@ -19,6 +19,7 @@ import {
 import { ContentInspectConfig, RenderModeType } from '../AgoraMediaBase';
 import {
   ChannelMediaOptions,
+  ImageTrackOptions,
   LeaveChannelOptions,
   StreamFallbackOptions,
 } from '../IAgoraRtcEngine';
@@ -1600,6 +1601,143 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
 
   protected getApiTypeFromGetCallIdEx(connection: RtcConnection): string {
     return 'RtcEngineEx_getCallIdEx';
+  }
+
+  preloadEffectEx(
+    connection: RtcConnection,
+    soundId: number,
+    filePath: string,
+    startPos: number = 0
+  ): number {
+    const apiType = this.getApiTypeFromPreloadEffectEx(
+      connection,
+      soundId,
+      filePath,
+      startPos
+    );
+    const jsonParams = {
+      connection: connection,
+      soundId: soundId,
+      filePath: filePath,
+      startPos: startPos,
+      toJSON: () => {
+        return {
+          connection: connection,
+          soundId: soundId,
+          filePath: filePath,
+          startPos: startPos,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromPreloadEffectEx(
+    connection: RtcConnection,
+    soundId: number,
+    filePath: string,
+    startPos: number = 0
+  ): string {
+    return 'RtcEngineEx_preloadEffectEx';
+  }
+
+  playEffectEx(
+    connection: RtcConnection,
+    soundId: number,
+    filePath: string,
+    loopCount: number,
+    pitch: number,
+    pan: number,
+    gain: number,
+    publish: boolean = false,
+    startPos: number = 0
+  ): number {
+    const apiType = this.getApiTypeFromPlayEffectEx(
+      connection,
+      soundId,
+      filePath,
+      loopCount,
+      pitch,
+      pan,
+      gain,
+      publish,
+      startPos
+    );
+    const jsonParams = {
+      connection: connection,
+      soundId: soundId,
+      filePath: filePath,
+      loopCount: loopCount,
+      pitch: pitch,
+      pan: pan,
+      gain: gain,
+      publish: publish,
+      startPos: startPos,
+      toJSON: () => {
+        return {
+          connection: connection,
+          soundId: soundId,
+          filePath: filePath,
+          loopCount: loopCount,
+          pitch: pitch,
+          pan: pan,
+          gain: gain,
+          publish: publish,
+          startPos: startPos,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromPlayEffectEx(
+    connection: RtcConnection,
+    soundId: number,
+    filePath: string,
+    loopCount: number,
+    pitch: number,
+    pan: number,
+    gain: number,
+    publish: boolean = false,
+    startPos: number = 0
+  ): string {
+    return 'RtcEngineEx_playEffectEx';
+  }
+
+  enableVideoImageSourceEx(
+    enable: boolean,
+    options: ImageTrackOptions,
+    connection: RtcConnection
+  ): number {
+    const apiType = this.getApiTypeFromEnableVideoImageSourceEx(
+      enable,
+      options,
+      connection
+    );
+    const jsonParams = {
+      enable: enable,
+      options: options,
+      connection: connection,
+      toJSON: () => {
+        return {
+          enable: enable,
+          options: options,
+          connection: connection,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromEnableVideoImageSourceEx(
+    enable: boolean,
+    options: ImageTrackOptions,
+    connection: RtcConnection
+  ): string {
+    return 'RtcEngineEx_enableVideoImageSourceEx';
   }
 }
 

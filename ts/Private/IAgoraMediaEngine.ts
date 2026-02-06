@@ -17,7 +17,7 @@ import {
 } from './AgoraMediaBase';
 
 /**
- * The channel mode.
+ * Channel mode.
  */
 export enum AudioMixingDualMonoMode {
   /**
@@ -25,15 +25,15 @@ export enum AudioMixingDualMonoMode {
    */
   AudioMixingDualMonoAuto = 0,
   /**
-   * 1: Left channel mode. This mode replaces the audio of the right channel with the audio of the left channel, which means the user can only hear the audio of the left channel.
+   * 1: Left channel mode. This mode replaces the right channel audio with the left channel audio, so the user hears only the left channel.
    */
   AudioMixingDualMonoL = 1,
   /**
-   * 2: Right channel mode. This mode replaces the audio of the left channel with the audio of the right channel, which means the user can only hear the audio of the right channel.
+   * 2: Right channel mode. This mode replaces the left channel audio with the right channel audio, so the user hears only the right channel.
    */
   AudioMixingDualMonoR = 2,
   /**
-   * 3: Mixed channel mode. This mode mixes the audio of the left channel and the right channel, which means the user can hear the audio of the left channel and the right channel at the same time.
+   * 3: Mixed mode. This mode overlays the left and right channel data, so the user hears both the left and right channels simultaneously.
    */
   AudioMixingDualMonoMix = 3,
 }
@@ -45,97 +45,102 @@ export abstract class IMediaEngine {
   /**
    * Registers an audio frame observer object.
    *
-   * Call this method to register an audio frame observer object (register a callback). When you need the SDK to trigger the onMixedAudioFrame, onRecordAudioFrame, onPlaybackAudioFrame, onPlaybackAudioFrameBeforeMixing or onEarMonitoringAudioFrame callback, you need to use this method to register the callbacks.
+   * This method registers an audio frame observer object, i.e., registers callbacks. You need to call this method to register callbacks if you want the SDK to trigger the onMixedAudioFrame, onRecordAudioFrame, onPlaybackAudioFrame, onPlaybackAudioFrameBeforeMixing, and onEarMonitoringAudioFrame callbacks.
    *
-   * @param observer The observer instance. See IAudioFrameObserver. Agora recommends calling this method after receiving onLeaveChannel to release the audio observer object.
+   * @param observer Instance of the interface object. See IAudioFrameObserver. It is recommended to call this after receiving onLeaveChannel to release the audio frame observer object.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract registerAudioFrameObserver(observer: IAudioFrameObserver): number;
 
   /**
    * Registers a raw video frame observer object.
    *
-   * If you want to observe raw video frames (such as YUV or RGBA format), Agora recommends that you implement one IVideoFrameObserver class with this method. When calling this method to register a video observer, you can register callbacks in the IVideoFrameObserver class as needed. After you successfully register the video frame observer, the SDK triggers the registered callbacks each time a video frame is received.
+   * If you want to observe raw video frames (such as YUV or RGBA format), Agora recommends registering an IVideoFrameObserver class using this method.
+   * When registering the video observer, you can choose to register callbacks from the IVideoFrameObserver class as needed. Once registered successfully, the SDK triggers the registered callbacks whenever a video frame is captured. When handling callbacks, you need to consider changes in the width and height parameters of the video frame, as the observed video frame may vary due to the following conditions:
+   *  When the network condition is poor, the resolution may drop in steps.
+   *  When the user adjusts the resolution manually, the resolution reported in the callback will also change.
    *
-   * @param observer The observer instance. See IVideoFrameObserver.
+   * @param observer Instance of the interface object. See IVideoFrameObserver.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract registerVideoFrameObserver(observer: IVideoFrameObserver): number;
 
   /**
-   * Registers a receiver object for the encoded video image.
+   * Registers a video frame observer for encoded video frames.
    *
-   * If you only want to observe encoded video frames (such as H.264 format) without decoding and rendering the video, Agora recommends that you implement one IVideoEncodedFrameObserver class through this method. Call this method before joining a channel.
+   * If you only want to observe encoded video frames (e.g., H.264 format) and do not need to decode or render them, Agora recommends using this method to register an IVideoEncodedFrameObserver class. This method must be called before joining a channel.
    *
-   * @param observer The video frame observer object. See IVideoEncodedFrameObserver.
+   * @param observer Video frame observer. See IVideoEncodedFrameObserver.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract registerVideoEncodedFrameObserver(
     observer: IVideoEncodedFrameObserver
   ): number;
 
   /**
-   * Registers a facial information observer.
+   * Registers a face information observer.
    *
-   * You can call this method to register the onFaceInfo callback to receive the facial information processed by Agora speech driven extension. When calling this method to register a facial information observer, you can register callbacks in the IFaceInfoObserver class as needed. After successfully registering the facial information observer, the SDK triggers the callback you have registered when it captures the facial information converted by the speech driven extension.
-   *  Call this method before joining a channel.
-   *  Before calling this method, you need to make sure that the speech driven extension has been enabled by calling enableExtension.
+   * You can call this method to register the onFaceInfo callback to obtain face information processed by the Agora voice driver plugin. When registering a face information observer using this method, you can register the callbacks in the IFaceInfoObserver class as needed. After successful registration, the SDK triggers the registered callback when face information converted by the voice driver plugin is detected.
+   *  This method must be called before joining a channel.
+   *  Before calling this method, make sure you have called enableExtension to enable the voice driver plugin.
    *
-   * @param observer Facial information observer, see IFaceInfoObserver.
+   * @param observer The face information observer. See IFaceInfoObserver.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract registerFaceInfoObserver(observer: IFaceInfoObserver): number;
 
   /**
-   * Pushes the external audio frame.
+   * Pushes external audio frames.
    *
-   * Call this method to push external audio frames through the audio track.
+   * Call this method to push external audio frames through an audio track.
    *
    * @param frame The external audio frame. See AudioFrame.
-   * @param trackId The audio track ID. If you want to publish a custom external audio source, set this parameter to the ID of the corresponding custom audio track you want to publish.
+   * @param trackId The audio track ID. If you want to publish a custom external audio source, set this parameter to the custom audio track ID you want to publish.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract pushAudioFrame(frame: AudioFrame, trackId?: number): number;
 
   /**
-   * Pulls the remote audio data.
+   * Pulls remote audio data.
    *
-   * After a successful call of this method, the app pulls the decoded and mixed audio data for playback.
+   * After calling this method, the app actively pulls the decoded and mixed remote audio data for audio playback. This method and the onPlaybackAudioFrame callback can both be used to obtain the mixed remote audio playback data. After calling setExternalAudioSink to enable external audio rendering, the app will no longer receive data from the onPlaybackAudioFrame callback. Therefore, choose between this method and the onPlaybackAudioFrame callback based on your actual business needs. The two have different handling mechanisms. The differences are as follows:
+   *  After calling this method, the app actively pulls audio data. By setting the audio data, the SDK can adjust the buffer to help the app handle latency, effectively avoiding audio playback jitter.
+   *  After registering the onPlaybackAudioFrame callback, the SDK delivers audio data to the app through the callback. When the app handles audio frame latency, it may cause audio playback jitter. This method is only used to pull mixed remote audio playback data. To obtain the original captured audio data, or the original playback data of each stream before mixing, call registerAudioFrameObserver to register the corresponding callback.
    *
    * @returns
-   * The AudioFrame instance, if the method call succeeds.
-   *  An error code, if the call fails,.
+   * If the method call succeeds, returns an AudioFrame object.
+   *  If the method call fails, returns an error code.
    */
   abstract pullAudioFrame(frame: AudioFrame): number;
 
   /**
-   * Configures the external video source.
+   * Sets the external video source.
    *
-   * After calling this method to enable an external video source, you can call pushVideoFrame to push external video data to the SDK.
+   * After calling this method to enable the external video source, you can call pushVideoFrame to push external video data to the SDK. Dynamic switching of video sources within a channel is not supported. If you have enabled the external video source and joined a channel, to switch to the internal video source, you must leave the channel first, then call this method to disable the external video source, and rejoin the channel.
    *
-   * @param enabled Whether to use the external video source: true : Use the external video source. The SDK prepares to accept the external video frame. false : (Default) Do not use the external video source.
-   * @param useTexture Whether to use the external video frame in the Texture format. true : Use the external video frame in the Texture format. false : (Default) Do not use the external video frame in the Texture format.
+   * @param enabled Whether to enable the external video source: true : Enable the external video source. The SDK is ready to receive external video frames. false : (Default) Do not enable the external video source.
+   * @param useTexture Whether to use external video frames in Texture format: true : Use external video frames in Texture format. false : Do not use external video frames in Texture format.
    * @param sourceType Whether the external video frame is encoded. See ExternalVideoSourceType.
-   * @param encodedVideoOption Video encoding options. This parameter needs to be set if sourceType is EncodedVideoFrame. To set this parameter, contact.
+   * @param encodedVideoOption Video encoding options. If sourceType is EncodedVideoFrame, you need to set this parameter. You can [contact technical support](https://ticket.shengwang.cn/) to learn how to configure this parameter.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setExternalVideoSource(
     enabled: boolean,
@@ -145,19 +150,19 @@ export abstract class IMediaEngine {
   ): number;
 
   /**
-   * Sets the external audio source parameters.
+   * Sets external audio capture parameters.
    *
-   * Deprecated: This method is deprecated, use createCustomAudioTrack instead.
+   * Deprecated Deprecated: This method is deprecated. Use createCustomAudioTrack instead.
    *
-   * @param enabled Whether to enable the external audio source: true : Enable the external audio source. false : (Default) Disable the external audio source.
-   * @param sampleRate The sample rate (Hz) of the external audio source which can be set as 8000, 16000, 32000, 44100, or 48000.
-   * @param channels The number of channels of the external audio source, which can be set as 1 (Mono) or 2 (Stereo).
-   * @param localPlayback Whether to play the external audio source: true : Play the external audio source. false : (Default) Do not play the external source.
-   * @param publish Whether to publish audio to the remote users: true : (Default) Publish audio to the remote users. false : Do not publish audio to the remote users.
+   * @param enabled Whether to enable the use of external audio sources: true : Enable external audio source. false : (Default) Disable external audio source.
+   * @param sampleRate Sampling rate (Hz) of the external audio source. Can be set to 8000, 16000, 32000, 44100, or 48000.
+   * @param channels Number of channels of the external audio source. Can be set to 1 (mono) or 2 (stereo).
+   * @param localPlayback Whether to play the external audio source locally: true : Play locally. false : (Default) Do not play locally.
+   * @param publish Whether to publish the audio to the remote end: true : (Default) Publish to remote. false : Do not publish to remote.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setExternalAudioSource(
     enabled: boolean,
@@ -168,19 +173,19 @@ export abstract class IMediaEngine {
   ): number;
 
   /**
-   * Creates a custom audio track.
+   * Creates a custom audio capture track.
    *
-   * Call this method before joining a channel. To publish a custom audio source, see the following steps:
-   *  Call this method to create a custom audio track and get the audio track ID.
-   *  Call joinChannel to join the channel. In ChannelMediaOptions, set publishCustomAudioTrackId to the audio track ID that you want to publish, and set publishCustomAudioTrack to true.
-   *  Call pushAudioFrame and specify trackId as the audio track ID set in step 2. You can then publish the corresponding custom audio source in the channel.
+   * To publish custom captured audio in a channel, follow these steps:
+   *  Call this method to create an audio track and obtain the audio track ID.
+   *  When calling joinChannel to join a channel, set publishCustomAudioTrackId in ChannelMediaOptions to the audio track ID you want to publish, and set publishCustomAudioTrack to true.
+   *  Call pushAudioFrame and set trackId to the audio track ID specified in step 2 to publish the corresponding custom audio source in the channel. This method must be called before joining a channel.
    *
-   * @param trackType The type of the custom audio track. See AudioTrackType. If AudioTrackDirect is specified for this parameter, you must set publishMicrophoneTrack to false in ChannelMediaOptions when calling joinChannel to join the channel; otherwise, joining the channel fails and returns the error code -2.
-   * @param config The configuration of the custom audio track. See AudioTrackConfig.
+   * @param trackType Custom audio track type. See AudioTrackType. If AudioTrackDirect is specified, you must set publishMicrophoneTrack in ChannelMediaOptions to false when calling joinChannel, otherwise joining the channel will fail and return error code -2.
+   * @param config Custom audio track configuration. See AudioTrackConfig.
    *
    * @returns
-   * If the method call is successful, the audio track ID is returned as the unique identifier of the audio track.
-   *  If the method call fails, 0xffffffff is returned.
+   * If the method call succeeds, returns the audio track ID as the unique identifier of the audio track.
+   *  If the method call fails, returns 0xffffffff. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract createCustomAudioTrack(
     trackType: AudioTrackType,
@@ -190,28 +195,28 @@ export abstract class IMediaEngine {
   /**
    * Destroys the specified audio track.
    *
-   * @param trackId The custom audio track ID returned in createCustomAudioTrack.
+   * @param trackId Custom audio track ID returned by the createCustomAudioTrack method.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract destroyCustomAudioTrack(trackId: number): number;
 
   /**
-   * Sets the external audio sink.
+   * Sets external audio rendering.
    *
-   * After enabling the external audio sink, you can call pullAudioFrame to pull remote audio frames. The app can process the remote audio and play it with the audio effects that you want.
+   * After calling this method to enable external audio rendering, you can call pullAudioFrame to pull remote audio data. The app can process the pulled raw audio data before rendering to achieve the desired audio effect. After calling this method to enable external audio rendering, the app will no longer receive data from the onPlaybackAudioFrame callback.
    *
-   * @param enabled Whether to enable or disable the external audio sink: true : Enables the external audio sink. false : (Default) Disables the external audio sink.
-   * @param sampleRate The sample rate (Hz) of the external audio sink, which can be set as 16000, 32000, 44100, or 48000.
-   * @param channels The number of audio channels of the external audio sink:
-   *  1: Mono.
-   *  2: Stereo.
+   * @param enabled Whether to enable external audio rendering: true : Enable external audio rendering. false : (Default) Disable external audio rendering.
+   * @param sampleRate The sample rate (Hz) for external audio rendering. Can be set to 16000, 32000, 44100, or 48000.
+   * @param channels The number of channels for external audio rendering:
+   *  1: Mono
+   *  2: Stereo
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setExternalAudioSink(
     enabled: boolean,
@@ -228,21 +233,21 @@ export abstract class IMediaEngine {
   ): number;
 
   /**
-   * Pushes the external raw video frame to the SDK through video tracks.
+   * Publishes external raw video frames to the channel through a custom video track.
    *
-   * To publish a custom video source, see the following steps:
-   *  Call createCustomVideoTrack to create a video track and get the video track ID. If you only need to push one custom video source to the channel, you can directly call the setExternalVideoSource method and the SDK will automatically create a video track with the videoTrackId set to 0.
-   *  Call joinChannel to join the channel. In ChannelMediaOptions, set customVideoTrackId to the video track ID that you want to publish, and set publishCustomVideoTrack to true.
-   *  Call this method and specify videoTrackId as the video track ID set in step 2. You can then publish the corresponding custom video source in the channel. After calling this method, even if you stop pushing external video frames to the SDK, the custom video stream will still be counted as the video duration usage and incur charges. Agora recommends that you take appropriate measures based on the actual situation to avoid such video billing.
-   *  If you no longer need to capture external video data, you can call destroyCustomVideoTrack to destroy the custom video track.
-   *  If you only want to use the external video data for local preview and not publish it in the channel, you can call muteLocalVideoStream to cancel sending video stream or call updateChannelMediaOptions to set publishCustomVideoTrack to false.
+   * When you need to publish a custom captured video in the channel, follow these steps:
+   *  Call createCustomVideoTrack to create a video track and get the video track ID.
+   *  When calling joinChannel to join the channel, set customVideoTrackId in ChannelMediaOptions to the video track ID you want to publish, and set publishCustomVideoTrack to true.
+   *  Call this method and specify videoTrackId as the video track ID from step 2 to publish the corresponding custom video source in the channel. After calling this method, even if you stop pushing external video frames to the SDK, the custom captured video stream will still be counted in video duration usage and incur charges. Agora recommends taking appropriate actions based on your actual needs to avoid such video billing:
+   *  If you no longer need to capture external video data, call destroyCustomVideoTrack to destroy the custom captured video track.
+   *  If you only want to use the captured external video data for local preview and not publish it in the channel, call muteLocalVideoStream to stop sending the video stream, or call updateChannelMediaOptions and set publishCustomVideoTrack to false.
    *
-   * @param frame The external raw video frame to be pushed. See ExternalVideoFrame.
-   * @param videoTrackId The video track ID returned by calling the createCustomVideoTrack method. If you only need to push one custom video source, set videoTrackId to 0.
+   * @param frame The video frame to be pushed. See ExternalVideoFrame.
+   * @param videoTrackId The video track ID returned by the createCustomVideoTrack method. If you only need to push a single external video stream, set videoTrackId to 0.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract pushVideoFrame(
     frame: ExternalVideoFrame,
@@ -283,35 +288,35 @@ export abstract class IMediaEngine {
   abstract release(): void;
 
   /**
-   * Unregisters an audio frame observer.
+   * Unregisters the audio frame observer.
    *
-   * @param observer The audio frame observer, reporting the reception of each audio frame. See IAudioFrameObserver.
+   * @param observer The audio frame observer that monitors each received audio frame. See IAudioFrameObserver.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and troubleshooting.
    */
   abstract unregisterAudioFrameObserver(observer: IAudioFrameObserver): number;
 
   /**
    * Unregisters the video frame observer.
    *
-   * @param observer The video observer, reporting the reception of each video frame. See IVideoFrameObserver.
+   * @param observer The video frame observer that observes the reception of each video frame. See IVideoFrameObserver.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract unregisterVideoFrameObserver(observer: IVideoFrameObserver): number;
 
   /**
-   * Unregisters a receiver object for the encoded video frame.
+   * Unregisters the video frame observer for encoded video frames.
    *
-   * @param observer The video observer, reporting the reception of each video frame. See IVideoEncodedFrameObserver.
+   * @param observer Video frame observer that observes the reception of each video frame. See IVideoEncodedFrameObserver.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract unregisterVideoEncodedFrameObserver(
     observer: IVideoEncodedFrameObserver
