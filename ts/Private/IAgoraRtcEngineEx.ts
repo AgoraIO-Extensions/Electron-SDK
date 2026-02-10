@@ -31,47 +31,48 @@ import {
 } from './IAgoraRtcEngine';
 
 /**
- * Contains connection information.
+ * Class containing connection information.
  */
 export class RtcConnection {
   /**
-   * The channel name.
+   * Channel name.
    */
   channelId?: string;
   /**
-   * The ID of the local user.
+   * Local user ID.
    */
   localUid?: number;
 }
 
 /**
- * This interface class contains multi-channel methods.
+ * Interface class that provides multi-channel methods.
  *
- * Inherited from IRtcEngine.
+ * Inherits from IRtcEngine.
  */
 export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * Joins a channel.
    *
-   * You can call this method multiple times to join more than one channel. If you want to join the same channel from different devices, ensure that the user IDs are different for all devices.
+   * Call this method to join multiple channels simultaneously. If you want to join the same channel on different devices, make sure the user IDs used on different devices are different. If you are already in a channel, you cannot join the same channel again with the same user ID.
+   * Before joining a channel, make sure the App ID used to generate the Token is the same as the one used to initialize the engine with the initialize method. Otherwise, joining the channel with the Token will fail.
    *
-   * @param token The token generated on your server for authentication.
-   *  (Recommended) If your project has enabled the security mode (using APP ID and Token for authentication), this parameter is required.
-   *  If you have only enabled the testing mode (using APP ID for authentication), this parameter is optional. You will automatically exit the channel 24 hours after successfully joining in.
-   *  If you need to join different channels at the same time or switch between channels, Agora recommends using a wildcard token so that you don't need to apply for a new token every time joining a channel.
-   * @param connection The connection information. See RtcConnection.
-   * @param options The channel media options. See ChannelMediaOptions.
+   * @param token A dynamic key generated on the server for authentication. See [Token Authentication](https://doc.shengwang.cn/doc/rtc/electron/basic-features/token-authentication).
+   *  (Recommended) If your project enables security mode (i.e., using APP ID + Token for authentication), this parameter is required.
+   *  If your project only enables debug mode (i.e., using APP ID for authentication), you can join a channel without providing a Token. You will automatically leave the channel 24 hours after joining.
+   *  If you need to join multiple channels simultaneously or switch channels frequently, Agora recommends using a wildcard Token to avoid requesting a new Token from the server each time. See [Using Wildcard Token](https://doc.shengwang.cn/doc/rtc/electron/best-practice/wildcard-token).
+   * @param connection Connection information. See RtcConnection.
+   * @param options Channel media options. See ChannelMediaOptions.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
-   *  -2: The parameter is invalid. For example, the token is invalid, the uid parameter is not set to an integer, or the value of a member in ChannelMediaOptions is invalid. You need to pass in a valid parameter and join the channel again.
-   *  -3: Fails to initialize the IRtcEngine object. You need to reinitialize the IRtcEngine object.
-   *  -7: The IRtcEngine object has not been initialized. You need to initialize the IRtcEngine object before calling this method.
-   *  -8: The internal state of the IRtcEngine object is wrong. The typical cause is that after calling startEchoTest to start a call loop test, you call this method to join the channel without calling stopEchoTest to stop the test. You need to call stopEchoTest before calling this method.
-   *  -17: The request to join the channel is rejected. The typical cause is that the user is already in the channel. Agora recommends that you use the onConnectionStateChanged callback to see whether the user is in the channel. Do not call this method to join the channel unless you receive the ConnectionStateDisconnected (1) state.
-   *  -102: The channel name is invalid. You need to pass in a valid channel name in channelId to rejoin the channel.
-   *  -121: The user ID is invalid. You need to pass in a valid user ID in uid to rejoin the channel.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and troubleshooting.
+   *  -2: Invalid parameters. For example, invalid Token, uid is not an integer, or ChannelMediaOptions contains invalid values. Provide valid parameters and rejoin the channel.
+   *  -3: IRtcEngine initialization failed. Reinitialize the IRtcEngine object.
+   *  -7: IRtcEngine is not initialized. Initialize the IRtcEngine object before calling this method.
+   *  -8: Internal state error in IRtcEngine. Possible cause: startEchoTest was called to start echo test but stopEchoTest was not called before joining the channel. Call stopEchoTest before this method.
+   *  -17: Join channel rejected. Possible cause: the user is already in the channel. Use onConnectionStateChanged to check the connection state. Do not call this method again unless you receive ConnectionStateDisconnected (1).
+   *  -102: Invalid channel name. Provide a valid channelId and rejoin the channel.
+   *  -121: Invalid user ID. Provide a valid uid and rejoin the channel.
    */
   abstract joinChannelEx(
     token: string,
@@ -82,16 +83,17 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * Sets channel options and leaves the channel.
    *
-   * After calling this method, the SDK terminates the audio and video interaction, leaves the current channel, and releases all resources related to the session. After calling joinChannelEx to join a channel, you must call this method to end the call, otherwise, the next call cannot be started.
-   *  This method call is asynchronous. When this method returns, it does not necessarily mean that the user has left the channel.
-   *  If you call leaveChannel, you will leave all the channels you have joined by calling joinChannel or joinChannelEx.
+   * After calling this method, the SDK stops all audio and video interactions, leaves the current channel, and releases all session-related resources.
+   * After successfully joining a channel using joinChannelEx, you must call this method to end the call, otherwise you cannot start a new one.
+   *  This method is asynchronous. When the call returns, it does not mean the user has actually left the channel.
+   *  If you call leaveChannel, it will leave both channels joined via joinChannel and joinChannelEx. If you call release immediately after this method, the SDK will not trigger the onLeaveChannel callback.
    *
-   * @param connection The connection information. See RtcConnection.
-   * @param options The options for leaving the channel. See LeaveChannelOptions. This parameter only supports the stopMicrophoneRecording member in the LeaveChannelOptions settings; setting other members does not take effect.
+   * @param connection Connection information. See RtcConnection.
+   * @param options Options for leaving the channel. See LeaveChannelOptions. This parameter only supports setting the stopMicrophoneRecording member in LeaveChannelOptions. Other members are not effective.
    *
    * @returns
-   * 0: Success.
-   *  < 0: Failure.
+   * 0: The method call succeeds.
+   *  < 0: The method call fails. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract leaveChannelEx(
     connection: RtcConnection,
@@ -108,17 +110,17 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Updates the channel media options after joining the channel.
+   * Updates channel media options after joining the channel.
    *
-   * @param options The channel media options. See ChannelMediaOptions.
-   * @param connection The connection information. See RtcConnection.
+   * @param options Channel media options. See ChannelMediaOptions.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
-   * 0: Success.
-   *  < 0: Failure.
-   *  -2: The value of a member in ChannelMediaOptions is invalid. For example, the token or the user ID is invalid. You need to fill in a valid parameter.
-   *  -7: The IRtcEngine object has not been initialized. You need to initialize the IRtcEngine object before calling this method.
-   *  -8: The internal state of the IRtcEngine object is wrong. The possible reason is that the user is not in the channel. Agora recommends that you use the onConnectionStateChanged callback to see whether the user is in the channel. If you receive the ConnectionStateDisconnected (1) or ConnectionStateFailed (5) state, the user is not in the channel. You need to call joinChannel to join a channel before calling this method.
+   * 0: The method call succeeds.
+   *  < 0: The method call fails. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and troubleshooting.
+   *  -2: Invalid ChannelMediaOptions values. For example, using an invalid token or setting an invalid user role. You must provide valid parameters.
+   *  -7: The IRtcEngine object is not initialized. You must initialize the IRtcEngine object before calling this method.
+   *  -8: The internal state of the IRtcEngine object is incorrect. This may happen if the user is not in a channel. Use the onConnectionStateChanged callback to determine whether the user is in a channel. If you receive ConnectionStateDisconnected (1) or ConnectionStateFailed (5), the user is not in a channel. You must call joinChannel before using this method.
    */
   abstract updateChannelMediaOptionsEx(
     options: ChannelMediaOptions,
@@ -126,16 +128,16 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Sets the video encoder configuration.
+   * Sets the video encoding configuration.
    *
-   * Sets the encoder configuration for the local video. Each configuration profile corresponds to a set of video parameters, including the resolution, frame rate, and bitrate.
+   * Sets the encoding configuration for the local video. Each video encoding configuration corresponds to a set of video parameters, including resolution, frame rate, and bitrate. The config parameter of this method specifies the maximum values achievable under ideal network conditions. If the network condition is poor, the video engine may not use this config to render the local video and will automatically downgrade to a suitable video parameter configuration.
    *
-   * @param config Video profile. See VideoEncoderConfiguration.
-   * @param connection The connection information. See RtcConnection.
+   * @param config Video encoding configuration. See VideoEncoderConfiguration.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
-   * 0: Success.
-   *  < 0: Failure.
+   * 0: The method call succeeds.
+   *  < 0: The method call fails. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and troubleshooting tips.
    */
   abstract setVideoEncoderConfigurationEx(
     config: VideoEncoderConfiguration,
@@ -143,18 +145,23 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Initializes the video view of a remote user.
+   * Initializes the remote user view.
    *
-   * This method initializes the video view of a remote stream on the local device. It affects only the video view that the local user sees. Call this method to bind the remote video stream to a video view and to set the rendering and mirror modes of the video view. The application specifies the uid of the remote video in the VideoCanvas method before the remote user joins the channel. If the remote uid is unknown to the application, set it after the application receives the onUserJoined callback. If the Video Recording function is enabled, the Video Recording Service joins the channel as a dummy client, causing other clients to also receive the onUserJoined callback. Do not bind the dummy client to the application view because the dummy client does not send any video streams. To unbind the remote user from the view, set the view parameter to NULL. Once the remote user leaves the channel, the SDK unbinds the remote user.
-   *  Call this method after joinChannelEx.
-   *  To update the rendering or mirror mode of the remote video view during a call, use the setRemoteRenderModeEx method.
+   * This method binds a remote user to a display view and sets the rendering and mirror mode for the remote user's view as seen locally. It only affects the video display seen by the local user.
+   * You need to specify the remote user's ID in VideoCanvas when calling this method. It is generally recommended to set this before joining the channel.
+   * If the remote user's uid is not available before joining the channel, you can call this method upon receiving the onUserJoined callback. If video recording is enabled, the recording service joins the channel as a dummy client. Other clients will also receive its onUserJoined event, but the app should not bind a view to it (as it does not send video streams).
+   * To unbind a view from a remote user, call this method and set view to null.
+   * After leaving the channel, the SDK clears the binding between the remote user and the view.
+   *  You must call this method after joinChannelEx.
+   *  In Flutter, you do not need to call this method manually. Use AgoraVideoView to render local and remote views.
+   *  If you want to update the rendering or mirror mode of the remote user's view during a call, use the setRemoteRenderModeEx method.
    *
-   * @param canvas The remote video view settings. See VideoCanvas.
-   * @param connection The connection information. See RtcConnection.
+   * @param canvas Video canvas information. See VideoCanvas.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setupRemoteVideoEx(
     canvas: VideoCanvas,
@@ -162,15 +169,17 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Stops or resumes receiving the audio stream of a specified user.
+   * Stops or resumes receiving the specified audio stream.
+   *
+   * This method stops or resumes receiving the audio stream from a specified remote user. You can call this method before or after joining a channel. The setting is reset after leaving the channel.
    *
    * @param uid The ID of the specified user.
-   * @param mute Whether to stop receiving the audio stream of the specified user: true : Stop receiving the audio stream of the specified user. false : (Default) Resume receiving the audio stream of the specified user.
-   * @param connection The connection information. See RtcConnection.
+   * @param mute Whether to stop receiving the specified audio stream: true : Stop receiving the specified audio stream. false : (Default) Continue receiving the specified audio stream.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and troubleshooting.
    */
   abstract muteRemoteAudioStreamEx(
     uid: number,
@@ -179,17 +188,17 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Stops or resumes receiving the video stream of a specified user.
+   * Stops or resumes receiving the specified video stream.
    *
-   * This method is used to stop or resume receiving the video stream of a specified user. You can call this method before or after joining a channel. If a user leaves a channel, the settings in this method become invalid.
+   * This method stops or resumes receiving the video stream from a specified remote user. You can call this method before or after joining a channel. The setting is reset after leaving the channel.
    *
-   * @param uid The user ID of the remote user.
-   * @param mute Whether to stop receiving the video stream of the specified user: true : Stop receiving the video stream of the specified user. false : (Default) Resume receiving the video stream of the specified user.
-   * @param connection The connection information. See RtcConnection.
+   * @param uid The ID of the remote user.
+   * @param mute Whether to stop receiving the video stream from a remote user: true : Stop receiving. false : (Default) Resume receiving.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and troubleshooting.
    */
   abstract muteRemoteVideoStreamEx(
     uid: number,
@@ -200,18 +209,18 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * Sets the video stream type to subscribe to.
    *
-   * The SDK will dynamically adjust the size of the corresponding video stream based on the size of the video window to save bandwidth and computing resources. The default aspect ratio of the low-quality video stream is the same as that of the high-quality video stream. According to the current aspect ratio of the high-quality video stream, the system will automatically allocate the resolution, frame rate, and bitrate of the low-quality video stream. Depending on the default behavior of the sender and the specific settings when calling setDualStreamMode, the scenarios for the receiver calling this method are as follows:
-   *  The SDK enables low-quality video stream adaptive mode (AutoSimulcastStream) on the sender side by default, meaning only the high-quality video stream is transmitted. Only the receiver with the role of the host can call this method to initiate a low-quality video stream request. Once the sender receives the request, it starts automatically sending the low-quality video stream. At this point, all users in the channel can call this method to switch to low-quality video stream subscription mode.
-   *  If the sender calls setDualStreamMode and sets mode to DisableSimulcastStream (never send low-quality video stream), then calling this method will have no effect.
-   *  If the sender calls setDualStreamMode and sets mode to EnableSimulcastStream (always send low-quality video stream), both the host and audience receivers can call this method to switch to low-quality video stream subscription mode. If the publisher has already called setDualStreamModeEx and set mode to DisableSimulcastStream (never send low-quality video stream), calling this method will not take effect, you should call setDualStreamModeEx again on the sending end and adjust the settings.
+   * Depending on the sender's default behavior and the configuration of setDualStreamMode, the receiver's use of this method falls into the following cases:
+   *  By default, the SDK enables the adaptive low stream mode (AutoSimulcastStream) on the sender side. That is, the sender only sends the high stream. Only receivers with host role can call this method to request the low stream. Once the sender receives the request, it starts sending the low stream automatically. At this point, all users in the channel can call this method to switch to low stream subscription mode.
+   *  If the sender calls setDualStreamMode and sets mode to DisableSimulcastStream (never send low stream), then this method has no effect.
+   *  If the sender calls setDualStreamMode and sets mode to EnableSimulcastStream (always send low stream), then both host and audience receivers can call this method to switch to low stream subscription mode. When receiving low video streams, the SDK dynamically adjusts the video stream size based on the size of the video window to save bandwidth and computing resources. The aspect ratio of the low stream is the same as that of the high stream. Based on the current aspect ratio of the high stream, the system automatically allocates resolution, frame rate, and bitrate for the low stream. If the sender has called setDualStreamModeEx and set mode to DisableSimulcastStream (never send low stream), then this method has no effect. You need to call setDualStreamModeEx again on the sender side to change the setting.
    *
-   * @param uid The user ID.
-   * @param streamType The video stream type, see VideoStreamType.
-   * @param connection The connection information. See RtcConnection.
+   * @param uid User ID.
+   * @param streamType Video stream type: VideoStreamType.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
-   * 0: Success.
-   *  < 0: Failure.
+   * 0: The method call succeeds.
+   *  < 0: The method call fails. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setRemoteVideoStreamTypeEx(
     uid: number,
@@ -222,14 +231,14 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * Stops or resumes publishing the local audio stream.
    *
-   * This method does not affect any ongoing audio recording, because it does not disable the audio capture device. A successful call of this method triggers the onUserMuteAudio and onRemoteAudioStateChanged callbacks on the remote client.
+   * After this method is successfully called, the remote client triggers the onUserMuteAudio and onRemoteAudioStateChanged callbacks. This method does not affect the audio capture state because the audio capture device is not disabled.
    *
-   * @param mute Whether to stop publishing the local audio stream: true : Stops publishing the local audio stream. false : (Default) Resumes publishing the local audio stream.
-   * @param connection The connection information. See RtcConnection.
+   * @param mute Whether to stop publishing the local audio stream. true : Stop publishing. false : (Default) Publish.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract muteLocalAudioStreamEx(
     mute: boolean,
@@ -239,15 +248,15 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * Stops or resumes publishing the local video stream.
    *
-   * A successful call of this method triggers the onUserMuteVideo callback on the remote client.
-   *  This method does not affect any ongoing video recording, because it does not disable the camera.
+   * After this method is successfully called, the remote user receives the onUserMuteVideo callback.
+   *  This method does not affect the video capture state and does not disable the camera.
    *
-   * @param mute Whether to stop publishing the local video stream. true : Stop publishing the local video stream. false : (Default) Publish the local video stream.
-   * @param connection The connection information. See RtcConnection.
+   * @param mute Whether to stop sending the local video stream. true : Stop sending the local video stream. false : (Default) Send the local video stream.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and troubleshooting.
    */
   abstract muteLocalVideoStreamEx(
     mute: boolean,
@@ -255,18 +264,18 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Stops or resumes subscribing to the audio streams of all remote users.
+   * Stops or resumes subscribing to all remote users' audio streams.
    *
-   * After successfully calling this method, the local user stops or resumes subscribing to the audio streams of all remote users, including the ones join the channel subsequent to this call.
-   *  Call this method after joining a channel.
-   *  If you do not want to subscribe the audio streams of remote users before joining a channel, you can set autoSubscribeAudio as false when calling joinChannel.
+   * After this method is successfully called, the local user stops or resumes subscribing to remote users' audio streams, including the streams of users who join the channel after this method is called.
+   *  This method must be called after joining a channel.
+   *  To disable subscribing to remote users' audio streams before joining a channel, set autoSubscribeAudio to false when calling joinChannel.
    *
-   * @param mute Whether to stop subscribing to the audio streams of all remote users: true : Stops subscribing to the audio streams of all remote users. false : (Default) Subscribes to the audio streams of all remote users by default.
-   * @param connection The connection information. See RtcConnection.
+   * @param mute Whether to stop subscribing to all remote users' audio streams: true : Stop subscribing to all remote users' audio streams. false : (Default) Subscribe to all remote users' audio streams.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract muteAllRemoteAudioStreamsEx(
     mute: boolean,
@@ -274,16 +283,16 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Stops or resumes subscribing to the video streams of all remote users.
+   * Stops or resumes subscribing to all remote users' video streams.
    *
-   * After successfully calling this method, the local user stops or resumes subscribing to the video streams of all remote users, including all subsequent users.
+   * After this method is successfully called, the local user stops or resumes subscribing to all remote users' video streams, including the streams of users who join the channel after this method is called.
    *
-   * @param mute Whether to stop subscribing to the video streams of all remote users. true : Stop subscribing to the video streams of all remote users. false : (Default) Subscribe to the video streams of all remote users by default.
-   * @param connection The connection information. See RtcConnection.
+   * @param mute Whether to stop subscribing to all remote users' video streams. true : Stop subscribing to all users' video streams. false : (Default) Subscribe to all users' video streams.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract muteAllRemoteVideoStreamsEx(
     mute: boolean,
@@ -291,21 +300,22 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Sets the blocklist of subscriptions for audio streams.
+   * Sets the audio subscription blocklist.
    *
-   * You can call this method to specify the audio streams of a user that you do not want to subscribe to.
-   *  You can call this method either before or after joining a channel.
-   *  The blocklist is not affected by the setting in muteRemoteAudioStream, muteAllRemoteAudioStreams, and autoSubscribeAudio in ChannelMediaOptions.
-   *  Once the blocklist of subscriptions is set, it is effective even if you leave the current channel and rejoin the channel.
-   *  If a user is added in the allowlist and blocklist at the same time, only the blocklist takes effect.
+   * You can call this method to specify the audio streams you do not want to subscribe to.
+   *  This method can be called before or after joining a channel.
+   *  The audio subscription blocklist is not affected by muteRemoteAudioStream, muteAllRemoteAudioStreams, or autoSubscribeAudio in ChannelMediaOptions.
+   *  After setting the blocklist, if you leave and rejoin the channel, the blocklist remains effective.
+   *  If a user is in both the audio subscription blocklist and allowlist, only the blocklist takes effect.
    *
-   * @param uidList The user ID list of users that you do not want to subscribe to. If you want to specify the audio streams of a user that you do not want to subscribe to, add the user ID in this list. If you want to remove a user from the blocklist, you need to call the setSubscribeAudioBlocklist method to update the user ID list; this means you only add the uid of users that you do not want to subscribe to in the new user ID list.
-   * @param uidNumber The number of users in the user ID list.
-   * @param connection The connection information. See RtcConnection.
+   * @param uidList List of user IDs in the audio subscription blocklist.
+   * If you want to block the audio stream of a specific user, add that user's ID to this list. If you want to remove a user from the blocklist, call setSubscribeAudioBlocklist again with an updated list that excludes the user's uid.
+   * @param uidNumber Number of users in the blocklist.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setSubscribeAudioBlocklistEx(
     uidList: number[],
@@ -314,21 +324,22 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Sets the allowlist of subscriptions for audio streams.
+   * Sets the audio subscription allowlist.
    *
-   * You can call this method to specify the audio streams of a user that you want to subscribe to.
-   *  If a user is added in the allowlist and blocklist at the same time, only the blocklist takes effect.
-   *  You can call this method either before or after joining a channel.
-   *  The allowlist is not affected by the setting in muteRemoteAudioStream, muteAllRemoteAudioStreams and autoSubscribeAudio in ChannelMediaOptions.
-   *  Once the allowlist of subscriptions is set, it is effective even if you leave the current channel and rejoin the channel.
+   * You can call this method to specify the audio streams you want to subscribe to.
+   *  This method can be called before or after joining a channel.
+   *  The audio subscription allowlist is not affected by muteRemoteAudioStream, muteAllRemoteAudioStreams, or autoSubscribeAudio in ChannelMediaOptions.
+   *  After setting the allowlist, if you leave and rejoin the channel, the allowlist remains effective.
+   *  If a user is in both the audio subscription blocklist and allowlist, only the blocklist takes effect.
    *
-   * @param uidList The user ID list of users that you want to subscribe to. If you want to specify the audio streams of a user for subscription, add the user ID in this list. If you want to remove a user from the allowlist, you need to call the setSubscribeAudioAllowlist method to update the user ID list; this means you only add the uid of users that you want to subscribe to in the new user ID list.
-   * @param uidNumber The number of users in the user ID list.
-   * @param connection The connection information. See RtcConnection.
+   * @param uidList List of user IDs in the audio subscription allowlist.
+   * If you want to subscribe to the audio stream of a specific user, add that user's ID to this list. If you want to remove a user from the allowlist, call setSubscribeAudioAllowlist again with an updated list that excludes the user's uid.
+   * @param uidNumber Number of users in the allowlist.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setSubscribeAudioAllowlistEx(
     uidList: number[],
@@ -337,21 +348,22 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Sets the blocklist of subscriptions for video streams.
+   * Sets the video subscription blocklist.
    *
-   * You can call this method to specify the video streams of a user that you do not want to subscribe to.
-   *  If a user is added in the allowlist and blocklist at the same time, only the blocklist takes effect.
-   *  Once the blocklist of subscriptions is set, it is effective even if you leave the current channel and rejoin the channel.
+   * You can call this method to specify the video streams you do not want to subscribe to.
    *  You can call this method either before or after joining a channel.
-   *  The blocklist is not affected by the setting in muteRemoteVideoStream, muteAllRemoteVideoStreams and autoSubscribeAudio in ChannelMediaOptions.
+   *  The video subscription blocklist is not affected by muteRemoteVideoStream, muteAllRemoteVideoStreams, or autoSubscribeVideo in ChannelMediaOptions.
+   *  After setting the blocklist, it remains effective even if you leave and rejoin the channel.
+   *  If a user is in both the audio subscription allowlist and blocklist, only the blocklist takes effect.
    *
-   * @param uidList The user ID list of users that you do not want to subscribe to. If you want to specify the video streams of a user that you do not want to subscribe to, add the user ID of that user in this list. If you want to remove a user from the blocklist, you need to call the setSubscribeVideoBlocklist method to update the user ID list; this means you only add the uid of users that you do not want to subscribe to in the new user ID list.
-   * @param uidNumber The number of users in the user ID list.
-   * @param connection The connection information. See RtcConnection.
+   * @param uidList The user ID list for the video subscription blocklist.
+   * If you want to block the video stream from a specific user, add that user's ID to this list. If you want to remove a user from the blocklist, you need to call the setSubscribeVideoBlocklist method again to update the list so that it no longer includes the uid of the user you want to remove.
+   * @param uidNumber The number of users in the blocklist.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setSubscribeVideoBlocklistEx(
     uidList: number[],
@@ -360,21 +372,22 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Sets the allowlist of subscriptions for video streams.
+   * Sets the video subscription allowlist.
    *
-   * You can call this method to specify the video streams of a user that you want to subscribe to.
-   *  If a user is added in the allowlist and blocklist at the same time, only the blocklist takes effect.
-   *  Once the allowlist of subscriptions is set, it is effective even if you leave the current channel and rejoin the channel.
+   * You can call this method to specify the video streams you want to subscribe to.
    *  You can call this method either before or after joining a channel.
-   *  The allowlist is not affected by the setting in muteRemoteVideoStream, muteAllRemoteVideoStreams and autoSubscribeAudio in ChannelMediaOptions.
+   *  The video subscription allowlist is not affected by muteRemoteVideoStream, muteAllRemoteVideoStreams, or autoSubscribeVideo in ChannelMediaOptions.
+   *  After setting the allowlist, it remains effective even if you leave and rejoin the channel.
+   *  If a user is in both the audio subscription allowlist and blocklist, only the blocklist takes effect.
    *
-   * @param uidList The user ID list of users that you want to subscribe to. If you want to specify the video streams of a user for subscription, add the user ID of that user in this list. If you want to remove a user from the allowlist, you need to call the setSubscribeVideoAllowlist method to update the user ID list; this means you only add the uid of users that you want to subscribe to in the new user ID list.
-   * @param uidNumber The number of users in the user ID list.
-   * @param connection The connection information. See RtcConnection.
+   * @param uidList The user ID list for the video subscription allowlist.
+   * If you want to subscribe to the video stream of a specific user, add that user's ID to this list. If you want to remove a user from the allowlist, you need to call the setSubscribeVideoAllowlist method again to update the list so that it no longer includes the uid of the user you want to remove.
+   * @param uidNumber The number of users in the allowlist.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setSubscribeVideoAllowlistEx(
     uidList: number[],
@@ -383,17 +396,17 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Sets options for subscribing to remote video streams.
+   * Sets the subscription options for the remote video stream.
    *
-   * When a remote user has enabled dual-stream mode, you can call this method to choose the option for subscribing to the video streams sent by the remote user.
+   * When the remote user sends dual streams, you can call this method to set the subscription options for the remote video stream.
    *
-   * @param uid The user ID of the remote user.
-   * @param options The video subscription options. See VideoSubscriptionOptions.
-   * @param connection The connection information. See RtcConnection.
+   * @param uid Remote user ID.
+   * @param options Subscription settings for the video stream. See VideoSubscriptionOptions.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setRemoteVideoSubscriptionOptionsEx(
     uid: number,
@@ -402,23 +415,24 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Sets the 2D position (the position on the horizontal plane) of the remote user's voice.
+   * Sets the 2D position of a remote user's voice, that is, the horizontal position.
    *
-   * This method sets the voice position and volume of a remote user. When the local user calls this method to set the voice position of a remote user, the voice difference between the left and right channels allows the local user to track the real-time position of the remote user, creating a sense of space. This method applies to massive multiplayer online games, such as Battle Royale games.
-   *  For the best voice positioning, Agora recommends using a wired headset.
-   *  Call this method after joining a channel.
+   * Sets the spatial position and volume of a remote user's voice to help the local user determine the direction of the sound.
+   * By calling this method to set the position where the remote user's voice appears, the difference in sound between the left and right channels creates a sense of direction, allowing the user to determine the remote user's real-time position. In multiplayer online games, such as battle royale games, this method can effectively enhance the directional perception of game characters and simulate realistic scenarios.
+   *  For the best listening experience, it is recommended that users wear wired headphones.
+   *  This method must be called after joining the channel.
    *
-   * @param uid The user ID of the remote user.
-   * @param pan The voice position of the remote user. The value ranges from -1.0 to 1.0:
-   *  -1.0: The remote voice comes from the left.
-   *  0.0: (Default) The remote voice comes from the front.
-   *  1.0: The remote voice comes from the right.
-   * @param gain The volume of the remote user. The value ranges from 0.0 to 100.0. The default value is 100.0 (the original volume of the remote user). The smaller the value, the lower the volume.
-   * @param connection The connection information. See RtcConnection.
+   * @param uid The ID of the remote user.
+   * @param pan Sets the spatial position of the remote user's voice. The range is [-1.0, 1.0]:
+   *  -1.0: The sound appears on the left.
+   *  (Default) 0.0: The sound appears in the center.
+   *  1.0: The sound appears on the right.
+   * @param gain Sets the volume of the remote user's voice. The range is [0.0, 100.0], and the default is 100.0, which represents the user's original volume. The smaller the value, the lower the volume.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setRemoteVoicePositionEx(
     uid: number,
@@ -437,20 +451,18 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Sets the video display mode of a specified remote user.
+   * Sets the display mode of the remote view.
    *
-   * After initializing the video view of a remote user, you can call this method to update its rendering and mirror modes. This method affects only the video view that the local user sees.
-   *  Call this method after initializing the remote view by calling the setupRemoteVideo method.
-   *  During a call, you can call this method as many times as necessary to update the display mode of the video view of a remote user.
+   * After initializing the remote user view, you can call this method to update the rendering and mirror mode of the remote user view as displayed locally. This method only affects the video seen by the local user.
    *
-   * @param uid The user ID of the remote user.
-   * @param renderMode The video display mode of the remote user. See RenderModeType.
+   * @param uid Remote user ID.
+   * @param renderMode Display mode of the remote view. See RenderModeType.
    * @param mirrorMode The mirror mode of the remote user view. See VideoMirrorModeType.
-   * @param connection The connection information. See RtcConnection.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setRemoteRenderModeEx(
     uid: number,
@@ -460,20 +472,21 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Enables loopback audio capturing.
+   * Enables loopback recording.
    *
-   * If you enable loopback audio capturing, the output of the sound card is mixed into the audio stream sent to the other end.
-   *  macOS does not support loopback audio capture of the default sound card. If you need to use this function, use a virtual sound card and pass its name to the deviceName parameter. Agora recommends using AgoraALD as the virtual sound card for audio capturing.
-   *  This method only supports using one sound card for audio capturing.
+   * After enabling loopback recording, the sound played by the sound card will be mixed into the local audio stream and can be sent to the remote side.
+   *  The default sound card on macOS does not support recording. If you need to use this feature, please enable a virtual sound card and set deviceName to the name of that virtual sound card. Agora recommends using its self-developed virtual sound card AgoraALD for recording.
+   *  This method currently supports only one loopback recording stream.
    *
-   * @param connection The connection information. See RtcConnection.
-   * @param enabled Sets whether to enable loopback audio capture: true : Enable loopback audio capturing. false : (Default) Disable loopback audio capturing.
-   * @param deviceName macOS: The device name of the virtual sound card. The default value is set to NULL, which means using AgoraALD for loopback audio capturing.
-   *  Windows: The device name of the sound card. The default is set to NULL, which means the SDK uses the sound card of your device for loopback audio capturing.
+   * @param connection Connection information. See RtcConnection.
+   * @param enabled Whether to enable loopback recording: true : Enable loopback recording. false : (Default) Disable loopback recording.
+   * @param deviceName Electron for UnionTech OS SDK does not support this parameter.
+   *  macOS: The device name of the virtual sound card. Default is empty, which means using the AgoraALD virtual sound card for recording.
+   *  Windows: The device name of the sound card. Default is empty, which means using the built-in sound card of the device.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract enableLoopbackRecordingEx(
     connection: RtcConnection,
@@ -498,20 +511,20 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Adjusts the playback signal volume of a specified remote user.
+   * Adjusts the playback volume of a specified remote user.
    *
-   * You can call this method to adjust the playback volume of a specified remote user. To adjust the playback volume of different remote users, call the method as many times, once for each remote user.
+   * You can call this method during a call to adjust the playback volume of a specified remote user. To adjust the playback volume of multiple users, call this method multiple times.
    *
-   * @param uid The user ID of the remote user.
-   * @param volume The volume of the user. The value range is [0,400].
+   * @param uid The ID of the remote user.
+   * @param volume The volume, with a range of [0,400].
    *  0: Mute.
-   *  100: (Default) The original volume.
-   *  400: Four times the original volume (amplifying the audio signals by four times).
-   * @param connection The connection information. See RtcConnection.
+   *  100: (Default) Original volume.
+   *  400: Four times the original volume, with overflow protection.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract adjustUserPlaybackSignalVolumeEx(
     uid: number,
@@ -520,27 +533,29 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Gets the current connection state of the SDK.
+   * Gets the current network connection state.
    *
-   * @param connection The connection information. See RtcConnection.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
-   * The current connection state. See ConnectionStateType.
+   * The current network connection state. See ConnectionStateType.
    */
   abstract getConnectionStateEx(connection: RtcConnection): ConnectionStateType;
 
   /**
-   * Enables or disables the built-in encryption.
+   * Enables or disables built-in encryption.
    *
-   * After the user leaves the channel, the SDK automatically disables the built-in encryption. To enable the built-in encryption, call this method before the user joins the channel again.
+   * The SDK automatically disables encryption after the user leaves the channel. To re-enable encryption, you must call this method before the user joins the channel again.
+   *  All users in the same channel must use the same encryption mode and key when calling this method.
+   *  If built-in encryption is enabled, the RTMP streaming feature cannot be used.
    *
-   * @param connection The connection information. See RtcConnection.
-   * @param enabled Whether to enable built-in encryption: true : Enable the built-in encryption. false : (Default) Disable the built-in encryption.
-   * @param config Built-in encryption configurations. See EncryptionConfig.
+   * @param connection Connection information. See RtcConnection.
+   * @param enabled Whether to enable built-in encryption: true : Enable built-in encryption. false : (Default) Disable built-in encryption.
+   * @param config Configure the built-in encryption mode and key. See EncryptionConfig.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract enableEncryptionEx(
     connection: RtcConnection,
@@ -551,12 +566,14 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * Creates a data stream.
    *
-   * @param config The configurations for the data stream. See DataStreamConfig.
-   * @param connection The connection information. See RtcConnection.
+   * Within the lifecycle of IRtcEngine, each user can create up to 5 data streams. The data streams are destroyed when leaving the channel. To use them again, you need to recreate them.
+   *
+   * @param config Data stream configuration. See DataStreamConfig.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
-   * ID of the created data stream, if the method call succeeds.
-   *  < 0: Failure.
+   * ID of the created data stream: if the method call succeeds.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract createDataStreamEx(
     config: DataStreamConfig,
@@ -564,22 +581,23 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Sends data stream messages.
+   * Sends a data stream.
    *
-   * A successful method call triggers the onStreamMessage callback on the remote client, from which the remote user gets the stream message. A failed method call triggers the onStreamMessageError callback on the remote client. The SDK has the following restrictions on this method:
-   *  Each client within the channel can have up to 5 data channels simultaneously, with a total shared packet bitrate limit of 30 KB/s for all data channels.
-   *  Each data channel can send up to 60 packets per second, with each packet being a maximum of 1 KB. After calling createDataStreamEx, you can call this method to send data stream messages to all users in the channel.
-   *  Call this method after joinChannelEx.
-   *  Ensure that you call createDataStreamEx to create a data channel before calling this method.
+   * After calling createDataStreamEx, you can use this method to send data stream messages to all users in the channel.
+   * The SDK imposes the following restrictions on this method:
+   *  Each client in the channel can have up to 5 data channels simultaneously, and the total sending bitrate shared by all data channels is limited to 30 KB/s.
+   *  Each data channel can send up to 60 packets per second, with each packet up to 1 KB in size. If the method call succeeds, the remote end triggers the onStreamMessage callback, where the remote user can receive the message; if it fails, the remote end triggers the onStreamMessageError callback.
+   *  This method must be called after joinChannelEx.
+   *  Make sure to call createDataStreamEx to create the data channel before calling this method.
    *
-   * @param streamId The data stream ID. You can get the data stream ID by calling createDataStreamEx.
-   * @param data The message to be sent.
-   * @param length The length of the data.
-   * @param connection The connection information. See RtcConnection.
+   * @param streamId Data stream ID. You can get it via createDataStreamEx.
+   * @param data The data to be sent.
+   * @param length Length of the data.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract sendStreamMessageEx(
     streamId: number,
@@ -589,25 +607,26 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Adds a watermark image to the local video.
+   * Adds a local video watermark.
    *
-   * This method adds a PNG watermark image to the local video in the live streaming. Once the watermark image is added, all the audience in the channel (CDN audience included), and the capturing device can see and capture it. The Agora SDK supports adding only one watermark image onto a live video stream. The newly added watermark image replaces the previous one. The watermark coordinates are dependent on the settings in the setVideoEncoderConfigurationEx method:
-   *  If the orientation mode of the encoding video (OrientationMode) is fixed landscape mode or the adaptive landscape mode, the watermark uses the landscape orientation.
-   *  If the orientation mode of the encoding video (OrientationMode) is fixed portrait mode or the adaptive portrait mode, the watermark uses the portrait orientation.
-   *  When setting the watermark position, the region must be less than the dimensions set in the setVideoEncoderConfigurationEx method; otherwise, the watermark image will be cropped.
-   *  Ensure that you have called enableVideo before calling this method.
-   *  This method supports adding a watermark image in the PNG file format only. Supported pixel formats of the PNG image are RGBA, RGB, Palette, Gray, and Alpha_gray.
-   *  If the dimensions of the PNG image differ from your settings in this method, the image will be cropped or zoomed to conform to your settings.
-   *  If you have enabled the local video preview by calling the startPreview method, you can use the visibleInPreview member to set whether or not the watermark is visible in the preview.
-   *  If you have enabled the mirror mode for the local video, the watermark on the local video is also mirrored. To avoid mirroring the watermark, Agora recommends that you do not use the mirror and watermark functions for the local video at the same time. You can implement the watermark function in your application layer.
+   * Deprecated Deprecated: This method is deprecated. Use addVideoWatermarkWithConfigEx instead. This method adds a PNG image as a watermark to the local live video stream. Users in the same live streaming channel, audience of the CDN live stream, and capture devices can see or capture the watermark image. Currently, only one watermark can be added to the live stream. A newly added watermark replaces the previous one.
+   * The watermark coordinates depend on the settings in the setVideoEncoderConfigurationEx method:
+   *  If the video orientation (OrientationMode) is fixed to landscape or adaptive landscape, landscape coordinates are used for the watermark.
+   *  If the video orientation (OrientationMode) is fixed to portrait or adaptive portrait, portrait coordinates are used for the watermark.
+   *  When setting the watermark coordinates, the image area of the watermark must not exceed the video dimensions set in the setVideoEncoderConfigurationEx method; otherwise, the excess part will be cropped.
+   *  You must call this method after calling enableVideo.
+   *  The image to be added must be in PNG format. This method supports all pixel formats of PNG images: RGBA, RGB, Palette, Gray, and Alpha_gray.
+   *  If the size of the PNG image differs from the size you set in this method, the SDK will scale or crop the image to match the settings.
+   *  If you have started the local video preview using startPreview, you can use the visibleInPreview parameter to set whether the watermark is visible during preview.
+   *  If local video mirroring is enabled, the local watermark will also be mirrored. To prevent the watermark from being mirrored when viewed locally, we recommend not using both mirroring and watermark features simultaneously. Implement local watermarking at the application level.
    *
-   * @param watermarkUrl The local file path of the watermark image to be added. This method supports adding a watermark image from the local absolute or relative file path.
-   * @param options The options of the watermark image to be added. See WatermarkOptions.
-   * @param connection The connection information. See RtcConnection.
+   * @param watermarkUrl The local path of the watermark image to be added. This method supports adding watermark images from absolute or relative local paths.
+   * @param options Settings for the watermark image to be added. See WatermarkOptions.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract addVideoWatermarkEx(
     watermarkUrl: string,
@@ -616,20 +635,20 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Removes the watermark image from the video stream.
+   * Removes added video watermarks.
    *
-   * @param connection The connection information. See RtcConnection.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract clearVideoWatermarkEx(connection: RtcConnection): number;
 
   /**
-   * Agora supports reporting and analyzing customized messages.
+   * Custom data reporting and analysis service.
    *
-   * Agora supports reporting and analyzing customized messages. This function is in the beta stage with a free trial. The ability provided in its beta test version is reporting a maximum of 10 message pieces within 6 seconds, with each message piece not exceeding 256 bytes and each string not exceeding 100 bytes. To try out this function, contact and discuss the format of customized messages with us.
+   * Agora provides custom data reporting and analysis services. This service is currently in a free beta phase. During the beta, you can report up to 10 data entries within 6 seconds. Each custom data entry must not exceed 256 bytes, and each string must not exceed 100 bytes. To try this service, [contact sales](https://www.shengwang.cn/contact-sales/) to enable it and agree on the custom data format.
    */
   abstract sendCustomReportMessageEx(
     id: string,
@@ -641,20 +660,20 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Enables the reporting of users' volume indication.
+   * Enables audio volume indication.
    *
-   * This method enables the SDK to regularly report the volume information to the app of the local user who sends a stream and remote users (three users at most) whose instantaneous volumes are the highest.
+   * This method allows the SDK to periodically report to the app the volume information of the local user who is sending streams and the remote users (up to 3) with the highest instantaneous volume.
    *
-   * @param interval Sets the time interval between two consecutive volume indications:
-   *  ≤ 0: Disables the volume indication.
-   *  > 0: Time interval (ms) between two consecutive volume indications. Ensure this parameter is set to a value greater than 10, otherwise you will not receive the onAudioVolumeIndication callback. Agora recommends that this value is set as greater than 100.
-   * @param smooth The smoothing factor that sets the sensitivity of the audio volume indicator. The value ranges between 0 and 10. The recommended value is 3. The greater the value, the more sensitive the indicator.
-   * @param reportVad true : Enables the voice activity detection of the local user. Once it is enabled, the vad parameter of the onAudioVolumeIndication callback reports the voice activity status of the local user. false : (Default) Disables the voice activity detection of the local user. Once it is disabled, the vad parameter of the onAudioVolumeIndication callback does not report the voice activity status of the local user, except for the scenario where the engine automatically detects the voice activity of the local user.
-   * @param connection The connection information. See RtcConnection.
+   * @param interval The time interval for the volume indication:
+   *  ≤ 0: Disables the volume indication feature.
+   *  > 0: Returns the interval for volume indication, in milliseconds. It is recommended to set it above 100 ms. Must not be less than 10 ms, otherwise the onAudioVolumeIndication callback will not be received.
+   * @param smooth The smoothing factor that specifies the sensitivity of the volume indication. The range is [0,10], and the recommended value is 3. The larger the value, the more sensitive the fluctuation; the smaller the value, the smoother the fluctuation.
+   * @param reportVad true : Enables the local voice detection feature. When enabled, the vad parameter in the onAudioVolumeIndication callback reports whether a human voice is detected locally. false : (Default) Disables the local voice detection feature. Except in scenarios where the engine automatically performs local voice detection, the vad parameter in the onAudioVolumeIndication callback does not report whether a human voice is detected locally.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract enableAudioVolumeIndicationEx(
     interval: number,
@@ -664,21 +683,24 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Starts pushing media streams to a CDN without transcoding.
+   * Starts pushing media streams without transcoding.
    *
-   * Call this method after joining a channel.
-   *  Only hosts in the LIVE_BROADCASTING profile can call this method.
-   *  If you want to retry pushing streams after a failed push, make sure to call stopRtmpStream first, then call this method to retry pushing streams; otherwise, the SDK returns the same error code as the last failed push. Agora recommends that you use the server-side Media Push function. You can call this method to push an audio or video stream to the specified CDN address. This method can push media streams to only one CDN address at a time, so if you need to push streams to multiple addresses, call this method multiple times. After you call this method, the SDK triggers the onRtmpStreamingStateChanged callback on the local client to report the state of the streaming.
+   * Agora recommends using the more advanced server-side streaming feature. See [Implement Server-side Streaming](https://doc.shengwang.cn/doc/media-push/restful/landing-page).
+   * Call this method to push live audio and video streams to a specified streaming URL. This method supports pushing to only one URL at a time. To push to multiple URLs, call this method multiple times.
+   * After calling this method, the SDK triggers the onRtmpStreamingStateChanged callback locally to report the streaming status.
+   *  Call this method after joining a channel.
+   *  Only broadcasters in a live streaming scenario can call this method.
+   *  If the streaming fails and you want to retry, you must call stopRtmpStream before calling this method again. Otherwise, the SDK will return the same error code as the previous failure.
    *
-   * @param url The address of Media Push. The format is RTMP or RTMPS. The character length cannot exceed 1024 bytes. Special characters such as Chinese characters are not supported.
-   * @param connection The connection information. See RtcConnection.
+   * @param url The streaming URL. Must be in RTMP or RTMPS format. The maximum length is 1024 bytes. Special characters such as Chinese characters are not supported.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
-   *  -2: The URL or configuration of transcoding is invalid; check your URL and transcoding configurations.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and troubleshooting.
+   *  -2: The URL or transcoding parameter is incorrect. Check your URL or parameter settings.
    *  -7: The SDK is not initialized before calling this method.
-   *  -19: The Media Push URL is already in use; use another URL instead.
+   *  -19: The streaming URL is already in use. Use a different streaming URL.
    */
   abstract startRtmpStreamWithoutTranscodingEx(
     url: string,
@@ -686,24 +708,26 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Starts Media Push and sets the transcoding configuration.
+   * Starts pushing streams to a CDN and sets the transcoding configuration.
    *
-   * Agora recommends that you use the server-side Media Push function. You can call this method to push a live audio-and-video stream to the specified CDN address and set the transcoding configuration. This method can push media streams to only one CDN address at a time, so if you need to push streams to multiple addresses, call this method multiple times. After you call this method, the SDK triggers the onRtmpStreamingStateChanged callback on the local client to report the state of the streaming.
-   *  Ensure that you enable the Media Push service before using this function.
+   * Agora recommends using the more comprehensive server-side streaming feature. See [Implement server-side CDN streaming](https://doc.shengwang.cn/doc/media-push/restful/landing-page).
+   * Call this method to push live audio and video streams to the specified CDN streaming URL and set the transcoding configuration. This method can only push media streams to one URL at a time. To push to multiple URLs, call this method multiple times.
+   * After calling this method, the SDK triggers the onRtmpStreamingStateChanged callback locally to report the streaming status.
+   *  Make sure the CDN streaming service is enabled.
    *  Call this method after joining a channel.
-   *  Only hosts in the LIVE_BROADCASTING profile can call this method.
-   *  If you want to retry pushing streams after a failed push, make sure to call stopRtmpStreamEx first, then call this method to retry pushing streams; otherwise, the SDK returns the same error code as the last failed push.
+   *  Only hosts in a live streaming scenario can call this method.
+   *  If the stream push fails and you want to retry, you must call stopRtmpStreamEx before calling this method again. Otherwise, the SDK returns the same error code as the previous failure.
    *
-   * @param url The address of Media Push. The format is RTMP or RTMPS. The character length cannot exceed 1024 bytes. Special characters such as Chinese characters are not supported.
-   * @param transcoding The transcoding configuration for Media Push. See LiveTranscoding.
+   * @param url The CDN streaming URL. Must be in RTMP or RTMPS format. The character length must not exceed 1024 bytes. Special characters such as Chinese characters are not supported.
+   * @param transcoding The transcoding configuration for the CDN stream. See LiveTranscoding.
    * @param connection The connection information. See RtcConnection.
    *
    * @returns
-   * 0: Success.
-   *  < 0: Failure.
-   *  -2: The URL or configuration of transcoding is invalid; check your URL and transcoding configurations.
+   * 0: The method call succeeds.
+   *  < 0: The method call fails. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
+   *  -2: The URL or transcoding parameter is invalid. Check your URL or parameter settings.
    *  -7: The SDK is not initialized before calling this method.
-   *  -19: The Media Push URL is already in use; use another URL instead.
+   *  -19: The CDN streaming URL is already in use. Use a different URL.
    */
   abstract startRtmpStreamWithTranscodingEx(
     url: string,
@@ -712,16 +736,17 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Updates the transcoding configuration.
+   * Updates the CDN transcoding configuration.
    *
-   * Agora recommends that you use the server-side Media Push function. After you start pushing media streams to CDN with transcoding, you can dynamically update the transcoding configuration according to the scenario. The SDK triggers the onTranscodingUpdated callback after the transcoding configuration is updated.
+   * Agora recommends using the more comprehensive server-side streaming feature. See [Implement server-side CDN streaming](https://doc.shengwang.cn/doc/media-push/restful/landing-page).
+   * After enabling transcoding streaming, you can dynamically update the transcoding configuration based on your scenario. After the configuration is updated, the SDK triggers the onTranscodingUpdated callback.
    *
-   * @param transcoding The transcoding configuration for Media Push. See LiveTranscoding.
+   * @param transcoding The transcoding configuration for the CDN stream. See LiveTranscoding.
    * @param connection The connection information. See RtcConnection.
    *
    * @returns
-   * 0: Success.
-   *  < 0: Failure.
+   * 0: The method call succeeds.
+   *  < 0: The method call fails. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract updateRtmpTranscodingEx(
     transcoding: LiveTranscoding,
@@ -729,39 +754,42 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Stops pushing media streams to a CDN.
+   * Stops pushing streams to a CDN.
    *
-   * Agora recommends that you use the server-side Media Push function. You can call this method to stop the live stream on the specified CDN address. This method can stop pushing media streams to only one CDN address at a time, so if you need to stop pushing streams to multiple addresses, call this method multiple times. After you call this method, the SDK triggers the onRtmpStreamingStateChanged callback on the local client to report the state of the streaming.
+   * Agora recommends using the more comprehensive server-side streaming feature. See [Implement server-side CDN streaming](https://doc.shengwang.cn/doc/media-push/restful/landing-page).
+   * Call this method to stop the live stream on the specified CDN streaming URL. This method can only stop one URL at a time. To stop multiple URLs, call this method multiple times.
+   * After calling this method, the SDK triggers the onRtmpStreamingStateChanged callback locally to report the streaming status.
    *
-   * @param url The address of Media Push. The format is RTMP or RTMPS. The character length cannot exceed 1024 bytes. Special characters such as Chinese characters are not supported.
+   * @param url The CDN streaming URL. Must be in RTMP or RTMPS format. The character length must not exceed 1024 bytes. Special characters such as Chinese characters are not supported.
    * @param connection The connection information. See RtcConnection.
    *
    * @returns
-   * 0: Success.
-   *  < 0: Failure.
+   * 0: The method call succeeds.
+   *  < 0: The method call fails. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract stopRtmpStreamEx(url: string, connection: RtcConnection): number;
 
   /**
-   * Starts relaying media streams across channels or updates channels for media relay.
+   * Starts or updates the media stream relay across channels.
    *
-   * The first successful call to this method starts relaying media streams from the source channel to the destination channels. To relay the media stream to other channels, or exit one of the current media relays, you can call this method again to update the destination channels. This feature supports relaying media streams to a maximum of six destination channels. After a successful method call, the SDK triggers the onChannelMediaRelayStateChanged callback, and this callback returns the state of the media stream relay. Common states are as follows:
-   *  If the onChannelMediaRelayStateChanged callback returns RelayStateRunning (2) and RelayOk (0), it means that the SDK starts relaying media streams from the source channel to the destination channel.
-   *  If the onChannelMediaRelayStateChanged callback returns RelayStateFailure (3), an exception occurs during the media stream relay.
-   *  Call this method after joining the channel.
-   *  This method takes effect only when you are a host in a live streaming channel.
-   *  The relaying media streams across channels function needs to be enabled by contacting.
-   *  Agora does not support string user accounts in this API.
+   * The first successful call to this method starts relaying media streams across channels. To relay streams to multiple destination channels or to leave a current relay channel, you can call this method again to add or remove destination channels. This feature supports relaying to up to six destination channels.
+   * After a successful call, the SDK triggers the onChannelMediaRelayStateChanged callback to report the current relay state. Common states include:
+   *  If the onChannelMediaRelayStateChanged callback reports RelayStateRunning (2) and RelayOk (0), it means the SDK has started relaying media streams between the source and destination channels.
+   *  If the callback reports RelayStateFailure (3), it indicates an error occurred during the media stream relay.
+   *  Call this method after successfully joining a channel.
+   *  In a live streaming scenario, only users with the broadcaster role can call this method.
+   *  To enable the media stream relay across channels, [contact technical support](https://ticket.shengwang.cn/).
+   *  This feature does not support string-type UIDs.
    *
-   * @param configuration The configuration of the media stream relay. See ChannelMediaRelayConfiguration.
-   * @param connection The connection information. See RtcConnection.
+   * @param configuration Configuration for media stream relay across channels. See ChannelMediaRelayConfiguration.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
-   *  -1: A general error occurs (no specified reason).
-   *  -2: The parameter is invalid.
-   *  -8: Internal state error. Probably because the user is not a broadcaster.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and troubleshooting.
+   *  -1: General error (not categorized).
+   *  -2: Invalid parameter.
+   *  -8: Internal state error, possibly due to the user not being a broadcaster.
    */
   abstract startOrUpdateChannelMediaRelayEx(
     configuration: ChannelMediaRelayConfiguration,
@@ -769,44 +797,44 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Stops the media stream relay. Once the relay stops, the host quits all the target channels.
+   * Stops the media stream relay across channels. Once stopped, the broadcaster leaves all destination channels.
    *
-   * After a successful method call, the SDK triggers the onChannelMediaRelayStateChanged callback. If the callback reports RelayStateIdle (0) and RelayOk (0), the host successfully stops the relay. If the method call fails, the SDK triggers the onChannelMediaRelayStateChanged callback with the RelayErrorServerNoResponse (2) or RelayErrorServerConnectionLost (8) status code. You can call the leaveChannel method to leave the channel, and the media stream relay automatically stops.
+   * After a successful call, the SDK triggers the onChannelMediaRelayStateChanged callback. If it reports RelayStateIdle (0) and RelayOk (0), it indicates that the media stream relay has stopped. If the method call fails, the SDK triggers the onChannelMediaRelayStateChanged callback and reports the error code RelayErrorServerNoResponse (2) or RelayErrorServerConnectionLost (8). You can call the leaveChannel method to leave the channel, and the media stream relay will stop automatically.
    *
-   * @param connection The connection information. See RtcConnection.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
-   *  -5: The method call was rejected. There is no ongoing channel media relay.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and troubleshooting.
+   *  -5: The method call is rejected. There is no ongoing media stream relay.
    */
   abstract stopChannelMediaRelayEx(connection: RtcConnection): number;
 
   /**
-   * Pauses the media stream relay to all target channels.
+   * Pauses media stream forwarding to all destination channels.
    *
-   * After the cross-channel media stream relay starts, you can call this method to pause relaying media streams to all target channels; after the pause, if you want to resume the relay, call resumeAllChannelMediaRelay. Call this method after startOrUpdateChannelMediaRelayEx.
+   * After starting media stream forwarding across channels, if you need to pause forwarding to all channels, you can call this method. To resume forwarding, call the resumeAllChannelMediaRelay method. You must call this method after calling startOrUpdateChannelMediaRelayEx to start cross-channel media stream forwarding.
    *
-   * @param connection The connection information. See RtcConnection.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
-   * 0: Success.
-   *  < 0: Failure.
-   *  -5: The method call was rejected. There is no ongoing channel media relay.
+   * 0: The method call was successful.
+   *  < 0: The method call failed. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
+   *  -5: This method call was rejected. There is no ongoing cross-channel media stream forwarding.
    */
   abstract pauseAllChannelMediaRelayEx(connection: RtcConnection): number;
 
   /**
-   * Resumes the media stream relay to all target channels.
+   * Resumes media stream forwarding to all destination channels.
    *
-   * After calling the pauseAllChannelMediaRelayEx method, you can call this method to resume relaying media streams to all destination channels. Call this method after pauseAllChannelMediaRelayEx.
+   * After calling the pauseAllChannelMediaRelayEx method, if you need to resume forwarding media streams to all destination channels, you can call this method. You must call this method after pauseAllChannelMediaRelayEx.
    *
-   * @param connection The connection information. See RtcConnection.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
-   * 0: Success.
-   *  < 0: Failure.
-   *  -5: The method call was rejected. There is no paused channel media relay.
+   * 0: The method call was successful.
+   *  < 0: The method call failed. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
+   *  -5: This method call was rejected. There is no paused cross-channel media stream forwarding.
    */
   abstract resumeAllChannelMediaRelayEx(connection: RtcConnection): number;
 
@@ -824,19 +852,19 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   abstract getUserInfoByUidEx(uid: number, connection: RtcConnection): UserInfo;
 
   /**
-   * Enables or disables dual-stream mode on the sender side.
+   * Enables or disables dual-stream mode on the sender.
    *
-   * After you enable dual-stream mode, you can call setRemoteVideoStreamType to choose to receive either the high-quality video stream or the low-quality video stream on the subscriber side. You can call this method to enable or disable the dual-stream mode on the publisher side. Dual streams are a pairing of a high-quality video stream and a low-quality video stream:
-   *  High-quality video stream: High bitrate, high resolution.
-   *  Low-quality video stream: Low bitrate, low resolution. Deprecated: This method is deprecated as of v4.2.0. Use setDualStreamModeEx instead. This method is applicable to all types of streams from the sender, including but not limited to video streams collected from cameras, screen sharing streams, and custom-collected video streams.
+   * Deprecated Deprecated: Deprecated since v4.2.0. Use setDualStreamModeEx instead. You can call this method on the sending side to enable or disable dual-stream mode. Dual-stream refers to high-quality and low-quality video streams:
+   *  High-quality stream: High resolution and high frame rate video stream.
+   *  Low-quality stream: Low resolution and low frame rate video stream. After enabling dual-stream mode, you can call setRemoteVideoStreamType on the receiving side to choose whether to receive the high-quality or low-quality video stream. This method applies to all types of streams sent by the sender, including but not limited to camera-captured video streams, screen sharing streams, and custom captured video streams.
    *
    * @param enabled Whether to enable dual-stream mode: true : Enable dual-stream mode. false : (Default) Disable dual-stream mode.
-   * @param streamConfig The configuration of the low-quality video stream. See SimulcastStreamConfig. When setting mode to DisableSimulcastStream, setting streamConfig will not take effect.
-   * @param connection The connection information. See RtcConnection.
+   * @param streamConfig Configuration of the low-quality video stream. See SimulcastStreamConfig. If mode is set to DisableSimulcastStream, then streamConfig will not take effect.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract enableDualStreamModeEx(
     enabled: boolean,
@@ -847,20 +875,20 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * Sets the dual-stream mode on the sender side.
    *
-   * The SDK defaults to enabling low-quality video stream adaptive mode (AutoSimulcastStream) on the sender side, which means the sender does not actively send low-quality video stream. The receiving end with the role of the host can initiate a low-quality video stream request by calling setRemoteVideoStreamTypeEx, and upon receiving the request, the sending end automatically starts sending low-quality stream.
-   *  If you want to modify this behavior, you can call this method and set mode to DisableSimulcastStream (never send low-quality video streams) or EnableSimulcastStream (always send low-quality video streams).
-   *  If you want to restore the default behavior after making changes, you can call this method again with mode set to AutoSimulcastStream. The difference and connection between this method and enableDualStreamModeEx is as follows:
-   *  When calling this method and setting mode to DisableSimulcastStream, it has the same effect as enableDualStreamModeEx (false).
-   *  When calling this method and setting mode to EnableSimulcastStream, it has the same effect as enableDualStreamModeEx (true).
-   *  Both methods can be called before and after joining a channel. If both methods are used, the settings in the method called later takes precedence.
+   * By default, the SDK enables the adaptive low stream mode (AutoSimulcastStream) on the sender side. That is, the sender does not proactively send the low stream. A receiver with host role can call setRemoteVideoStreamTypeEx to request the low stream. Once the sender receives the request, it starts sending the low stream automatically.
+   *  If you want to change this behavior, you can call this method and set mode to DisableSimulcastStream (never send low stream) or EnableSimulcastStream (always send low stream).
+   *  If you want to revert to the default behavior after making changes, call this method again and set mode to AutoSimulcastStream. The differences and relationships between this method and enableDualStreamModeEx are as follows:
+   *  Calling this method and setting mode to DisableSimulcastStream has the same effect as enableDualStreamModeEx(false).
+   *  Calling this method and setting mode to EnableSimulcastStream has the same effect as enableDualStreamModeEx(true).
+   *  Both methods can be called before or after joining a channel. If both are used, the settings of the method called later take precedence.
    *
-   * @param mode The mode in which the video stream is sent. See SimulcastStreamMode.
-   * @param streamConfig The configuration of the low-quality video stream. See SimulcastStreamConfig. When setting mode to DisableSimulcastStream, setting streamConfig will not take effect.
-   * @param connection The connection information. See RtcConnection.
+   * @param mode Mode for sending video streams. See SimulcastStreamMode.
+   * @param streamConfig Configuration for the low video stream. See SimulcastStreamConfig. When mode is set to DisableSimulcastStream, setting streamConfig has no effect.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
-   * 0: Success.
-   *  < 0: Failure.
+   * 0: The method call succeeds.
+   *  < 0: The method call fails. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setDualStreamModeEx(
     mode: SimulcastStreamMode,
@@ -887,19 +915,22 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Takes a snapshot of a video stream using connection ID.
+   * Takes a video snapshot using the connection ID.
    *
-   * This method takes a snapshot of a video stream from the specified user, generates a JPG image, and saves it to the specified path.
+   * This method captures a snapshot of the specified user's video stream, generates a JPG image, and saves it to the specified path.
+   *  This method is asynchronous. When the call returns, the SDK has not actually taken the snapshot.
+   *  When used to capture a local video snapshot, it captures the video stream specified in ChannelMediaOptions.
+   *  If the video has been pre-processed, such as with watermarking or beautification, the snapshot will include the effects of the pre-processing.
    *
-   * @param connection The connection information. See RtcConnection.
-   * @param uid The user ID. Set uid as 0 if you want to take a snapshot of the local user's video.
-   * @param filePath The local path (including filename extensions) of the snapshot. For example:
+   * @param connection Connection information. See RtcConnection.
+   * @param uid User ID. Set to 0 to capture a snapshot of the local user's video.
+   * @param filePath Make sure the directory exists and is writable. The local path to save the snapshot, including file name and format. For example:
    *  Windows: C:\Users\<user_name>\AppData\Local\Agora\<process_name>\example.jpg
-   *  macOS: ～/Library/Logs/example.jpg Ensure that the path you specify exists and is writable.
+   *  macOS: ～/Library/Logs/example.jpg
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and troubleshooting.
    */
   abstract takeSnapshotEx(
     connection: RtcConnection,
@@ -908,17 +939,17 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Enables or disables video screenshot and upload.
+   * Enables/disables local snapshot upload.
    *
-   * This method can take screenshots for multiple video streams and upload them. When video screenshot and upload function is enabled, the SDK takes screenshots and uploads videos sent by local users based on the type and frequency of the module you set in ContentInspectConfig. After video screenshot and upload, the Agora server sends the callback notification to your app server in HTTPS requests and sends all screenshots to the third-party cloud storage service.
+   * This method allows capturing and uploading snapshots for multiple video streams. After enabling local snapshot upload, the SDK captures and uploads snapshots of the video sent by the local user based on the module type and frequency you set in ContentInspectConfig. After capturing, the Agora server sends a callback notification to your server via HTTPS request and uploads all snapshots to the third-party cloud storage you specify. Before calling this method, make sure you have [contacted technical support](https://ticket.shengwang.cn/) to enable the local snapshot upload service.
    *
-   * @param enabled Whether to enalbe video screenshot and upload: true : Enables video screenshot and upload. false : Disables video screenshot and upload.
-   * @param config Screenshot and upload configuration. See ContentInspectConfig.
-   * @param connection The connection information. See RtcConnection.
+   * @param enabled Whether to enable local snapshot upload: true : Enable local snapshot upload. false : Disable local snapshot upload.
+   * @param config Local snapshot upload configuration. See ContentInspectConfig.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract enableContentInspectEx(
     enabled: boolean,
@@ -927,16 +958,17 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Enables tracing the video frame rendering process.
+   * Starts video frame rendering tracing.
    *
-   * If you have not called this method, the SDK tracks the rendering events of the video frames from the moment you call joinChannel to join the channel. You can call this method at an appropriate time according to the actual application scenario to set the starting position for tracking video rendering events.
-   *  After the local user leaves the current channel, the SDK automatically tracks the video rendering events from the moment you join a channel. The SDK starts tracing the rendering status of the video frames in the channel from the moment this method is successfully called and reports information about the event through the onVideoRenderingTracingResult callback.
+   * After this method is successfully called, the SDK uses the time of this call as the starting point and reports video frame rendering information via the onVideoRenderingTracingResult callback.
+   *  If you do not call this method, the SDK starts tracing video rendering events automatically using the time of the joinChannel call as the starting point. You can call this method at an appropriate time based on your business scenario to customize the tracing.
+   *  After leaving the current channel, the SDK automatically resets the time to the next joinChannel call.
    *
-   * @param connection The connection information. See RtcConnection.
+   * @param connection Connection information. See RtcConnection.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract startMediaRenderingTracingEx(connection: RtcConnection): number;
 
@@ -949,15 +981,11 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Gets the call ID with the connection ID.
+   * Gets the call ID using the connection ID.
    *
-   * When a user joins a channel on a client, a callId is generated to identify the call from the client. You can call this method to get callId, and pass it in when calling methods such as rate and complain.
+   * Each time the client joins a channel, a corresponding callId is generated to identify the call session. You can call this method to get the callId and then pass it to methods such as rate and complain.
    *
-   * @param connection The connection information. See RtcConnection.
-   *
-   * @returns
-   * The current call ID, if the method succeeds.
-   *  An empty string, if the method call fails.
+   * @param connection Connection information. See RtcConnection.
    */
   abstract getCallIdEx(connection: RtcConnection): string;
 
@@ -980,7 +1008,22 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * @ignore
+   * Preloads the specified sound effect into the channel.
+   *
+   * Since Available since v4.6.2. Each time you call this method, only one sound effect file can be preloaded into memory. To preload multiple sound effects, call this method multiple times. After preloading, you can call playEffect to play the preloaded sound effect, or playAllEffects to play all preloaded sound effects.
+   *  To ensure smooth user experience, the size of the sound effect file should not exceed the limit.
+   *  Agora recommends calling this method before joining a channel.
+   *  If you call preloadEffectEx before playEffectEx, the file resource will not be closed after playEffectEx is executed. The next call to playEffectEx will start playback from the beginning.
+   *  If you do not call preloadEffectEx before playEffectEx, the file resource will be destroyed after playEffectEx is executed. The next call to playEffectEx will attempt to reopen the file and play from the beginning.
+   *
+   * @param connection Connection information. See RtcConnection.
+   * @param soundId Sound effect ID.
+   * @param filePath Absolute path of the local file or URL of the online file. Supported audio formats include: mp3, mp4, m4a, aac, 3gp, mkv, and wav.
+   * @param startPos Start position (in milliseconds) for playing the sound effect file.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract preloadEffectEx(
     connection: RtcConnection,
@@ -990,7 +1033,27 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * @ignore
+   * Plays the specified sound effect in the channel.
+   *
+   * Since Available since v4.6.2. You can call this method to play a specified sound effect to all users in the channel. Each call to this method can only play one sound effect. To play multiple sound effects simultaneously, use different soundId and filePath values and call this method multiple times. You can also set whether to publish the sound effect in the channel.
+   *  Agora recommends not playing more than three sound effects simultaneously.
+   *  The sound effect ID and file path in this method must match those in the preloadEffectEx method.
+   *  If you call preloadEffectEx before calling playEffectEx, the file resource will not be closed after playEffectEx is executed. The next call to playEffectEx will start playback from the beginning.
+   *  If you do not call preloadEffectEx before calling playEffectEx, the file resource will be destroyed after playEffectEx is executed. The next call to playEffectEx will attempt to reopen the file and play from the beginning.
+   *
+   * @param connection RtcConnection object. See RtcConnection.
+   * @param soundId Sound effect ID.
+   * @param filePath Absolute path of the local file or URL of the online file. Supported audio formats include mp3, mp4, m4a, aac, 3gp, mkv, and wav.
+   * @param loopCount Number of times the sound effect is played: -1 : Loops indefinitely until stopEffect or stopAllEffects is called. 0 : Plays once. 1 : Plays twice.
+   * @param pitch Pitch of the sound effect. The range is 0.5 to 2.0. The default value is 1.0 (original pitch). The smaller the value, the lower the pitch.
+   * @param pan Spatial position of the sound effect. The range is -1.0 to 1.0: -1.0 : The sound effect comes from the user's left. 0.0 : The sound effect comes from the front. 1.0 : The sound effect comes from the user's right.
+   * @param gain Volume of the sound effect. The range is 0 to 100. The default value is 100 (original volume). The smaller the value, the lower the volume.
+   * @param publish Whether to publish the sound effect in the channel: true : Publishes the sound effect in the channel. false : (Default) Does not publish the sound effect in the channel.
+   * @param startPos Start position (in milliseconds) for playing the sound effect file.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure.
    */
   abstract playEffectEx(
     connection: RtcConnection,
@@ -1005,17 +1068,20 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
-   * Gets a video screenshot of the specified observation point using the connection ID.
+   * Takes a video snapshot at a specified observation point using the connection ID.
    *
-   * This method takes a snapshot of a video stream from the specified user, generates a JPG image, and saves it to the specified path.
+   * This method captures a snapshot of the specified user's video stream, generates a JPG image, and saves it to the specified path.
+   *  This method is asynchronous. When the call returns, the SDK has not actually taken the snapshot.
+   *  When used to capture a local video snapshot, it captures the video stream specified in ChannelMediaOptions.
+   *  If the video has been pre-processed, such as with watermarking or beautification, the snapshot will include the effects of the pre-processing.
    *
-   * @param connection The connection information. See RtcConnection.
-   * @param uid The user ID. Set uid as 0 if you want to take a snapshot of the local user's video.
-   * @param config The configuration of the snaptshot. See SnapshotConfig.
+   * @param connection Connection information. See RtcConnection.
+   * @param uid User ID. Set to 0 to capture a snapshot of the local user's video.
+   * @param config Snapshot settings. See SnapshotConfig.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and troubleshooting.
    */
   abstract takeSnapshotWithConfigEx(
     connection: RtcConnection,
