@@ -160,9 +160,9 @@
     "pify": "^4.0.1"
   },
   "agora_electron": {
-    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.5.2.180-build.2_DCG_Windows_Video_Standalone_20260210_1131_31923.zip",
-    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.5.2.180-build.2_DCG_Mac_Video_Standalone_20260210_1127_32860.zip",
-    "native_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_rel.v4.5.2.180_31583_FULL_20260205_1626_1007791.zip",
-    "native_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_rel.v4.5.2.180_26881_FULL_20260205_1626_1007792.zip"
+    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.5.3-dev.3_DCG_Windows_Video_Standalone_20260226_0354_31933.zip",
+    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.5.3-dev.3_DCG_Mac_Video_Standalone_20260226_0354_32870.zip",
+    "native_sdk_win": "https://download.agora.io/sdk/release/AgoraRtcEngine_windows_Preview_4.5.3-dev.3_20260226_155230.zip",
+    "native_sdk_mac": "https://download.agora.io/sdk/release/AgoraRtcEngine_macOS_Preview_4.5.3-dev.3_20260226_155230.zip"
   }
 }

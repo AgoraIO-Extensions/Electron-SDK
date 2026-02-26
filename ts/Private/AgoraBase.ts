@@ -1716,6 +1716,106 @@ export class WatermarkOptions {
 }
 
 /**
+ * Modes for multipath data transmission.
+ *
+ * Since Added since v4.6.2.
+ */
+export enum MultipathMode {
+  /**
+   * (0): Redundant transmission mode. The same data is redundantly transmitted over all available paths.
+   */
+  Duplicate = 0,
+  /**
+   * (1): Dynamic transmission mode. The SDK dynamically selects the optimal path for data transmission based on current network conditions to improve performance.
+   */
+  Dynamic = 1,
+}
+
+/**
+ * Network path types used for multipath transmission.
+ *
+ * Since Added since v4.6.2.
+ */
+export enum MultipathType {
+  /**
+   * (0): Local Area Network (LAN) path.
+   */
+  Lan = 0,
+  /**
+   * (1): Wi-Fi path.
+   */
+  Wifi = 1,
+  /**
+   * (2): Mobile network path.
+   */
+  Mobile = 2,
+  /**
+   * (99): Unknown or unspecified network path.
+   */
+  Unknown = 99,
+}
+
+/**
+ * Used to obtain statistics for a specific network path.
+ *
+ * Since Available since v4.6.2.
+ */
+export class PathStats {
+  /**
+   * The type of the network path. See MultipathType.
+   */
+  type?: MultipathType;
+  /**
+   * The transmission bitrate of the path, in Kbps.
+   */
+  txKBitRate?: number;
+  /**
+   * The receiving bitrate of the path, in Kbps.
+   */
+  rxKBitRate?: number;
+}
+
+/**
+ * Used to aggregate statistics for each network path in multipath transmission.
+ *
+ * Since Available since v4.6.2.
+ */
+export class MultipathStats {
+  /**
+   * Total number of bytes sent over the LAN path.
+   */
+  lanTxBytes?: number;
+  /**
+   * Total number of bytes received over the LAN path.
+   */
+  lanRxBytes?: number;
+  /**
+   * Total number of bytes sent over the Wi-Fi path.
+   */
+  wifiTxBytes?: number;
+  /**
+   * Total number of bytes received over the Wi-Fi path.
+   */
+  wifiRxBytes?: number;
+  /**
+   * Total number of bytes sent over the mobile network path.
+   */
+  mobileTxBytes?: number;
+  /**
+   * Total number of bytes received over the mobile network path.
+   */
+  mobileRxBytes?: number;
+  /**
+   * The number of currently active transmission paths.
+   */
+  activePathNum?: number;
+  /**
+   * Array of statistics for each active transmission path. See PathStats.
+   */
+  pathStats?: PathStats[];
+}
+
+/**
  * Call-related statistics.
  */
 export class RtcStats {
@@ -2301,6 +2401,30 @@ export enum LocalVideoStreamState {
 }
 
 /**
+ * Local video event types.
+ *
+ * Since Available since v4.6.1.
+ */
+export enum LocalVideoEventType {
+  /**
+   * (1): The screen capture window is hidden (Android only).
+   */
+  LocalVideoEventTypeScreenCaptureWindowHidden = 1,
+  /**
+   * (2): The screen capture window recovers from hidden state (Android only).
+   */
+  LocalVideoEventTypeScreenCaptureWindowRecoverFromHidden = 2,
+  /**
+   * (3): The screen capture is stopped by the user (Android only).
+   */
+  LocalVideoEventTypeScreenCaptureStoppedByUser = 3,
+  /**
+   * (4): A system internal error occurs during screen capture (Android only).
+   */
+  LocalVideoEventTypeScreenCaptureSystemInternalError = 4,
+}
+
+/**
  * Reason for local video state change.
  */
 export enum LocalVideoStreamReason {
@@ -2416,10 +2540,6 @@ export enum LocalVideoStreamReason {
    * 30: The display being captured is disconnected. When receiving this state, prompt the user that screen sharing is paused and restart screen sharing.
    */
   LocalVideoStreamReasonScreenCaptureDisplayDisconnected = 30,
-  /**
-   * @ignore
-   */
-  LocalVideoStreamReasonScreenCaptureAlphaNotSupported = 35,
 }
 
 /**
@@ -4572,10 +4692,6 @@ export class ScreenCaptureParameters {
    * When sharing a partial region of a window or screen, if this parameter is set to true, the SDK highlights the entire window or screen. Whether to highlight the shared window or screen: true : Highlight. false : (Default) Do not highlight.
    */
   enableHighLight?: boolean;
-  /**
-   * @ignore
-   */
-  enableAlpha?: boolean;
 }
 
 /**

@@ -1488,7 +1488,6 @@ export interface IVideoEncodedFrameObserver {
    * @param videoEncodedFrameInfo Encoded video frame information. See EncodedVideoFrameInfo.
    */
   onEncodedVideoFrameReceived?(
-    channelId: string,
     uid: number,
     imageBuffer: Uint8Array,
     length: number,
