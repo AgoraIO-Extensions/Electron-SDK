@@ -310,6 +310,12 @@ export function processIRtcEngineEventHandler(
       }
       break;
 
+    case 'onLocalVideoEvent':
+      if (handler.onLocalVideoEvent !== undefined) {
+        handler.onLocalVideoEvent(jsonParams.source, jsonParams.event);
+      }
+      break;
+
     case 'onLocalVideoStateChanged':
       if (handler.onLocalVideoStateChanged !== undefined) {
         handler.onLocalVideoStateChanged(
@@ -957,6 +963,12 @@ export function processIRtcEngineEventHandler(
     case 'onSetRtmFlagResult':
       if (handler.onSetRtmFlagResult !== undefined) {
         handler.onSetRtmFlagResult(jsonParams.connection, jsonParams.code);
+      }
+      break;
+
+    case 'onMultipathStats':
+      if (handler.onMultipathStats !== undefined) {
+        handler.onMultipathStats(jsonParams.connection, jsonParams.stats);
       }
       break;
   }

@@ -51,10 +51,14 @@ import {
   LocalAudioStreamReason,
   LocalAudioStreamState,
   LocalTranscoderConfiguration,
+  LocalVideoEventType,
   LocalVideoStreamReason,
   LocalVideoStreamState,
   LowlightEnhanceOptions,
   MediaTraceEvent,
+  MultipathMode,
+  MultipathStats,
+  MultipathType,
   NetworkType,
   PermissionType,
   QualityAdaptIndication,
@@ -1274,6 +1278,26 @@ export class ChannelMediaOptions {
    * @ignore
    */
   parameters?: string;
+  /**
+   * Permissions and system requirements:
+   *  Android: Android 7.0 or later (API level 24 or above), requires ACCESS_NETWORK_STATE and CHANGE_NETWORK_STATE permissions.
+   *  iOS: iOS 12.0 or later.
+   *  macOS: 10.14 or later.
+   *  Windows: Windows Vista or later. Whether to enable multipath transmission: true : Enable multipath transmission. false : Disable multipath transmission.
+   */
+  enableMultipath?: boolean;
+  /**
+   * Uplink transmission mode. See MultipathMode. When using this parameter, make sure enableMultipath is set to true.
+   */
+  uplinkMultipathMode?: MultipathMode;
+  /**
+   * Downlink transmission mode. See MultipathMode. When using this parameter, make sure enableMultipath is set to true.
+   */
+  downlinkMultipathMode?: MultipathMode;
+  /**
+   * Preferred transmission path type. See MultipathType. When using this parameter, make sure enableMultipath is set to true.
+   */
+  preferMultipathType?: MultipathType;
 }
 
 /**
@@ -1652,6 +1676,11 @@ export interface IRtcEngineEventHandler {
     height: number,
     rotation: number
   ): void;
+
+  /**
+   * @ignore
+   */
+  onLocalVideoEvent?(source: VideoSourceType, event: LocalVideoEventType): void;
 
   /**
    * Occurs when the local video state changes.
@@ -2599,6 +2628,15 @@ export interface IRtcEngineEventHandler {
    * @ignore
    */
   onSetRtmFlagResult?(connection: RtcConnection, code: number): void;
+
+  /**
+   * Callback for multipath transmission statistics.
+   *
+   * Since Available since v4.6.2.
+   *
+   * @param stats Multipath transmission statistics. See MultipathStats.
+   */
+  onMultipathStats?(connection: RtcConnection, stats: MultipathStats): void;
 }
 
 /**
