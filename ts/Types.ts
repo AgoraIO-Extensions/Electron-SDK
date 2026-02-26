@@ -1,8 +1,4 @@
-import {
-  AdvanceOptions,
-  VideoCanvas,
-  VideoCodecType,
-} from './Private/AgoraBase';
+import { VideoCanvas, VideoCodecType } from './Private/AgoraBase';
 import { VideoFrame } from './Private/AgoraMediaBase';
 import { RtcConnection } from './Private/IAgoraRtcEngineEx';
 import { CapabilityManager } from './Renderer/CapabilityManager';
@@ -51,11 +47,11 @@ export interface AgoraEnvOptions {
   /**
    * @ignore
    */
-  encodeAlpha: boolean;
+  maxDecodeRetryCount: number;
   /**
    * @ignore
    */
-  maxDecodeRetryCount: number;
+  enableArgusCounters: boolean;
 }
 
 /**
@@ -104,6 +100,7 @@ export type RendererCacheContext = Pick<
   | 'useWebCodecsDecoder'
   | 'enableFps'
   | 'position'
+  | 'enableAlphaMask'
 >;
 
 /**
@@ -162,10 +159,18 @@ export interface IAgoraElectronBridge {
   GetVideoFrame(
     context: RendererCacheContext,
     videoFrame: VideoFrame,
-    advanceOptions: AdvanceOptions
+    advanceOptions: {
+      renderAlpha: boolean;
+      /**
+       * @ignore
+       */
+    }
   ): {
     ret: number;
-    isNewFrame: boolean;
+    /**
+     * @ignore
+     */
+    hasMoreFrame: boolean;
   };
 
   sendMsg: (

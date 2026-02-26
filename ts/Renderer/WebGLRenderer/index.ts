@@ -1,6 +1,11 @@
-import { VideoFrame } from '../../Private/AgoraMediaBase';
-import { RendererType } from '../../Types';
-import { AgoraEnv, logWarn } from '../../Utils';
+import {
+  ColorSpace,
+  PrimaryID,
+  RangeID,
+  VideoFrame,
+} from '../../Private/AgoraMediaBase';
+import { RendererContext, RendererType } from '../../Types';
+import { logWarn } from '../../Utils';
 import { IRenderer } from '../IRenderer';
 
 export type WebGLFallback = (renderer: WebGLRenderer, error: Error) => void;
@@ -20,6 +25,7 @@ const vertexShaderSource = `
     gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
     v_texCoord = a_texCoord;
   }`;
+
 const yuvShaderSource = `
   precision mediump float;
   uniform sampler2D Ytex;
@@ -27,28 +33,53 @@ const yuvShaderSource = `
   uniform sampler2D Vtex;
   uniform sampler2D Atex;
   uniform bool hasAlpha;
+
+  // Dynamic color space conversion parameters
+  uniform float u_yOffset;
+  uniform float u_yScale;
+  uniform float u_rVCoeff;
+  uniform float u_gUCoeff;
+  uniform float u_gVCoeff;
+  uniform float u_bUCoeff;
+
   varying vec2 v_texCoord;
+
   void main(void) {
-    float nx,ny,r,g,b,y,u,v,a;
-    mediump vec4 txl,ux,vx;
-    nx=v_texCoord[0];
-    ny=v_texCoord[1];
-    y=texture2D(Ytex,vec2(nx,ny)).r;
-    u=texture2D(Utex,vec2(nx,ny)).r;
-    v=texture2D(Vtex,vec2(nx,ny)).r;
+    float nx = v_texCoord[0];
+    float ny = v_texCoord[1];
+
+    float y = texture2D(Ytex, vec2(nx, ny)).r;
+    float u = texture2D(Utex, vec2(nx, ny)).r;
+    float v = texture2D(Vtex, vec2(nx, ny)).r;
+    float a;
+
     if (hasAlpha) {
-      a=texture2D(Atex,vec2(nx,ny)).r;
+      a = texture2D(Atex, vec2(nx, ny)).r;
     } else {
-      a=1.0;
+      a = 1.0;
     }
-    y=1.1643*(y-0.0625);
-    u=u-0.5;
-    v=v-0.5;
-    r=y+1.5958*v;
-    g=y-0.39173*u-0.81290*v;
-    b=y+2.017*u;
-    gl_FragColor=vec4(r,g,b,a);
+
+    // Apply dynamic color space conversion
+    y = u_yScale * (y - u_yOffset);
+    u = u - 0.5;
+    v = v - 0.5;
+
+    float r = y + u_rVCoeff * v;
+    float g = y + u_gUCoeff * u + u_gVCoeff * v;
+    float b = y + u_bUCoeff * u;
+
+    gl_FragColor = vec4(r, g, b, a);
   }`;
+
+// Color space conversion coefficients
+interface ColorSpaceParams {
+  yOffset: number;
+  yScale: number;
+  rVCoeff: number;
+  gUCoeff: number;
+  gVCoeff: number;
+  bUCoeff: number;
+}
 
 export class WebGLRenderer extends IRenderer {
   gl: WebGLRenderingContext | WebGL2RenderingContext | null;
@@ -63,6 +94,16 @@ export class WebGLRenderer extends IRenderer {
   texCoordBuffer: WebGLBuffer | null;
   surfaceBuffer: WebGLBuffer | null;
   fallback?: WebGLFallback;
+
+  // Color space uniform locations
+  private colorSpaceUniforms: {
+    yOffset?: WebGLUniformLocation | null;
+    yScale?: WebGLUniformLocation | null;
+    rVCoeff?: WebGLUniformLocation | null;
+    gUCoeff?: WebGLUniformLocation | null;
+    gVCoeff?: WebGLUniformLocation | null;
+    bUCoeff?: WebGLUniformLocation | null;
+  } = {};
 
   constructor(fallback?: WebGLFallback) {
     super();
@@ -79,8 +120,8 @@ export class WebGLRenderer extends IRenderer {
     this.fallback = fallback;
   }
 
-  public override bind(view: HTMLElement) {
-    super.bind(view);
+  public override bind(context: RendererContext) {
+    super.bind(context);
 
     this.canvas?.addEventListener(
       'webglcontextlost',
@@ -98,18 +139,18 @@ export class WebGLRenderer extends IRenderer {
     ): WebGLRenderingContext | WebGLRenderingContext | null => {
       for (let i = 0; i < contextNames.length; i++) {
         const contextName = contextNames[i]!;
-        const context = this.canvas?.getContext(contextName, {
+        const canvasContext = this.canvas?.getContext(contextName, {
           depth: true,
           stencil: true,
-          alpha: true,
+          alpha: context.enableAlphaMask,
           antialias: false,
           premultipliedAlpha: true,
-          preserveDrawingBuffer: !AgoraEnv.encodeAlpha,
+          preserveDrawingBuffer: !context.enableAlphaMask,
           powerPreference: 'default',
           failIfMajorPerformanceCaveat: false,
         });
-        if (context) {
-          return context as WebGLRenderingContext | WebGLRenderingContext;
+        if (canvasContext) {
+          return canvasContext as WebGLRenderingContext | WebGLRenderingContext;
         }
       }
       return null;
@@ -170,22 +211,29 @@ export class WebGLRenderer extends IRenderer {
     super.unbind();
   }
 
-  public override drawFrame({
-    width,
-    height,
-    yStride,
-    uStride,
-    vStride,
-    yBuffer,
-    uBuffer,
-    vBuffer,
-    rotation,
-    alphaBuffer,
-  }: VideoFrame) {
+  public override drawFrame(
+    uid: number,
+    {
+      width,
+      height,
+      yStride,
+      uStride,
+      vStride,
+      yBuffer,
+      uBuffer,
+      vBuffer,
+      rotation,
+      alphaBuffer,
+      colorSpace,
+    }: VideoFrame
+  ) {
     this.rotateCanvas({ width, height, rotation });
     this.updateRenderMode();
 
     if (!this.gl || !this.program) return;
+
+    // Set color space conversion parameters based on frame properties
+    this.setColorSpaceUniforms(colorSpace);
 
     const left = 0,
       top = 0,
@@ -273,7 +321,7 @@ export class WebGLRenderer extends IRenderer {
         pixels: vBuffer!,
       },
     };
-    if (alphaBuffer) {
+    if (alphaBuffer && alphaBuffer.length > 0 && this.context.enableAlphaMask) {
       textures[this.gl.TEXTURE3] = {
         texture: this.aTexture,
         stride: width!,
@@ -293,7 +341,7 @@ export class WebGLRenderer extends IRenderer {
 
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
 
-    super.drawFrame();
+    super.drawFrame(uid);
   }
 
   protected override rotateCanvas({ width, height, rotation }: VideoFrame) {
@@ -391,6 +439,32 @@ export class WebGLRenderer extends IRenderer {
 
     this.hasAlpha = this.gl.getUniformLocation(this.program, 'hasAlpha');
 
+    // Get color space uniform locations
+    this.colorSpaceUniforms.yOffset = this.gl.getUniformLocation(
+      this.program,
+      'u_yOffset'
+    );
+    this.colorSpaceUniforms.yScale = this.gl.getUniformLocation(
+      this.program,
+      'u_yScale'
+    );
+    this.colorSpaceUniforms.rVCoeff = this.gl.getUniformLocation(
+      this.program,
+      'u_rVCoeff'
+    );
+    this.colorSpaceUniforms.gUCoeff = this.gl.getUniformLocation(
+      this.program,
+      'u_gUCoeff'
+    );
+    this.colorSpaceUniforms.gVCoeff = this.gl.getUniformLocation(
+      this.program,
+      'u_gVCoeff'
+    );
+    this.colorSpaceUniforms.bUCoeff = this.gl.getUniformLocation(
+      this.program,
+      'u_bUCoeff'
+    );
+
     this.surfaceBuffer = this.gl.createBuffer();
     this.texCoordBuffer = this.gl.createBuffer();
 
@@ -438,6 +512,9 @@ export class WebGLRenderer extends IRenderer {
     this.uTexture = createTexture(this.gl.TEXTURE1, 1, 'Utex');
     this.vTexture = createTexture(this.gl.TEXTURE2, 2, 'Vtex');
     this.aTexture = createTexture(this.gl.TEXTURE3, 3, 'Atex');
+
+    // Set default color space parameters (BT.601 Limited Range)
+    this.setColorSpaceUniforms();
   }
 
   private releaseTextures() {
@@ -453,6 +530,8 @@ export class WebGLRenderer extends IRenderer {
     this.yTexture = null;
     this.uTexture = null;
     this.vTexture = null;
+    this.aTexture = null;
+    this.hasAlpha = null;
 
     this.gl?.deleteBuffer(this.texCoordBuffer);
     this.gl?.deleteBuffer(this.surfaceBuffer);
@@ -486,4 +565,131 @@ export class WebGLRenderer extends IRenderer {
 
     this.initTextures();
   };
+
+  /**
+   * Get color space conversion parameters based on color space and range
+   */
+  private getColorSpaceParams(colorSpace?: ColorSpace): ColorSpaceParams {
+    // Default to BT.601 Limited if not specified
+    const primaries = colorSpace?.primaries ?? PrimaryID.PrimaryidBt709;
+    const range = colorSpace?.range ?? RangeID.RangeidLimited;
+
+    // Y offset and scale based on ran
+    let yOffset: number;
+    let yScale: number;
+
+    if (range === RangeID.RangeidFull) {
+      yOffset = 0.0;
+      yScale = 1.0;
+    } else {
+      // Limited range: Y [16, 235] -> [0, 1]
+      yOffset = 16.0 / 255.0; // 0.0625
+      yScale = 255.0 / (235.0 - 16.0); // 1.1643
+    }
+
+    // Color space conversion coefficients
+    let rVCoeff: number, gUCoeff: number, gVCoeff: number, bUCoeff: number;
+
+    switch (primaries) {
+      case PrimaryID.PrimaryidBt709:
+        if (range === RangeID.RangeidFull) {
+          // BT.709 Full Range
+          rVCoeff = 1.5748;
+          gUCoeff = -0.187324;
+          gVCoeff = -0.468124;
+          bUCoeff = 1.8556;
+        } else {
+          // BT.709 Limited Range
+          rVCoeff = 1.792741;
+          gUCoeff = -0.213249;
+          gVCoeff = -0.532909;
+          bUCoeff = 2.112402;
+        }
+        break;
+
+      case PrimaryID.PrimaryidBt2020:
+        if (range === RangeID.RangeidFull) {
+          // BT.2020 Full Range
+          rVCoeff = 1.4746;
+          gUCoeff = -0.164553;
+          gVCoeff = -0.571353;
+          bUCoeff = 1.8814;
+        } else {
+          // BT.2020 Limited Range
+          rVCoeff = 1.678674;
+          gUCoeff = -0.187326;
+          gVCoeff = -0.650424;
+          bUCoeff = 2.141772;
+        }
+        break;
+
+      case PrimaryID.PrimaryidSmpte170m || PrimaryID.PrimaryidBt470bg:
+        if (range === RangeID.RangeidFull) {
+          // BT.601 Full Range
+          rVCoeff = 1.402;
+          gUCoeff = -0.344136;
+          gVCoeff = -0.714136;
+          bUCoeff = 1.772;
+        } else {
+          // BT.601 Limited Range
+          rVCoeff = 1.596027;
+          gUCoeff = -0.391762;
+          gVCoeff = -0.812968;
+          bUCoeff = 2.017232;
+        }
+        break;
+      default:
+        if (range === RangeID.RangeidFull) {
+          // BT.601 Full Range
+          rVCoeff = 1.402;
+          gUCoeff = -0.344136;
+          gVCoeff = -0.714136;
+          bUCoeff = 1.772;
+        } else {
+          // BT.601 Limited Range (your original values)
+          rVCoeff = 1.596027;
+          gUCoeff = -0.391762;
+          gVCoeff = -0.812968;
+          bUCoeff = 2.017232;
+        }
+        break;
+    }
+
+    return {
+      yOffset,
+      yScale,
+      rVCoeff,
+      gUCoeff,
+      gVCoeff,
+      bUCoeff,
+    };
+  }
+
+  /**
+   * Set color space uniform values in the shader
+   */
+  private setColorSpaceUniforms(colorSpace?: ColorSpace): void {
+    if (!this.gl || !this.program) return;
+
+    const params = this.getColorSpaceParams(colorSpace);
+
+    if (this.colorSpaceUniforms.yOffset) {
+      this.gl.uniform1f(this.colorSpaceUniforms.yOffset, params.yOffset);
+    }
+    if (this.colorSpaceUniforms.yScale) {
+      this.gl.uniform1f(this.colorSpaceUniforms.yScale, params.yScale);
+    }
+    if (this.colorSpaceUniforms.rVCoeff) {
+      this.gl.uniform1f(this.colorSpaceUniforms.rVCoeff, params.rVCoeff);
+    }
+    if (this.colorSpaceUniforms.gUCoeff) {
+      this.gl.uniform1f(this.colorSpaceUniforms.gUCoeff, params.gUCoeff);
+    }
+    if (this.colorSpaceUniforms.gVCoeff) {
+      this.gl.uniform1f(this.colorSpaceUniforms.gVCoeff, params.gVCoeff);
+    }
+    if (this.colorSpaceUniforms.bUCoeff) {
+      this.gl.uniform1f(this.colorSpaceUniforms.bUCoeff, params.bUCoeff);
+    }
+  }
 }

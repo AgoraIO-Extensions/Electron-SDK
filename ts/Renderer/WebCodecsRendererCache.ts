@@ -49,7 +49,7 @@ export class WebCodecsRendererCache extends IRendererCache {
         if (renderer.rendererType !== RendererType.WEBCODECSRENDERER) {
           continue;
         }
-        renderer.bind(renderer.context.view);
+        renderer.bind(renderer.context);
       }
 
       try {
@@ -133,5 +133,21 @@ export class WebCodecsRendererCache extends IRendererCache {
     this._decoder?.release();
     this._decoder = null;
     super.release();
+  }
+
+  public fetchVideoFrame(): { hasMoreFrame: boolean; needRender: boolean } {
+    return { hasMoreFrame: false, needRender: false };
+  }
+
+  public renderFrame(): void {
+    return;
+  }
+
+  public startRendering(): void {
+    return;
+  }
+
+  public stopRendering(): void {
+    return;
   }
 }

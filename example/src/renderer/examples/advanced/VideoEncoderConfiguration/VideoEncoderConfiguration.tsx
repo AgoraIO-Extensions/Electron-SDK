@@ -25,7 +25,6 @@ import {
   AgoraDropdown,
   AgoraList,
   AgoraStyle,
-  AgoraSwitch,
   AgoraTextInput,
   AgoraView,
 } from '../../../components/ui';
@@ -46,7 +45,6 @@ interface State extends BaseVideoComponentState {
   mirrorMode: VideoMirrorModeType;
   encodingPreference: EncodingPreference;
   compressionPreference: CompressionPreference;
-  encodeAlpha: boolean;
   video_module_position: VideoModulePosition;
 }
 
@@ -76,7 +74,6 @@ export default class VideoEncoderConfiguration
       mirrorMode: VideoMirrorModeType.VideoMirrorModeDisabled,
       encodingPreference: EncodingPreference.PreferAuto,
       compressionPreference: CompressionPreference.PreferQuality,
-      encodeAlpha: false,
       video_module_position: VideoModulePosition.PositionPreEncoder,
     };
   }
@@ -155,7 +152,6 @@ export default class VideoEncoderConfiguration
       orientationMode,
       degradationPreference,
       mirrorMode,
-      encodeAlpha,
       encodingPreference,
       compressionPreference,
     } = this.state;
@@ -174,7 +170,6 @@ export default class VideoEncoderConfiguration
       advanceOptions: {
         encodingPreference,
         compressionPreference,
-        encodeAlpha,
       },
     });
   };
@@ -253,7 +248,6 @@ export default class VideoEncoderConfiguration
       degradationPreference,
       mirrorMode,
       encodingPreference,
-      encodeAlpha,
       compressionPreference,
       joinChannelSuccess,
       video_module_position,
@@ -388,13 +382,6 @@ export default class VideoEncoderConfiguration
           value={compressionPreference}
           onValueChange={(value) => {
             this.setState({ compressionPreference: value });
-          }}
-        />
-        <AgoraSwitch
-          title={'encodeAlpha'}
-          value={encodeAlpha}
-          onValueChange={(value) => {
-            this.setState({ encodeAlpha: value });
           }}
         />
         <AgoraButton

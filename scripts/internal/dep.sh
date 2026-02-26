@@ -4,6 +4,9 @@ set +x
 MY_PATH=$(realpath $(dirname "$0"))
 PROJECT_ROOT=$(realpath ${MY_PATH}/../..)
 PACKAGE_JSON_PATH="${PROJECT_ROOT}/package.json"
+TERRA_CONFIG_PATH1="${PROJECT_ROOT}/scripts/terra/config/types_config.yaml"
+TERRA_CONFIG_PATH2="${PROJECT_ROOT}/scripts/terra/config/impl_config.yaml"
+
 if [ "$#" -lt 1 ]; then
     exit 1
 fi
@@ -13,10 +16,10 @@ MAC_DEPENDENCIES=$(echo "$INPUT" | jq -r '.[] | select(.platform == "macOS") | .
 IRIS_MAC_DEPENDENCIES=$(echo "$INPUT" | jq -r '.[] | select(.platform == "macOS") | .iris_cdn[]')
 WINDOWS_DEPENDENCIES=$(echo "$INPUT" | jq -r '.[] | select(.platform == "Windows") | .cdn[]')
 IRIS_WINDOWS_DEPENDENCIES=$(echo "$INPUT" | jq -r '.[] | select(.platform == "Windows") | .iris_cdn[]')
+DEP_VERSION=$(echo "$INPUT" | jq -r '.[] | select(.platform == "Windows") | .version')
 
 if [ -z "$MAC_DEPENDENCIES" ]; then
   echo "No mac native dependencies need to change."
-  exit 0
 else
   for DEP in $MAC_DEPENDENCIES; do
     sed 's|"native_sdk_mac": "\(.*\)"|"native_sdk_mac": "'"$DEP"'"|g' $PACKAGE_JSON_PATH > tmp
@@ -27,7 +30,6 @@ fi
 
 if [ -z "$IRIS_MAC_DEPENDENCIES" ]; then
   echo "No iris mac native dependencies need to change."
-  exit 0
 else
   for DEP in $IRIS_MAC_DEPENDENCIES; do
     if [[ "$DEP" == *Standalone* ]]; then
@@ -40,7 +42,6 @@ fi
 
 if [ -z "$WINDOWS_DEPENDENCIES" ]; then
   echo "No windows native dependencies need to change."
-  exit 0
 else
   sed 's|"native_sdk_win": "\(.*\)"|"native_sdk_win": "'"$WINDOWS_DEPENDENCIES"'"|g' $PACKAGE_JSON_PATH > tmp
   mv tmp package.json
@@ -48,7 +49,6 @@ fi
 
 if [ -z "$IRIS_WINDOWS_DEPENDENCIES" ]; then
   echo "No iris windows native dependencies need to change."
-  exit 0
 else
   for DEP in $IRIS_WINDOWS_DEPENDENCIES; do
     if [[ "$DEP" == *Standalone* ]]; then
@@ -57,4 +57,14 @@ else
       break
     fi
   done
+fi
+
+if [ -z "$DEP_VERSION" ]; then
+  echo "can not find dependencies version."
+else
+  echo "update dependencies version to $TERRA_CONFIG_PATH1"
+  sed 's|sdkVersion: \(.*\)|sdkVersion: '$DEP_VERSION'|g' $TERRA_CONFIG_PATH1 > tmp
+  mv tmp $TERRA_CONFIG_PATH1
+  sed 's|sdkVersion: \(.*\)|sdkVersion: '$DEP_VERSION'|g' $TERRA_CONFIG_PATH2 > tmp
+  mv tmp $TERRA_CONFIG_PATH2
 fi

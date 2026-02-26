@@ -1,5 +1,6 @@
 import JoinChannelAudio from './JoinChannelAudio/JoinChannelAudio';
 import JoinChannelVideo from './JoinChannelVideo/JoinChannelVideo';
+import Performance from './Performance/Performance';
 import StringUid from './StringUid/StringUid';
 import VideoDecoder from './VideoDecoder/VideoDecoder';
 
@@ -21,6 +22,10 @@ const Basic = {
     {
       name: 'VideoDecoder',
       component: VideoDecoder,
+    },
+    {
+      name: 'Performance',
+      component: Performance,
     },
   ],
 };

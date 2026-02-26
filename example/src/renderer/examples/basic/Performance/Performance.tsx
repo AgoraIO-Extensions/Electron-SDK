@@ -1,15 +1,11 @@
 import {
   ChannelProfileType,
   ClientRoleType,
+  EncodingPreference,
   ErrorCodeType,
   IRtcEngineEventHandler,
-  LocalAudioStats,
-  LocalVideoStats,
   LocalVideoStreamReason,
   LocalVideoStreamState,
-  QualityType,
-  RemoteAudioStats,
-  RemoteVideoStats,
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
@@ -26,31 +22,25 @@ import {
 import {
   AgoraButton,
   AgoraDropdown,
+  AgoraStyle,
+  AgoraTextInput,
   AgoraView,
   RtcSurfaceView,
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
-import { arrayToItems } from '../../../utils';
+import { arrayToItems, enumToItems } from '../../../utils';
 import { askMediaAccess } from '../../../utils/permissions';
 
 interface State extends BaseVideoComponentState {
   selectedUser?: number;
-  lastmileDelay?: number;
-  videoSentBitrate?: number;
-  encodedFrameWidth?: number;
-  encodedFrameHeight?: number;
-  encoderOutputFrameRate?: number;
-  audioSentBitrate?: number;
-  cpuAppUsage?: number;
-  cpuTotalUsage?: number;
-  txPacketLossRate?: number;
-  remoteUserStatsList: Map<
-    number,
-    { remoteVideoStats: RemoteVideoStats; remoteAudioStats: RemoteAudioStats }
-  >;
+  camWidth: number;
+  camHeight: number;
+  camFrameRate: number;
+  camBitrate: number;
+  camEncodingPreference: EncodingPreference;
 }
 
-export default class JoinChannelVideo
+export default class Performance
   extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler
 {
@@ -63,17 +53,13 @@ export default class JoinChannelVideo
       uid: Config.uid,
       joinChannelSuccess: false,
       remoteUsers: [],
-      remoteUserStatsList: new Map(),
-      encodedFrameWidth: 0,
-      encodedFrameHeight: 0,
-      encoderOutputFrameRate: 0,
-      lastmileDelay: 0,
-      videoSentBitrate: 0,
-      audioSentBitrate: 0,
-      cpuAppUsage: 0,
-      cpuTotalUsage: 0,
-      txPacketLossRate: 0,
       startPreview: false,
+      hideRightBar: false,
+      camWidth: 320,
+      camHeight: 180,
+      camFrameRate: 10,
+      camBitrate: 200,
+      camEncodingPreference: EncodingPreference.PreferHardware,
     };
   }
 
@@ -102,8 +88,13 @@ export default class JoinChannelVideo
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();
 
-    // Start preview before joinChannel
-    this.engine.startPreview();
+    this.engine.setVideoEncoderConfiguration({
+      frameRate: 30,
+      dimensions: {
+        width: 1920,
+        height: 1080,
+      },
+    });
     this.setState({ startPreview: true });
   }
 
@@ -204,144 +195,134 @@ export default class JoinChannelVideo
     );
   }
 
-  onRtcStats(connection: RtcConnection, stats: RtcStats): void {
-    this.setState({
-      lastmileDelay: stats.lastmileDelay,
-      cpuAppUsage: stats.cpuAppUsage,
-      cpuTotalUsage: stats.cpuTotalUsage,
-      txPacketLossRate: stats.txPacketLossRate,
+  setVideoEncoderConfiguration = () => {
+    const {
+      camWidth,
+      camHeight,
+      camBitrate,
+      camFrameRate,
+      camEncodingPreference,
+    } = this.state;
+
+    this.engine?.setVideoEncoderConfiguration({
+      dimensions: {
+        width: camWidth,
+        height: camHeight,
+      },
+      frameRate: camFrameRate,
+      bitrate: camBitrate,
+      advanceOptions: {
+        encodingPreference: camEncodingPreference,
+      },
     });
-  }
-
-  onLocalVideoStats(
-    connection: RtcConnection,
-    source: VideoSourceType,
-    stats: LocalVideoStats
-  ): void {
-    this.setState({
-      videoSentBitrate: stats.sentBitrate,
-      encodedFrameWidth: stats.encodedFrameWidth,
-      encodedFrameHeight: stats.encodedFrameHeight,
-      encoderOutputFrameRate: stats.encoderOutputFrameRate,
-    });
-  }
-
-  onLocalAudioStats(connection: RtcConnection, stats: LocalAudioStats): void {
-    this.setState({
-      audioSentBitrate: stats.sentBitrate,
-    });
-  }
-
-  onRemoteVideoStats(connection: RtcConnection, stats: RemoteVideoStats): void {
-    const { remoteUserStatsList } = this.state;
-    if (stats.uid) {
-      remoteUserStatsList.set(stats.uid, {
-        remoteVideoStats: stats,
-        remoteAudioStats:
-          remoteUserStatsList.get(stats.uid)?.remoteAudioStats || {},
-      });
-    }
-  }
-
-  onRemoteAudioStats(connection: RtcConnection, stats: RemoteAudioStats): void {
-    const { remoteUserStatsList } = this.state;
-    if (stats.uid) {
-      remoteUserStatsList.set(stats.uid, {
-        remoteVideoStats:
-          remoteUserStatsList.get(stats.uid)?.remoteVideoStats || {},
-        remoteAudioStats: stats,
-      });
-    }
-  }
+  };
 
   protected renderUsers(): ReactElement | undefined {
-    return super.renderUsers();
+    const { joinChannelSuccess, remoteUsers } = this.state;
+    return (
+      <>
+        {joinChannelSuccess ? (
+          <>
+            {remoteUsers.map((item) =>
+              this.renderUser({
+                uid: item,
+                sourceType: VideoSourceType.VideoSourceRemote,
+              })
+            )}
+          </>
+        ) : undefined}
+      </>
+    );
   }
 
-  protected renderVideo(user: VideoCanvas): ReactElement | undefined {
-    const {
-      joinChannelSuccess,
-      encodedFrameWidth,
-      encodedFrameHeight,
-      encoderOutputFrameRate,
-      remoteUserStatsList,
-      lastmileDelay,
-      videoSentBitrate,
-      audioSentBitrate,
-      cpuAppUsage,
-      cpuTotalUsage,
-      txPacketLossRate,
-    } = this.state;
+  protected renderUser(user: VideoCanvas): ReactElement | undefined {
     return (
-      <div className="video-view-container">
-        <RtcSurfaceView canvas={user} />
-        {joinChannelSuccess && user.sourceType === 0 && (
-          <div className="status-bar">
-            <p>
-              {encodedFrameWidth}x{encodedFrameHeight},{encoderOutputFrameRate}
-              fps
-            </p>
-            <p>LM Delay: {lastmileDelay}ms</p>
-            <p>VSend: {videoSentBitrate}kbps</p>
-            <p>ASend: {audioSentBitrate}kbps</p>
-            <p>
-              CPU: {cpuAppUsage}%/{cpuTotalUsage}%
-            </p>
-            <p>Send Loss: {txPacketLossRate}%</p>
-          </div>
-        )}
-        {joinChannelSuccess && user.sourceType != 0 && user.uid && (
-          <div className="status-bar">
-            <p>
-              VRecv:{' '}
-              {
-                remoteUserStatsList.get(user.uid)?.remoteVideoStats
-                  .receivedBitrate
-              }
-              kbps
-            </p>
-            <p>
-              ARecv:{' '}
-              {
-                remoteUserStatsList.get(user.uid)?.remoteAudioStats
-                  .receivedBitrate
-              }
-              kbps
-            </p>
-            <p>
-              VLoss:{' '}
-              {
-                remoteUserStatsList.get(user.uid)?.remoteVideoStats
-                  .packetLossRate
-              }
-              %
-            </p>
-            <p>
-              ALoss:{' '}
-              {
-                remoteUserStatsList.get(user.uid)?.remoteAudioStats
-                  .audioLossRate
-              }
-              %
-            </p>
-            <p>
-              AQuality:{' '}
-              {
-                QualityType[
-                  remoteUserStatsList.get(user.uid)?.remoteAudioStats.quality!
-                ]
-              }
-            </p>
-          </div>
-        )}
+      <div key={user.uid}>
+        <RtcSurfaceView
+          canvas={user}
+          videoClass="video-item-performance"
+          containerClass="window-item-performance"
+        />
       </div>
     );
   }
 
+  protected renderVideo(user: VideoCanvas): ReactElement | undefined {
+    return (
+      <RtcSurfaceView
+        containerClass={AgoraStyle.meetSurfaceViewContainer}
+        videoClass={AgoraStyle.meetSurfaceViewVideo}
+        canvas={user}
+      />
+    );
+  }
+
   protected renderConfiguration(): ReactElement | undefined {
-    const { joinChannelSuccess, remoteUsers, selectedUser } = this.state;
+    const {
+      joinChannelSuccess,
+      remoteUsers,
+      selectedUser,
+      camEncodingPreference,
+    } = this.state;
     return (
       <>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              camWidth: text === '' ? this.createState().camWidth : +text,
+            });
+          }}
+          numberKeyboard={true}
+          placeholder={`camWidth (defaults: ${this.createState().camWidth})`}
+        />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              camHeight: text === '' ? this.createState().camHeight : +text,
+            });
+          }}
+          numberKeyboard={true}
+          placeholder={`camHeight (defaults: ${this.createState().camHeight})`}
+        />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              camFrameRate:
+                text === '' ? this.createState().camFrameRate : +text,
+            });
+          }}
+          numberKeyboard={true}
+          placeholder={`camFrameRate (defaults: ${
+            this.createState().camFrameRate
+          })`}
+        />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              camBitrate: text === '' ? this.createState().camBitrate : +text,
+            });
+          }}
+          numberKeyboard={true}
+          placeholder={`camBitrate (defaults: ${
+            this.createState().camBitrate
+          })`}
+        />
+        <AgoraDropdown
+          title={'EncodingPreference'}
+          items={enumToItems(EncodingPreference)}
+          value={camEncodingPreference}
+          onValueChange={(value) => {
+            this.setState({ camEncodingPreference: value });
+          }}
+        />
+        <AgoraButton
+          title={`setVideoEncoderConfiguration`}
+          onPress={this.setVideoEncoderConfiguration}
+        />
         {joinChannelSuccess ? (
           <>
             <AgoraDropdown

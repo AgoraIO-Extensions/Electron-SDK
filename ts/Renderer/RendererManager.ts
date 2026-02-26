@@ -15,7 +15,7 @@ import {
   RendererContext,
   RendererType,
 } from '../Types';
-import { AgoraEnv, isSupportWebGL, logDebug } from '../Utils';
+import { AgoraEnv, isSupportWebGL } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 import { generateRendererCacheKey, isUseConnection } from './IRendererCache';
@@ -32,19 +32,7 @@ export class RendererManager {
   /**
    * @ignore
    */
-  private renderingFps: number;
-  /**
-   * @ignore
-   */
-  private _currentFrameCount: number;
-  /**
-   * @ignore
-   */
-  private _previousFirstFrameTime: number;
-  /**
-   * @ignore
-   */
-  private _renderingTimer?: number;
+  renderingFps: number;
   /**
    * @ignore
    */
@@ -70,8 +58,6 @@ export class RendererManager {
 
   constructor() {
     this.renderingFps = 15;
-    this._currentFrameCount = 0;
-    this._previousFirstFrameTime = 0;
     this._rendererCaches = [];
     this._context = {
       renderMode: RenderModeType.RenderModeHidden,
@@ -84,10 +70,6 @@ export class RendererManager {
 
   public setRenderingFps(fps: number) {
     this.renderingFps = fps;
-    if (this._renderingTimer) {
-      this.stopRendering();
-      this.startRendering();
-    }
   }
 
   public set defaultChannelId(channelId: string) {
@@ -107,7 +89,6 @@ export class RendererManager {
   }
 
   public release(): void {
-    this.stopRendering();
     this.clearRendererCache();
   }
 
@@ -118,6 +99,7 @@ export class RendererManager {
     context.useWebCodecsDecoder = context.useWebCodecsDecoder || false;
     context.enableFps = context.enableFps || false;
     context.position = context.position || this.defaultObservedFramePosition;
+    context.enableAlphaMask = context.enableAlphaMask || false;
 
     if (!AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
       context.useWebCodecsDecoder = false;
@@ -188,10 +170,8 @@ export class RendererManager {
       }
       this._rendererCaches.push(rendererCache);
     }
-    rendererCache.addRenderer(this.createRenderer(checkedContext));
-    if (!context.useWebCodecsDecoder) {
-      this.startRendering();
-    }
+    const renderer = this.createRenderer(checkedContext);
+    rendererCache.addRenderer(renderer);
     return rendererCache;
   }
 
@@ -208,6 +188,7 @@ export class RendererManager {
       rendererCache.removeRenderer();
     }
     if (rendererCache.renderers.length === 0) {
+      rendererCache.stopRendering();
       rendererCache.release();
       this._rendererCaches.splice(
         this._rendererCaches.indexOf(rendererCache),
@@ -218,6 +199,7 @@ export class RendererManager {
 
   public clearRendererCache(): void {
     for (const rendererCache of this._rendererCaches) {
+      rendererCache.stopRendering();
       rendererCache.release();
     }
     this._rendererCaches.splice(0);
@@ -229,6 +211,18 @@ export class RendererManager {
     return this._rendererCaches.find(
       (cache) => cache.key === generateRendererCacheKey(context)
     );
+  }
+
+  public getRendererCachesBySourceType(
+    sourceType: VideoSourceType
+  ): RendererCacheType[] {
+    return this._rendererCaches.filter(
+      (cache) => cache.cacheContext.sourceType === sourceType
+    );
+  }
+
+  public getRendererCaches(): RendererCacheType[] {
+    return this._rendererCaches;
   }
 
   public getRenderers(context: RendererContext): IRenderer[] {
@@ -256,12 +250,12 @@ export class RendererManager {
           renderer = new WebGLRenderer(
             this.handleWebGLFallback(context).bind(this)
           );
-          renderer.bind(context.view);
+          renderer.bind(context);
         }
         break;
       case RendererType.SOFTWARE:
         renderer = new YUVCanvasRenderer();
-        renderer.bind(context.view);
+        renderer.bind(context);
         break;
       default:
         throw new Error('Unknown renderer type');
@@ -269,71 +263,6 @@ export class RendererManager {
 
     renderer.setContext(context);
     return renderer;
-  }
-
-  public startRendering(): void {
-    if (this._renderingTimer) return;
-
-    const renderingLooper = () => {
-      if (this._previousFirstFrameTime === 0) {
-        // Get the current time as the time of the first frame of per second
-        this._previousFirstFrameTime = performance.now();
-        // Reset the frame count
-        this._currentFrameCount = 0;
-      }
-
-      // Increase the frame count
-      ++this._currentFrameCount;
-
-      // Get the current time
-      const currentFrameTime = performance.now();
-      // Calculate the time difference between the current frame and the previous frame
-      const deltaTime = currentFrameTime - this._previousFirstFrameTime;
-      // Calculate the expected time of the current frame
-      const expectedTime = (this._currentFrameCount * 1000) / this.renderingFps;
-      logDebug(
-        new Date().toLocaleTimeString(),
-        'currentFrameCount',
-        this._currentFrameCount,
-        'expectedTime',
-        expectedTime,
-        'deltaTime',
-        deltaTime
-      );
-
-      if (this._rendererCaches.length === 0) {
-        // If there is no renderer, stop rendering
-        this.stopRendering();
-        return;
-      }
-
-      // Render all renderers that do not use WebCodecs
-      for (const rendererCache of this._rendererCaches.filter(
-        (cache) => cache instanceof RendererCache
-      )) {
-        this.doRendering(rendererCache);
-      }
-
-      if (this._currentFrameCount >= this.renderingFps) {
-        this._previousFirstFrameTime = 0;
-      }
-
-      if (deltaTime < expectedTime) {
-        // If the time difference between the current frame and the previous frame is less than the expected time, then wait for the difference
-        this._renderingTimer = window.setTimeout(
-          renderingLooper,
-          expectedTime - deltaTime
-        );
-      } else {
-        // If the time difference between the current frame and the previous frame is greater than the expected time, then render immediately
-        renderingLooper();
-      }
-    };
-    renderingLooper();
-  }
-
-  public doRendering(rendererCache: RendererCacheType): void {
-    rendererCache.draw();
   }
 
   private handleWebGLFallback(context: RendererContext): WebGLFallback {
@@ -376,13 +305,6 @@ export class RendererManager {
         ...renderer.context,
         setupMode: VideoViewSetupMode.VideoViewSetupReplace,
       });
-    }
-  }
-
-  public stopRendering(): void {
-    if (this._renderingTimer) {
-      window.clearTimeout(this._renderingTimer);
-      this._renderingTimer = undefined;
     }
   }
 
