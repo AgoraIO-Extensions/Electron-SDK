@@ -1,8 +1,7 @@
 ﻿import { createCheckers } from 'ts-interface-checker';
 
 import { AgoraElectronBridge } from '../../Private/internal/IrisApiEngine';
-import { AgoraEnv, logError, parseIntPtr2Number } from '../../Utils';
-import { VideoEncoderConfiguration } from '../AgoraBase';
+import { AgoraEnv, logDebug, logError, parseIntPtr2Number } from '../../Utils';
 let RendererManager: any;
 let CapabilityManager: any;
 //@ts-ignore
@@ -80,6 +79,14 @@ const checkers = createCheckers(
   IAgoraRtcEngineTI
 );
 
+interface PerformanceCounter {
+  counters: {
+    counterId: number;
+    value: number;
+  }[];
+  uid: number;
+}
+
 export class RtcEngineExInternal extends IRtcEngineExImpl {
   static _event_handlers: IRtcEngineEventHandler[] = [];
   static _direct_cdn_streaming_event_handler: IDirectCdnStreamingEventHandler[] =
@@ -98,6 +105,13 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     new LocalSpatialAudioEngineInternal();
   private _h265_transcoder: IH265Transcoder = new H265TranscoderInternal();
 
+  private performanceInterval: number = 6000;
+  private performanceIntervalFunc: any;
+  private VideoRemoteRenderMeanFpsCounterId: number = 537;
+  private VideoRemoteRenderDrawCostCounterId: number = 576;
+  private VideoLocalRenderMeanFpsCounterId: number = 526;
+  private VideoLocalRenderDrawCostCounterId: number = 577;
+
   override initialize(context: RtcEngineContext): number {
     const ret = super.initialize(context);
     callIrisApi.call(this, 'RtcEngine_setAppType', {
@@ -111,6 +125,68 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       }
       if (AgoraEnv.CapabilityManager === undefined && CapabilityManager) {
         AgoraEnv.CapabilityManager = new CapabilityManager();
+      }
+      if (AgoraEnv.enableArgusCounters) {
+        try {
+          this.performanceIntervalFunc = setInterval(() => {
+            let rendererManager = AgoraEnv.AgoraRendererManager;
+            let counters: {
+              data: PerformanceCounter[];
+              connection: RtcConnection;
+            }[] = [];
+            if (rendererManager) {
+              rendererManager.getRendererCaches().forEach((cache) => {
+                const isRemote =
+                  cache.callbackContext.sourceType ===
+                  VideoSourceType.VideoSourceRemote;
+                if (
+                  cache.callbackContext.connection?.channelId &&
+                  (cache.callbackContext.connection?.localUid || isRemote)
+                ) {
+                  let counter = counters.find(
+                    (counter) =>
+                      counter.connection.channelId ===
+                        cache.callbackContext.connection.channelId &&
+                      counter.connection.localUid ===
+                        cache.callbackContext.connection.localUid
+                  );
+                  let data: PerformanceCounter = {
+                    counters: [
+                      {
+                        counterId: isRemote
+                          ? this.VideoRemoteRenderMeanFpsCounterId
+                          : this.VideoLocalRenderMeanFpsCounterId,
+                        value: Math.floor(cache.actualFps),
+                      },
+                      {
+                        counterId: isRemote
+                          ? this.VideoRemoteRenderDrawCostCounterId
+                          : this.VideoLocalRenderDrawCostCounterId,
+                        value: Math.floor(cache.avgFrameInterval),
+                      },
+                    ],
+                    uid: isRemote ? cache.cacheContext.uid! : 0,
+                  };
+                  if (!counter) {
+                    counters.push({
+                      data: [data],
+                      connection: cache.callbackContext.connection,
+                    });
+                  } else {
+                    counter.data.push(data);
+                  }
+                }
+              });
+            }
+            counters.forEach((counter) => {
+              this.setParameters(
+                JSON.stringify({ 'rtc.report.argus_counters': counter })
+              );
+            });
+          }, this.performanceInterval);
+        } catch (error) {
+          logDebug('argus counters report error', error);
+        }
       }
     }
     return ret;
@@ -139,6 +215,10 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     this.removeAllListeners();
     AgoraEnv.CapabilityManager?.release();
     AgoraEnv.CapabilityManager = undefined;
+    if (this.performanceIntervalFunc) {
+      clearInterval(this.performanceIntervalFunc);
+      this.performanceIntervalFunc = undefined;
+    }
     super.release(sync);
   }
 
@@ -336,13 +416,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
         (value) => value !== observer
       );
     return super.unregisterMediaMetadataObserver(observer, type);
-  }
-
-  override setVideoEncoderConfiguration(
-    config: VideoEncoderConfiguration
-  ): number {
-    AgoraEnv.encodeAlpha = config?.advanceOptions?.encodeAlpha ?? false;
-    return super.setVideoEncoderConfiguration(config);
   }
 
   protected override getApiTypeFromJoinChannel(

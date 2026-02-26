@@ -2,7 +2,13 @@ import path from 'path';
 import { format as formatUrl } from 'url';
 
 import 'agora-electron-sdk/js/Private/ipc/main.js';
-import { BrowserWindow, app, ipcMain, systemPreferences } from 'electron';
+import {
+  BrowserWindow,
+  app,
+  dialog,
+  ipcMain,
+  systemPreferences,
+} from 'electron';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 app.allowRendererProcessReuse = false;
@@ -50,6 +56,19 @@ function createMainWindow() {
         console.log('main process request handler:' + JSON.stringify(arg));
         return await systemPreferences.askForMediaAccess(arg.type);
       }
+    });
+
+    ipcMain.handle('IPC_SHOW_MESSAGE_BOX', async (event, options) => {
+      const result = await dialog.showMessageBox(window, {
+        type: options.type || 'info',
+        title: options.title || 'message',
+        message: options.message || '',
+        buttons: options.buttons || ['confirm'],
+        defaultId: 0,
+        cancelId: 0,
+        noLink: true,
+      });
+      return result;
     });
   });
 

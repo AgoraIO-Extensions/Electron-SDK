@@ -11,8 +11,8 @@ export abstract class IRenderer {
   private _frameCount = 0;
   private _startTime: number | null = null;
 
-  public bind(element: HTMLElement) {
-    this.parentElement = element;
+  public bind(context: RendererContext) {
+    this.parentElement = context.view;
     this.container = document.createElement('div');
     Object.assign(this.container.style, {
       width: '100%',
@@ -22,7 +22,7 @@ export abstract class IRenderer {
       alignItems: 'center',
       overflow: 'hidden',
     });
-    this.parentElement.appendChild(this.container);
+    this.parentElement?.appendChild(this.container);
     this.canvas = document.createElement('canvas');
     this.canvas.style.display = 'none';
     this.container.appendChild(this.canvas);
@@ -45,6 +45,7 @@ export abstract class IRenderer {
   }
 
   public drawFrame(
+    uid: number,
     _videoFrame?: VideoFrame,
     _codecConfig?: CodecConfigInfo
   ): void {
@@ -63,6 +64,10 @@ export abstract class IRenderer {
     if (this.context.mirrorMode !== context.mirrorMode) {
       this.context.mirrorMode = context.mirrorMode;
       this.updateMirrorMode();
+    }
+
+    if (this.context.enableAlphaMask !== context.enableAlphaMask) {
+      this.context.enableAlphaMask = context.enableAlphaMask;
     }
     this.context = { ...this.context, ...context };
   }

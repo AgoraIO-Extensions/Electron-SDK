@@ -17,6 +17,7 @@ import {
   IVideoEncodedFrameObserver,
   IVideoFrameObserver,
   VideoFrame,
+  VideoSourceType,
 } from '../AgoraMediaBase';
 import { IH265TranscoderObserver } from '../IAgoraH265Transcoder';
 import {
@@ -342,6 +343,34 @@ export const EVENT_PROCESSORS: EventProcessors = {
         case 'onStreamMessage':
         case 'onStreamMessageEx':
           data.data = buffers[0];
+          break;
+        case 'onLocalVideoStats':
+          if (data) {
+            let rendererManager = AgoraEnv.AgoraRendererManager;
+            if (rendererManager) {
+              let sourceType = (data as any).sourceType;
+              let connection = (data as any).connection;
+              let rendererCaches =
+                rendererManager.getRendererCachesBySourceType(sourceType);
+              rendererCaches.forEach((cache) => {
+                cache.setCallbackContext(connection, sourceType);
+              });
+            }
+          }
+          break;
+        case 'onRemoteVideoStats':
+          if (data) {
+            let rendererManager = AgoraEnv.AgoraRendererManager;
+            if (rendererManager) {
+              let connection = (data as any).connection;
+              const sourceType = VideoSourceType.VideoSourceRemote;
+              let rendererCaches =
+                rendererManager.getRendererCachesBySourceType(sourceType);
+              rendererCaches.forEach((cache) => {
+                cache.setCallbackContext(connection, sourceType);
+              });
+            }
+          }
           break;
       }
     },

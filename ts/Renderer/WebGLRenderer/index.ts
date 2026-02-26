@@ -4,8 +4,8 @@ import {
   RangeID,
   VideoFrame,
 } from '../../Private/AgoraMediaBase';
-import { RendererType } from '../../Types';
-import { AgoraEnv, logWarn } from '../../Utils';
+import { RendererContext, RendererType } from '../../Types';
+import { logWarn } from '../../Utils';
 import { IRenderer } from '../IRenderer';
 
 export type WebGLFallback = (renderer: WebGLRenderer, error: Error) => void;
@@ -120,8 +120,8 @@ export class WebGLRenderer extends IRenderer {
     this.fallback = fallback;
   }
 
-  public override bind(view: HTMLElement) {
-    super.bind(view);
+  public override bind(context: RendererContext) {
+    super.bind(context);
 
     this.canvas?.addEventListener(
       'webglcontextlost',
@@ -139,18 +139,18 @@ export class WebGLRenderer extends IRenderer {
     ): WebGLRenderingContext | WebGLRenderingContext | null => {
       for (let i = 0; i < contextNames.length; i++) {
         const contextName = contextNames[i]!;
-        const context = this.canvas?.getContext(contextName, {
+        const canvasContext = this.canvas?.getContext(contextName, {
           depth: true,
           stencil: true,
-          alpha: true,
+          alpha: context.enableAlphaMask,
           antialias: false,
           premultipliedAlpha: true,
-          preserveDrawingBuffer: !AgoraEnv.encodeAlpha,
+          preserveDrawingBuffer: !context.enableAlphaMask,
           powerPreference: 'default',
           failIfMajorPerformanceCaveat: false,
         });
-        if (context) {
-          return context as WebGLRenderingContext | WebGLRenderingContext;
+        if (canvasContext) {
+          return canvasContext as WebGLRenderingContext | WebGLRenderingContext;
         }
       }
       return null;
@@ -211,19 +211,22 @@ export class WebGLRenderer extends IRenderer {
     super.unbind();
   }
 
-  public override drawFrame({
-    width,
-    height,
-    yStride,
-    uStride,
-    vStride,
-    yBuffer,
-    uBuffer,
-    vBuffer,
-    rotation,
-    alphaBuffer,
-    colorSpace,
-  }: VideoFrame) {
+  public override drawFrame(
+    uid: number,
+    {
+      width,
+      height,
+      yStride,
+      uStride,
+      vStride,
+      yBuffer,
+      uBuffer,
+      vBuffer,
+      rotation,
+      alphaBuffer,
+      colorSpace,
+    }: VideoFrame
+  ) {
     this.rotateCanvas({ width, height, rotation });
     this.updateRenderMode();
 
@@ -318,7 +321,7 @@ export class WebGLRenderer extends IRenderer {
         pixels: vBuffer!,
       },
     };
-    if (alphaBuffer && alphaBuffer.length > 0) {
+    if (alphaBuffer && alphaBuffer.length > 0 && this.context.enableAlphaMask) {
       textures[this.gl.TEXTURE3] = {
         texture: this.aTexture,
         stride: width!,
@@ -338,7 +341,7 @@ export class WebGLRenderer extends IRenderer {
 
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
 
-    super.drawFrame();
+    super.drawFrame(uid);
   }
 
   protected override rotateCanvas({ width, height, rotation }: VideoFrame) {
