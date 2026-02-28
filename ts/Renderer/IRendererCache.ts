@@ -1,4 +1,5 @@
-import { RtcConnection, VideoSourceType } from 'agora-electron-sdk';
+import { VideoSourceType } from '../Private/AgoraMediaBase';
+import { RtcConnection } from '../Private/IAgoraRtcEngineEx';
 
 import { RendererCacheContext, RendererContext } from '../Types';
 
