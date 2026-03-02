@@ -1,5 +1,12 @@
 
 
+## [4.2.7-build.129-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.7-build.129-rc.1...v4.2.7-build.129-rc.2) (2026-03-02)
+
+
+### Bug Fixes
+
+* alpha crash in electron 24 ([#1395](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1395)) ([0f22429](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/0f224299346b1176fbb83b7e901442bbbf7af67f))
+
 ## [4.2.7-build.129-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.6-build.168-rc.1...v4.2.7-build.129-rc.1) (2026-02-09)
 
 ## [4.2.6-build.168-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.7-build.127-rc.2...v4.2.6-build.168-rc.1) (2026-01-19)
