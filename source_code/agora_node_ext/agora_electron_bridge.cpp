@@ -472,7 +472,11 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   videoFrame.metadata_size = 0;
   if (renderAlpha) {
     napi_get_buffer_info(env, alpha_buffer_obj, &alpha_buffer, &alpha_length);
-    videoFrame.alphaBuffer = (uint8_t *) alpha_buffer;
+    if (alpha_buffer && alpha_length > 0) {
+      videoFrame.alphaBuffer = (uint8_t *) alpha_buffer;
+    } else {
+      videoFrame.alphaBuffer = nullptr;
+    }
   } else {
     videoFrame.alphaBuffer = nullptr;
   }
