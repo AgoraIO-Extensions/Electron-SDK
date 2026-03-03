@@ -17,6 +17,17 @@ compileConfig = [
     ]
 ]
 
+def prepareEnv() {
+    gitCheckOut(getConfig(), params.repository, false, false, [
+        "./electron-sdk": [
+            params.repository,
+            params.electron_sdk_branch,
+            '',
+            getConfig().CREDENTIAL_SSH
+        ]
+    ])
+}
+
 def doBuild(buildVariables) {
     type = params.Package_Publish ? "publish" : "non-publish"
     command = compileConfig.get(type).command
