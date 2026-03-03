@@ -11,6 +11,9 @@ new_name="\"name\": \"shengwang-electron-sdk\""
 old_description="\"description\": \"agora-electron-sdk\""
 new_description="\"description\": \"shengwang-electron-sdk\""
 
+old_repository="\"repository\": \"https:\/\/github.com\/AgoraIO-Extensions\/Electron-SDK\""
+new_repository="\"repository\": \"https:\/\/github.com\/AgoraIO-Extensions\/Shengwang-Electron-SDK\""
+
 old_yarn_link="yarn example link agora-electron-sdk"
 new_yarn_link="yarn example link shengwang-electron-sdk"
 
