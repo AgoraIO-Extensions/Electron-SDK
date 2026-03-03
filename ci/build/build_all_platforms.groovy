@@ -40,15 +40,6 @@ timestamps {
         booleanParam(name: 'Upload_CDN', value: params.Upload_CDN)
     ]
 
-    gitCheckOut(getConfig(), params.repository, false, false, [
-      "./electron-sdk": [
-          params.repository,
-          params.electron_sdk_branch,
-          '',
-          getConfig().CREDENTIAL_SSH
-      ]
-    ])
-
     def buildJobs = [
         "electron_mac_build": {
             build job: 'ELECTRON/build_mac', parameters: commonBuildParams + [
