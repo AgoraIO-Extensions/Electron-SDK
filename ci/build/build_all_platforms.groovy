@@ -41,16 +41,16 @@ timestamps {
                 string(name: 'arch', value: 'x64')
             ]
         },
-        // "electron_windows_x86_build": {
-        //     build job: 'ELECTRON/build_windows', parameters: commonBuildParams + [
-        //         string(name: 'arch', value: "ia32"),
-        //     ]
-        // },
-        // "electron_windows_x64_build": {
-        //     build job: 'ELECTRON/build_windows', parameters: commonBuildParams + [
-        //         string(name: 'arch', value: "x64"),
-        //     ]
-        // }
+        "electron_windows_x86_build": {
+            build job: 'ELECTRON/build_windows', parameters: commonBuildParams + [
+                string(name: 'arch', value: "ia32"),
+            ]
+        },
+        "electron_windows_x64_build": {
+            build job: 'ELECTRON/build_windows', parameters: commonBuildParams + [
+                string(name: 'arch', value: "x64"),
+            ]
+        }
     ]
     parallel buildJobs
 }
