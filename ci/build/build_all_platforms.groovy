@@ -23,6 +23,7 @@ properties([
 timestamps {
     def commonBuildParams = [
         string(name: 'electron_sdk_branch', value: params.electron_sdk_branch),
+        string(name: 'repository', value: params.repository),
         string(name: 'network_path', value: params.network_path),
         string(name: 'example_sdk_mode', value: params.example_sdk_mode),
         string(name: 'example_electron_version', value: params.example_electron_version),
