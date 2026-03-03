@@ -15,12 +15,6 @@ sed "s/${old_package_name}/${new_package_name}/g" ${change_file} >tmp && mv tmp 
 change_file=${PROJECT_ROOT}/.github/workflows/publish.yml
 sed "s/${old_package_name}/${new_package_name}/g" ${change_file} >tmp && mv tmp ${change_file}
 
-change_file=${PROJECT_ROOT}/ci/packager-mac.sh
-sed "s#${old_node_modules}#${new_node_modules}#g" ${change_file} >tmp && mv tmp ${change_file}
-
-change_file=${PROJECT_ROOT}/ci/packager-win.ps1
-sed "s#${old_node_modules}#${new_node_modules}#g" ${change_file} >tmp && mv tmp ${change_file}
-
 change_comment_file=${PROJECT_ROOT}/scripts/terra/comment_config.yaml
 sed "s/ng_json_template_en/ng_json_template_cn/g" ${change_comment_file} > tmp && mv tmp ${change_comment_file}
 echo "${change_comment_file} rewritten successfully"
