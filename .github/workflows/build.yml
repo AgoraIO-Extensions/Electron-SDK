@@ -34,7 +34,7 @@ jobs:
         run: |
           curl -X POST -sS -D- -o/dev/null ${{secrets.JENKINS_BUILD_URL}} \
           -H 'Content-Type: application/json' \
-          -d "{\"branch\": \"${{github.ref_name}}\", \"type\": \"sdk\"}"
+          -d "{\"url\": \"${{github.repositoryUrl}}\", \"branch\": \"${{github.ref_name}}\", \"type\": \"sdk\"}"
 
   build-windows:
     if: ${{ inputs.type == 'demo' }}
