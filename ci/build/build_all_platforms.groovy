@@ -1,3 +1,8 @@
+// -*- mode: groovy -*-
+// vim: set filetype=groovy :
+@Library('agora-build-pipeline-library') _
+import groovy.transform.Field
+
 properties([
     buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '7', numToKeepStr: '100')),
     parameters([
