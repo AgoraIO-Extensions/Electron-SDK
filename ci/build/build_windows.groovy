@@ -87,7 +87,7 @@ def doUploadCDN(artifactoryUrls) {
     build job: 'AD/Agora-Electron-Upload-CDN', propagate: false, parameters: [
         string(name: 'electron_sdk_url', value: cdnUrl),
         string(name: 'npmv', value: params.package_version),
-        string(name: 'company', value: 'agora'),
+        string(name: 'company', value: params.repository.toLowerCase().contains('shengwang') ? 'shengwang' : 'agora'),
         string(name: 'electron_version', value: 'napi')
     ], wait: true
 }
