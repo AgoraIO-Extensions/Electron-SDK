@@ -18,6 +18,14 @@ compileConfig = [
 ]
 
 def doBuild(buildVariables) {
+    gitCheckOut(getConfig(), params.repository, false, false, [
+      "./electron-sdk": [
+          params.repository,
+          params.electron_sdk_branch,
+          '',
+          getConfig().CREDENTIAL_SSH
+      ]
+    ])
     type = params.Package_Publish ? "publish" : "non-publish"
     command = compileConfig.get(type).command
     preCommand = compileConfig.get(type).get("preCommand", "")
@@ -79,6 +87,7 @@ def doUploadCDN(artifactoryUrls) {
     build job: 'AD/Agora-Electron-Upload-CDN', propagate: false, parameters: [
         string(name: 'electron_sdk_url', value: cdnUrl),
         string(name: 'npmv', value: params.package_version),
+        string(name: 'company', value: params.repository.toLowerCase().contains('shengwang') ? 'shengwang' : 'agora'),
         string(name: 'electron_version', value: 'napi')
     ], wait: true
 }

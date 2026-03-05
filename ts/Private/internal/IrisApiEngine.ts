@@ -66,6 +66,7 @@ import {
   MusicContentCenterInternal,
 } from './MusicContentCenterInternal';
 import { RtcEngineExInternal } from './RtcEngineExInternal';
+import { VideoEffectObjectInternal } from './VideoEffectObjectInternal';
 
 // @ts-ignore
 export const DeviceEventEmitter: EventEmitter = new EventEmitter();
@@ -486,12 +487,15 @@ export function callIrisApi(funcName: string, params: any): any {
           // frame.buffer
           buffers.push(params.frame.buffer);
           // frame.eglContext
+          // @ts-ignore
           buffers.push(Buffer.from(''));
           // frame.metadata_buffer
+          // @ts-ignore
           buffers.push(Buffer.from(''));
           // frame.alphaBuffer
           buffers.push(params.frame.alphaBuffer);
           // frame.d3d11_texture_2d
+          // @ts-ignore
           buffers.push(Buffer.from(''));
           break;
         case 'MediaEngine_pushEncodedVideoImage_e71452b':
@@ -508,6 +512,13 @@ export function callIrisApi(funcName: string, params: any): any {
       const json = params.toJSON?.call();
       params.toJSON = function () {
         return { ...json, playerId: params.mediaPlayerId };
+      };
+    } else if (funcName.startsWith('VideoEffectObject_')) {
+      params.videoEffectObjectId = // @ts-ignore
+        (this as VideoEffectObjectInternal).getVideoEffectObjectId();
+      const json = params.toJSON?.call();
+      params.toJSON = function () {
+        return { ...json, objectId: params.videoEffectObjectId };
       };
     } else if (funcName.startsWith('MediaRecorder_')) {
       // @ts-ignore
@@ -543,6 +554,13 @@ export function callIrisApi(funcName: string, params: any): any {
           params.mediaPlayerId = params.media_player.getMediaPlayerId();
           params.toJSON = function () {
             return { playerId: params.mediaPlayerId };
+          };
+          break;
+        case 'RtcEngine_destroyVideoEffectObject_66d092b':
+          params.videoEffectObjectId =
+            params.videoEffectObject.getVideoEffectObjectId();
+          params.toJSON = function () {
+            return { objectId: params.videoEffectObjectId };
           };
           break;
         case 'RtcEngine_destroyMediaRecorder_95cdef5':
