@@ -1,5 +1,13 @@
 
 
+## [4.6.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.2...v4.6.2) (2026-03-05)
+
+
+### Features
+
+* 4.6 for atlas ([#1396](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1396)) ([5fcf9a5](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/5fcf9a51642ec3ce6e4e5d32059b2ab90bea3356))
+* support 4.6.2 ([#1369](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1369)) ([1b9be80](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/1b9be800cd088c3edba06c335a08eaddd6cab9a7)), closes [#1287](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1287) [#1285](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1285) [#1286](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1286)
+
 ## [4.5.2-build.166-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.2-build.3-rc.1...v4.5.2-build.166-rc.1) (2025-11-28)
 
 ## [4.5.2-build.3-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.2-build.143-rc.1...v4.5.2-build.3-rc.1) (2025-09-04)
