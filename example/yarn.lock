@@ -1785,10 +1785,10 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-agora-electron-sdk@4.5.2-build.166-rc.1:
-  version "4.5.2-build.166-rc.1"
-  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.5.2-build.166-rc.1.tgz#b0a532058f57427be15da68c93d86c2ff661e2c3"
-  integrity sha512-UmVtJ8ikXsvqmtE3oLnuv/5eek5XcnYNFYVyzs/KRZ2ekRzMtMt1PaPGwovg495wseKYZB8Y6C/d0U2FxOM3pQ==
+agora-electron-sdk@4.6.2:
+  version "4.6.2"
+  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.6.2.tgz#6ea9e0340242f3a0bc8aba3c9cad6cc2176ce6d8"
+  integrity sha512-X2RQTzQHpKWivYuwMEm2fz2tow2STvijRWjjd7Vx38o7BkcM/mhIxeRJDW6xTbW/Q+O8w82+M0K1Sh9jFDtXOA==
   dependencies:
     archive-type "^4.0.0"
     buffer "^6.0.3"
@@ -5649,9 +5649,9 @@ iferr@^0.1.5:
   integrity sha512-DUNFN5j7Tln0D+TxzloUjKB+CtVu6myn0JEFak6dG18mNt9YkQ6lzGCdafwofISZ1lLF3xRHJ98VKy9ynkcFaA==
 
 immutable@^4.0.0:
-  version "4.3.7"
-  resolved "https://registry.npmjs.org/immutable/-/immutable-4.3.7.tgz#c70145fc90d89fb02021e65c84eb0226e4e5a381"
-  integrity sha512-1hqclzwYwjRDFLjcFxOM5AYkkG0rpFPpr1RLPMEuGczoS7YA8gLhy8SWXYRAA/XwfEHpfo3cw5JGioS32fnMRw==
+  version "4.3.8"
+  resolved "https://registry.npmjs.org/immutable/-/immutable-4.3.8.tgz#02d183c7727fb2bb1d5d0380da0d779dce9296a7"
+  integrity sha512-d/Ld9aLbKpNwyl0KiM2CT1WYvkitQ1TSvmRtkcV8FKStiDoA7Slzgjmb/1G2yhKM1p0XeNOieaTbFZmU1d3Xuw==
 
 import-local@^2.0.0:
   version "2.0.0"
