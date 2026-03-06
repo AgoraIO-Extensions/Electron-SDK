@@ -18,7 +18,7 @@ compileConfig = [
 ]
 
 def doBuild(buildVariables) {
-    gitCheckOut(getConfig(), params.repository, false, false, [
+    gitCheckOut(getConfig(), params.repository, false, is_tag_fetch, [
       "./electron-sdk": [
           params.repository,
           params.electron_sdk_branch,
