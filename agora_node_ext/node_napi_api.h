@@ -453,6 +453,9 @@ napi_status napi_get_value_arraybuffer_(const Local<Value> &value,
                                         std::vector<uint8_t> &buffer,
                                         uint32_t &length);
 
+/** Return true if the buffer is valid UTF-8 (so it can be passed as string). */
+bool is_valid_utf8(const uint8_t* data, size_t length);
+
 const char* nullable(char const* s);
 
 #ifdef _WIN32

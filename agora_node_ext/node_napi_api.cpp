@@ -861,6 +861,37 @@ napi_status napi_get_value_arraybuffer_(const Local<Value> &value,
   return napi_ok;
 }
 
+static bool is_valid_utf8_impl(const uint8_t* data, size_t length) {
+  size_t i = 0;
+  while (i < length) {
+    uint8_t c = data[i];
+    if (c <= 0x7F) {
+      i += 1;
+    } else if (c >= 0xC2 && c <= 0xDF && i + 1 < length &&
+               (data[i + 1] & 0xC0) == 0x80) {
+      i += 2;
+    } else if (c >= 0xE0 && c <= 0xEF && i + 2 < length &&
+               (data[i + 1] & 0xC0) == 0x80 && (data[i + 2] & 0xC0) == 0x80) {
+      if (c == 0xE0 && data[i + 1] < 0xA0) return false;
+      i += 3;
+    } else if (c >= 0xF0 && c <= 0xF4 && i + 3 < length &&
+               (data[i + 1] & 0xC0) == 0x80 && (data[i + 2] & 0xC0) == 0x80 &&
+               (data[i + 3] & 0xC0) == 0x80) {
+      if (c == 0xF0 && data[i + 1] < 0x90) return false;
+      if (c == 0xF4 && data[i + 1] > 0x8F) return false;
+      i += 4;
+    } else {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool is_valid_utf8(const uint8_t* data, size_t length) {
+  if (!data) return (length == 0);
+  return is_valid_utf8_impl(data, length);
+}
+
 const char* nullable(char const* s) {
   return (s ? s : "");
 }

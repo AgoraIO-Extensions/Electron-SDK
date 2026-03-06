@@ -14,6 +14,7 @@
 #include <uv.h>
 #include <string>
 #include <unordered_map>
+#include <vector>
 #include "IAgoraRtcEngine.h"
 #include "agora_node_ext.h"
 #include "agora_video_source.h"
@@ -422,8 +423,7 @@ private:
   void onRefreshRecordingServiceStatus_node(int status);
   void onStreamMessage_node(uid_t uid,
                             int streamId,
-                            const char* data,
-                            size_t length);
+                            const std::vector<uint8_t>& data);
   void onStreamMessageError_node(uid_t uid,
                                  int streamId,
                                  int code,

@@ -10,6 +10,7 @@
 
 #include "node_channel_event_handler.h"
 #include <stdio.h>
+#include <vector>
 #include "agora_rtc_engine.h"
 #include "node_async_queue.h"
 #include "node_log.h"
@@ -525,10 +526,45 @@ void NodeChannelEventHandler::onStreamMessage(IChannel* rtcChannel,
                                               const char* data,
                                               size_t length) {
   FUNC_TRACE;
-  std::string m_data(nullable(data));
+  // 按 length 拷贝二进制数据，避免按字符串截断，前端可收到 Uint8Array
+  std::vector<uint8_t> m_data;
+  if (data && length > 0) {
+    m_data.assign(reinterpret_cast<const uint8_t*>(data),
+                  reinterpret_cast<const uint8_t*>(data) + length);
+  }
   node_async_call::async_call([this, uid, streamId, m_data] {
-    MAKE_JS_CALL_3(RTC_CHANNEL_EVENT_STREAM_MESSAGE, uid, uid, int32, streamId,
-                   string, m_data.c_str());
+    auto it = m_callbacks.find(RTC_CHANNEL_EVENT_STREAM_MESSAGE);
+    if (it != m_callbacks.end()) {
+      Isolate* isolate = Isolate::GetCurrent();
+      HandleScope scope(isolate);
+      Local<Context> context = isolate->GetCurrentContext();
+
+      Local<Value> msgValue;
+      if (!m_data.empty() &&
+          is_valid_utf8(m_data.data(), m_data.size())) {
+        msgValue = String::NewFromUtf8(
+                       isolate,
+                       reinterpret_cast<const char*>(m_data.data()),
+                       NewStringType::kNormal,
+                       static_cast<int>(m_data.size()))
+                       .ToLocalChecked();
+      } else {
+        Local<v8::ArrayBuffer> buff =
+            v8::ArrayBuffer::New(isolate, m_data.size());
+        if (!m_data.empty()) {
+          memcpy(buff->GetContents().Data(), m_data.data(), m_data.size());
+        }
+        msgValue = v8::Uint8Array::New(buff, 0, m_data.size());
+      }
+
+      Local<Value> argv[4]{
+          napi_create_uid_(isolate, uid),
+          napi_create_int32_(isolate, streamId),
+          msgValue,
+          napi_create_uint32_(isolate, static_cast<uint32_t>(m_data.size()))};
+      NodeEventCallback& cb = *it->second;
+      cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 4, argv);
+    }
   });
 }
 

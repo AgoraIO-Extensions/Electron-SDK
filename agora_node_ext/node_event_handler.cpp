@@ -10,6 +10,7 @@
 
 #include "node_event_handler.h"
 #include <stdio.h>
+#include <vector>
 #include "agora_rtc_engine.h"
 #include "node_async_queue.h"
 #include "node_log.h"
@@ -905,11 +906,38 @@ void NodeEventHandler::onConnectionBanned() {
 
 void NodeEventHandler::onStreamMessage_node(uid_t uid,
                                             int streamId,
-                                            const char* data,
-                                            size_t length) {
+                                            const std::vector<uint8_t>& data) {
   FUNC_TRACE;
-  MAKE_JS_CALL_4(RTC_EVENT_STREAM_MESSAGE, uid, uid, int32, streamId, string,
-                 data, int32, length);
+  auto it = m_callbacks.find(RTC_EVENT_STREAM_MESSAGE);
+  if (it != m_callbacks.end()) {
+    Isolate* isolate = Isolate::GetCurrent();
+    HandleScope scope(isolate);
+    Local<Context> context = isolate->GetCurrentContext();
+
+    Local<Value> msgValue;
+    if (!data.empty() && is_valid_utf8(data.data(), data.size())) {
+      msgValue = String::NewFromUtf8(
+                     isolate,
+                     reinterpret_cast<const char*>(data.data()),
+                     NewStringType::kNormal,
+                     static_cast<int>(data.size()))
+                     .ToLocalChecked();
+    } else {
+      Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, data.size());
+      if (!data.empty()) {
+        memcpy(buff->GetContents().Data(), data.data(), data.size());
+      }
+      msgValue = v8::Uint8Array::New(buff, 0, data.size());
+    }
+
+    Local<Value> argv[4]{
+        napi_create_uid_(isolate, uid),
+        napi_create_int32_(isolate, streamId),
+        msgValue,
+        napi_create_uint32_(isolate, static_cast<uint32_t>(data.size()))};
+    NodeEventCallback& cb = *it->second;
+    cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 4, argv);
+  }
 }
 
 void NodeEventHandler::onStreamMessage(uid_t uid,
@@ -917,9 +945,14 @@ void NodeEventHandler::onStreamMessage(uid_t uid,
                                        const char* data,
                                        size_t length) {
   FUNC_TRACE;
-  std::string msg(data);
-  node_async_call::async_call([this, uid, streamId, msg, length] {
-    this->onStreamMessage_node(uid, streamId, msg.c_str(), length);
+  // 按 length 拷贝二进制数据，前端可收到 Uint8Array（如 new Uint8Array([1,2,3,4])）
+  std::vector<uint8_t> m_data;
+  if (data && length > 0) {
+    m_data.assign(reinterpret_cast<const uint8_t*>(data),
+                  reinterpret_cast<const uint8_t*>(data) + length);
+  }
+  node_async_call::async_call([this, uid, streamId, m_data] {
+    this->onStreamMessage_node(uid, streamId, m_data);
   });
 }
 
