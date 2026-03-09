@@ -1214,6 +1214,16 @@ export enum MaxUserAccountLengthType {
 }
 
 /**
+ * @ignore
+ */
+export enum MaxCustomUserInfoLengthType {
+  /**
+   * @ignore
+   */
+  MaxCustomUserInfoLength = 1024,
+}
+
+/**
  * Information about externally encoded video frames.
  */
 export class EncodedVideoFrameInfo {
@@ -2416,10 +2426,6 @@ export enum LocalVideoStreamReason {
    * 30: The display being captured is disconnected. When receiving this state, prompt the user that screen sharing is paused and restart screen sharing.
    */
   LocalVideoStreamReasonScreenCaptureDisplayDisconnected = 30,
-  /**
-   * @ignore
-   */
-  LocalVideoStreamReasonScreenCaptureAlphaNotSupported = 35,
 }
 
 /**
@@ -4572,10 +4578,6 @@ export class ScreenCaptureParameters {
    * When sharing a partial region of a window or screen, if this parameter is set to true, the SDK highlights the entire window or screen. Whether to highlight the shared window or screen: true : Highlight. false : (Default) Do not highlight.
    */
   enableHighLight?: boolean;
-  /**
-   * @ignore
-   */
-  enableAlpha?: boolean;
 }
 
 /**
@@ -5214,6 +5216,10 @@ export class UserInfo {
    * User account. Length limit: MaxUserAccountLengthType.
    */
   userAccount?: string;
+  /**
+   * @ignore
+   */
+  customUserInfo?: string;
 }
 
 /**
