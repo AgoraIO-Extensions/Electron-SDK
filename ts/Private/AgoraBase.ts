@@ -3646,6 +3646,10 @@ export class LocalAudioMixerConfiguration {
    * Whether the mixed audio stream uses the timestamp of audio frames captured by the local microphone: true : (default) Use the timestamp of audio frames captured by the local mic. Set this value if you want all locally captured audio streams to stay synchronized. false : Do not use the local mic timestamp. The SDK uses the timestamp when the mixed audio frame is constructed.
    */
   syncWithLocalMic?: boolean;
+  /**
+   * @ignore
+   */
+  mixingWithoutSource?: boolean;
 }
 
 /**

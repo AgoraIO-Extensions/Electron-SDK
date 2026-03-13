@@ -1673,6 +1673,88 @@ export enum RecorderReasonCode {
    * @ignore
    */
   RecorderReasonConfigChanged = 4,
+  /**
+   * @ignore
+   */
+  RecorderReasonFailed = 5,
+  /**
+   * @ignore
+   */
+  RecorderReasonInitializeFailed = 6,
+  /**
+   * @ignore
+   */
+  RecorderReasonSetupVideoTrackFailed = 7,
+  /**
+   * @ignore
+   */
+  RecorderReasonSetupAudioTrackFailed = 8,
+  /**
+   * @ignore
+   */
+  RecorderReasonStartFailed = 9,
+  /**
+   * @ignore
+   */
+  RecorderReasonInvalidState = 10,
+}
+
+/**
+ * @ignore
+ */
+export enum AudioRecordingContentType {
+  /**
+   * @ignore
+   */
+  LocalAudioOnly = 1,
+  /**
+   * @ignore
+   */
+  RemoteAudiosOnly = 2,
+  /**
+   * @ignore
+   */
+  MixedAllAudios = 3,
+  /**
+   * @ignore
+   */
+  AllAudioStreams = 4,
+  /**
+   * @ignore
+   */
+  LocalUpstreamMixedAudio = 5,
+}
+
+/**
+ * @ignore
+ */
+export enum MediaRecorderMode {
+  /**
+   * @ignore
+   */
+  RecorderModeNonTranscoded = 0,
+  /**
+   * @ignore
+   */
+  RecorderModeTranscoded = 1,
+}
+
+/**
+ * @ignore
+ */
+export class AudioConfiguration {
+  /**
+   * @ignore
+   */
+  sampleRate?: number;
+  /**
+   * @ignore
+   */
+  audioRecordingType?: AudioRecordingContentType;
+  /**
+   * @ignore
+   */
+  recordingChannel?: number;
 }
 
 /**
@@ -1714,15 +1796,15 @@ export class MediaRecorderConfiguration {
   /**
    * @ignore
    */
-  sample_rate?: number;
-  /**
-   * @ignore
-   */
-  channel_num?: number;
-  /**
-   * @ignore
-   */
   videoSourceType?: VideoSourceType;
+  /**
+   * @ignore
+   */
+  recordingMode?: MediaRecorderMode;
+  /**
+   * @ignore
+   */
+  audioConfiguration?: AudioConfiguration;
 }
 
 /**
