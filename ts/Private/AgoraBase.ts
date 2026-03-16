@@ -444,30 +444,6 @@ export enum ErrorCodeType {
    * @ignore
    */
   ErrAdmApplicationLoopback = 2007,
-  /**
-   * @ignore
-   */
-  ErrAdmApplicationLoopbackStopped = 2008,
-  /**
-   * @ignore
-   */
-  ErrAdmSystemLoopback = 2009,
-  /**
-   * @ignore
-   */
-  ErrAdmSystemLoopbackStopped = 2010,
-  /**
-   * @ignore
-   */
-  ErrAdmLoopbackNoPermission = 2011,
-  /**
-   * @ignore
-   */
-  ErrAdmLoopbackSilentDetected = 2012,
-  /**
-   * @ignore
-   */
-  ErrAdmLoopbackSilentRecovered = 2013,
 }
 
 /**
@@ -3703,54 +3679,6 @@ export class AudioTrackConfig {
    * Whether to enable local audio playback: true : (default) Enable local audio playback. false : Disable local audio playback.
    */
   enableLocalPlayback?: boolean;
-}
-
-/**
- * @ignore
- */
-export enum LoopbackAudioTrackType {
-  /**
-   * @ignore
-   */
-  LoopbackSystem = 0,
-  /**
-   * @ignore
-   */
-  LoopbackSystemExcludeSelf = 1,
-  /**
-   * @ignore
-   */
-  LoopbackApplication = 2,
-  /**
-   * @ignore
-   */
-  LoopbackProcess = 3,
-}
-
-/**
- * @ignore
- */
-export class LoopbackAudioTrackConfig {
-  /**
-   * @ignore
-   */
-  loopbackType?: LoopbackAudioTrackType;
-  /**
-   * @ignore
-   */
-  volume?: number;
-  /**
-   * @ignore
-   */
-  deviceName?: string;
-  /**
-   * @ignore
-   */
-  appName?: string;
-  /**
-   * @ignore
-   */
-  processId?: number;
 }
 
 /**
