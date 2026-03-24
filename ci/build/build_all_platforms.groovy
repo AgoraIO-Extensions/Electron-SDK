@@ -9,6 +9,7 @@ properties([
         string(name: 'example_electron_version', defaultValue: '', description: '', trim: true),
         booleanParam(name: 'Upload_CDN', defaultValue: false),
         booleanParam(name: 'isBuildDemo', defaultValue: false),
+        booleanParam(name: 'is_tag_fetch', defaultValue: true),
         ]),
     [$class: 'ThrottleJobProperty',
         categories: [],
@@ -35,7 +36,8 @@ timestamps {
         booleanParam(name:'Clean_Clone', value: true),
         booleanParam(name:'isBuildSdk', value: params.Upload_CDN ? true : (params.isBuildDemo ? params.example_sdk_mode == "1" : false)),
         booleanParam(name:'isBuildDemo', value: params.isBuildDemo),
-        booleanParam(name: 'Upload_CDN', value: params.Upload_CDN)
+        booleanParam(name: 'is_tag_fetch', value: params.is_tag_fetch),
+        booleanParam(name: 'Upload_CDN', value: params.Upload_CDN),
     ]
 
     def buildJobs = [
