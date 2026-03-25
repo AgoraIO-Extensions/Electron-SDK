@@ -1214,16 +1214,6 @@ export enum MaxUserAccountLengthType {
 }
 
 /**
- * @ignore
- */
-export enum MaxCustomUserInfoLengthType {
-  /**
-   * @ignore
-   */
-  MaxCustomUserInfoLength = 1024,
-}
-
-/**
  * Information about externally encoded video frames.
  */
 export class EncodedVideoFrameInfo {
@@ -5216,10 +5206,6 @@ export class UserInfo {
    * User account. Length limit: MaxUserAccountLengthType.
    */
   userAccount?: string;
-  /**
-   * @ignore
-   */
-  customUserInfo?: string;
 }
 
 /**
