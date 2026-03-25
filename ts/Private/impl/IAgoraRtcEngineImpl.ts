@@ -1168,6 +1168,40 @@ export class IVideoEffectObjectImpl implements IVideoEffectObject {
     return 'VideoEffectObject_performVideoEffectAction_eddb1a6';
   }
 
+  setVideoEffectStringParam(
+    option: string,
+    key: string,
+    param: string
+  ): number {
+    const apiType = this.getApiTypeFromSetVideoEffectStringParam(
+      option,
+      key,
+      param
+    );
+    const jsonParams = {
+      option: option,
+      key: key,
+      param: param,
+      toJSON: () => {
+        return {
+          option: option,
+          key: key,
+          param: param,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromSetVideoEffectStringParam(
+    option: string,
+    key: string,
+    param: string
+  ): string {
+    return 'VideoEffectObject_setVideoEffectStringParam_0e4f59e';
+  }
+
   setVideoEffectFloatParam(option: string, key: string, param: number): number {
     const apiType = this.getApiTypeFromSetVideoEffectFloatParam(
       option,

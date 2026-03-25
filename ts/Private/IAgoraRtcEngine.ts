@@ -1274,10 +1274,6 @@ export class ChannelMediaOptions {
    * @ignore
    */
   parameters?: string;
-  /**
-   * @ignore
-   */
-  customUserInfo?: string;
 }
 
 /**
@@ -2776,6 +2772,15 @@ export abstract class IVideoEffectObject {
   abstract performVideoEffectAction(
     nodeId: number,
     actionId: VideoEffectAction
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract setVideoEffectStringParam(
+    option: string,
+    key: string,
+    param: string
   ): number;
 
   /**
