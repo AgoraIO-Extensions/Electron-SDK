@@ -50,10 +50,10 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    * Call this method to join multiple channels simultaneously. If you want to join the same channel on different devices, make sure the user IDs used on different devices are different. If you are already in a channel, you cannot join the same channel again with the same user ID.
    * Before joining a channel, make sure the App ID used to generate the Token is the same as the one used to initialize the engine with the initialize method. Otherwise, joining the channel with the Token will fail.
    *
-   * @param token A dynamic key generated on the server for authentication. See [Token Authentication](https://doc.shengwang.cn/doc/rtc/electron/basic-features/token-authentication).
+   * @param token A dynamic key generated on the server for authentication. See [Token Authentication](https://docs.agora.io/en/video-calling/token-authentication/deploy-token-server).
    *  (Recommended) If your project enables security mode (i.e., using APP ID + Token for authentication), this parameter is required.
    *  If your project only enables debug mode (i.e., using APP ID for authentication), you can join a channel without providing a Token. You will automatically leave the channel 24 hours after joining.
-   *  If you need to join multiple channels simultaneously or switch channels frequently, Agora recommends using a wildcard Token to avoid requesting a new Token from the server each time. See [Using Wildcard Token](https://doc.shengwang.cn/doc/rtc/electron/best-practice/wildcard-token).
+   *  If you need to join multiple channels simultaneously or switch channels frequently, Agora recommends using a wildcard Token to avoid requesting a new Token from the server each time. See [Using Wildcard Token](https://docs.agora.io/en/video-calling/token-authentication/deploy-token-server).
    * @param connection Connection information. See RtcConnection.
    * @param options Channel media options. See ChannelMediaOptions.
    *
@@ -633,7 +633,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * Custom data reporting and analysis service.
    *
-   * Agora provides custom data reporting and analysis services. This service is currently in a free beta phase. During the beta, you can report up to 10 data entries within 6 seconds. Each custom data entry must not exceed 256 bytes, and each string must not exceed 100 bytes. To try this service, [contact sales](https://www.shengwang.cn/contact-sales/) to enable it and agree on the custom data format.
+   * Agora provides custom data reporting and analysis services. This service is currently in a free beta phase. During the beta, you can report up to 10 data entries within 6 seconds. Each custom data entry must not exceed 256 bytes, and each string must not exceed 100 bytes. To try this service, [contact sales](mailto:support@agora.io) to enable it and agree on the custom data format.
    */
   abstract sendCustomReportMessageEx(
     id: string,
@@ -670,7 +670,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * Starts pushing media streams without transcoding.
    *
-   * Agora recommends using the more advanced server-side streaming feature. See [Implement Server-side Streaming](https://doc.shengwang.cn/doc/media-push/restful/landing-page).
+   * Agora recommends using the more advanced server-side streaming feature. See [Implement Server-side Streaming](https://docs.agora.io/en/media-push/get-started/enable-media-push).
    * Call this method to push live audio and video streams to a specified streaming URL. This method supports pushing to only one URL at a time. To push to multiple URLs, call this method multiple times.
    * After calling this method, the SDK triggers the onRtmpStreamingStateChanged callback locally to report the streaming status.
    *  Call this method after joining a channel.
@@ -695,7 +695,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * Starts pushing streams to a CDN and sets the transcoding configuration.
    *
-   * Agora recommends using the more comprehensive server-side streaming feature. See [Implement server-side CDN streaming](https://doc.shengwang.cn/doc/media-push/restful/landing-page).
+   * Agora recommends using the more comprehensive server-side streaming feature. See [Implement server-side CDN streaming](https://docs.agora.io/en/media-push/get-started/enable-media-push).
    * Call this method to push live audio and video streams to the specified CDN streaming URL and set the transcoding configuration. This method can only push media streams to one URL at a time. To push to multiple URLs, call this method multiple times.
    * After calling this method, the SDK triggers the onRtmpStreamingStateChanged callback locally to report the streaming status.
    *  Make sure the CDN streaming service is enabled.
@@ -723,7 +723,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * Updates the CDN transcoding configuration.
    *
-   * Agora recommends using the more comprehensive server-side streaming feature. See [Implement server-side CDN streaming](https://doc.shengwang.cn/doc/media-push/restful/landing-page).
+   * Agora recommends using the more comprehensive server-side streaming feature. See [Implement server-side CDN streaming](https://docs.agora.io/en/media-push/get-started/enable-media-push).
    * After enabling transcoding streaming, you can dynamically update the transcoding configuration based on your scenario. After the configuration is updated, the SDK triggers the onTranscodingUpdated callback.
    *
    * @param transcoding The transcoding configuration for the CDN stream. See LiveTranscoding.
@@ -741,7 +741,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * Stops pushing streams to a CDN.
    *
-   * Agora recommends using the more comprehensive server-side streaming feature. See [Implement server-side CDN streaming](https://doc.shengwang.cn/doc/media-push/restful/landing-page).
+   * Agora recommends using the more comprehensive server-side streaming feature. See [Implement server-side CDN streaming](https://docs.agora.io/en/media-push/get-started/enable-media-push).
    * Call this method to stop the live stream on the specified CDN streaming URL. This method can only stop one URL at a time. To stop multiple URLs, call this method multiple times.
    * After calling this method, the SDK triggers the onRtmpStreamingStateChanged callback locally to report the streaming status.
    *
@@ -763,7 +763,7 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    *  If the callback reports RelayStateFailure (3), it indicates an error occurred during the media stream relay.
    *  Call this method after successfully joining a channel.
    *  In a live streaming scenario, only users with the broadcaster role can call this method.
-   *  To enable the media stream relay across channels, [contact technical support](https://ticket.shengwang.cn/).
+   *  To enable the media stream relay across channels, [contact technical support](https://www.agora.io/cn/contact/).
    *  This feature does not support string-type UIDs.
    *
    * @param configuration Configuration for media stream relay across channels. See ChannelMediaRelayConfiguration.

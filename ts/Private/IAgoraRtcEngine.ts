@@ -1175,7 +1175,7 @@ export class ChannelMediaOptions {
    */
   mediaPlayerAudioDelayMs?: number;
   /**
-   * (Optional) A dynamic key generated on the server for authentication. See [Token Authentication](https://doc.shengwang.cn/doc/rtc/electron/basic-features/token-authentication).
+   * (Optional) A dynamic key generated on the server for authentication. See [Token Authentication](https://docs.agora.io/en/video-calling/token-authentication/deploy-token-server).
    *  This parameter only takes effect when calling updateChannelMediaOptions or updateChannelMediaOptionsEx.
    *  Make sure the App ID, channel name, and user name used to generate the token match the App ID used in the initialize method and the channel name and user name set in the joinChannel or joinChannelEx method.
    */
@@ -1198,7 +1198,7 @@ export class ChannelMediaOptions {
    */
   customVideoTrackId?: number;
   /**
-   * To enable this feature, please [contact sales](https://www.shengwang.cn/contact-sales/). Sets whether the current audio stream participates in stream selection based on audio volume algorithm. true : Participate in volume-based stream selection. If volume-based stream selection is not enabled, this parameter has no effect. false : Do not participate in volume-based stream selection.
+   * To enable this feature, please [contact sales](mailto:support@agora.io). Sets whether the current audio stream participates in stream selection based on audio volume algorithm. true : Participate in volume-based stream selection. If volume-based stream selection is not enabled, this parameter has no effect. false : Do not participate in volume-based stream selection.
    */
   isAudioFilterable?: boolean;
 }
@@ -2937,11 +2937,11 @@ export abstract class IRtcEngine {
    *  Ensure that the channel name, user ID, and Token passed during preloading are the same as those used when joining the channel; otherwise, preloading will not take effect.
    *  Currently, one IRtcEngine instance supports preloading up to 20 channels. If this limit is exceeded, only the latest 20 preloaded channels will take effect.
    *
-   * @param token The dynamic key generated on the server for authentication. See [Token Authentication](https://doc.shengwang.cn/doc/rtc/electron/basic-features/token-authentication).
+   * @param token The dynamic key generated on the server for authentication. See [Token Authentication](https://docs.agora.io/en/video-calling/token-authentication/deploy-token-server).
    * When the token expires, depending on the number of preloaded channels, you can pass a new token for preloading in different ways:
    *  To preload one channel: call this method to pass the new token.
    *  To preload multiple channels:
-   *  If you use a wildcard token, call updatePreloadChannelToken to update the token for all preloaded channels. When generating a wildcard token, the user ID must not be set to 0. See [Using Wildcard Tokens](https://doc.shengwang.cn/doc/rtc/electron/best-practice/wildcard-token).
+   *  If you use a wildcard token, call updatePreloadChannelToken to update the token for all preloaded channels. When generating a wildcard token, the user ID must not be set to 0. See [Using Wildcard Tokens](https://docs.agora.io/en/video-calling/token-authentication/deploy-token-server).
    *  If you use different tokens: call this method and pass your user ID, corresponding channel name, and the updated token.
    * @param channelId The name of the channel to preload. This parameter identifies the channel for real-time audio and video interaction. Under the same App ID, users who enter the same channel name will join the same channel for audio and video interaction.
    * This parameter is a string with a maximum length of 64 bytes. The following character set is supported (a total of 89 characters):
@@ -2986,10 +2986,10 @@ export abstract class IRtcEngine {
    *  Apps with different App IDs cannot communicate with each other.
    *  Before joining a channel, make sure the App ID used to generate the Token is the same as the one used to initialize the engine with the initialize method. Otherwise, joining the channel with the Token will fail.
    *
-   * @param token A dynamic key generated on the server for authentication. See [Token Authentication](https://doc.shengwang.cn/doc/rtc/electron/basic-features/token-authentication).
+   * @param token A dynamic key generated on the server for authentication. See [Token Authentication](https://docs.agora.io/en/video-calling/token-authentication/deploy-token-server).
    *  (Recommended) If your project enables security mode (i.e., using APP ID + Token for authentication), this parameter is required.
    *  If your project only enables debug mode (i.e., using APP ID for authentication), you can join a channel without providing a Token. You will automatically leave the channel 24 hours after joining.
-   *  If you need to join multiple channels simultaneously or switch channels frequently, Agora recommends using a wildcard Token to avoid requesting a new Token from the server each time. See [Using Wildcard Token](https://doc.shengwang.cn/doc/rtc/electron/best-practice/wildcard-token).
+   *  If you need to join multiple channels simultaneously or switch channels frequently, Agora recommends using a wildcard Token to avoid requesting a new Token from the server each time. See [Using Wildcard Token](https://docs.agora.io/en/video-calling/token-authentication/deploy-token-server).
    * @param channelId Channel name. This parameter identifies the channel for real-time audio and video interaction. Users with the same App ID and channel name will join the same channel. The value must be a string no longer than 64 bytes. Supported character set (89 characters total):
    *  26 lowercase English letters a~z
    *  26 uppercase English letters A~Z
@@ -3411,7 +3411,7 @@ export abstract class IRtcEngine {
    *  If someone subscribes to the low stream, it is enabled and reset to the SimulcastStreamConfig set by the most recent call to setDualStreamMode. If no configuration was set previously, the following values are used:
    *  Video resolution: 480 × 272
    *  Frame rate: 15 fps
-   *  Bitrate: 500 Kbps ApplicationScenario1v1 (2) is suitable for [1v1 video call](https://doc.shengwang.cn/doc/one-to-one-live/android/rtm/overview/product-overview) scenarios. The SDK optimizes strategies for this scenario to meet the requirements of low latency and high video quality, improving performance in terms of image quality, first frame rendering, latency on mid-to-low-end devices, and smoothness under poor network conditions. ApplicationScenarioLiveshow (3) is suitable for [showroom live streaming](https://doc.shengwang.cn/doc/showroom/android/overview/product-overview) scenarios. The SDK optimizes strategies for this scenario to meet the high demands on first frame rendering time and image clarity. For example, it enables audio and video frame accelerated rendering by default to improve first frame rendering experience, eliminating the need to call enableInstantMediaRendering separately. It also enables B-frames by default to ensure high image quality and transmission efficiency. Additionally, it enhances video quality and smoothness under poor network conditions and on low-end devices.
+   *  Bitrate: 500 Kbps ApplicationScenario1v1 (2) is suitable for 1v1 video call scenarios. The SDK optimizes strategies for this scenario to meet the requirements of low latency and high video quality, improving performance in terms of image quality, first frame rendering, latency on mid-to-low-end devices, and smoothness under poor network conditions. ApplicationScenarioLiveshow (3) is suitable for showroom live streaming scenarios. The SDK optimizes strategies for this scenario to meet the high demands on first frame rendering time and image clarity. For example, it enables audio and video frame accelerated rendering by default to improve first frame rendering experience, eliminating the need to call enableInstantMediaRendering separately. It also enables B-frames by default to ensure high image quality and transmission efficiency. Additionally, it enhances video quality and smoothness under poor network conditions and on low-end devices.
    *
    * @returns
    * 0: Success.
@@ -3817,7 +3817,7 @@ export abstract class IRtcEngine {
   /**
    * Starts playing a music file.
    *
-   * For supported audio file formats, see [What audio file formats does RTC SDK support](https://doc.shengwang.cn/faq/general-product-inquiry/audio-format). If the local music file does not exist, the file format is not supported, or the online music file URL is inaccessible, the SDK reports AudioMixingReasonCanNotOpen.
+   * For supported audio file formats, see [What audio file formats does RTC SDK support](https://docs.agora.io/en/help/general-product-inquiry/audio_format#extended-audio-file-formats). If the local music file does not exist, the file format is not supported, or the online music file URL is inaccessible, the SDK reports AudioMixingReasonCanNotOpen.
    *  Using this method to play short sound effect files may result in playback failure. To play sound effects, use playEffect.
    *  If you need to call this method multiple times, ensure that the interval between calls is greater than 500 ms.
    *
@@ -3883,7 +3883,7 @@ export abstract class IRtcEngine {
    * Specifies the playback audio track of the current music file.
    *
    * After getting the number of audio tracks in the music file, you can call this method to specify any track for playback. For example, if a multi-track file contains songs in different languages on different tracks, you can use this method to set the playback language.
-   *  For supported audio file formats, see [What audio file formats does the RTC SDK support?](https://doc.shengwang.cn/faq/general-product-inquiry/audio-format).
+   *  For supported audio file formats, see [What audio file formats does the RTC SDK support?](https://docs.agora.io/en/help/general-product-inquiry/audio_format#extended-audio-file-formats).
    *  You need to call this method after calling startAudioMixing and receiving the onAudioMixingStateChanged(AudioMixingStatePlaying) callback.
    *
    * @param index The specified playback track. The value range should be greater than or equal to 0 and less than the return value of getAudioTrackCount.
@@ -4053,7 +4053,7 @@ export abstract class IRtcEngine {
    * Loads the audio effect file into memory.
    *
    * To ensure smooth communication, be mindful of the size of the preloaded audio effect files.
-   * For supported audio formats, see [What audio formats are supported by the RTC SDK](https://doc.shengwang.cn/faq/general-product-inquiry/audio-format).
+   * For supported audio formats, see [What audio formats are supported by the RTC SDK](https://docs.agora.io/en/help/general-product-inquiry/audio_format#extended-audio-file-formats).
    *
    * @param soundId The ID of the audio effect. Each audio effect has a unique ID.
    * @param filePath File path:
@@ -5590,7 +5590,7 @@ export abstract class IRtcEngine {
   /**
    * Starts pushing media streams without transcoding.
    *
-   * Agora recommends using the more advanced server-side streaming feature. See [Implement Server-side Streaming](https://doc.shengwang.cn/doc/media-push/restful/landing-page).
+   * Agora recommends using the more advanced server-side streaming feature. See [Implement Server-side Streaming](https://docs.agora.io/en/media-push/get-started/enable-media-push).
    * Call this method to push live audio and video streams to a specified streaming URL. This method supports pushing to only one URL at a time. To push to multiple URLs, call this method multiple times.
    * After calling this method, the SDK triggers the onRtmpStreamingStateChanged callback locally to report the streaming status.
    *  Call this method after joining a channel.
@@ -5611,9 +5611,9 @@ export abstract class IRtcEngine {
   /**
    * Starts pushing streams to a CDN and sets the transcoding configuration.
    *
-   * Agora recommends using the more comprehensive server-side streaming feature. See [Implement server-side CDN streaming](https://doc.shengwang.cn/doc/media-push/restful/landing-page).
+   * Agora recommends using the more comprehensive server-side streaming feature. See [Implement server-side CDN streaming](https://docs.agora.io/en/media-push/get-started/enable-media-push).
    * Call this method to push live audio and video streams to the specified CDN streaming URL and set the transcoding configuration. This method can only push media streams to one URL at a time. To push to multiple URLs, call this method multiple times.
-   * Each stream push represents a streaming task. The default maximum number of concurrent tasks is 200, meaning you can run up to 200 streaming tasks simultaneously under one Agora project. To increase the quota, [contact technical support](https://ticket.shengwang.cn/).
+   * Each stream push represents a streaming task. The default maximum number of concurrent tasks is 200, meaning you can run up to 200 streaming tasks simultaneously under one Agora project. To increase the quota, [contact technical support](https://www.agora.io/cn/contact/).
    * After calling this method, the SDK triggers the onRtmpStreamingStateChanged callback locally to report the streaming status.
    *  Call this method after joining a channel.
    *  Only hosts in a live streaming scenario can call this method.
@@ -5637,7 +5637,7 @@ export abstract class IRtcEngine {
   /**
    * Updates the CDN transcoding configuration.
    *
-   * Agora recommends using the more comprehensive server-side streaming feature. See [Implement server-side CDN streaming](https://doc.shengwang.cn/doc/media-push/restful/landing-page).
+   * Agora recommends using the more comprehensive server-side streaming feature. See [Implement server-side CDN streaming](https://docs.agora.io/en/media-push/get-started/enable-media-push).
    * After enabling transcoding streaming, you can dynamically update the transcoding configuration based on your scenario. After the configuration is updated, the SDK triggers the onTranscodingUpdated callback.
    *
    * @param transcoding The transcoding configuration for the CDN stream. See LiveTranscoding.
@@ -5651,7 +5651,7 @@ export abstract class IRtcEngine {
   /**
    * Stops pushing streams to a CDN.
    *
-   * Agora recommends using the more comprehensive server-side streaming feature. See [Implement server-side CDN streaming](https://doc.shengwang.cn/doc/media-push/restful/landing-page).
+   * Agora recommends using the more comprehensive server-side streaming feature. See [Implement server-side CDN streaming](https://docs.agora.io/en/media-push/get-started/enable-media-push).
    * Call this method to stop the live stream on the specified CDN streaming URL. This method can only stop one URL at a time. To stop multiple URLs, call this method multiple times.
    * After calling this method, the SDK triggers the onRtmpStreamingStateChanged callback locally to report the streaming status.
    *
@@ -5940,7 +5940,7 @@ export abstract class IRtcEngine {
   /**
    * Sends a custom report message.
    *
-   * Agora provides custom data reporting and analysis services. This service is currently in a free beta phase. During the beta, you can report up to 10 data entries within 6 seconds. Each custom data entry must not exceed 256 bytes, and each string must not exceed 100 bytes. To try this service, [contact sales](https://www.shengwang.cn/contact-sales/) to enable it and agree on the custom data format.
+   * Agora provides custom data reporting and analysis services. This service is currently in a free beta phase. During the beta, you can report up to 10 data entries within 6 seconds. Each custom data entry must not exceed 256 bytes, and each string must not exceed 100 bytes. To try this service, [contact sales](mailto:support@agora.io) to enable it and agree on the custom data format.
    */
   abstract sendCustomReportMessage(
     id: string,
@@ -6058,10 +6058,10 @@ export abstract class IRtcEngine {
    *  Apps with different App IDs cannot communicate with each other.
    *  Before joining a channel, ensure that the App ID used to generate the Token is the same as the one used to initialize the engine via the initialize method. Otherwise, joining the channel with the Token will fail.
    *
-   * @param token A dynamic key generated on your server for authentication. See [Token Authentication](https://doc.shengwang.cn/doc/rtc/electron/basic-features/token-authentication).
+   * @param token A dynamic key generated on your server for authentication. See [Token Authentication](https://docs.agora.io/en/video-calling/token-authentication/deploy-token-server).
    *  (Recommended) If your project enables security mode (i.e., uses APP ID + Token for authentication), this parameter is required.
    *  If your project only enables debug mode (i.e., uses APP ID only for authentication), you can join the channel without providing a Token. The user will automatically leave the channel after 24 hours.
-   *  If you need to join multiple channels simultaneously or switch channels frequently, Agora recommends using a wildcard Token to avoid requesting a new Token from the server for each new channel. See [Using Wildcard Token](https://doc.shengwang.cn/doc/rtc/electron/best-practice/wildcard-token).
+   *  If you need to join multiple channels simultaneously or switch channels frequently, Agora recommends using a wildcard Token to avoid requesting a new Token from the server for each new channel. See [Using Wildcard Token](https://docs.agora.io/en/video-calling/token-authentication/deploy-token-server).
    * @param userAccount The user’s User Account. This parameter identifies the user in the real-time audio and video channel. You need to set and manage the User Account yourself, and ensure that each user in the same channel has a unique User Account. This parameter is required, must not exceed 255 bytes, and cannot be null. Supported character set (89 characters total):
    *  26 lowercase English letters a-z
    *  26 uppercase English letters A-Z
@@ -6097,10 +6097,10 @@ export abstract class IRtcEngine {
    *  Apps with different App IDs cannot communicate with each other.
    *  Before joining a channel, ensure that the App ID used to generate the Token is the same as the one used to initialize the engine via the initialize method. Otherwise, joining the channel with the Token will fail.
    *
-   * @param token A dynamic key generated on your server for authentication. See [Token Authentication](https://doc.shengwang.cn/doc/rtc/electron/basic-features/token-authentication).
+   * @param token A dynamic key generated on your server for authentication. See [Token Authentication](https://docs.agora.io/en/video-calling/token-authentication/deploy-token-server).
    *  (Recommended) If your project enables security mode (i.e., uses APP ID + Token for authentication), this parameter is required.
    *  If your project only enables debug mode (i.e., uses APP ID only for authentication), you can join the channel without providing a Token. The user will automatically leave the channel after 24 hours.
-   *  If you need to join multiple channels simultaneously or switch channels frequently, Agora recommends using a wildcard Token to avoid requesting a new Token from the server for each new channel. See [Using Wildcard Token](https://doc.shengwang.cn/doc/rtc/electron/best-practice/wildcard-token).
+   *  If you need to join multiple channels simultaneously or switch channels frequently, Agora recommends using a wildcard Token to avoid requesting a new Token from the server for each new channel. See [Using Wildcard Token](https://docs.agora.io/en/video-calling/token-authentication/deploy-token-server).
    * @param userAccount The user’s User Account. This parameter identifies the user in the real-time audio and video channel. You need to set and manage the User Account yourself, and ensure that each user in the same channel has a unique User Account. This parameter is required, must not exceed 255 bytes, and cannot be null. Supported character set (89 characters total):
    *  26 lowercase English letters a-z
    *  26 uppercase English letters A-Z
@@ -6160,7 +6160,7 @@ export abstract class IRtcEngine {
    *  If the onChannelMediaRelayStateChanged callback reports RelayStateFailure (3), it means an error occurred during cross-channel media stream forwarding.
    *  Call this method after successfully joining a channel.
    *  In a live streaming scenario, only users with the broadcaster role can call this method.
-   *  The cross-channel media stream forwarding feature requires [technical support](https://ticket.shengwang.cn/) to enable.
+   *  The cross-channel media stream forwarding feature requires [technical support](https://www.agora.io/cn/contact/) to enable.
    *  This feature does not support string-type UIDs.
    *
    * @param configuration Cross-channel media stream forwarding configuration. See ChannelMediaRelayConfiguration.
@@ -6302,8 +6302,8 @@ export abstract class IRtcEngine {
    *  Once the virtual metronome is enabled, the SDK starts playing the specified audio files from the beginning and controls the playback duration of each file based on the beatsPerMinute setting in AgoraRhythmPlayerConfig. For example, if beatsPerMinute is set to 60, the SDK plays one beat per second. If the file duration exceeds the beat duration, the SDK only plays the portion corresponding to the beat duration.
    *  By default, the sound of the virtual metronome is not published to remote users. If you want remote users to hear the metronome, set publishRhythmPlayerTrack in ChannelMediaOptions to true after calling this method.
    *
-   * @param sound1 The absolute path or URL of the strong beat file, including the file name and extension. For example, C:\music\audio.mp4. Supported audio formats: see [Supported Audio Formats by RTC SDK](https://doc.shengwang.cn/faq/general-product-inquiry/audio-format).
-   * @param sound2 The absolute path or URL of the weak beat file, including the file name and extension. For example, C:\music\audio.mp4. Supported audio formats: see [Supported Audio Formats by RTC SDK](https://doc.shengwang.cn/faq/general-product-inquiry/audio-format).
+   * @param sound1 The absolute path or URL of the strong beat file, including the file name and extension. For example, C:\music\audio.mp4. Supported audio formats: see [Supported Audio Formats by RTC SDK](https://docs.agora.io/en/help/general-product-inquiry/audio_format#extended-audio-file-formats).
+   * @param sound2 The absolute path or URL of the weak beat file, including the file name and extension. For example, C:\music\audio.mp4. Supported audio formats: see [Supported Audio Formats by RTC SDK](https://docs.agora.io/en/help/general-product-inquiry/audio_format#extended-audio-file-formats).
    * @param config Metronome configuration. See AgoraRhythmPlayerConfig.
    */
   abstract startRhythmPlayer(
@@ -6718,11 +6718,11 @@ export abstract class IRtcEngine {
    *  Ensure that the channel name, user User Account, and Token passed during preloading are the same as those used when joining the channel; otherwise, preloading will not take effect.
    *  Currently, one IRtcEngine instance supports preloading up to 20 channels. If this limit is exceeded, only the latest 20 preloaded channels will take effect.
    *
-   * @param token The dynamic key generated on the server for authentication. See [Token Authentication](https://doc.shengwang.cn/doc/rtc/electron/basic-features/token-authentication).
+   * @param token The dynamic key generated on the server for authentication. See [Token Authentication](https://docs.agora.io/en/video-calling/token-authentication/deploy-token-server).
    * When the token expires, depending on the number of preloaded channels, you can pass a new token for preloading in different ways:
    *  To preload one channel: call this method to pass the new token.
    *  To preload multiple channels:
-   *  If you use a wildcard token, call updatePreloadChannelToken to update the token for all preloaded channels. When generating a wildcard token, the user ID must not be set to 0. See [Using Wildcard Tokens](https://doc.shengwang.cn/doc/rtc/electron/best-practice/wildcard-token).
+   *  If you use a wildcard token, call updatePreloadChannelToken to update the token for all preloaded channels. When generating a wildcard token, the user ID must not be set to 0. See [Using Wildcard Tokens](https://docs.agora.io/en/video-calling/token-authentication/deploy-token-server).
    *  If you use different tokens: call this method and pass your user ID, corresponding channel name, and the updated token.
    * @param channelId The name of the channel to preload. This parameter identifies the channel for real-time audio and video interaction. Under the same App ID, users who enter the same channel name will join the same channel for audio and video interaction.
    * This parameter is a string with a maximum length of 64 bytes. The following character set is supported (a total of 89 characters):
