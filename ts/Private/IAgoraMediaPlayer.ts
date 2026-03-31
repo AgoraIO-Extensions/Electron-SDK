@@ -192,7 +192,15 @@ export abstract class IMediaPlayer {
   abstract setPlaybackSpeed(speed: number): number;
 
   /**
-   * @ignore
+   * Specifies the audio track to play in the current audio file.
+   *
+   * After obtaining the audio track index of the audio file, you can call this method to specify any track for playback. If different tracks in a multi-track file contain songs in different languages, you can call this method to set the playback language. You need to call this method after calling getStreamInfo to obtain the audio stream index.
+   *
+   * @param index The index of the audio track.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract selectAudioTrack(index: number): number;
 
@@ -353,7 +361,14 @@ export abstract class IMediaPlayer {
   ): number;
 
   /**
-   * @ignore
+   * Registers an audio frame observer.
+   *
+   * @param observer The audio frame observer that monitors the reception of each audio frame. See IAudioPcmFrameSink.
+   * @param mode The usage mode of the audio frame. See RawAudioFrameOpModeType.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract registerAudioFrameObserver(
     observer: IAudioPcmFrameSink,
@@ -361,19 +376,39 @@ export abstract class IMediaPlayer {
   ): number;
 
   /**
-   * @ignore
+   * Unregisters the audio frame observer.
+   *
+   * @param observer The audio frame observer. See IAudioPcmFrameSink.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract unregisterAudioFrameObserver(observer: IAudioPcmFrameSink): number;
 
   /**
-   * @ignore
+   * Registers a video frame observer.
+   *
+   * You need to implement a IMediaPlayerVideoFrameObserver class in this method and register the callbacks of that class as needed. After successful registration, the SDK triggers the registered callbacks when each video frame is captured.
+   *
+   * @param observer The video frame observer that monitors the reception of each video frame. See IMediaPlayerVideoFrameObserver.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract registerVideoFrameObserver(
     observer: IMediaPlayerVideoFrameObserver
   ): number;
 
   /**
-   * @ignore
+   * Unregisters the video frame observer.
+   *
+   * @param observer The video frame observer that monitors the reception of each video frame. See IMediaPlayerVideoFrameObserver.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract unregisterVideoFrameObserver(
     observer: IMediaPlayerVideoFrameObserver
@@ -415,7 +450,10 @@ export abstract class IMediaPlayer {
   abstract getPlayerSdkVersion(): string;
 
   /**
-   * @ignore
+   * Gets the path of the media resource being played.
+   *
+   * @returns
+   * The path of the media resource being played.
    */
   abstract getPlaySrc(): string;
 
@@ -705,7 +743,12 @@ export abstract class IMediaPlayerCacheManager {
  */
 export interface IMediaPlayerVideoFrameObserver {
   /**
-   * @ignore
+   * Callback triggered when a video frame is received.
+   *
+   * After registering the video observer, this callback is triggered each time a video frame is received to report video frame information.
+   * It is recommended to implement this callback using the C++ API.
+   *
+   * @param frame Video frame information. See VideoFrame.
    */
   onFrame?(frame: VideoFrame): void;
 }

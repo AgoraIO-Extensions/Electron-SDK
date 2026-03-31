@@ -684,7 +684,7 @@ export class VideoFrame {
    */
   pixelBuffer?: Uint8Array;
   /**
-   * Metadata in the video frame. This parameter requires [contacting technical support](https://ticket.shengwang.cn/) to use.
+   * Metadata in the video frame. This parameter requires [contacting technical support](https://www.agora.io/cn/contact/) to use.
    */
   metaInfo?: IVideoFrameMetaInfo;
 }
@@ -836,7 +836,11 @@ export class SnapshotConfig {
  */
 export interface IAudioPcmFrameSink {
   /**
-   * @ignore
+   * Callback when an audio frame is received.
+   *
+   * After registering the audio data observer, this callback is triggered each time an audio frame is received to report the audio frame information.
+   *
+   * @param frame Audio frame information. See AudioPcmFrame.
    */
   onFrame?(frame: AudioPcmFrame): void;
 }

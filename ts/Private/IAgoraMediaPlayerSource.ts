@@ -127,7 +127,11 @@ export interface IMediaPlayerSourceObserver {
   onPlayerPlaybackStats?(stats: PlayerPlaybackStats): void;
 
   /**
-   * @ignore
+   * Audio volume indication callback from the media player.
+   *
+   * The SDK triggers this callback every 200 ms to report the current volume of the media player.
+   *
+   * @param volume The current volume of the player, ranging from [0, 255].
    */
   onAudioVolumeIndication?(volume: number): void;
 }
