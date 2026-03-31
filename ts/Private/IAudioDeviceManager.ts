@@ -325,7 +325,7 @@ export abstract class IAudioDeviceManager {
   abstract followSystemLoopbackDevice(enable: boolean): number;
 
   /**
-   * @ignore
+   * Releases all resources occupied by the IAudioDeviceManager object.
    */
   abstract release(): void;
 

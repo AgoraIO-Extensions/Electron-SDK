@@ -73,7 +73,14 @@ export abstract class ILocalSpatialAudioEngine {
   abstract release(): void;
 
   /**
-   * @ignore
+   * Initializes ILocalSpatialAudioEngine.
+   *
+   * You need to call this method to initialize ILocalSpatialAudioEngine before calling any other methods in the ILocalSpatialAudioEngine class.
+   *  The SDK supports only one ILocalSpatialAudioEngine instance per app.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract initialize(): number;
 
