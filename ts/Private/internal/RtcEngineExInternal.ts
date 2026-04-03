@@ -27,6 +27,7 @@ import {
 } from '../AgoraBase';
 import {
   IAudioSpectrumObserver,
+  MediaSourceType,
   RenderModeType,
   VideoSourceType,
 } from '../AgoraMediaBase';
@@ -42,6 +43,7 @@ import {
   IMetadataObserver,
   IRtcEngineEventHandler,
   IVideoDeviceManager,
+  IVideoEffectObject,
   LeaveChannelOptions,
   MetadataType,
   RtcEngineContext,
@@ -72,6 +74,7 @@ import { MediaEngineInternal } from './MediaEngineInternal';
 import { MediaPlayerInternal } from './MediaPlayerInternal';
 import { MediaRecorderInternal } from './MediaRecorderInternal';
 import { MusicContentCenterInternal } from './MusicContentCenterInternal';
+import { VideoEffectObjectInternal } from './VideoEffectObjectInternal';
 
 const checkers = createCheckers(
   AgoraBaseTI,
@@ -594,6 +597,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
         if (!value.thumbImage?.buffer || !value.thumbImage?.length) {
           value.thumbImage!.buffer = undefined;
         } else {
+          // @ts-ignore
           value.thumbImage!.buffer = AgoraElectronBridge.GetBuffer(
             value.thumbImage!.buffer as unknown as number,
             value.thumbImage.length!
@@ -602,6 +606,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
         if (!value.iconImage?.buffer || !value.iconImage?.length) {
           value.iconImage!.buffer = undefined;
         } else {
+          // @ts-ignore
           value.iconImage.buffer = AgoraElectronBridge.GetBuffer(
             value.iconImage!.buffer as unknown as number,
             value.iconImage.length!
@@ -716,5 +721,24 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       channelId,
       uid,
     });
+  }
+
+  override createVideoEffectObject(
+    bundlePath: string,
+    type?: MediaSourceType
+  ): IVideoEffectObject {
+    // @ts-ignore
+    const videoEffectObjectId = super.createVideoEffectObject(
+      bundlePath,
+      type
+    ) as number;
+    return new VideoEffectObjectInternal(videoEffectObjectId);
+  }
+
+  override destroyVideoEffectObject(
+    videoEffectObject: IVideoEffectObject
+  ): number {
+    const ret = super.destroyVideoEffectObject(videoEffectObject);
+    return ret;
   }
 }
