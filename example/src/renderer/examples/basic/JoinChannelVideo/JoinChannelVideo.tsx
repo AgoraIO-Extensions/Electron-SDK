@@ -213,12 +213,25 @@ export default class JoinChannelVideo
     });
   }
 
-  onLocalVideoStats(connection: RtcConnection, stats: LocalVideoStats): void {
+  onLocalVideoStats(connection: RtcConnection, stats: LocalVideoStats): void;
+  onLocalVideoStats(
+    connection: RtcConnection,
+    sourceType: VideoSourceType,
+    stats: LocalVideoStats
+  ): void;
+  onLocalVideoStats(
+    connection: RtcConnection,
+    sourceTypeOrStats: VideoSourceType | LocalVideoStats,
+    stats?: LocalVideoStats
+  ): void {
+    void connection;
+    const localVideoStats =
+      stats ?? (sourceTypeOrStats as LocalVideoStats | undefined);
     this.setState({
-      videoSentBitrate: stats.sentBitrate,
-      encodedFrameWidth: stats.encodedFrameWidth,
-      encodedFrameHeight: stats.encodedFrameHeight,
-      encoderOutputFrameRate: stats.encoderOutputFrameRate,
+      videoSentBitrate: localVideoStats?.sentBitrate,
+      encodedFrameWidth: localVideoStats?.encodedFrameWidth,
+      encodedFrameHeight: localVideoStats?.encodedFrameHeight,
+      encoderOutputFrameRate: localVideoStats?.encoderOutputFrameRate,
     });
   }
 

@@ -1,6 +1,8 @@
 {
   "name": "Agora-Electron-API-Example",
   "version": "1.0.0",
+  "description": "Agora Electron API Example",
+  "author": "Agora.io",
   "license": "MIT",
   "scripts": {
     "postinstall": "npm run rebuild",
