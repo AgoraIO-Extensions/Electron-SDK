@@ -1,5 +1,7 @@
 import { MediaSourceType } from 'agora-electron-sdk';
 
+export const CUSTOM_VIDEO_EFFECT_BUNDLE_RELATIVE_PATH =
+  'AgoraBeautyMaterial/beauty_material_functional';
 export const CLEAR_VISION_EXTENSION_PROVIDER =
   'agora_video_filters_clear_vision';
 export const CLEAR_VISION_EXTENSION_NAME = 'clear_vision';
@@ -45,6 +47,44 @@ export interface FaceShapeOptions {
   shapeStyle: number;
   styleIntensity: number;
 }
+
+export interface SdkDrivenBeautyOptions {
+  smoothness: number;
+  lightness: number;
+  redness: number;
+  eyePouch: number;
+  faceStyle: number;
+  faceIntensity: number;
+}
+
+export const BEAUTY_TEMPLATES = {
+  basic: {
+    label: 'Basic (基础)',
+    templateName: 'Beauty-Basic',
+  },
+} as const;
+
+export const STYLE_MAKEUP_TEMPLATES = {
+  none: {
+    label: 'None',
+    templateName: null,
+  },
+  natural: {
+    label: 'Natural (百熙)',
+    templateName: 'Makeup-Natural',
+  },
+} as const;
+
+export const FILTER_TEMPLATES = {
+  none: {
+    label: 'None',
+    templateName: null,
+  },
+  whiteTea: {
+    label: 'Whitetea (白茶)',
+    templateName: 'Filter-Whitetea',
+  },
+} as const;
 
 export const DEFAULT_MAKEUP_OPTIONS: MakeupOptions = {
   enable_mu: false,
@@ -92,6 +132,15 @@ export const DEFAULT_FACE_SHAPE_OPTIONS: FaceShapeOptions = {
   shapeIntensity: 0,
   shapeStyle: FACE_SHAPE_BEAUTY_STYLES.FaceShapeBeautyStyleFemale,
   styleIntensity: 0,
+};
+
+export const DEFAULT_SDK_DRIVEN_BEAUTY_OPTIONS: SdkDrivenBeautyOptions = {
+  smoothness: 0.5,
+  lightness: 0.3,
+  redness: 0,
+  eyePouch: 0,
+  faceStyle: -1,
+  faceIntensity: 50,
 };
 
 export const MAKEUP_ITEMS = {
@@ -250,6 +299,63 @@ export function releaseVideoEffectResources(
     false,
     MediaSourceType.PrimaryCameraSource
   );
+}
+
+export function buildSdkDrivenBeautyOperations(
+  options: SdkDrivenBeautyOptions
+): VideoEffectOperation[] {
+  return [
+    {
+      kind: 'float',
+      option: 'beauty_effect_option',
+      key: 'smoothness',
+      value: options.smoothness,
+    },
+    {
+      kind: 'float',
+      option: 'beauty_effect_option',
+      key: 'lightness',
+      value: options.lightness,
+    },
+    {
+      kind: 'float',
+      option: 'beauty_effect_option',
+      key: 'redness',
+      value: options.redness,
+    },
+    {
+      kind: 'float',
+      option: 'face_buffing_option',
+      key: 'eye_pouch',
+      value: options.eyePouch,
+    },
+    {
+      kind: 'int',
+      option: 'face_shape_beauty_option',
+      key: 'style',
+      value: options.faceStyle,
+    },
+    {
+      kind: 'int',
+      option: 'face_shape_beauty_option',
+      key: 'intensity',
+      value: options.faceIntensity,
+    },
+  ];
+}
+
+export function buildStyleEffectOperations(
+  option: 'style_effect_option' | 'filter_effect_option',
+  value: number
+): VideoEffectOperation[] {
+  return [
+    {
+      kind: 'float',
+      option,
+      key: option === 'style_effect_option' ? 'styleIntensity' : 'strength',
+      value,
+    },
+  ];
 }
 
 export function buildMakeupEffectOperations(

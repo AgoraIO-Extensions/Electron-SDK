@@ -1,8 +1,13 @@
 import {
+  BEAUTY_TEMPLATES,
   FACE_SHAPE_AREAS,
+  FILTER_TEMPLATES,
+  STYLE_MAKEUP_TEMPLATES,
   VIDEO_EFFECT_BUNDLE_RELATIVE_PATH_CANDIDATES,
   buildFaceShapeEffectOperations,
   buildMakeupEffectOperations,
+  buildSdkDrivenBeautyOperations,
+  buildStyleEffectOperations,
   mapUiToResourceId,
   releaseVideoEffectResources,
   resolveVideoEffectBundlePath,
@@ -315,5 +320,89 @@ describe('buildFaceShapeEffectOperations', () => {
         styleIntensity: 18,
       })
     ).toEqual([]);
+  });
+});
+
+describe('buildSdkDrivenBeautyOperations', () => {
+  test('builds flutter-style beauty params for the BEAUTY node', () => {
+    expect(
+      buildSdkDrivenBeautyOperations({
+        smoothness: 0.5,
+        lightness: 0.3,
+        redness: 0.1,
+        eyePouch: 0.2,
+        faceStyle: 1,
+        faceIntensity: 42,
+      })
+    ).toEqual([
+      {
+        kind: 'float',
+        option: 'beauty_effect_option',
+        key: 'smoothness',
+        value: 0.5,
+      },
+      {
+        kind: 'float',
+        option: 'beauty_effect_option',
+        key: 'lightness',
+        value: 0.3,
+      },
+      {
+        kind: 'float',
+        option: 'beauty_effect_option',
+        key: 'redness',
+        value: 0.1,
+      },
+      {
+        kind: 'float',
+        option: 'face_buffing_option',
+        key: 'eye_pouch',
+        value: 0.2,
+      },
+      {
+        kind: 'int',
+        option: 'face_shape_beauty_option',
+        key: 'style',
+        value: 1,
+      },
+      {
+        kind: 'int',
+        option: 'face_shape_beauty_option',
+        key: 'intensity',
+        value: 42,
+      },
+    ]);
+  });
+});
+
+describe('buildStyleEffectOperations', () => {
+  test('builds style makeup intensity params', () => {
+    expect(buildStyleEffectOperations('style_effect_option', 0.8)).toEqual([
+      {
+        kind: 'float',
+        option: 'style_effect_option',
+        key: 'styleIntensity',
+        value: 0.8,
+      },
+    ]);
+  });
+
+  test('builds filter strength params', () => {
+    expect(buildStyleEffectOperations('filter_effect_option', 0.6)).toEqual([
+      {
+        kind: 'float',
+        option: 'filter_effect_option',
+        key: 'strength',
+        value: 0.6,
+      },
+    ]);
+  });
+});
+
+describe('template metadata', () => {
+  test('keeps flutter-aligned template names', () => {
+    expect(BEAUTY_TEMPLATES.basic.templateName).toBe('Beauty-Basic');
+    expect(STYLE_MAKEUP_TEMPLATES.natural.templateName).toBe('Makeup-Natural');
+    expect(FILTER_TEMPLATES.whiteTea.templateName).toBe('Filter-Whitetea');
   });
 });
