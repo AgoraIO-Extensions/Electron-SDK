@@ -1052,7 +1052,7 @@ export class VideoFrame {
    */
   pixelBuffer?: Uint8Array;
   /**
-   * Metadata in the video frame. This parameter requires [contacting technical support](https://ticket.shengwang.cn/) to use.
+   * Metadata in the video frame. This parameter requires [contacting technical support](https://www.agora.io/cn/contact/) to use.
    */
   metaInfo?: IVideoFrameMetaInfo;
   /**

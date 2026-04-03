@@ -135,7 +135,7 @@ export abstract class IMediaEngine {
    * @param enabled Whether to enable the external video source: true : Enable the external video source. The SDK is ready to receive external video frames. false : (Default) Do not enable the external video source.
    * @param useTexture Whether to use external video frames in Texture format: true : Use external video frames in Texture format. false : Do not use external video frames in Texture format.
    * @param sourceType Whether the external video frame is encoded. See ExternalVideoSourceType.
-   * @param encodedVideoOption Video encoding options. If sourceType is EncodedVideoFrame, you need to set this parameter. You can [contact technical support](https://ticket.shengwang.cn/) to learn how to configure this parameter.
+   * @param encodedVideoOption Video encoding options. If sourceType is EncodedVideoFrame, you need to set this parameter. You can [contact technical support](https://www.agora.io/cn/contact/) to learn how to configure this parameter.
    *
    * @returns
    * 0: Success.
