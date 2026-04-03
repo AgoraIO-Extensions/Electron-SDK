@@ -41,7 +41,7 @@ import {
   buildSdkDrivenBeautyOperations,
   buildStyleEffectOperations,
   releaseVideoEffectResources,
-} from './videoEffectHelpers';
+} from './VideoEffectHelpers';
 
 type BeautyTemplateKey = keyof typeof BEAUTY_TEMPLATES;
 type StyleMakeupTemplateKey = keyof typeof STYLE_MAKEUP_TEMPLATES;
