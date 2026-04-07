@@ -57,6 +57,19 @@ export interface SdkDrivenBeautyOptions {
   faceIntensity: number;
 }
 
+export interface BundleTemplateOption {
+  label: string;
+  relativePath: string;
+  templateName: string;
+}
+
+export interface BundleTemplateGroups {
+  beauty: BundleTemplateOption[];
+  filter: BundleTemplateOption[];
+  sticker: BundleTemplateOption[];
+  styleMakeup: BundleTemplateOption[];
+}
+
 export const BEAUTY_TEMPLATES = {
   basic: {
     label: 'Basic (基础)',
@@ -85,6 +98,43 @@ export const FILTER_TEMPLATES = {
     templateName: 'Filter-Whitetea',
   },
 } as const;
+
+export function parseBundleUiOptions(config: {
+  user_interface_option?: Record<string, string>;
+}): BundleTemplateOption[] {
+  return Object.entries(config.user_interface_option ?? {}).map(
+    ([label, relativePath]) => ({
+      label,
+      relativePath,
+      templateName: label,
+    })
+  );
+}
+
+export function classifyBundleTemplates(
+  options: BundleTemplateOption[]
+): BundleTemplateGroups {
+  return options.reduce<BundleTemplateGroups>(
+    (groups, option) => {
+      if (option.templateName.startsWith('Beauty-')) {
+        groups.beauty.push(option);
+      } else if (option.templateName.startsWith('Makeup-')) {
+        groups.styleMakeup.push(option);
+      } else if (option.templateName.startsWith('Filter-')) {
+        groups.filter.push(option);
+      } else if (option.templateName.startsWith('Sticker-')) {
+        groups.sticker.push(option);
+      }
+      return groups;
+    },
+    {
+      beauty: [],
+      filter: [],
+      sticker: [],
+      styleMakeup: [],
+    }
+  );
+}
 
 export const DEFAULT_MAKEUP_OPTIONS: MakeupOptions = {
   enable_mu: false,
@@ -142,6 +192,21 @@ export const DEFAULT_SDK_DRIVEN_BEAUTY_OPTIONS: SdkDrivenBeautyOptions = {
   faceStyle: -1,
   faceIntensity: 50,
 };
+
+export function extractSdkDrivenBeautyOptionsFromConfig(
+  config: any,
+  fallback: SdkDrivenBeautyOptions = DEFAULT_SDK_DRIVEN_BEAUTY_OPTIONS
+): SdkDrivenBeautyOptions {
+  return {
+    smoothness: config?.beauty_effect_option?.smoothness ?? fallback.smoothness,
+    lightness: config?.beauty_effect_option?.lightness ?? fallback.lightness,
+    redness: config?.beauty_effect_option?.redness ?? fallback.redness,
+    eyePouch: config?.face_buffing_option?.eye_pouch ?? fallback.eyePouch,
+    faceStyle: config?.face_shape_beauty_option?.style ?? fallback.faceStyle,
+    faceIntensity:
+      config?.face_shape_beauty_option?.intensity ?? fallback.faceIntensity,
+  };
+}
 
 export const MAKEUP_ITEMS = {
   browStyle: ['CLOSE', 'eyebrow001', 'eyebrow002', 'eyebrow003'],
@@ -301,6 +366,22 @@ export function releaseVideoEffectResources(
   );
 }
 
+export function buildBundleCacheSyncTargets(
+  bundlePath: string,
+  relativePaths: string[]
+) {
+  return [
+    {
+      cachePath: `${bundlePath}/saved.cache`,
+      jsonPath: `${bundlePath}/saved.json`,
+    },
+    ...relativePaths.map((relativePath) => ({
+      cachePath: `${bundlePath}/${relativePath.replace(/\/$/, '')}/saved.cache`,
+      jsonPath: `${bundlePath}/${relativePath.replace(/\/$/, '')}/saved.json`,
+    })),
+  ];
+}
+
 export function buildSdkDrivenBeautyOperations(
   options: SdkDrivenBeautyOptions
 ): VideoEffectOperation[] {
@@ -345,14 +426,17 @@ export function buildSdkDrivenBeautyOperations(
 }
 
 export function buildStyleEffectOperations(
-  option: 'style_effect_option' | 'filter_effect_option',
+  option:
+    | 'style_effect_option'
+    | 'style_makeup_option'
+    | 'filter_effect_option',
   value: number
 ): VideoEffectOperation[] {
   return [
     {
       kind: 'float',
       option,
-      key: option === 'style_effect_option' ? 'styleIntensity' : 'strength',
+      key: option === 'filter_effect_option' ? 'strength' : 'styleIntensity',
       value,
     },
   ];

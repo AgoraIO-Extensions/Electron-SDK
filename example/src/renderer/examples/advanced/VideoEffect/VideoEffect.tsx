@@ -29,34 +29,39 @@ import { getResourcePath } from '../../../utils';
 import { askMediaAccess } from '../../../utils/permissions';
 
 import {
-  BEAUTY_TEMPLATES,
+  BundleTemplateOption,
   CLEAR_VISION_EXTENSION_NAME,
   CLEAR_VISION_EXTENSION_PROVIDER,
   CUSTOM_VIDEO_EFFECT_BUNDLE_RELATIVE_PATH,
   DEFAULT_SDK_DRIVEN_BEAUTY_OPTIONS,
-  FILTER_TEMPLATES,
-  STYLE_MAKEUP_TEMPLATES,
   SdkDrivenBeautyOptions,
-  VideoEffectOperation,
-  buildSdkDrivenBeautyOperations,
+  buildBundleCacheSyncTargets,
   buildStyleEffectOperations,
+  classifyBundleTemplates,
+  extractSdkDrivenBeautyOptionsFromConfig,
+  parseBundleUiOptions,
   releaseVideoEffectResources,
 } from './VideoEffectHelpers';
 
-type BeautyTemplateKey = keyof typeof BEAUTY_TEMPLATES;
-type StyleMakeupTemplateKey = keyof typeof STYLE_MAKEUP_TEMPLATES;
-type FilterTemplateKey = keyof typeof FILTER_TEMPLATES;
-
 interface State extends BaseVideoComponentState {
   beautyEnabled: boolean;
-  beautyTemplate: BeautyTemplateKey;
+  beautyTemplate: string;
+  beautyTemplateRelativePath: string;
+  beautyTemplates: BundleTemplateOption[];
   bundlePath: string;
   bundlePathExists: boolean;
-  filter: FilterTemplateKey;
+  filter: string;
+  filterRelativePath: string;
+  filterTemplates: BundleTemplateOption[];
   filterStrength: number;
   makeupIntensity: number;
   sdkBeautyOptions: SdkDrivenBeautyOptions;
-  styleMakeup: StyleMakeupTemplateKey;
+  sticker: string;
+  stickerRelativePath: string;
+  stickerTemplates: BundleTemplateOption[];
+  styleMakeup: string;
+  styleMakeupRelativePath: string;
+  styleMakeupTemplates: BundleTemplateOption[];
   videoEffectObjectCreated: boolean;
 }
 
@@ -67,38 +72,59 @@ const FACE_STYLE_ITEMS = [
   { label: 'Natural (2)', value: 2 },
 ];
 
-const BEAUTY_TEMPLATE_ITEMS = Object.entries(BEAUTY_TEMPLATES).map(
-  ([value, template]) => ({
-    label: template.label,
-    value,
-  })
-);
-
-const STYLE_MAKEUP_ITEMS = Object.entries(STYLE_MAKEUP_TEMPLATES).map(
-  ([value, template]) => ({
-    label: template.label,
-    value,
-  })
-);
-
-const FILTER_ITEMS = Object.entries(FILTER_TEMPLATES).map(
-  ([value, template]) => ({
-    label: template.label,
-    value,
-  })
-);
-
 export default class VideoEffect
   extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler
 {
   protected videoEffectObject?: IVideoEffectObject;
 
+  private pendingParamTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
   private syncBeautyUITimer?: ReturnType<typeof setTimeout>;
+
+  private loadBeautyOptionsFromTemplate(
+    bundlePath: string,
+    relativePath: string
+  ): SdkDrivenBeautyOptions {
+    const normalizedRelativePath = relativePath.replace(/\/$/, '');
+    const templatePath = `${bundlePath}/${normalizedRelativePath}`;
+    const candidates = [
+      `${templatePath}/saved.cache`,
+      `${templatePath}/saved.json`,
+      `${templatePath}/config.json`,
+    ];
+
+    for (const filePath of candidates) {
+      if (!fs.existsSync(filePath)) {
+        continue;
+      }
+      try {
+        return extractSdkDrivenBeautyOptionsFromConfig(
+          JSON.parse(fs.readFileSync(filePath, 'utf8'))
+        );
+      } catch (error) {
+        this.error(
+          'loadBeautyOptionsFromTemplate failed',
+          'filePath',
+          filePath,
+          'error',
+          error
+        );
+      }
+    }
+
+    return { ...DEFAULT_SDK_DRIVEN_BEAUTY_OPTIONS };
+  }
 
   protected createState(): State {
     const bundlePath = getResourcePath(
       CUSTOM_VIDEO_EFFECT_BUNDLE_RELATIVE_PATH
+    );
+    const bundleConfig = JSON.parse(
+      fs.readFileSync(`${bundlePath}/config.json`, 'utf8')
+    );
+    const templateGroups = classifyBundleTemplates(
+      parseBundleUiOptions(bundleConfig)
     );
     return {
       appId: Config.appId,
@@ -110,14 +136,27 @@ export default class VideoEffect
       remoteUsers: [],
       startPreview: false,
       beautyEnabled: false,
-      beautyTemplate: 'basic',
+      beautyTemplate: templateGroups.beauty.at(0)?.templateName ?? '',
+      beautyTemplateRelativePath:
+        templateGroups.beauty.at(0)?.relativePath ?? '',
+      beautyTemplates: templateGroups.beauty,
       bundlePath,
       bundlePathExists: fs.existsSync(bundlePath),
-      filter: 'none',
+      filter: '',
+      filterRelativePath: '',
+      filterTemplates: templateGroups.filter,
       filterStrength: 0.5,
       makeupIntensity: 1,
-      sdkBeautyOptions: { ...DEFAULT_SDK_DRIVEN_BEAUTY_OPTIONS },
-      styleMakeup: 'none',
+      sdkBeautyOptions: this.loadBeautyOptionsFromTemplate(
+        bundlePath,
+        templateGroups.beauty.at(0)?.relativePath ?? ''
+      ),
+      sticker: '',
+      stickerRelativePath: '',
+      stickerTemplates: templateGroups.sticker,
+      styleMakeup: '',
+      styleMakeupRelativePath: '',
+      styleMakeupTemplates: templateGroups.styleMakeup,
       videoEffectObjectCreated: false,
     };
   }
@@ -178,58 +217,13 @@ export default class VideoEffect
     if (this.syncBeautyUITimer) {
       clearTimeout(this.syncBeautyUITimer);
     }
+    this.pendingParamTimers.forEach((timer) => clearTimeout(timer));
+    this.pendingParamTimers.clear();
     releaseVideoEffectResources(this.engine, this.videoEffectObject);
     this.videoEffectObject = undefined;
     this.engine?.unregisterEventHandler(this);
     this.engine?.release();
   }
-
-  private applyVideoEffectOperations = (
-    nodeId: VideoEffectNodeId,
-    operations: VideoEffectOperation[]
-  ) => {
-    if (!this.videoEffectObject) {
-      return;
-    }
-
-    const result = this.videoEffectObject.addOrUpdateVideoEffect(nodeId, '');
-    if (result !== 0) {
-      this.error(
-        'addOrUpdateVideoEffect failed',
-        'nodeId',
-        nodeId,
-        'result',
-        result
-      );
-      return;
-    }
-
-    operations.forEach(({ kind, option, key, value }) => {
-      switch (kind) {
-        case 'bool':
-          this.videoEffectObject?.setVideoEffectBoolParam(
-            option,
-            key,
-            value as boolean
-          );
-          break;
-        case 'int':
-          this.videoEffectObject?.setVideoEffectIntParam(
-            option,
-            key,
-            value as number
-          );
-          break;
-        case 'float':
-          this.videoEffectObject?.setVideoEffectFloatParam(
-            option,
-            key,
-            value as number
-          );
-          break;
-      }
-    });
-  };
 
   private syncBeautyUI = () => {
     if (!this.videoEffectObject) {
@@ -297,7 +291,11 @@ export default class VideoEffect
     this.setState({
       beautyEnabled: false,
       filter: 'none',
+      filterRelativePath: '',
       styleMakeup: 'none',
+      styleMakeupRelativePath: '',
+      sticker: '',
+      stickerRelativePath: '',
       videoEffectObjectCreated: false,
     });
   };
@@ -307,22 +305,28 @@ export default class VideoEffect
       return;
     }
 
-    const template = BEAUTY_TEMPLATES[this.state.beautyTemplate];
+    const { beautyTemplate } = this.state;
+    if (!beautyTemplate) {
+      this.error('beautyTemplate is invalid');
+      return;
+    }
     const result = this.videoEffectObject.addOrUpdateVideoEffect(
       VideoEffectNodeId.Beauty,
-      template.templateName
+      beautyTemplate
     );
     if (result !== 0) {
       this.error('applyBeauty failed', 'result', result);
       return;
     }
 
-    this.applyVideoEffectOperations(
-      VideoEffectNodeId.Beauty,
-      buildSdkDrivenBeautyOperations(this.state.sdkBeautyOptions)
-    );
     this.scheduleSyncBeautyUI();
-    this.setState({ beautyEnabled: true });
+    this.setState({
+      beautyEnabled: true,
+      beautyTemplateRelativePath:
+        this.state.beautyTemplates.find(
+          (template) => template.templateName === beautyTemplate
+        )?.relativePath ?? '',
+    });
   };
 
   private removeBeauty = () => {
@@ -338,6 +342,7 @@ export default class VideoEffect
       VideoEffectNodeId.Beauty,
       VideoEffectAction.Save
     );
+    this.syncSavedConfigCache();
   };
 
   private resetConfig = () => {
@@ -345,24 +350,51 @@ export default class VideoEffect
       VideoEffectNodeId.Beauty,
       VideoEffectAction.Reset
     );
+    this.syncSavedConfigCache();
     this.scheduleSyncBeautyUI();
   };
 
-  private applyStyleMakeup = (styleMakeup: StyleMakeupTemplateKey) => {
+  private syncSavedConfigCache = () => {
+    const {
+      beautyTemplateRelativePath,
+      bundlePath,
+      filterRelativePath,
+      stickerRelativePath,
+      styleMakeupRelativePath,
+    } = this.state;
+
+    buildBundleCacheSyncTargets(
+      bundlePath,
+      [
+        beautyTemplateRelativePath,
+        styleMakeupRelativePath,
+        filterRelativePath,
+        stickerRelativePath,
+      ]
+        .filter(Boolean)
+        .filter((value, index, array) => array.indexOf(value) === index)
+    ).forEach(({ cachePath, jsonPath }) => {
+      if (!fs.existsSync(jsonPath)) {
+        return;
+      }
+      fs.copyFileSync(jsonPath, cachePath);
+    });
+  };
+
+  private applyStyleMakeup = (styleMakeup: string) => {
     if (!this.videoEffectObject) {
       return;
     }
 
-    const template = STYLE_MAKEUP_TEMPLATES[styleMakeup];
-    if (!template.templateName) {
+    if (!styleMakeup) {
       this.videoEffectObject.removeVideoEffect(VideoEffectNodeId.StyleMakeup);
-      this.setState({ styleMakeup });
+      this.setState({ styleMakeup, styleMakeupRelativePath: '' });
       return;
     }
 
     const result = this.videoEffectObject.addOrUpdateVideoEffect(
       VideoEffectNodeId.StyleMakeup,
-      template.templateName
+      styleMakeup
     );
     if (result !== 0) {
       this.error('applyStyleMakeup failed', 'result', result);
@@ -370,7 +402,7 @@ export default class VideoEffect
     }
 
     buildStyleEffectOperations(
-      'style_effect_option',
+      'style_makeup_option',
       this.state.makeupIntensity
     ).forEach(({ option, key, value }) => {
       this.videoEffectObject?.setVideoEffectFloatParam(
@@ -382,19 +414,23 @@ export default class VideoEffect
 
     this.setState({
       filter: 'none',
+      filterRelativePath: '',
       styleMakeup,
+      styleMakeupRelativePath:
+        this.state.styleMakeupTemplates.find(
+          (template) => template.templateName === styleMakeup
+        )?.relativePath ?? '',
     });
   };
 
-  private applyFilter = (filter: FilterTemplateKey) => {
+  private applyFilter = (filter: string) => {
     if (!this.videoEffectObject) {
       return;
     }
 
-    const template = FILTER_TEMPLATES[filter];
-    if (!template.templateName) {
+    if (!filter) {
       this.videoEffectObject.removeVideoEffect(VideoEffectNodeId.Filter);
-      this.setState({ filter });
+      this.setState({ filter, filterRelativePath: '' });
       return;
     }
 
@@ -404,7 +440,7 @@ export default class VideoEffect
 
     const result = this.videoEffectObject.addOrUpdateVideoEffect(
       VideoEffectNodeId.Filter,
-      template.templateName
+      filter
     );
     if (result !== 0) {
       this.error('applyFilter failed', 'result', result);
@@ -424,8 +460,94 @@ export default class VideoEffect
 
     this.setState({
       filter,
+      filterRelativePath:
+        this.state.filterTemplates.find(
+          (template) => template.templateName === filter
+        )?.relativePath ?? '',
       styleMakeup: 'none',
+      styleMakeupRelativePath: '',
     });
+  };
+
+  private applySticker = (sticker: string) => {
+    if (!this.videoEffectObject) {
+      return;
+    }
+
+    if (!sticker) {
+      this.videoEffectObject.removeVideoEffect(VideoEffectNodeId.Sticker);
+      this.setState({ sticker, stickerRelativePath: '' });
+      return;
+    }
+
+    const result = this.videoEffectObject.addOrUpdateVideoEffect(
+      VideoEffectNodeId.Sticker,
+      sticker
+    );
+    if (result !== 0) {
+      this.error('applySticker failed', 'result', result);
+      return;
+    }
+
+    this.setState({
+      sticker,
+      stickerRelativePath:
+        this.state.stickerTemplates.find(
+          (template) => template.templateName === sticker
+        )?.relativePath ?? '',
+    });
+  };
+
+  private setVideoEffectParam = (
+    kind: 'float' | 'int',
+    option: string,
+    key: string,
+    value: number
+  ) => {
+    if (!this.videoEffectObject) {
+      return;
+    }
+    if (kind === 'int') {
+      this.videoEffectObject.setVideoEffectIntParam(option, key, value);
+      return;
+    }
+    this.videoEffectObject.setVideoEffectFloatParam(option, key, value);
+  };
+
+  private scheduleVideoEffectParam = (
+    kind: 'float' | 'int',
+    option: string,
+    key: string,
+    value: number,
+    delay = 80
+  ) => {
+    const timerKey = `${kind}:${option}:${key}`;
+    const pending = this.pendingParamTimers.get(timerKey);
+    if (pending) {
+      clearTimeout(pending);
+    }
+    this.pendingParamTimers.set(
+      timerKey,
+      setTimeout(() => {
+        this.pendingParamTimers.delete(timerKey);
+        this.setVideoEffectParam(kind, option, key, value);
+      }, delay)
+    );
+  };
+
+  private commitVideoEffectParam = (
+    kind: 'float' | 'int',
+    option: string,
+    key: string,
+    value: number
+  ) => {
+    const timerKey = `${kind}:${option}:${key}`;
+    const pending = this.pendingParamTimers.get(timerKey);
+    if (pending) {
+      clearTimeout(pending);
+      this.pendingParamTimers.delete(timerKey);
+    }
+    this.setVideoEffectParam(kind, option, key, value);
   };
 
   private updateSdkBeautyOptions = (
@@ -433,7 +555,8 @@ export default class VideoEffect
     option: string,
     key: string,
     value: number,
-    kind: 'float' | 'int' = 'float'
+    kind: 'float' | 'int' = 'float',
+    commit = false
   ) => {
     this.setState(
       (prevState) => ({
@@ -449,10 +572,10 @@ export default class VideoEffect
         if (!this.state.beautyEnabled) {
           await this.applyBeauty();
         }
-        if (kind === 'int') {
-          this.videoEffectObject?.setVideoEffectIntParam(option, key, value);
+        if (commit || kind === 'int') {
+          this.commitVideoEffectParam(kind, option, key, value);
         } else {
-          this.videoEffectObject?.setVideoEffectFloatParam(option, key, value);
+          this.scheduleVideoEffectParam(kind, option, key, value);
         }
       }
     );
@@ -461,6 +584,7 @@ export default class VideoEffect
   private renderUnitSlider(
     title: string,
     value: number,
+    onValueChange: (value: number) => void,
     onSlidingComplete: (value: number) => void,
     min = 0,
     max = 1,
@@ -474,6 +598,7 @@ export default class VideoEffect
           maximumValue={max}
           step={step}
           value={value}
+          onValueChange={onValueChange}
           onSlidingComplete={onSlidingComplete}
         />
         <AgoraDivider />
@@ -485,13 +610,18 @@ export default class VideoEffect
     const {
       beautyEnabled,
       beautyTemplate,
+      beautyTemplates,
       bundlePath,
       bundlePathExists,
       filter,
+      filterTemplates,
       filterStrength,
       makeupIntensity,
       sdkBeautyOptions,
+      sticker,
+      stickerTemplates,
       styleMakeup,
+      styleMakeupTemplates,
       videoEffectObjectCreated,
     } = this.state;
 
@@ -536,11 +666,26 @@ export default class VideoEffect
             <AgoraDivider>Beauty</AgoraDivider>
             <AgoraDropdown
               title={'Beauty Template'}
-              items={BEAUTY_TEMPLATE_ITEMS}
+              items={beautyTemplates.map((template) => ({
+                label: template.label,
+                value: template.templateName,
+              }))}
               value={beautyTemplate}
               onValueChange={(value) => {
                 this.setState(
-                  { beautyTemplate: value as BeautyTemplateKey },
+                  {
+                    beautyTemplate: value,
+                    beautyTemplateRelativePath:
+                      beautyTemplates.find(
+                        (template) => template.templateName === value
+                      )?.relativePath ?? '',
+                    sdkBeautyOptions: this.loadBeautyOptionsFromTemplate(
+                      bundlePath,
+                      beautyTemplates.find(
+                        (template) => template.templateName === value
+                      )?.relativePath ?? ''
+                    ),
+                  },
                   this.applyBeauty
                 );
               }}
@@ -555,6 +700,16 @@ export default class VideoEffect
                   'smoothness',
                   value
                 );
+              },
+              (value) => {
+                this.updateSdkBeautyOptions(
+                  { smoothness: value },
+                  'beauty_effect_option',
+                  'smoothness',
+                  value,
+                  'float',
+                  true
+                );
               }
             )}
             {this.renderUnitSlider(
@@ -566,6 +721,16 @@ export default class VideoEffect
                   'beauty_effect_option',
                   'lightness',
                   value
+                );
+              },
+              (value) => {
+                this.updateSdkBeautyOptions(
+                  { lightness: value },
+                  'beauty_effect_option',
+                  'lightness',
+                  value,
+                  'float',
+                  true
                 );
               }
             )}
@@ -579,6 +744,16 @@ export default class VideoEffect
                   'redness',
                   value
                 );
+              },
+              (value) => {
+                this.updateSdkBeautyOptions(
+                  { redness: value },
+                  'beauty_effect_option',
+                  'redness',
+                  value,
+                  'float',
+                  true
+                );
               }
             )}
             {this.renderUnitSlider(
@@ -590,6 +765,16 @@ export default class VideoEffect
                   'face_buffing_option',
                   'eye_pouch',
                   value
+                );
+              },
+              (value) => {
+                this.updateSdkBeautyOptions(
+                  { eyePouch: value },
+                  'face_buffing_option',
+                  'eye_pouch',
+                  value,
+                  'float',
+                  true
                 );
               }
             )}
@@ -613,13 +798,23 @@ export default class VideoEffect
               maximumValue={100}
               step={1}
               value={sdkBeautyOptions.faceIntensity}
-              onSlidingComplete={(value) => {
+              onValueChange={(value) => {
                 this.updateSdkBeautyOptions(
                   { faceIntensity: value },
                   'face_shape_beauty_option',
                   'intensity',
                   value,
                   'int'
+                );
+              }}
+              onSlidingComplete={(value) => {
+                this.updateSdkBeautyOptions(
+                  { faceIntensity: value },
+                  'face_shape_beauty_option',
+                  'intensity',
+                  value,
+                  'int',
+                  true
                 );
               }}
             />
@@ -645,20 +840,36 @@ export default class VideoEffect
             </AgoraText>
             <AgoraDropdown
               title={'Style Makeup Template'}
-              items={STYLE_MAKEUP_ITEMS}
+              items={[
+                { label: 'None', value: '' },
+                ...styleMakeupTemplates.map((template) => ({
+                  label: template.label,
+                  value: template.templateName,
+                })),
+              ]}
               value={styleMakeup}
               onValueChange={(value) => {
-                this.applyStyleMakeup(value as StyleMakeupTemplateKey);
+                this.applyStyleMakeup(value);
               }}
             />
-            {styleMakeup !== 'none'
+            {styleMakeup
               ? this.renderUnitSlider(
                   'styleIntensity',
                   makeupIntensity,
                   (value) => {
                     this.setState({ makeupIntensity: value });
-                    this.videoEffectObject?.setVideoEffectFloatParam(
-                      'style_effect_option',
+                    this.scheduleVideoEffectParam(
+                      'float',
+                      'style_makeup_option',
+                      'styleIntensity',
+                      value
+                    );
+                  },
+                  (value) => {
+                    this.setState({ makeupIntensity: value });
+                    this.commitVideoEffectParam(
+                      'float',
+                      'style_makeup_option',
                       'styleIntensity',
                       value
                     );
@@ -669,22 +880,58 @@ export default class VideoEffect
             <AgoraDivider>Filter</AgoraDivider>
             <AgoraDropdown
               title={'Filter Template'}
-              items={FILTER_ITEMS}
+              items={[
+                { label: 'None', value: '' },
+                ...filterTemplates.map((template) => ({
+                  label: template.label,
+                  value: template.templateName,
+                })),
+              ]}
               value={filter}
               onValueChange={(value) => {
-                this.applyFilter(value as FilterTemplateKey);
+                this.applyFilter(value);
               }}
             />
-            {filter !== 'none'
-              ? this.renderUnitSlider('strength', filterStrength, (value) => {
-                  this.setState({ filterStrength: value });
-                  this.videoEffectObject?.setVideoEffectFloatParam(
-                    'filter_effect_option',
-                    'strength',
-                    value
-                  );
-                })
+            {filter
+              ? this.renderUnitSlider(
+                  'strength',
+                  filterStrength,
+                  (value) => {
+                    this.setState({ filterStrength: value });
+                    this.scheduleVideoEffectParam(
+                      'float',
+                      'filter_effect_option',
+                      'strength',
+                      value
+                    );
+                  },
+                  (value) => {
+                    this.setState({ filterStrength: value });
+                    this.commitVideoEffectParam(
+                      'float',
+                      'filter_effect_option',
+                      'strength',
+                      value
+                    );
+                  }
+                )
               : null}
+
+            <AgoraDivider>Sticker</AgoraDivider>
+            <AgoraDropdown
+              title={'Sticker Template'}
+              items={[
+                { label: 'None', value: '' },
+                ...stickerTemplates.map((template) => ({
+                  label: template.label,
+                  value: template.templateName,
+                })),
+              ]}
+              value={sticker}
+              onValueChange={(value) => {
+                this.applySticker(value);
+              }}
+            />
           </>
         ) : null}
       </>
@@ -692,13 +939,27 @@ export default class VideoEffect
   }
 
   protected renderAction(): ReactElement | undefined {
-    const { beautyEnabled, filter, styleMakeup, videoEffectObjectCreated } =
-      this.state;
+    const {
+      beautyEnabled,
+      beautyTemplateRelativePath,
+      filter,
+      filterRelativePath,
+      sticker,
+      stickerRelativePath,
+      styleMakeup,
+      styleMakeupRelativePath,
+      videoEffectObjectCreated,
+    } = this.state;
     return (
       <>
         <AgoraText>{`beauty enabled: ${beautyEnabled}`}</AgoraText>
+        <AgoraText>{`beauty path: ${beautyTemplateRelativePath}`}</AgoraText>
         <AgoraText>{`style makeup: ${styleMakeup}`}</AgoraText>
+        <AgoraText>{`style makeup path: ${styleMakeupRelativePath}`}</AgoraText>
         <AgoraText>{`filter: ${filter}`}</AgoraText>
+        <AgoraText>{`filter path: ${filterRelativePath}`}</AgoraText>
+        <AgoraText>{`sticker: ${sticker}`}</AgoraText>
+        <AgoraText>{`sticker path: ${stickerRelativePath}`}</AgoraText>
         <AgoraButton
           disabled={!videoEffectObjectCreated}
           title={'Sync Beauty UI From SDK'}
