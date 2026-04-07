@@ -249,6 +249,14 @@ export default class VideoEffect
           'face_buffing_option',
           'eye_pouch'
         ),
+        faceStyle: this.videoEffectObject.getVideoEffectIntParam(
+          'face_shape_beauty_option',
+          'style'
+        ),
+        faceIntensity: this.videoEffectObject.getVideoEffectIntParam(
+          'face_shape_beauty_option',
+          'intensity'
+        ),
       },
     });
   };
@@ -413,8 +421,6 @@ export default class VideoEffect
     });
 
     this.setState({
-      filter: 'none',
-      filterRelativePath: '',
       styleMakeup,
       styleMakeupRelativePath:
         this.state.styleMakeupTemplates.find(
@@ -432,10 +438,6 @@ export default class VideoEffect
       this.videoEffectObject.removeVideoEffect(VideoEffectNodeId.Filter);
       this.setState({ filter, filterRelativePath: '' });
       return;
-    }
-
-    if (this.state.styleMakeup !== 'none') {
-      this.videoEffectObject.removeVideoEffect(VideoEffectNodeId.StyleMakeup);
     }
 
     const result = this.videoEffectObject.addOrUpdateVideoEffect(
@@ -464,8 +466,6 @@ export default class VideoEffect
         this.state.filterTemplates.find(
           (template) => template.templateName === filter
         )?.relativePath ?? '',
-      styleMakeup: 'none',
-      styleMakeupRelativePath: '',
     });
   };
 
@@ -835,8 +835,8 @@ export default class VideoEffect
 
             <AgoraDivider>Style Makeup</AgoraDivider>
             <AgoraText>
-              Style makeup and filters are mutually exclusive. Applying filter
-              removes style makeup first.
+              Style makeup and filters can both be applied. Their visual
+              stacking is determined by the bundle and SDK runtime.
             </AgoraText>
             <AgoraDropdown
               title={'Style Makeup Template'}
