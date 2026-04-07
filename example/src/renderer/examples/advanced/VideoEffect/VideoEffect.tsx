@@ -937,35 +937,4 @@ export default class VideoEffect
       </>
     );
   }
-
-  protected renderAction(): ReactElement | undefined {
-    const {
-      beautyEnabled,
-      beautyTemplateRelativePath,
-      filter,
-      filterRelativePath,
-      sticker,
-      stickerRelativePath,
-      styleMakeup,
-      styleMakeupRelativePath,
-      videoEffectObjectCreated,
-    } = this.state;
-    return (
-      <>
-        <AgoraText>{`beauty enabled: ${beautyEnabled}`}</AgoraText>
-        <AgoraText>{`beauty path: ${beautyTemplateRelativePath}`}</AgoraText>
-        <AgoraText>{`style makeup: ${styleMakeup}`}</AgoraText>
-        <AgoraText>{`style makeup path: ${styleMakeupRelativePath}`}</AgoraText>
-        <AgoraText>{`filter: ${filter}`}</AgoraText>
-        <AgoraText>{`filter path: ${filterRelativePath}`}</AgoraText>
-        <AgoraText>{`sticker: ${sticker}`}</AgoraText>
-        <AgoraText>{`sticker path: ${stickerRelativePath}`}</AgoraText>
-        <AgoraButton
-          disabled={!videoEffectObjectCreated}
-          title={'Sync Beauty UI From SDK'}
-          onPress={this.syncBeautyUI}
-        />
-      </>
-    );
-  }
 }
