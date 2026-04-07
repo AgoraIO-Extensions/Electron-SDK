@@ -135,12 +135,6 @@ export class RendererCache extends IRendererCache {
       }
     }
 
-    if (hasMoreFrame) {
-      this.renderers.forEach((renderer) => {
-        renderer.drawFrame(this.cacheContext.uid!, this.videoFrame);
-      });
-    }
-
     return { hasMoreFrame, needRender };
   }
 
@@ -270,24 +264,11 @@ export class RendererCache extends IRendererCache {
 
       // 记录当前时间作为本次循环的开始时间
       this._lastRenderTime = currentTime;
-
-      // 获取第一帧并渲染
-      // 无论hasMoreFrame是true还是false，都渲染当前帧
-      // 因为fetchVideoFrame总是会获取一帧数据（如果有的话）
-      let { hasMoreFrame, needRender } = this.fetchVideoFrame();
+      // Fetch at most one frame per tick and render it once. When frames pile
+      // up, favor UI responsiveness over draining the entire backlog.
+      const { needRender } = this.fetchVideoFrame();
       if (needRender) {
         this.renderFrame();
-      }
-
-      // 如果hasMoreFrame为true，表示还有更多帧需要获取
-      while (hasMoreFrame) {
-        // 获取下一帧
-        let { hasMoreFrame: nextHasMoreFrame, needRender } =
-          this.fetchVideoFrame();
-        hasMoreFrame = nextHasMoreFrame;
-        if (needRender) {
-          this.renderFrame();
-        }
       }
 
       // 安排下一帧
