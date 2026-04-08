@@ -2,6 +2,7 @@ import {
   AudioTrackConfig,
   AudioTrackType,
   EncodedVideoFrameInfo,
+  LoopbackAudioTrackConfig,
   SenderOptions,
 } from '../AgoraBase';
 import {
@@ -382,6 +383,73 @@ export class IMediaEngineImpl implements IMediaEngine {
     videoTrackId: number = 0
   ): string {
     return 'MediaEngine_pushEncodedVideoImage';
+  }
+
+  createLoopbackAudioTrack(config: LoopbackAudioTrackConfig): number {
+    const apiType = this.getApiTypeFromCreateLoopbackAudioTrack(config);
+    const jsonParams = {
+      config: config,
+      toJSON: () => {
+        return {
+          config: config,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromCreateLoopbackAudioTrack(
+    config: LoopbackAudioTrackConfig
+  ): string {
+    return 'MediaEngine_createLoopbackAudioTrack';
+  }
+
+  destroyLoopbackAudioTrack(trackId: number): number {
+    const apiType = this.getApiTypeFromDestroyLoopbackAudioTrack(trackId);
+    const jsonParams = {
+      trackId: trackId,
+      toJSON: () => {
+        return {
+          trackId: trackId,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromDestroyLoopbackAudioTrack(trackId: number): string {
+    return 'MediaEngine_destroyLoopbackAudioTrack';
+  }
+
+  updateLoopbackAudioTrackConfig(
+    trackId: number,
+    config: LoopbackAudioTrackConfig
+  ): number {
+    const apiType = this.getApiTypeFromUpdateLoopbackAudioTrackConfig(
+      trackId,
+      config
+    );
+    const jsonParams = {
+      trackId: trackId,
+      config: config,
+      toJSON: () => {
+        return {
+          trackId: trackId,
+          config: config,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromUpdateLoopbackAudioTrackConfig(
+    trackId: number,
+    config: LoopbackAudioTrackConfig
+  ): string {
+    return 'MediaEngine_updateLoopbackAudioTrackConfig';
   }
 
   release(): void {
