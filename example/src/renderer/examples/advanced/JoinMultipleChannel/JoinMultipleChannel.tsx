@@ -446,8 +446,11 @@ export default class JoinMultipleChannel
             renderItem={(item) => {
               return this.renderVideo(
                 { uid: item },
-                remoteUsers2.indexOf(item) === -1 ? channelId : channelId2,
-                remoteUsers2.indexOf(item) === -1 ? uid : uid2
+                {
+                  channelId:
+                    remoteUsers2.indexOf(item) === -1 ? channelId : channelId2,
+                  localUid: remoteUsers2.indexOf(item) === -1 ? uid : uid2,
+                }
               );
             }}
           />
@@ -458,13 +461,12 @@ export default class JoinMultipleChannel
 
   protected renderVideo(
     user: VideoCanvas,
-    channelId?: string,
-    localUid?: number
+    connection?: RtcConnection
   ): ReactElement | undefined {
     return (
-      <AgoraCard title={`${channelId} - ${user.uid}`}>
+      <AgoraCard title={`${connection?.channelId} - ${user.uid}`}>
         <AgoraText>Click view to mirror</AgoraText>
-        <RtcSurfaceView canvas={user} connection={{ channelId, localUid }} />
+        <RtcSurfaceView canvas={user} connection={connection} />
       </AgoraCard>
     );
   }
