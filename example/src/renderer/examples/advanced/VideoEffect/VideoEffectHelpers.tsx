@@ -354,16 +354,72 @@ export function releaseVideoEffectResources(
     | undefined,
   videoEffectObject: any
 ) {
+  destroyVideoEffectObjectResource(engine, videoEffectObject);
+  disableVideoEffectExtension(engine);
+}
+
+export function destroyVideoEffectObjectResource(
+  engine:
+    | {
+        destroyVideoEffectObject?: (videoEffectObject: any) => void;
+      }
+    | undefined,
+  videoEffectObject: any
+) {
   if (videoEffectObject && engine?.destroyVideoEffectObject) {
     engine.destroyVideoEffectObject(videoEffectObject);
   }
+}
 
+export function setVideoEffectExtensionEnabled(
+  engine:
+    | {
+        enableExtension?: (
+          provider: string,
+          extension: string,
+          enable?: boolean,
+          type?: MediaSourceType
+        ) => void;
+      }
+    | undefined,
+  enabled: boolean
+) {
   engine?.enableExtension?.(
     CLEAR_VISION_EXTENSION_PROVIDER,
     CLEAR_VISION_EXTENSION_NAME,
-    false,
+    enabled,
     MediaSourceType.PrimaryCameraSource
   );
+}
+
+export function enableVideoEffectExtension(
+  engine:
+    | {
+        enableExtension?: (
+          provider: string,
+          extension: string,
+          enable?: boolean,
+          type?: MediaSourceType
+        ) => void;
+      }
+    | undefined
+) {
+  setVideoEffectExtensionEnabled(engine, true);
+}
+
+export function disableVideoEffectExtension(
+  engine:
+    | {
+        enableExtension?: (
+          provider: string,
+          extension: string,
+          enable?: boolean,
+          type?: MediaSourceType
+        ) => void;
+      }
+    | undefined
+) {
+  setVideoEffectExtensionEnabled(engine, false);
 }
 
 export function buildBundleCacheSyncTargets(

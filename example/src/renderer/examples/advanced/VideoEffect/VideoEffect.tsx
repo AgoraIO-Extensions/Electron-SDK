@@ -6,6 +6,8 @@ import {
   IRtcEngineEventHandler,
   IVideoEffectObject,
   MediaSourceType,
+  RtcConnection,
+  RtcStats,
   VideoEffectAction,
   VideoEffectNodeId,
   createAgoraRtcEngine,
@@ -30,14 +32,14 @@ import { askMediaAccess } from '../../../utils/permissions';
 
 import {
   BundleTemplateOption,
-  CLEAR_VISION_EXTENSION_NAME,
-  CLEAR_VISION_EXTENSION_PROVIDER,
   CUSTOM_VIDEO_EFFECT_BUNDLE_RELATIVE_PATH,
   DEFAULT_SDK_DRIVEN_BEAUTY_OPTIONS,
   SdkDrivenBeautyOptions,
   buildBundleCacheSyncTargets,
   buildStyleEffectOperations,
   classifyBundleTemplates,
+  destroyVideoEffectObjectResource,
+  enableVideoEffectExtension,
   extractSdkDrivenBeautyOptionsFromConfig,
   parseBundleUiOptions,
   releaseVideoEffectResources,
@@ -178,12 +180,7 @@ export default class VideoEffect
 
     await askMediaAccess(['microphone', 'camera']);
 
-    this.engine.enableExtension(
-      CLEAR_VISION_EXTENSION_PROVIDER,
-      CLEAR_VISION_EXTENSION_NAME,
-      true,
-      MediaSourceType.PrimaryCameraSource
-    );
+    enableVideoEffectExtension(this.engine);
     this.engine.setParameters(
       JSON.stringify({ 'rtc.video.yuvconverter_enable_hardware_buffer': true })
     );
@@ -210,20 +207,37 @@ export default class VideoEffect
   }
 
   protected leaveChannel() {
+    this.cleanupVideoEffectObject();
     this.engine?.leaveChannel();
   }
 
   protected releaseRtcEngine() {
-    if (this.syncBeautyUITimer) {
-      clearTimeout(this.syncBeautyUITimer);
-    }
-    this.pendingParamTimers.forEach((timer) => clearTimeout(timer));
-    this.pendingParamTimers.clear();
+    this.clearVideoEffectTimers();
     releaseVideoEffectResources(this.engine, this.videoEffectObject);
     this.videoEffectObject = undefined;
     this.engine?.unregisterEventHandler(this);
     this.engine?.release();
   }
+
+  onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
+    this.cleanupVideoEffectObject();
+    super.onLeaveChannel(connection, stats);
+  }
+
+  private clearVideoEffectTimers = () => {
+    if (this.syncBeautyUITimer) {
+      clearTimeout(this.syncBeautyUITimer);
+      this.syncBeautyUITimer = undefined;
+    }
+    this.pendingParamTimers.forEach((timer) => clearTimeout(timer));
+    this.pendingParamTimers.clear();
+  };
+
+  private cleanupVideoEffectObject = () => {
+    this.clearVideoEffectTimers();
+    destroyVideoEffectObjectResource(this.engine, this.videoEffectObject);
+    this.videoEffectObject = undefined;
+  };
 
   private syncBeautyUI = () => {
     if (!this.videoEffectObject) {
@@ -269,8 +283,12 @@ export default class VideoEffect
   };
 
   private createVideoEffectObject = () => {
-    if (this.videoEffectObject) {
+    if (this.videoEffectObject && this.state.videoEffectObjectCreated) {
       return;
+    }
+    if (this.videoEffectObject) {
+      this.warn('stale videoEffectObject detected, destroying before recreate');
+      this.cleanupVideoEffectObject();
     }
 
     const { bundlePath, bundlePathExists } = this.state;
@@ -279,6 +297,7 @@ export default class VideoEffect
       return;
     }
 
+    enableVideoEffectExtension(this.engine);
     const videoEffectObject = this.engine?.createVideoEffectObject(
       bundlePath,
       MediaSourceType.PrimaryCameraSource
@@ -294,8 +313,7 @@ export default class VideoEffect
   };
 
   private destroyVideoEffectObject = () => {
-    releaseVideoEffectResources(this.engine, this.videoEffectObject);
-    this.videoEffectObject = undefined;
+    this.cleanupVideoEffectObject();
     this.setState({
       beautyEnabled: false,
       filter: 'none',
