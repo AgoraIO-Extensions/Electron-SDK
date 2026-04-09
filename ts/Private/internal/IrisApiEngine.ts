@@ -345,20 +345,6 @@ export const EVENT_PROCESSORS: EventProcessors = {
         case 'onStreamMessageEx':
           data.data = buffers[0];
           break;
-        case 'onLocalVideoStats':
-          if (data) {
-            let rendererManager = AgoraEnv.AgoraRendererManager;
-            if (rendererManager) {
-              let sourceType = (data as any).sourceType;
-              let connection = (data as any).connection;
-              let rendererCaches =
-                rendererManager.getRendererCachesBySourceType(sourceType);
-              rendererCaches.forEach((cache) => {
-                cache.setCallbackContext(connection, sourceType);
-              });
-            }
-          }
-          break;
         case 'onRemoteVideoStats':
           if (data) {
             let rendererManager = AgoraEnv.AgoraRendererManager;

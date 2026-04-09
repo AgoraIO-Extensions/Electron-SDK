@@ -133,47 +133,75 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
         try {
           this.performanceIntervalFunc = setInterval(() => {
             let rendererManager = AgoraEnv.AgoraRendererManager;
-            let counters: {
+            let remoteCounters: {
               data: PerformanceCounter[];
               connection: RtcConnection;
+            }[] = [];
+            let localCounters: {
+              data: PerformanceCounter[];
+              videoSourceType: VideoSourceType | undefined;
             }[] = [];
             if (rendererManager) {
               rendererManager.getRendererCaches().forEach((cache) => {
                 const isRemote =
-                  cache.callbackContext.sourceType ===
+                  cache.callbackContext?.sourceType ===
                   VideoSourceType.VideoSourceRemote;
-                if (
-                  cache.callbackContext.connection?.channelId &&
-                  (cache.callbackContext.connection?.localUid || isRemote)
-                ) {
-                  let counter = counters.find(
+                if (isRemote) {
+                  if (
+                    cache.callbackContext.connection?.channelId &&
+                    cache.callbackContext.connection?.localUid
+                  ) {
+                    let counter = remoteCounters.find(
+                      (counter) =>
+                        counter.connection.channelId ===
+                          cache.callbackContext.connection.channelId &&
+                        counter.connection.localUid ===
+                          cache.callbackContext.connection.localUid
+                    );
+                    let data: PerformanceCounter = {
+                      counters: [
+                        {
+                          counterId: this.VideoRemoteRenderMeanFpsCounterId,
+                          value: Math.floor(cache.actualFps),
+                        },
+                        {
+                          counterId: this.VideoRemoteRenderDrawCostCounterId,
+                          value: Math.floor(cache.avgFrameInterval),
+                        },
+                      ],
+                      uid: cache.cacheContext.uid!,
+                    };
+                    if (!counter) {
+                      remoteCounters.push({
+                        data: [data],
+                        connection: cache.callbackContext.connection,
+                      });
+                    } else {
+                      counter.data.push(data);
+                    }
+                  }
+                } else {
+                  let counter = localCounters.find(
                     (counter) =>
-                      counter.connection.channelId ===
-                        cache.callbackContext.connection.channelId &&
-                      counter.connection.localUid ===
-                        cache.callbackContext.connection.localUid
+                      counter.videoSourceType === cache.cacheContext.sourceType
                   );
                   let data: PerformanceCounter = {
                     counters: [
                       {
-                        counterId: isRemote
-                          ? this.VideoRemoteRenderMeanFpsCounterId
-                          : this.VideoLocalRenderMeanFpsCounterId,
+                        counterId: this.VideoLocalRenderMeanFpsCounterId,
                         value: Math.floor(cache.actualFps),
                       },
                       {
-                        counterId: isRemote
-                          ? this.VideoRemoteRenderDrawCostCounterId
-                          : this.VideoLocalRenderDrawCostCounterId,
+                        counterId: this.VideoLocalRenderDrawCostCounterId,
                         value: Math.floor(cache.avgFrameInterval),
                       },
                     ],
-                    uid: isRemote ? cache.cacheContext.uid! : 0,
+                    uid: cache.cacheContext.uid!,
                   };
                   if (!counter) {
-                    counters.push({
+                    localCounters.push({
                       data: [data],
-                      connection: cache.callbackContext.connection,
+                      videoSourceType: cache.cacheContext.sourceType,
                     });
                   } else {
                     counter.data.push(data);
@@ -181,6 +209,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
                 }
               });
             }
+            const counters = [...remoteCounters, ...localCounters];
             counters.forEach((counter) => {
               this.setParameters(
                 JSON.stringify({ 'rtc.report.argus_counters': counter })
