@@ -1,4 +1,4 @@
-name: Build API Example / Addon
+name: Build API Example
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -6,38 +6,10 @@ concurrency:
 
 on:
   workflow_call:
-    inputs:
-      type:
-        description: "Build type"
-        required: true
-        default: "sdk"
-        type: string
   workflow_dispatch:
-    inputs:
-      type:
-        description: "Build type"
-        required: true
-        default: "demo"
-        type: choice
-        options:
-          - demo
-          - sdk
-  release:
-    types: [published]
 
 jobs:
-  build-jenkins:
-    if: ${{ inputs.type == 'sdk' || (github.event_name == 'release' && github.event.action == 'published') }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Build
-        run: |
-          curl -X POST -sS -D- -o/dev/null ${{secrets.JENKINS_BUILD_URL}} \
-          -H 'Content-Type: application/json' \
-          -d "{\"branch\": \"${{github.ref_name}}\", \"type\": \"sdk\"}"
-
   build-windows:
-    if: ${{ inputs.type == 'demo' }}
     strategy:
       matrix:
         arch: [ia32, x64]
@@ -66,13 +38,12 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: AgoraRtcNgExample-win-${{ matrix.arch }}
+          name: AgoraRtcNgExample-win-${{ matrix.arch }}-${{ github.run_id }}
           path: |
             example/dist/Agora-Electron-API-Example-*-win.zip
           if-no-files-found: error
 
   build-mac:
-    if: ${{ inputs.type == 'demo' }}
     strategy:
       matrix:
         arch: [arm64, x64]
@@ -103,7 +74,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: AgoraRtcNgExample-mac-${{ matrix.arch }}
+          name: AgoraRtcNgExample-mac-${{ matrix.arch }}-${{ github.run_id }}
           path: |
             example/dist/Agora-Electron-API-Example-*-mac.zip
           if-no-files-found: error
