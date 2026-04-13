@@ -1,4 +1,4 @@
-name: Build API Example / Addon
+name: Build API Example
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -6,38 +6,10 @@ concurrency:
 
 on:
   workflow_call:
-    inputs:
-      type:
-        description: "Build type"
-        required: false
-        default: "sdk"
-        type: string
   workflow_dispatch:
-    inputs:
-      type:
-        description: "Build type"
-        required: false
-        default: "demo"
-        type: choice
-        options:
-          - demo
-          - sdk
-  release:
-    types: [published]
 
 jobs:
-  build-jenkins:
-    if: ${{ inputs.type == 'sdk' || (github.event_name == 'release' && github.event.action == 'published') }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Build
-        run: |
-          curl -X POST -sS -D- -o/dev/null ${{secrets.JENKINS_BUILD_URL}} \
-          -H 'Content-Type: application/json' \
-          -d "{\"branch\": \"${{github.ref_name}}\", \"type\": \"sdk\"}"
-
   build-windows:
-    if: ${{ inputs.type == 'demo' }}
     strategy:
       matrix:
         arch: [ia32, x64]
@@ -72,7 +44,6 @@ jobs:
           if-no-files-found: error
 
   build-mac:
-    if: ${{ inputs.type == 'demo' }}
     strategy:
       matrix:
         arch: [arm64, x64]
