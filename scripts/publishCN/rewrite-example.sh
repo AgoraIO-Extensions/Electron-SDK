@@ -12,7 +12,8 @@ find "$change_dir" -type f | while read -r file; do
 done
 
 change_file=${PROJECT_ROOT}/example/package.json
-sed "s/${old_package_name}/${new_package_name}/g" ${change_file} >tmp && mv tmp ${change_file}
+# Do not rename the direct dependency key in dependencies (keep e.g. agora-electron-sdk + version).
+sed -E "/^[[:space:]]*\"${old_package_name}\":/!s#${old_package_name}#${new_package_name}#g" "${change_file}" >tmp && mv tmp "${change_file}"
 
 change_file=${PROJECT_ROOT}/example/webpack.renderer.additions.js
 sed "s/${old_package_name}/${new_package_name}/g" ${change_file} >tmp && mv tmp ${change_file}
