@@ -6,14 +6,15 @@ PROJECT_ROOT=$(realpath ${MY_PATH}/../..)
 
 change_dir="${PROJECT_ROOT}/example/src"
 
-find "$change_dir" -type f | while read -r file; do
-  sed -i.bak "s/${old_package_name}/${new_package_name}/g" "$file"
-  echo "Replaced in $file"
-done
+# find "$change_dir" -type f | while read -r file; do
+#   sed -i.bak "s/${old_package_name}/${new_package_name}/g" "$file"
+#   echo "Replaced in $file"
+# done
 
 change_file=${PROJECT_ROOT}/example/package.json
-# Do not rename the direct dependency key in dependencies (keep e.g. agora-electron-sdk + version).
-sed -E "/^[[:space:]]*\"${old_package_name}\":/!s#${old_package_name}#${new_package_name}#g" "${change_file}" >tmp && mv tmp "${change_file}"
+sed "s/${old_package_name}/${new_package_name}/g" "${change_file}" >tmp && mv tmp "${change_file}"
+# dependencies 里该包使用通配版本（仅匹配 JSON 键为包名的一行，不影响 node_modules/... 等路径）
+sed -E "/^[[:space:]]*\"${new_package_name}\":/s/(\"${new_package_name}\": )\"[^\"]*\"/\1\"*\"/" "${change_file}" >tmp && mv tmp "${change_file}"
 
 change_file=${PROJECT_ROOT}/example/webpack.renderer.additions.js
 sed "s/${old_package_name}/${new_package_name}/g" ${change_file} >tmp && mv tmp ${change_file}
