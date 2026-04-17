@@ -18,4 +18,9 @@ regex = '''"[0-9a-f]{32}"'''
 id = "hashed-password-md5"
 description = "MD5 Password"
 regex = '''['\ "=]+[0-9a-f]{32}['\ "\n]+'''
+[rules.allowlist]
+description = "ignore legacy lefthook version hash comments"
+paths = [
+    '''^\.husky/prepare-commit-msg$''',
+]
 # ----- END MD5 Password -----
