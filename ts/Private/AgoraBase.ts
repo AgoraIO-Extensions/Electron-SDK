@@ -453,6 +453,34 @@ export enum ErrorCodeType {
    * 1501: No permission to use the camera. Please check whether camera permission is enabled.
    */
   ErrVdmCameraNotAuthorized = 1501,
+  /**
+   * @ignore
+   */
+  ErrAdmApplicationLoopback = 2007,
+  /**
+   * @ignore
+   */
+  ErrAdmApplicationLoopbackStopped = 2008,
+  /**
+   * @ignore
+   */
+  ErrAdmSystemLoopback = 2009,
+  /**
+   * @ignore
+   */
+  ErrAdmSystemLoopbackStopped = 2010,
+  /**
+   * @ignore
+   */
+  ErrAdmLoopbackNoPermission = 2011,
+  /**
+   * @ignore
+   */
+  ErrAdmLoopbackSilentDetected = 2012,
+  /**
+   * @ignore
+   */
+  ErrAdmLoopbackSilentRecovered = 2013,
 }
 
 /**
@@ -1214,6 +1242,16 @@ export enum MaxUserAccountLengthType {
 }
 
 /**
+ * @ignore
+ */
+export enum MaxCustomUserInfoLengthType {
+  /**
+   * @ignore
+   */
+  MaxCustomUserInfoLength = 1024,
+}
+
+/**
  * Information about externally encoded video frames.
  */
 export class EncodedVideoFrameInfo {
@@ -1493,7 +1531,7 @@ export class VideoEncoderConfiguration {
    */
   frameRate?: number;
   /**
-   * Bitrate for video encoding in Kbps. This parameter does not need to be set; keep the default value STANDARD_BITRATE. The SDK automatically matches the optimal bitrate based on your video resolution and frame rate. For details on the relationship between resolution and frame rate, see [Video Profile](https://doc.shengwang.cn/doc/rtc/electron/basic-features/video-profile#%E8%A7%86%E9%A2%91%E5%B1%9E%E6%80%A7%E5%8F%82%E8%80%83).
+   * Bitrate for video encoding in Kbps. This parameter does not need to be set; keep the default value STANDARD_BITRATE. The SDK automatically matches the optimal bitrate based on your video resolution and frame rate. For details on the relationship between resolution and frame rate, see [Video Profile](https://docs.agora.io/en/video-calling/enhance-call-quality/configure-video-encoding).
    *  STANDARD_BITRATE (0): (Default) Standard bitrate mode.
    *  COMPATIBLE_BITRATE (-1): Compatible bitrate mode. In general, Agora recommends not using this value.
    */
@@ -2043,7 +2081,7 @@ export enum AudioScenarioType {
    */
   AudioScenarioAiServer = 9,
   /**
-   * 10: AI conversation scenario, only applicable for interactions with agents created using the [Agora Conversational AI Engine](https://doc.shengwang.cn/doc/convoai/restful/landing-page).
+   * 10: AI conversation scenario, only applicable for interactions with agents created using the [Agora Conversational AI Engine](https://docs.agora.io/en/conversational-ai/overview/product-overview).
    */
   AudioScenarioAiClient = 10,
   /**
@@ -2994,7 +3032,7 @@ export class RtcImage {
 /**
  * Advanced feature configuration for live transcoding.
  *
- * To use advanced features for live transcoding, please [contact sales](https://www.shengwang.cn/contact-sales/).
+ * To use advanced features for live transcoding, please [contact sales](mailto:support@agora.io).
  */
 export class LiveStreamAdvancedFeature {
   /**
@@ -3101,7 +3139,7 @@ export class LiveTranscoding {
    */
   height?: number;
   /**
-   * Video encoding bitrate in Kbps. This parameter does not need to be set. Keep the default value STANDARD_BITRATE, and the SDK automatically matches the optimal bitrate based on the resolution and frame rate you set. For the relationship between resolution and frame rate, see [Video Profile](https://doc.shengwang.cn/doc/rtc/electron/basic-features/video-profile#%E8%A7%86%E9%A2%91%E5%B1%9E%E6%80%A7%E5%8F%82%E8%80%83).
+   * Video encoding bitrate in Kbps. This parameter does not need to be set. Keep the default value STANDARD_BITRATE, and the SDK automatically matches the optimal bitrate based on the resolution and frame rate you set. For the relationship between resolution and frame rate, see [Video Profile](https://docs.agora.io/en/video-calling/enhance-call-quality/configure-video-encoding).
    */
   videoBitrate?: number;
   /**
@@ -3137,7 +3175,7 @@ export class LiveTranscoding {
    */
   transcodingUsers?: TranscodingUser[];
   /**
-   * Reserved parameter: custom information sent to the RTMP client, used to populate SEI frames in H264/H265 video. Max length: 4096 bytes. For details about SEI, see [SEI Frame FAQ](https://doc.shengwang.cn/faq/quality-issues/sei).
+   * Reserved parameter: custom information sent to the RTMP client, used to populate SEI frames in H264/H265 video. Max length: 4096 bytes.
    */
   transcodingExtraInfo?: string;
   /**
@@ -3713,7 +3751,7 @@ export class VideoCanvas {
   cropArea?: Rectangle;
   /**
    * The receiver can render alpha channel information only when the sender enables the alpha transmission feature.
-   *  To enable the alpha transmission feature, please [contact technical support](https://ticket.shengwang.cn/). (Optional) Whether to enable alpha mask rendering: true : Enable alpha mask rendering. false : (Default) Disable alpha mask rendering. Alpha mask rendering can create transparent images and extract portraits from video. When used with other methods, it can achieve effects such as picture-in-picture portraits or watermarking.
+   *  To enable the alpha transmission feature, please [contact technical support](https://www.agora.io/cn/contact/). (Optional) Whether to enable alpha mask rendering: true : Enable alpha mask rendering. false : (Default) Disable alpha mask rendering. Alpha mask rendering can create transparent images and extract portraits from video. When used with other methods, it can achieve effects such as picture-in-picture portraits or watermarking.
    */
   enableAlphaMask?: boolean;
   /**
@@ -4191,6 +4229,54 @@ export class AudioTrackConfig {
 }
 
 /**
+ * @ignore
+ */
+export enum LoopbackAudioTrackType {
+  /**
+   * @ignore
+   */
+  LoopbackSystem = 0,
+  /**
+   * @ignore
+   */
+  LoopbackSystemExcludeSelf = 1,
+  /**
+   * @ignore
+   */
+  LoopbackApplication = 2,
+  /**
+   * @ignore
+   */
+  LoopbackProcess = 3,
+}
+
+/**
+ * @ignore
+ */
+export class LoopbackAudioTrackConfig {
+  /**
+   * @ignore
+   */
+  loopbackType?: LoopbackAudioTrackType;
+  /**
+   * @ignore
+   */
+  volume?: number;
+  /**
+   * @ignore
+   */
+  deviceName?: string;
+  /**
+   * @ignore
+   */
+  appName?: string;
+  /**
+   * @ignore
+   */
+  processId?: number;
+}
+
+/**
  * Preset voice beautifier options.
  */
 export enum VoiceBeautifierPreset {
@@ -4659,7 +4745,7 @@ export class AudioRecordingConfiguration {
   /**
    * The actual recorded audio channel depends on the captured audio channel:
    *  If the captured audio is mono and recordingChannel is set to 2, the recorded audio will be stereo with duplicated mono data, not true stereo.
-   *  If the captured audio is stereo and recordingChannel is set to 1, the recorded audio will be mono with mixed stereo data. Additionally, the integration scheme may affect the final recorded audio channel. If you want to record stereo, please [contact technical support](https://ticket.shengwang.cn/) for assistance. Audio channel for recording. Supported values:
+   *  If the captured audio is stereo and recordingChannel is set to 1, the recorded audio will be mono with mixed stereo data. Additionally, the integration scheme may affect the final recorded audio channel. If you want to record stereo, please [contact technical support](https://www.agora.io/cn/contact/) for assistance. Audio channel for recording. Supported values:
    *  1: (default) Mono.
    *  2: Stereo.
    */
@@ -4817,7 +4903,7 @@ export enum ChannelMediaRelayError {
   /**
    * 2: No response from the server.
    * This error may be caused by poor network conditions. If this error occurs when initiating cross-channel media relay, you can try again later; if it occurs during the relay process, you can call the leaveChannel method to leave the channel.
-   * It may also be due to the current App ID not having cross-channel media relay enabled. You can [contact technical support](https://ticket.shengwang.cn/) to request enabling this feature.
+   * It may also be due to the current App ID not having cross-channel media relay enabled. You can [contact technical support](https://www.agora.io/cn/contact/) to request enabling this feature.
    */
   RelayErrorServerNoResponse = 2,
   /**
@@ -5179,7 +5265,7 @@ export class EchoTestConfiguration {
    */
   enableVideo?: boolean;
   /**
-   * The token used to ensure the security of the audio and video loop test. If you have not enabled the App Certificate in the console, you do not need to pass a value for this parameter. If you have enabled the App Certificate in the console, you must pass in a token, and the uid used when generating the token must be 0xFFFFFFFF, and the channel name must uniquely identify each loop test. For how to generate a token on the server, refer to [Use Token Authentication](https://doc.shengwang.cn/doc/rtc/electron/basic-features/token-authentication).
+   * The token used to ensure the security of the audio and video loop test. If you have not enabled the App Certificate in the console, you do not need to pass a value for this parameter. If you have enabled the App Certificate in the console, you must pass in a token, and the uid used when generating the token must be 0xFFFFFFFF, and the channel name must uniquely identify each loop test. For how to generate a token on the server, refer to [Use Token Authentication](https://docs.agora.io/en/video-calling/token-authentication/deploy-token-server).
    */
   token?: string;
   /**
@@ -5206,6 +5292,10 @@ export class UserInfo {
    * User account. Length limit: MaxUserAccountLengthType.
    */
   userAccount?: string;
+  /**
+   * @ignore
+   */
+  customUserInfo?: string;
 }
 
 /**
