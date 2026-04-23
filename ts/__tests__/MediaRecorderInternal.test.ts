@@ -115,4 +115,37 @@ test('removeAllListeners', () => {
   expect(callback2).not.toBeCalled();
 });
 
+test('setMediaRecorderObserver should replace placeholder observer created by addListener', () => {
+  const engine = createAgoraRtcEngine().createMediaRecorder({});
+  engine.addListener('onRecorderInfoUpdated', jest.fn());
+
+  const recorderObserver = {
+    onRecorderInfoUpdated: jest.fn(),
+  };
+  engine.setMediaRecorderObserver(recorderObserver);
+
+  const eventType = 'onRecorderInfoUpdated';
+  const data = {
+    nativeHandle,
+    channelId: 'test-channel',
+    uid: 1001,
+    info: { fileName: 'test.mp4' },
+  };
+  const handlers = EVENT_PROCESSORS.IMediaRecorderObserver.handlers(
+    eventType,
+    data,
+    []
+  );
+  handlers?.forEach((handler) => {
+    if (!handler) {
+      return;
+    }
+    EVENT_PROCESSORS.IMediaRecorderObserver.func.forEach((processor) => {
+      processor(handler, eventType, data);
+    });
+  });
+
+  expect(recorderObserver.onRecorderInfoUpdated).toBeCalledTimes(1);
+});
+
 import { EVENT_PROCESSORS, emitEvent } from '../Private/internal/IrisApiEngine';

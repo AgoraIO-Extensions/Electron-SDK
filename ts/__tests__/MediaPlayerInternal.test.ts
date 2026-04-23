@@ -131,4 +131,25 @@ test('removeAllListeners', () => {
   expect(callback2).not.toBeCalled();
 });
 
+test('media player removeAllListeners should not remove rtc engine listeners', () => {
+  const rtcEngine = createAgoraRtcEngine();
+  rtcEngine.removeAllListeners('onLocalVideoStateChanged');
+
+  const rtcCallback = jest.fn();
+  rtcEngine.addListener('onLocalVideoStateChanged', rtcCallback);
+
+  const player = rtcEngine.createMediaPlayer();
+  player.addListener('onAgoraCDNTokenWillExpire', jest.fn());
+  player.removeAllListeners();
+
+  emitEvent(
+    'onLocalVideoStateChanged',
+    EVENT_PROCESSORS.IRtcEngineEventHandler,
+    { source: 0, state: 2, reason: 0 }
+  );
+
+  expect(rtcCallback).toBeCalledTimes(1);
+  rtcEngine.removeAllListeners('onLocalVideoStateChanged');
+});
+
 import { EVENT_PROCESSORS, emitEvent } from '../Private/internal/IrisApiEngine';

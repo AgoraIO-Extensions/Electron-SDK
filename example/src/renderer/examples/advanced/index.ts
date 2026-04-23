@@ -13,6 +13,7 @@ import LocalSpatialAudioEngine from './LocalSpatialAudioEngine/LocalSpatialAudio
 import LocalVideoTranscoder from './LocalVideoTranscoder/LocalVideoTranscoder';
 import MediaPlayer from './MediaPlayer/MediaPlayer';
 import MediaRecorder from './MediaRecorder/MediaRecorder';
+import MediaRecorderObserverValidation from './MediaRecorderObserverValidation/MediaRecorderObserverValidation';
 import Meet from './Meet/Meet';
 import MusicContentCenter from './MusicContentCenter/MusicContentCenter';
 import PlayEffect from './PlayEffect/PlayEffect';
@@ -93,6 +94,10 @@ const Advanced = {
     {
       name: 'MediaRecorder',
       component: MediaRecorder,
+    },
+    {
+      name: 'MediaRecorderObserverValidation',
+      component: MediaRecorderObserverValidation,
     },
     {
       name: 'MusicContentCenter',
