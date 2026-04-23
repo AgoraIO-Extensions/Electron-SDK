@@ -12,9 +12,11 @@ import AgoraMediaBaseTI from '../ti/AgoraMediaBase-ti';
 const checkers = createCheckers(AgoraMediaBaseTI);
 
 import {
-  DeviceEventEmitter,
   EVENT_TYPE,
   EventProcessor,
+  addScopedEventListener,
+  removeAllScopedEventListeners,
+  removeScopedEventListener,
 } from './IrisApiEngine';
 
 export class MediaEngineInternal extends IMediaEngineImpl {
@@ -168,23 +170,23 @@ export class MediaEngineInternal extends IMediaEngineImpl {
     };
     // @ts-ignore
     listener!.agoraCallback = callback;
-    DeviceEventEmitter.addListener(eventType, callback);
+    addScopedEventListener(this, eventType, listener as Function, callback);
   }
 
   removeListener<EventType extends keyof IMediaEngineEvent>(
     eventType: EventType,
     listener?: IMediaEngineEvent[EventType]
   ) {
-    DeviceEventEmitter.removeListener(
+    removeScopedEventListener(
+      this,
       eventType,
-      // @ts-ignore
-      listener?.agoraCallback ?? listener
+      listener as Function | undefined
     );
   }
 
   removeAllListeners<EventType extends keyof IMediaEngineEvent>(
     eventType?: EventType
   ) {
-    DeviceEventEmitter.removeAllListeners(eventType);
+    removeAllScopedEventListeners(this, eventType);
   }
 }

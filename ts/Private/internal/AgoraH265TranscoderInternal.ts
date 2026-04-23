@@ -9,9 +9,11 @@ import IAgoraH265TranscoderTI from '../ti/IAgoraH265Transcoder-ti';
 const checkers = createCheckers(IAgoraH265TranscoderTI);
 
 import {
-  DeviceEventEmitter,
   EVENT_TYPE,
   EventProcessor,
+  addScopedEventListener,
+  removeAllScopedEventListeners,
+  removeScopedEventListener,
 } from './IrisApiEngine';
 
 export class H265TranscoderInternal extends IH265TranscoderImpl {
@@ -52,24 +54,24 @@ export class H265TranscoderInternal extends IH265TranscoderImpl {
     };
     // @ts-ignore
     listener!.agoraCallback = callback;
-    DeviceEventEmitter.addListener(eventType, callback);
+    addScopedEventListener(this, eventType, listener as Function, callback);
   }
 
   removeListener<EventType extends keyof IH265TranscoderEvent>(
     eventType: EventType,
     listener?: IH265TranscoderEvent[EventType]
   ) {
-    DeviceEventEmitter.removeListener(
+    removeScopedEventListener(
+      this,
       eventType,
-      // @ts-ignore
-      listener?.agoraCallback ?? listener
+      listener as Function | undefined
     );
   }
 
   removeAllListeners<EventType extends keyof IH265TranscoderEvent>(
     eventType?: EventType
   ) {
-    DeviceEventEmitter.removeAllListeners(eventType);
+    removeAllScopedEventListeners(this, eventType);
   }
 
   override registerTranscoderObserver(

@@ -71,6 +71,110 @@ import { VideoEffectObjectInternal } from './VideoEffectObjectInternal';
 // @ts-ignore
 export const DeviceEventEmitter: EventEmitter = new EventEmitter();
 
+type DeviceEventListener = (...args: any[]) => void;
+type ListenerRecord = {
+  listener: Function;
+  callback: DeviceEventListener;
+};
+
+const ScopedDeviceEventListeners = new WeakMap<
+  object,
+  Map<string, ListenerRecord[]>
+>();
+
+function getScopedListenerMap(owner: object): Map<string, ListenerRecord[]> {
+  let scopedListeners = ScopedDeviceEventListeners.get(owner);
+  if (scopedListeners === undefined) {
+    scopedListeners = new Map<string, ListenerRecord[]>();
+    ScopedDeviceEventListeners.set(owner, scopedListeners);
+  }
+  return scopedListeners;
+}
+
+function cleanupScopedListenerMap(
+  owner: object,
+  scopedListeners: Map<string, ListenerRecord[]>
+) {
+  if (scopedListeners.size === 0) {
+    ScopedDeviceEventListeners.delete(owner);
+  }
+}
+
+export function addScopedEventListener(
+  owner: object,
+  eventType: string,
+  listener: Function,
+  callback: DeviceEventListener
+) {
+  const scopedListeners = getScopedListenerMap(owner);
+  const listeners = scopedListeners.get(eventType) ?? [];
+
+  listeners.push({ listener, callback });
+  scopedListeners.set(eventType, listeners);
+  DeviceEventEmitter.addListener(eventType, callback);
+}
+
+export function removeScopedEventListener(
+  owner: object,
+  eventType: string,
+  listener?: Function
+) {
+  if (listener === undefined) {
+    removeAllScopedEventListeners(owner, eventType);
+    return;
+  }
+
+  const scopedListeners = ScopedDeviceEventListeners.get(owner);
+  if (scopedListeners === undefined) {
+    return;
+  }
+
+  const listeners = scopedListeners.get(eventType) ?? [];
+  const index = listeners.findIndex((record) => record.listener === listener);
+
+  if (index === -1) {
+    return;
+  }
+
+  const [record] = listeners.splice(index, 1);
+  DeviceEventEmitter.removeListener(eventType, record!.callback);
+
+  if (listeners.length === 0) {
+    scopedListeners.delete(eventType);
+  } else {
+    scopedListeners.set(eventType, listeners);
+  }
+  cleanupScopedListenerMap(owner, scopedListeners);
+}
+
+export function removeAllScopedEventListeners(
+  owner: object,
+  eventType?: string
+) {
+  const scopedListeners = ScopedDeviceEventListeners.get(owner);
+  if (scopedListeners === undefined) {
+    return;
+  }
+
+  if (eventType !== undefined) {
+    const listeners = scopedListeners.get(eventType) ?? [];
+    listeners.forEach((record) => {
+      DeviceEventEmitter.removeListener(eventType, record.callback);
+    });
+    scopedListeners.delete(eventType);
+    cleanupScopedListenerMap(owner, scopedListeners);
+    return;
+  }
+
+  scopedListeners.forEach((listeners, currentEventType) => {
+    listeners.forEach((record) => {
+      DeviceEventEmitter.removeListener(currentEventType, record.callback);
+    });
+  });
+  scopedListeners.clear();
+  ScopedDeviceEventListeners.delete(owner);
+}
+
 const AgoraNode = require('../../../build/Release/agora_node_ext');
 export const AgoraElectronBridge: IAgoraElectronBridge =
   new AgoraNode.AgoraElectronBridge();
