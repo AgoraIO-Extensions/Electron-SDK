@@ -41,7 +41,10 @@
           ]
         }
       ],
-      "type": "distribution"
+      "type": "distribution",
+      "extendInfo": {
+        "NSAudioCaptureUsageDescription": "This app needs access to the microphone for audio call and recording functionality."
+      }
     },
     "dmg": {
       "contents": [
