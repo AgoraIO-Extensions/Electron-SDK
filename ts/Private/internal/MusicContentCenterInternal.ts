@@ -17,9 +17,11 @@ import IAgoraMusicContentCenterTI from '../ti/IAgoraMusicContentCenter-ti';
 const checkers = createCheckers(IAgoraMusicContentCenterTI);
 
 import {
-  DeviceEventEmitter,
   EVENT_TYPE,
   EventProcessor,
+  addScopedEventListener,
+  removeAllScopedEventListeners,
+  removeScopedEventListener,
 } from './IrisApiEngine';
 import { MediaPlayerInternal } from './MediaPlayerInternal';
 
@@ -56,24 +58,24 @@ export class MusicContentCenterInternal extends IMusicContentCenterImpl {
     };
     // @ts-ignore
     listener!.agoraCallback = callback;
-    DeviceEventEmitter.addListener(eventType, callback);
+    addScopedEventListener(this, eventType, listener as Function, callback);
   }
 
   removeListener<EventType extends keyof IMusicContentCenterEvent>(
     eventType: EventType,
     listener?: IMusicContentCenterEvent[EventType]
   ) {
-    DeviceEventEmitter.removeListener(
+    removeScopedEventListener(
+      this,
       eventType,
-      // @ts-ignore
-      listener?.agoraCallback ?? listener
+      listener as Function | undefined
     );
   }
 
   removeAllListeners<EventType extends keyof IMusicContentCenterEvent>(
     eventType?: EventType
   ) {
-    DeviceEventEmitter.removeAllListeners(eventType);
+    removeAllScopedEventListeners(this, eventType);
   }
 
   override registerEventHandler(

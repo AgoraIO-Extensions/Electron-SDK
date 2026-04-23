@@ -64,10 +64,12 @@ import IAgoraRtcEngineTI from '../ti/IAgoraRtcEngine-ti';
 import { H265TranscoderInternal } from './AgoraH265TranscoderInternal';
 import { AudioDeviceManagerInternal } from './AudioDeviceManagerInternal';
 import {
-  DeviceEventEmitter,
   EVENT_TYPE,
   EventProcessor,
+  addScopedEventListener,
   callIrisApi,
+  removeAllScopedEventListeners,
+  removeScopedEventListener,
 } from './IrisApiEngine';
 import { LocalSpatialAudioEngineInternal } from './LocalSpatialAudioEngineInternal';
 import { MediaEngineInternal } from './MediaEngineInternal';
@@ -300,24 +302,24 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     };
     // @ts-ignore
     listener!.agoraCallback = callback;
-    DeviceEventEmitter.addListener(eventType, callback);
+    addScopedEventListener(this, eventType, listener as Function, callback);
   }
 
   removeListener<EventType extends keyof IRtcEngineEvent>(
     eventType: EventType,
     listener?: IRtcEngineEvent[EventType]
   ) {
-    DeviceEventEmitter.removeListener(
+    removeScopedEventListener(
+      this,
       eventType,
-      // @ts-ignore
-      listener?.agoraCallback ?? listener
+      listener as Function | undefined
     );
   }
 
   removeAllListeners<EventType extends keyof IRtcEngineEvent>(
     eventType?: EventType
   ) {
-    DeviceEventEmitter.removeAllListeners(eventType);
+    removeAllScopedEventListeners(this, eventType);
   }
 
   override getVersion(): SDKBuildInfo {

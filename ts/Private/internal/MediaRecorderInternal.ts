@@ -8,9 +8,11 @@ import AgoraMediaBaseTI from '../ti/AgoraMediaBase-ti';
 const checkers = createCheckers(AgoraMediaBaseTI);
 
 import {
-  DeviceEventEmitter,
   EVENT_TYPE,
   EventProcessor,
+  addScopedEventListener,
+  removeAllScopedEventListeners,
+  removeScopedEventListener,
 } from './IrisApiEngine';
 
 export class MediaRecorderInternal extends IMediaRecorderImpl {
@@ -36,7 +38,8 @@ export class MediaRecorderInternal extends IMediaRecorderImpl {
 
   override setMediaRecorderObserver(callback: IMediaRecorderObserver): number {
     const key = this._nativeHandle;
-    if (MediaRecorderInternal._observers.has(key)) {
+    const currentObserver = MediaRecorderInternal._observers.get(key);
+    if (currentObserver === callback) {
       return ErrorCodeType.ErrOk;
     }
     MediaRecorderInternal._observers.set(key, callback);
@@ -78,23 +81,23 @@ export class MediaRecorderInternal extends IMediaRecorderImpl {
     };
     // @ts-ignore
     listener!.agoraCallback = callback;
-    DeviceEventEmitter.addListener(eventType, callback);
+    addScopedEventListener(this, eventType, listener as Function, callback);
   }
 
   removeListener<EventType extends keyof IMediaRecorderEvent>(
     eventType: EventType,
     listener?: IMediaRecorderEvent[EventType]
   ) {
-    DeviceEventEmitter.removeListener(
+    removeScopedEventListener(
+      this,
       eventType,
-      // @ts-ignore
-      listener?.agoraCallback ?? listener
+      listener as Function | undefined
     );
   }
 
   removeAllListeners<EventType extends keyof IMediaRecorderEvent>(
     eventType?: EventType
   ) {
-    DeviceEventEmitter.removeAllListeners(eventType);
+    removeAllScopedEventListeners(this, eventType);
   }
 }
