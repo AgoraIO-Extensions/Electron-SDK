@@ -26,12 +26,14 @@ import {
 import {
   AgoraButton,
   AgoraDropdown,
+  AgoraList,
   AgoraView,
   RtcSurfaceView,
 } from '../../../components/ui';
 import Config from '../../../config/agora.config';
 import { arrayToItems } from '../../../utils';
 import { askMediaAccess } from '../../../utils/permissions';
+import { joinChannelVideoRemoteUsersGrid } from './layout';
 
 interface State extends BaseVideoComponentState {
   selectedUser?: number;
@@ -251,7 +253,28 @@ export default class JoinChannelVideo
   }
 
   protected renderUsers(): ReactElement | undefined {
-    return super.renderUsers();
+    const { startPreview, joinChannelSuccess, remoteUsers } = this.state;
+    if (!startPreview && !joinChannelSuccess) {
+      return undefined;
+    }
+
+    return (
+      <>
+        {this.renderUser({
+          sourceType: VideoSourceType.VideoSourceCamera,
+        })}
+        <AgoraList
+          data={remoteUsers ?? []}
+          grid={joinChannelVideoRemoteUsersGrid}
+          renderItem={(item) =>
+            this.renderUser({
+              uid: item,
+              sourceType: VideoSourceType.VideoSourceRemote,
+            })
+          }
+        />
+      </>
+    );
   }
 
   protected renderVideo(user: VideoCanvas): ReactElement | undefined {
