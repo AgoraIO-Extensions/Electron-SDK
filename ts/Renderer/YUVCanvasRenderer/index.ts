@@ -104,7 +104,18 @@ export class YUVCanvasRenderer extends IRenderer {
         stride: frame.vStride,
       }
     );
-    yuvBufferFrame.a = frame.alphaBuffer;
+
+    if (
+      this.enableAlphaMask &&
+      frame.alphaBuffer &&
+      frame.alphaBuffer.length === frameWidth * frameHeight
+    ) {
+      yuvBufferFrame.a =
+        frame.alphaBuffer instanceof Uint8Array
+          ? frame.alphaBuffer
+          : new Uint8Array(frame.alphaBuffer);
+    }
+
     this._yuvCanvasSink.drawFrame(yuvBufferFrame);
   }
 

@@ -76,6 +76,7 @@ export class WebGLRenderer extends IRenderer {
   observer?: ResizeObserver;
 
   fallback?: WebGLFallback;
+  private fallbackTriggered = false;
 
   constructor(fallback?: WebGLFallback) {
     super();
@@ -91,6 +92,7 @@ export class WebGLRenderer extends IRenderer {
   }
 
   public override bind(view: HTMLElement) {
+    this.fallbackTriggered = false;
     super.bind(view);
 
     const ResizeObserver = window.ResizeObserver;
@@ -159,10 +161,10 @@ export class WebGLRenderer extends IRenderer {
       error = err;
     }
     if (!this.gl || error) {
-      this.fallback?.call(
-        null,
-        this,
-        new Error('webgl lost or webgl initialize failed')
+      this.triggerFallback(
+        error instanceof Error
+          ? error
+          : new Error('webgl lost or webgl initialize failed')
       );
       return;
     }
@@ -531,11 +533,7 @@ export class WebGLRenderer extends IRenderer {
     }
 
     if (!this.gl) {
-      this.fallback?.call(
-        null,
-        this,
-        new Error('Browser not support! No WebGL detected.')
-      );
+      this.triggerFallback(new Error('Browser not support! No WebGL detected.'));
       return;
     }
 
@@ -661,11 +659,7 @@ export class WebGLRenderer extends IRenderer {
 
     this.releaseTextures();
 
-    this.fallback?.call(
-      null,
-      this,
-      new Error('Browser not support! No WebGL detected.')
-    );
+    this.triggerFallback(new Error('Browser not support! No WebGL detected.'));
   };
 
   private handleContextRestored = (event: Event) => {
@@ -681,4 +675,13 @@ export class WebGLRenderer extends IRenderer {
 
     this.initTextures();
   };
+
+  private triggerFallback(error: Error) {
+    if (this.fallbackTriggered) {
+      return;
+    }
+
+    this.fallbackTriggered = true;
+    this.fallback?.call(null, this, error);
+  }
 }

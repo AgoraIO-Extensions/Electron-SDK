@@ -40,7 +40,7 @@ export class RendererManager extends IRendererManager {
   /**
    * @ignore
    */
-  videoFrameUpdateInterval?: NodeJS.Timer;
+  videoFrameUpdateInterval?: NodeJS.Timeout;
   /**
    * @ignore
    */
@@ -539,14 +539,20 @@ export class RendererManager extends IRendererManager {
    */
   private handleWebGLFallback =
     (config: FormatRendererVideoConfig) => (renderer: WebGLRenderer) => {
-      const { contentMode, mirror } = renderer;
-      const view = renderer.parentElement!;
+      const { contentMode, mirror, enableAlphaMask } = renderer;
+      const view = renderer.parentElement;
       const renderers = this.getRenderers(config);
       const index = renderers.indexOf(renderer);
+
+      if (!view || index === -1) {
+        logWarn('handleWebGLFallback: renderer already detached, skip');
+        return;
+      }
+
       renderer.unbind();
       const newRenderer = this.createRenderer(RENDER_MODE.SOFTWARE);
       newRenderer.bind(view);
-      newRenderer.setRenderOption({ contentMode, mirror });
+      newRenderer.setRenderOption({ contentMode, mirror, enableAlphaMask });
       renderers.splice(index, 1, newRenderer);
     };
 
