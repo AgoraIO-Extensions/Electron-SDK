@@ -264,9 +264,15 @@ export class RendererCache extends IRendererCache {
 
       // 记录当前时间作为本次循环的开始时间
       this._lastRenderTime = currentTime;
-      // Fetch at most one frame per tick and render it once. When frames pile
-      // up, favor UI responsiveness over draining the entire backlog.
-      const { needRender } = this.fetchVideoFrame();
+      // Drain queued frames so each render tick paints the freshest frame
+      // instead of falling permanently behind when backlog accumulates.
+      let { hasMoreFrame, needRender } = this.fetchVideoFrame();
+      while (hasMoreFrame) {
+        const nextFrame = this.fetchVideoFrame();
+        hasMoreFrame = nextFrame.hasMoreFrame;
+        needRender = nextFrame.needRender || needRender;
+      }
+
       if (needRender) {
         this.renderFrame();
       }
