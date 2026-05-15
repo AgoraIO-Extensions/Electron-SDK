@@ -47,6 +47,17 @@ def doPublish(buildVariables) {
         ]
     ]
     def artifactoryUrls = archive.archiveFiles(archiveInfos)
+    def codesignUrls = artifactoryUrls.findAll { it?.toString()?.startsWith('http') }
+    if (codesignUrls.isEmpty()) {
+        error('No valid Artifactory URLs found for CodeSign')
+    }
+    def codesignResult = build(job: 'CodeSign', parameters: [
+        text(name: 'PACKAGE_URLS', value: codesignUrls.join('\n')),
+        string(name: 'SIGN_FILE_WHITELIST', value: '*.node'),
+    ], propagate: false)
+    if (!codesignResult || codesignResult.result != 'SUCCESS') {
+        error("CodeSign failed: ${codesignResult?.result ?: 'UNKNOWN'}")
+    }
     if (params.Upload_CDN) {
         doUploadCDN(artifactoryUrls)
     }
