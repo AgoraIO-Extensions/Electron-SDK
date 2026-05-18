@@ -145,6 +145,8 @@
   },
   "agora_electron": {
     "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.2.7.139-build.1_DCG_Windows_Video_Standalone_20260518_0451.zip",
-    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.2.7.139-build.1_DCG_Mac_Video_Standalone_20260518_0450.zip"
+    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.2.7.139-build.1_DCG_Mac_Video_Standalone_20260518_0450.zip",
+    "native_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_rel.v4.2.7.139_32292_FULL_20260512_1902_1114362.zip",
+    "native_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_rel.v4.2.7.139_27643_FULL_20260513_1143_1115450.zip"
   }
 }
