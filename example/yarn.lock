@@ -1273,9 +1273,9 @@
     prettier "*"
 
 "@tootallnate/once@2":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@tootallnate/once/-/once-2.0.0.tgz#f544a148d3ab35801c1f633a7441fd87c2e484bf"
-  integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/@tootallnate/once/-/once-2.0.1.tgz#35adc6222e3662fa2222ce123b961476a746b9ea"
+  integrity sha512-HqmEUIGRJ5fSXchkVgR5F7qn48bDBzv0kWj/Kfu5e6uci4UlEeng4331LnBkWffb++Ei3FOVLxo8JJWMFBDMeQ==
 
 "@types/cacheable-request@^6.0.1":
   version "6.0.3"
@@ -1785,10 +1785,10 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-agora-electron-sdk@4.5.2-build.166-rc.1:
-  version "4.5.2-build.166-rc.1"
-  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.5.2-build.166-rc.1.tgz#b0a532058f57427be15da68c93d86c2ff661e2c3"
-  integrity sha512-UmVtJ8ikXsvqmtE3oLnuv/5eek5XcnYNFYVyzs/KRZ2ekRzMtMt1PaPGwovg495wseKYZB8Y6C/d0U2FxOM3pQ==
+agora-electron-sdk@4.6.2:
+  version "4.6.2"
+  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.6.2.tgz#6ea9e0340242f3a0bc8aba3c9cad6cc2176ce6d8"
+  integrity sha512-X2RQTzQHpKWivYuwMEm2fz2tow2STvijRWjjd7Vx38o7BkcM/mhIxeRJDW6xTbW/Q+O8w82+M0K1Sh9jFDtXOA==
   dependencies:
     archive-type "^4.0.0"
     buffer "^6.0.3"
