@@ -13,6 +13,10 @@ const SYMLINK_ZIP_FIXTURE = Buffer.from(
   'UEsDBBQAAAgIAIt97lwGUP3wDAAAAAoAAAAJAAAAcm9vdC9saW5r09PTzy8tKc5MSQUAUEsBAj8DFAAACAgAi33uXAZQ/fAMAAAACgAAAAkAAAAAAAAAAAAAAP+hAAAAAHJvb3QvbGlua1BLBQYAAAAAAQABADcAAAAzAAAAAAA=',
   'base64'
 );
+const FRAMEWORK_ZIP_FIXTURE = Buffer.from(
+  'UEsDBBQAAAgIAHCE9lx9EREkDQAAAAsAAAAjAAAAcm9vdC9UZXN0LmZyYW1ld29yay9WZXJzaW9ucy9BL1Rlc3RLysxLLKrUTUksSQQAUEsDBBQAAAgIAHCE9lyLntnTAwAAAAEAAAAkAAAAcm9vdC9UZXN0LmZyYW1ld29yay9WZXJzaW9ucy9DdXJyZW50cwQAUEsDBBQAAAgIAHCE9lwVeFsGFwAAABUAAAAYAAAAcm9vdC9UZXN0LmZyYW1ld29yay9UZXN0C0stKs7MzyvWdy4tKkrNK9EPSS0uAQBQSwECPwMUAAAICABwhPZcfRERJA0AAAALAAAAIwAAAAAAAAAAAAAA7YEAAAAAcm9vdC9UZXN0LmZyYW1ld29yay9WZXJzaW9ucy9BL1Rlc3RQSwECPwMUAAAICABwhPZci57Z0wMAAAABAAAAJAAAAAAAAAAAAAAA/6FOAAAAcm9vdC9UZXN0LmZyYW1ld29yay9WZXJzaW9ucy9DdXJyZW50UEsBAj8DFAAACAgAcIT2XBV4WwYXAAAAFQAAABgAAAAAAAAAAAAAAP+hkwAAAHJvb3QvVGVzdC5mcmFtZXdvcmsvVGVzdFBLBQYAAAAAAwADAOkAAADgAAAAAAA=',
+  'base64'
+);
 
 const listTemporaryRoots = async () => {
   const names = await fs.readdir(os.tmpdir());
@@ -102,10 +106,25 @@ describe('extractZip', () => {
     }
   );
 
-  test('rejects symbolic links', async () => {
+  test('preserves safe relative symbolic links in macOS frameworks', async () => {
+    await extractZip(FRAMEWORK_ZIP_FIXTURE, output, { strip: 1 });
+
+    const framework = path.join(output, 'Test.framework');
+    await expect(
+      fs.readlink(path.join(framework, 'Versions', 'Current'))
+    ).resolves.toBe('A');
+    await expect(fs.readlink(path.join(framework, 'Test'))).resolves.toBe(
+      'Versions/Current/Test'
+    );
+    await expect(
+      fs.readFile(path.join(framework, 'Test'), 'utf8')
+    ).resolves.toBe('binary-data');
+  });
+
+  test('rejects symbolic links that escape the output directory', async () => {
     await expect(
       extractZip(SYMLINK_ZIP_FIXTURE, output, { strip: 1 })
-    ).rejects.toThrow('symbolic links');
+    ).rejects.toThrow('outside the output directory');
   });
 
   test('removes temporary files after success and failure', async () => {

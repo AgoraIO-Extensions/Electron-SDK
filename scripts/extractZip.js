@@ -27,23 +27,25 @@ const collectEntries = async (root, metadata, relativeDir = '') => {
     const sourcePath = path.join(root, relativePath);
     const stat = await fs.lstat(sourcePath);
 
-    if (stat.isSymbolicLink()) {
-      throw new Error(`Refusing to extract symbolic links: ${archivePath}`);
-    }
-
     const entryMetadata = metadata.get(archivePath) || {};
+    const isDirectory = stat.isDirectory();
+    const isSymbolicLink = stat.isSymbolicLink();
     const entry = {
       path: archivePath,
-      type: stat.isDirectory() ? 'directory' : 'file',
-      data: stat.isDirectory()
-        ? Buffer.alloc(0)
-        : await fs.readFile(sourcePath),
+      type: isSymbolicLink ? 'symlink' : isDirectory ? 'directory' : 'file',
+      data:
+        isDirectory || isSymbolicLink
+          ? Buffer.alloc(0)
+          : await fs.readFile(sourcePath),
       mode: entryMetadata.mode || stat.mode,
       mtime: entryMetadata.mtime || stat.mtime,
     };
+    if (isSymbolicLink) {
+      entry.linkname = await fs.readlink(sourcePath);
+    }
     entries.push(entry);
 
-    if (stat.isDirectory()) {
+    if (isDirectory) {
       entries.push(...(await collectEntries(root, metadata, relativePath)));
     }
   }
@@ -77,6 +79,27 @@ const validateDestination = (output, filePath, allowRoot = false) => {
   return destination;
 };
 
+const validateSymlinkTarget = (output, entry) => {
+  if (!entry.linkname || path.isAbsolute(entry.linkname)) {
+    throw new Error(
+      `Refusing to link outside the output directory: ${entry.linkname}`
+    );
+  }
+
+  const linkPath = validateDestination(output, entry.path);
+  const targetPath = path.resolve(path.dirname(linkPath), entry.linkname);
+  const relativeTarget = path.relative(output, targetPath);
+  if (
+    relativeTarget === '..' ||
+    relativeTarget.startsWith(`..${path.sep}`) ||
+    path.isAbsolute(relativeTarget)
+  ) {
+    throw new Error(
+      `Refusing to link outside the output directory: ${entry.linkname}`
+    );
+  }
+};
+
 const writeEntry = async (entry, output, realOutput) => {
   const destination = validateDestination(output, entry.path);
 
@@ -97,6 +120,12 @@ const writeEntry = async (entry, output, realOutput) => {
   await fs.ensureDir(parent);
   const realParent = await fs.realpath(parent);
   validateDestination(realOutput, path.relative(realOutput, realParent), true);
+
+  if (entry.type === 'symlink') {
+    validateSymlinkTarget(output, entry);
+    await fs.symlink(entry.linkname, destination);
+    return;
+  }
 
   if (await fs.pathExists(destination)) {
     const destinationStat = await fs.lstat(destination);
