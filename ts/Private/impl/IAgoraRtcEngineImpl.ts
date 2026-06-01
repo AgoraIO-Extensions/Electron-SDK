@@ -4440,24 +4440,20 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   setPlaybackAudioFrameBeforeMixingParameters(
     sampleRate: number,
-    channel: number,
-    samplesPerCall: number
+    channel: number
   ): number {
     const apiType =
       this.getApiTypeFromSetPlaybackAudioFrameBeforeMixingParameters(
         sampleRate,
-        channel,
-        samplesPerCall
+        channel
       );
     const jsonParams = {
       sampleRate: sampleRate,
       channel: channel,
-      samplesPerCall: samplesPerCall,
       toJSON: () => {
         return {
           sampleRate: sampleRate,
           channel: channel,
-          samplesPerCall: samplesPerCall,
         };
       },
     };
@@ -4467,10 +4463,9 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromSetPlaybackAudioFrameBeforeMixingParameters(
     sampleRate: number,
-    channel: number,
-    samplesPerCall: number
+    channel: number
   ): string {
-    return 'RtcEngine_setPlaybackAudioFrameBeforeMixingParameters_ee7e270';
+    return 'RtcEngine_setPlaybackAudioFrameBeforeMixingParameters_4e92b3c';
   }
 
   enableAudioSpectrumMonitor(intervalInMS: number = 100): number {
