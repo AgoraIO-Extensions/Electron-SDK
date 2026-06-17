@@ -2006,6 +2006,22 @@ export enum LocalVideoStreamState {
 }
 
 /**
+ * Local video event types.
+ *
+ * Since Available since v4.6.1.
+ */
+export enum LocalVideoEventType {
+  /**
+   * (3): The screen capture is stopped by the user (Android only).
+   */
+  LocalVideoEventTypeScreenCaptureStoppedByUser = 3,
+  /**
+   * (4): A system internal error occurs during screen capture (Android only).
+   */
+  LocalVideoEventTypeScreenCaptureSystemInternalError = 4,
+}
+
+/**
  * @ignore
  */
 export enum LocalVideoStreamError {
