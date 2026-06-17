@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         arch: [ia32, x64]
-    runs-on: windows-latest
+    runs-on: windows-2022
     env:
       npm_config_arch: ${{ matrix.arch }}
       npm_config_agora_electron_arch: ${{ matrix.arch }}
@@ -68,7 +68,6 @@ jobs:
 
       - name: Build Example
         run: |
-          node scripts/build-example-prepare.js
           yarn dist:mac
         working-directory: example
 

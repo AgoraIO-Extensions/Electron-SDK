@@ -294,6 +294,12 @@ export function processIRtcEngineEventHandler(
       }
       break;
 
+    case 'onLocalVideoEvent':
+      if (handler.onLocalVideoEvent !== undefined) {
+        handler.onLocalVideoEvent(jsonParams.source, jsonParams.event);
+      }
+      break;
+
     case 'onLocalVideoStateChanged':
       if (handler.onLocalVideoStateChanged !== undefined) {
         handler.onLocalVideoStateChanged(

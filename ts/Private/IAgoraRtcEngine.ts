@@ -43,6 +43,7 @@ import {
   LocalAudioStreamError,
   LocalAudioStreamState,
   LocalTranscoderConfiguration,
+  LocalVideoEventType,
   LocalVideoStreamError,
   LocalVideoStreamState,
   LowlightEnhanceOptions,
@@ -1577,6 +1578,11 @@ export interface IRtcEngineEventHandler {
   ): void;
 
   /**
+   * @ignore
+   */
+  onLocalVideoEvent?(source: VideoSourceType, event: LocalVideoEventType): void;
+
+  /**
    * Occurs when the local video state changes.
    *
    * The SDK triggers this callback when the local video state changes, reporting the current state and the reason for the change.
@@ -2712,73 +2718,63 @@ export enum DirectCdnStreamingError {
 }
 
 /**
- * Current CDN streaming state.
- *
- * Deprecated Deprecated since v4.6.2.
+ * @ignore
  */
 export enum DirectCdnStreamingState {
   /**
-   * 0: Initial state, streaming has not started yet.
+   * @ignore
    */
   DirectCdnStreamingStateIdle = 0,
   /**
-   * 1: Streaming is in progress. When you call startDirectCdnStreaming and streaming starts successfully, the SDK returns this value.
+   * @ignore
    */
   DirectCdnStreamingStateRunning = 1,
   /**
-   * 2: Streaming has ended normally. When you call stopDirectCdnStreaming to stop streaming, the SDK returns this value.
+   * @ignore
    */
   DirectCdnStreamingStateStopped = 2,
   /**
-   * 3: Streaming failed. You can troubleshoot based on the information reported by the onDirectCdnStreamingStateChanged callback, and then restart streaming.
+   * @ignore
    */
   DirectCdnStreamingStateFailed = 3,
   /**
-   * 4: Attempting to reconnect to Agora server and CDN. Up to 10 reconnection attempts are made. If reconnection still fails, the streaming state changes to DirectCdnStreamingStateFailed.
+   * @ignore
    */
   DirectCdnStreamingStateRecovering = 4,
 }
 
 /**
- * Statistics of the current CDN stream.
- *
- * Deprecated Deprecated since v4.6.2.
+ * @ignore
  */
 export class DirectCdnStreamingStats {
   /**
-   * Width of the video (px).
+   * @ignore
    */
   videoWidth?: number;
   /**
-   * Height of the video (px).
+   * @ignore
    */
   videoHeight?: number;
   /**
-   * Current video frame rate (fps).
+   * @ignore
    */
   fps?: number;
   /**
-   * Current video bitrate (bps).
+   * @ignore
    */
   videoBitrate?: number;
   /**
-   * Current audio bitrate (bps).
+   * @ignore
    */
   audioBitrate?: number;
 }
 
 /**
- * The IDirectCdnStreamingEventHandler interface is used by the SDK to send CDN streaming event notifications to the app. The app receives SDK event notifications by inheriting methods from this interface.
+ * @ignore
  */
 export interface IDirectCdnStreamingEventHandler {
   /**
-   * Callback when the CDN streaming state changes.
-   *
-   * After the host starts streaming directly to the CDN, when the streaming state changes, the SDK triggers this callback to report the new state, error code, and message. You can use this information to troubleshoot.
-   *
-   * @param state The current streaming state. See DirectCdnStreamingState.
-   * @param reason The reason for the change in streaming state. See DirectCdnStreamingReason.
-   * @param message The message corresponding to the state change.
+   * @ignore
    */
   onDirectCdnStreamingStateChanged?(
     state: DirectCdnStreamingState,
@@ -2787,35 +2783,29 @@ export interface IDirectCdnStreamingEventHandler {
   ): void;
 
   /**
-   * Callback for CDN streaming statistics.
-   *
-   * During the process of pushing streams directly to CDN by the host, the SDK triggers this callback once every second.
-   *
-   * @param stats Current streaming statistics. See DirectCdnStreamingStats.
+   * @ignore
    */
   onDirectCdnStreamingStats?(stats: DirectCdnStreamingStats): void;
 }
 
 /**
- * Media options for the host.
- *
- * Deprecated Deprecated since v4.6.2.
+ * @ignore
  */
 export class DirectCdnStreamingMediaOptions {
   /**
-   * Sets whether to publish video captured by the camera. true : Publish video captured by the camera. false : (Default) Do not publish video captured by the camera.
+   * @ignore
    */
   publishCameraTrack?: boolean;
   /**
-   * Sets whether to publish audio captured by the microphone. true : Publish audio captured by the microphone. false : (Default) Do not publish audio captured by the microphone.
+   * @ignore
    */
   publishMicrophoneTrack?: boolean;
   /**
-   * Sets whether to publish custom captured audio. true : Publish custom captured audio. false : (Default) Do not publish custom captured audio.
+   * @ignore
    */
   publishCustomAudioTrack?: boolean;
   /**
-   * Sets whether to publish custom captured video. true : Publish custom captured video. false : (Default) Do not publish custom captured video.
+   * @ignore
    */
   publishCustomVideoTrack?: boolean;
   /**
@@ -2827,7 +2817,7 @@ export class DirectCdnStreamingMediaOptions {
    */
   publishMediaPlayerId?: number;
   /**
-   * The video track ID returned by the createCustomVideoTrack method. Default is 0.
+   * @ignore
    */
   customVideoTrackId?: number;
 }
@@ -6227,49 +6217,21 @@ export abstract class IRtcEngine {
   abstract resumeAllChannelMediaRelay(): number;
 
   /**
-   * Sets the audio encoding properties when the host streams directly to the CDN.
-   *
-   * Deprecated Deprecated since v4.6.2.
+   * @ignore
    */
   abstract setDirectCdnStreamingAudioConfiguration(
     profile: AudioProfileType
   ): number;
 
   /**
-   * Sets the video encoding properties when the host streams directly to the CDN.
-   *
-   * Deprecated Deprecated since v4.6.2. This method only applies to video captured by the camera, screen sharing, or custom video sources. That is, it applies to video collected when publishCameraTrack or publishCustomVideoTrack is set to true in DirectCdnStreamingMediaOptions.
-   * If the resolution you set exceeds the range supported by your camera device, the SDK adapts it based on your settings and selects the closest resolution with the same aspect ratio for capture, encoding, and streaming. You can get the actual resolution of the pushed video stream via the onDirectCdnStreamingStats callback.
-   *
-   * @param config Video encoding parameter configuration. See VideoEncoderConfiguration. When streaming directly to the CDN, the SDK currently only supports setting OrientationMode to landscape (OrientationFixedLandscape) or portrait (OrientationFixedPortrait).
-   *
-   * @returns
-   * 0: The method call was successful.
-   *  < 0: The method call failed. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
+   * @ignore
    */
   abstract setDirectCdnStreamingVideoConfiguration(
     config: VideoEncoderConfiguration
   ): number;
 
   /**
-   * Starts direct CDN streaming on the host side.
-   *
-   * Deprecated Deprecated since v4.6.2. The SDK does not support pushing streams to the same URL more than once at the same time.
-   * Media options explanation:
-   * The SDK does not support setting both publishCameraTrack and publishCustomVideoTrack to true, nor both publishMicrophoneTrack and publishCustomAudioTrack to true. You can configure media options (DirectCdnStreamingMediaOptions) based on your scenario. For example:
-   * If you want to push custom audio and video streams collected by the host, configure the media options as follows:
-   *  Set publishCustomAudioTrack to true and call pushAudioFrame
-   *  Set publishCustomVideoTrack to true and call pushVideoFrame
-   *  Ensure publishCameraTrack is false (default value)
-   *  Ensure publishMicrophoneTrack is false (default value) Since v4.2.0, the SDK supports pushing audio-only streams. You can set publishCustomAudioTrack or publishMicrophoneTrack to true in DirectCdnStreamingMediaOptions and call pushAudioFrame to push an audio-only stream.
-   *
-   * @param eventHandler See onDirectCdnStreamingStateChanged and onDirectCdnStreamingStats.
-   * @param publishUrl CDN streaming URL.
-   * @param options Media options for the host. See DirectCdnStreamingMediaOptions.
-   *
-   * @returns
-   * 0: The method call was successful.
-   *  < 0: The method call failed. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
+   * @ignore
    */
   abstract startDirectCdnStreaming(
     eventHandler: IDirectCdnStreamingEventHandler,
@@ -6278,13 +6240,7 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
-   * Stops direct CDN streaming on the host side.
-   *
-   * Deprecated Deprecated since v4.6.2.
-   *
-   * @returns
-   * 0: The method call was successful.
-   *  < 0: The method call failed. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
+   * @ignore
    */
   abstract stopDirectCdnStreaming(): number;
 
