@@ -61,7 +61,7 @@ def doPublish(buildVariables) {
     }
     def codesignResult = build(job: 'CodeSign', parameters: [
         text(name: 'PACKAGE_URLS', value: codesignUrls.join('\n')),
-        string(name: 'SIGN_FILE_WHITELIST', value: '*.node AgoraRtcWrapper.dll'),
+        string(name: 'SIGN_FILE_WHITELIST', value: '^(AgoraRtcWrapper\\.dll|.*\\.node)$'),
     ], propagate: false)
     if (!codesignResult || codesignResult.result != 'SUCCESS') {
         error("CodeSign failed: ${codesignResult?.result ?: 'UNKNOWN'}")
