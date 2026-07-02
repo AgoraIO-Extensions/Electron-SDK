@@ -453,6 +453,34 @@ export enum ErrorCodeType {
    * 1501: No permission to use the camera. Please check whether camera permission is enabled.
    */
   ErrVdmCameraNotAuthorized = 1501,
+  /**
+   * @ignore
+   */
+  ErrVideoeffectAssetInvalid = 1700,
+  /**
+   * @ignore
+   */
+  ErrVideoeffectSaveFailed = 1701,
+  /**
+   * @ignore
+   */
+  ErrVideoeffectEngineInvalid = 1702,
+  /**
+   * @ignore
+   */
+  ErrVideoeffectNodeNotActive = 1704,
+  /**
+   * @ignore
+   */
+  ErrVideoeffectInvalidParam = 1705,
+  /**
+   * @ignore
+   */
+  ErrVideoeffectNotSupported = 1706,
+  /**
+   * @ignore
+   */
+  ErrVideoeffectInvalidBundlePath = 1707,
 }
 
 /**
@@ -3937,6 +3965,10 @@ export enum FaceShapeArea {
    */
   FaceShapeAreaChin = 108,
   /**
+   * @ignore
+   */
+  FaceShapeAreaFacesmall = 109,
+  /**
    * (200): Eye area, used to achieve a bigger eye effect. Value range: [0, 100], default is 50. The higher the value, the more noticeable the adjustment.
    */
   FaceShapeAreaEyescale = 200,
@@ -3964,6 +3996,10 @@ export enum FaceShapeArea {
    * (206): Outer eye corner area, used to adjust the shape of the outer eye corner. Value range: [-100, 100], default is 0. The greater the absolute value, the more noticeable the adjustment. Negative values indicate the opposite direction.
    */
   FaceShapeAreaEyeoutercorner = 206,
+  /**
+   * @ignore
+   */
+  FaceShapeAreaEyeangle = 207,
   /**
    * (300): Nose length area, used to elongate the nose. Value range: [-100, 100], default is 0. The greater the absolute value, the more noticeable the adjustment. Negative values indicate the opposite direction.
    */

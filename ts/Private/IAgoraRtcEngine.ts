@@ -2966,6 +2966,10 @@ export class RtcEngineContext {
    * Whether to automatically register Agora extensions when initializing IRtcEngine : true : (Default) Automatically register Agora extensions when initializing IRtcEngine. false : Do not register Agora extensions when initializing IRtcEngine. You need to call enableExtension to register them.
    */
   autoRegisterAgoraExtensions?: boolean;
+  /**
+   * @ignore
+   */
+  parameters?: string;
 }
 
 /**
@@ -5422,7 +5426,8 @@ export abstract class IRtcEngine {
    */
   abstract setPlaybackAudioFrameBeforeMixingParameters(
     sampleRate: number,
-    channel: number
+    channel: number,
+    samplesPerCall: number
   ): number;
 
   /**
