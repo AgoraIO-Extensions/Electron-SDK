@@ -1,5 +1,12 @@
 
 
+## [4.5.2-build.197-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.2-build.197-rc.1...v4.5.2-build.197-rc.2) (2026-07-20)
+
+
+### Bug Fixes
+
+* delete buffer when call pushVideoFrame ([0875a37](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/0875a3717c0831602dd3d8662fa81144bfbfab56))
+
 ## [4.5.2-build.197-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.2-build.9-rc.1...v4.5.2-build.197-rc.1) (2026-04-23)
 
 ## [4.5.2-build.9-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.2-build.194-rc.1...v4.5.2-build.9-rc.1) (2026-03-25)
