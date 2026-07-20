@@ -1,6 +1,7 @@
 import { createCheckers } from 'ts-interface-checker';
 
 import {
+  ExternalVideoFrame,
   IAudioFrameObserver,
   IFaceInfoObserver,
   IVideoEncodedFrameObserver,
@@ -15,6 +16,7 @@ import {
   EVENT_TYPE,
   EventProcessor,
   addScopedEventListener,
+  callIrisApi,
   removeAllScopedEventListeners,
   removeScopedEventListener,
 } from './IrisApiEngine';
@@ -24,6 +26,30 @@ export class MediaEngineInternal extends IMediaEngineImpl {
   static _video_frame_observers: IVideoFrameObserver[] = [];
   static _video_encoded_frame_observers: IVideoEncodedFrameObserver[] = [];
   static _face_info_observers: IFaceInfoObserver[] = [];
+
+  override pushVideoFrame(
+    frame: ExternalVideoFrame,
+    videoTrackId: number = 0
+  ): number {
+    const apiType = this.getApiTypeFromPushVideoFrame(frame, videoTrackId);
+    const jsonParams = {
+      frame,
+      videoTrackId,
+      toJSON: () => {
+        const serializableFrame = { ...frame };
+        delete serializableFrame.buffer;
+        delete serializableFrame.metadataBuffer;
+        delete serializableFrame.alphaBuffer;
+        delete serializableFrame.d3d11Texture2d;
+        return {
+          frame: serializableFrame,
+          videoTrackId,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
 
   override registerAudioFrameObserver(observer: IAudioFrameObserver): number {
     if (
