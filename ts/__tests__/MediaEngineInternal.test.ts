@@ -83,4 +83,62 @@ test('removeAllListeners', () => {
   expect(callback3).not.toBeCalled();
 });
 
-import { EVENT_PROCESSORS, emitEvent } from '../Private/internal/IrisApiEngine';
+test('pushVideoFrame sends binary fields only through native buffers', () => {
+  const engine = createAgoraRtcEngine().getMediaEngine();
+  const buffer = new Uint8Array([1, 2, 3]);
+  const metadataBuffer = new Uint8Array([4, 5]);
+  const alphaBuffer = new Uint8Array([6, 7, 8]);
+  const d3d11Texture2d = { texture: 9 };
+  const frame = {
+    buffer,
+    metadataBuffer,
+    alphaBuffer,
+    d3d11Texture2d,
+    stride: 1280,
+    height: 720,
+  };
+  const callApiSpy = jest
+    .spyOn(AgoraElectronBridge, 'CallApi')
+    .mockReturnValue({
+      callApiReturnCode: 0,
+      callApiResult: JSON.stringify({ result: 0 }),
+    });
+
+  try {
+    expect(engine.pushVideoFrame(frame, 7)).toBe(0);
+    expect(callApiSpy).toHaveBeenCalledTimes(1);
+
+    const call = callApiSpy.mock.calls[0];
+    expect(call).toBeDefined();
+    const [, json, buffers, bufferCount] = call!;
+    expect(buffers).toBeDefined();
+    expect(bufferCount).toBe(5);
+    expect(buffers![0]).toBe(buffer);
+    expect(buffers![1]).toHaveLength(0);
+    expect(buffers![2]).toHaveLength(0);
+    expect(buffers![3]).toBe(alphaBuffer);
+    expect(buffers![4]).toHaveLength(0);
+
+    expect(frame.buffer).toBe(buffer);
+    expect(frame.metadataBuffer).toBe(metadataBuffer);
+    expect(frame.alphaBuffer).toBe(alphaBuffer);
+    expect(frame.d3d11Texture2d).toBe(d3d11Texture2d);
+
+    const params = JSON.parse(json);
+    expect(params.videoTrackId).toBe(7);
+    expect(params.frame.stride).toBe(1280);
+    expect(params.frame.height).toBe(720);
+    expect(params.frame).not.toHaveProperty('buffer');
+    expect(params.frame).not.toHaveProperty('metadataBuffer');
+    expect(params.frame).not.toHaveProperty('alphaBuffer');
+    expect(params.frame).not.toHaveProperty('d3d11Texture2d');
+  } finally {
+    callApiSpy.mockRestore();
+  }
+});
+
+import {
+  AgoraElectronBridge,
+  EVENT_PROCESSORS,
+  emitEvent,
+} from '../Private/internal/IrisApiEngine';
