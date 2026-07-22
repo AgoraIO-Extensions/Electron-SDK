@@ -3,9 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
 
-const archiveType = require('archive-type');
 const contentDisposition = require('content-disposition');
-const decompress = require('decompress');
 const extName = require('ext-name');
 const fileType = require('file-type');
 const filenamify = require('filenamify');
@@ -14,6 +12,8 @@ const got = require('got');
 const makeDir = require('make-dir');
 const pEvent = require('p-event');
 const pify = require('pify');
+
+const extractZip = require('./extractZip');
 
 const fsP = pify(fs);
 const filenameFromPath = (res) =>
@@ -78,16 +78,16 @@ module.exports = (uri, output, opts) => {
       const [data, res] = result;
 
       if (!output) {
-        return opts.extract && archiveType(data)
-          ? decompress(data, opts)
+        return opts.extract && (fileType(data) || {}).ext === 'zip'
+          ? extractZip(data, null, opts)
           : data;
       }
 
       const filename = opts.filename || filenamify(getFilename(res, data));
       const outputFilepath = path.join(output, filename);
 
-      if (opts.extract && archiveType(data)) {
-        return decompress(data, path.dirname(outputFilepath), opts);
+      if (opts.extract && (fileType(data) || {}).ext === 'zip') {
+        return extractZip(data, path.dirname(outputFilepath), opts);
       }
 
       return makeDir(path.dirname(outputFilepath))
