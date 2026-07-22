@@ -1,5 +1,12 @@
 
 
+## [4.5.3-build.2-rc.3](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.2-rc.2...v4.5.3-build.2-rc.3) (2026-07-22)
+
+
+### Bug Fixes
+
+* preserve safe macOS framework symlinks ([40bca4b](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/40bca4b1fe706367c0fbba4b1e4b096a723390f4))
+
 ## [4.5.3-build.2-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.2-rc.1...v4.5.3-build.2-rc.2) (2026-07-22)
 
 
