@@ -1,5 +1,12 @@
 
 
+## [4.5.3-build.2-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.2-rc.1...v4.5.3-build.2-rc.2) (2026-07-22)
+
+
+### Bug Fixes
+
+* replace vulnerable decompress dependency ([f4ae38b](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/f4ae38b7879fd08b843f07fb5e8f4324cfa55fef))
+
 ## [4.5.3-build.2-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.128-rc.1...v4.5.3-build.2-rc.1) (2026-07-02)
 
 ## [4.5.3-build.128-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.1-rc.1...v4.5.3-build.128-rc.1) (2026-06-01)
