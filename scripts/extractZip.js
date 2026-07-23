@@ -30,18 +30,20 @@ const collectEntries = async (root, metadata, relativeDir = '') => {
     const entryMetadata = metadata.get(archivePath) || {};
     const isDirectory = stat.isDirectory();
     const isSymbolicLink = stat.isSymbolicLink();
+    const linkname = isSymbolicLink ? await fs.readlink(sourcePath) : null;
     const entry = {
       path: archivePath,
       type: isSymbolicLink ? 'symlink' : isDirectory ? 'directory' : 'file',
-      data:
-        isDirectory || isSymbolicLink
-          ? Buffer.alloc(0)
-          : await fs.readFile(sourcePath),
+      data: isDirectory
+        ? Buffer.alloc(0)
+        : isSymbolicLink
+        ? Buffer.from(linkname)
+        : await fs.readFile(sourcePath),
       mode: entryMetadata.mode || stat.mode,
       mtime: entryMetadata.mtime || stat.mtime,
     };
     if (isSymbolicLink) {
-      entry.linkname = await fs.readlink(sourcePath);
+      entry.linkname = linkname;
     }
     entries.push(entry);
 

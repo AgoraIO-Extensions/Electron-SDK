@@ -121,6 +121,21 @@ describe('extractZip', () => {
     ).resolves.toBe('binary-data');
   });
 
+  test('preserves framework symlinks through the prebuilt file filter', async () => {
+    await extractZip(FRAMEWORK_ZIP_FIXTURE, output, {
+      strip: 1,
+      filter: (file) => file.type !== 'directory' && file.data.length !== 0,
+    });
+
+    const framework = path.join(output, 'Test.framework');
+    await expect(
+      fs.readlink(path.join(framework, 'Versions', 'Current'))
+    ).resolves.toBe('A');
+    await expect(fs.readlink(path.join(framework, 'Test'))).resolves.toBe(
+      'Versions/Current/Test'
+    );
+  });
+
   test('rejects symbolic links that escape the output directory', async () => {
     await expect(
       extractZip(SYMLINK_ZIP_FIXTURE, output, { strip: 1 })
