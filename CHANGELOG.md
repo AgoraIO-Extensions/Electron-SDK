@@ -1,5 +1,12 @@
 
 
+## [4.5.3-build.2-rc.4](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.2-rc.3...v4.5.3-build.2-rc.4) (2026-07-23)
+
+
+### Bug Fixes
+
+* retain symlink data for prebuilt filtering ([cf24075](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/cf24075b6b8e7555a491718bf3d7e78758f8e191))
+
 ## [4.5.3-build.2-rc.3](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.2-rc.2...v4.5.3-build.2-rc.3) (2026-07-22)
 
 
