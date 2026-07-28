@@ -60,10 +60,14 @@ const matchNativeFile = (path) => {
     case 'win32':
       switch (arch) {
         case 'ia32':
-          result = path.startsWith('sdk/x86/') && path.endsWith('.dll');
+          result =
+            path.startsWith('sdk/x86/') &&
+            (path.endsWith('.dll') || path.endsWith('.exe'));
           break;
         case 'x64':
-          result = path.startsWith('sdk/x86_64/') && path.endsWith('.dll');
+          result =
+            path.startsWith('sdk/x86_64/') &&
+            (path.endsWith('.dll') || path.endsWith('.exe'));
           break;
       }
       break;
