@@ -260,6 +260,21 @@ export abstract class IAudioDeviceManager {
    *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    *  -2: Invalid parameter settings. Please reset the parameters.
    */
+  abstract startRecordingDeviceTest(indicationInterval: number): number;
+
+  /**
+   * Starts the audio recording device test.
+   *
+   * This method tests whether the local audio recording device is working properly. After calling this method, the SDK triggers the onAudioVolumeIndication callback at the specified interval to report the volume information of uid = 0 and the recording device.
+   * The difference between this method and startEchoTest is that this method tests whether the local audio recording device is working properly, while the latter tests whether the audio/video devices and network are functioning correctly. You must call this method before joining a channel. After testing is complete, if you need to join a channel, make sure to call stopRecordingDeviceTest to stop the device test first.
+   *
+   * @param indicationInterval The interval at which the SDK triggers the onAudioVolumeIndication callback, in milliseconds. The minimum value is 10; otherwise, the onAudioVolumeIndication callback will not be received and the SDK will return error code -2. Agora recommends setting this value to 100.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
+   *  -2: Invalid parameter settings. Please reset the parameters.
+   */
   abstract startRecordingDeviceTest(
     config: RecordingDeviceTestConfiguration
   ): number;

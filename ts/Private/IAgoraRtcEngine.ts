@@ -5438,6 +5438,26 @@ export abstract class IRtcEngine {
    */
   abstract setPlaybackAudioFrameBeforeMixingParameters(
     sampleRate: number,
+    channel: number
+  ): number;
+
+  /**
+   * Sets the raw audio playback data format before mixing.
+   *
+   * The SDK triggers the onPlaybackAudioFrameBeforeMixing callback based on this sampling interval.
+   *
+   * @param sampleRate Sampling rate (Hz) of the audio data. Can be set to 8000, 16000, 32000, 44100, or 48000.
+   * @param channel Number of audio channels. Can be set to 1 or 2:
+   *  1: Mono.
+   *  2: Stereo.
+   * @param samplesPerCall Sets the number of samples in the audio data returned in the onPlaybackAudioFrameBeforeMixing callback. In RTMP streaming scenarios, it is recommended to set this to 1024.
+   *
+   * @returns
+   * 0: Success.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
+   */
+  abstract setPlaybackAudioFrameBeforeMixingParameters(
+    sampleRate: number,
     channel: number,
     samplesPerCall: number
   ): number;

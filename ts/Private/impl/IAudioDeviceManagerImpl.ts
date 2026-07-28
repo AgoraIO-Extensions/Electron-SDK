@@ -292,6 +292,27 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     return 'AudioDeviceManager_stopPlaybackDeviceTest';
   }
 
+  startRecordingDeviceTest(indicationInterval: number): number {
+    const apiType =
+      this.getApiTypeFromStartRecordingDeviceTest(indicationInterval);
+    const jsonParams = {
+      indicationInterval: indicationInterval,
+      toJSON: () => {
+        return {
+          indicationInterval: indicationInterval,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromStartRecordingDeviceTest(
+    indicationInterval: number
+  ): string {
+    return 'AudioDeviceManager_startRecordingDeviceTest_46f8ab7';
+  }
+
   startRecordingDeviceTest(config: RecordingDeviceTestConfiguration): number {
     const apiType = this.getApiTypeFromStartRecordingDeviceTest(config);
     const jsonParams = {
