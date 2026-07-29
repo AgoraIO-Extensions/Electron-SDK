@@ -23,8 +23,7 @@ must remain owned by the main process.
 UI components and style classes, but it will continue to communicate only with
 the main-process controller over IPC.
 
-At component creation, the page reads `Config.appId`, `Config.token`,
-`Config.channelId`, and `Config.uid`. Only `channelId` is stored as editable page
+At component creation, the page copies only `Config.channelId` into editable page
 state. Editing it is temporary and does not mutate Settings or `Config`.
 
 When the user presses `join Channel`, the page reads `appId`, `token`, and `uid`
@@ -39,14 +38,21 @@ components. It does not expose App ID, token, or UID inputs and does not create
 an RTC engine. The existing main-process controller remains the sole owner of
 the offscreen window, RTC engine, native submissions, and texture releases.
 
-On unmount, the page requests stop if a join or start is active. The controller's
-idempotent stop behavior remains the authoritative cleanup boundary.
+On unmount, the page requests stop if a join or start is active. The controller
+will explicitly support cancellation while `start()` is awaiting the RTC join
+callback: `stop()` rejects the pending join wait with a cancellation error,
+drains any texture submission, and performs idempotent cleanup. The pending
+`start()` must settle rather than waiting indefinitely. The controller remains
+the authoritative cleanup boundary.
 
 ## Error Handling
 
-IPC validation remains in the main process. Renderer failures restore a usable
-idle state and display the error. Duplicate clicks are disabled while a start or
-stop request is pending.
+IPC validation remains in the main process. Renderer state is one of `idle`,
+`joining`, `joined`, or `leaving`, and duplicate clicks are disabled while an IPC
+request is pending. A start failure returns the page to `idle`. A stop failure
+returns it to `joined` so the user can retry, while displaying the error; the UI
+does not claim that main-process resources were released without a successful
+stop response.
 
 ## Tests
 
@@ -56,7 +62,10 @@ Focused renderer tests will prove that:
 - a temporary channel edit overrides only the submitted channel;
 - the page model maps join and leave to the existing IPC channels;
 - active or pending work requests stop during unmount.
+- stopping the controller during `starting` settles both operations and performs
+  cleanup without leaving a pending join promise.
 
-Existing controller and IPC tests remain unchanged. The final verification will
-run the focused example suites, source Jest suite, TypeScript typecheck, example
-compile, and `git diff --check`.
+Existing IPC behavior remains unchanged. Focused controller tests will cover the
+new cancellation path. The final verification will run the focused example
+suites, source Jest suite, TypeScript typecheck, example compile, and
+`git diff --check`.
