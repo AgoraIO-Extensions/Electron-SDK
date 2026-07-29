@@ -7,12 +7,25 @@ export interface SharedTexturePocConfig {
   uid: number;
 }
 
-export const initialSharedTexturePocConfig: SharedTexturePocConfig = {
+export type SharedTexturePocLifecycle =
+  | 'idle'
+  | 'joining'
+  | 'joined'
+  | 'leaving';
+
+export const getInitialSharedTextureChannel = () => Config.channelId;
+
+export const createSharedTexturePocConfig = (
+  channelId: string
+): SharedTexturePocConfig => ({
   appId: Config.appId,
-  channelId: Config.channelId,
+  channelId,
   token: Config.token,
   uid: Config.uid,
-};
+});
+
+export const shouldStopOnUnmount = (state: SharedTexturePocLifecycle) =>
+  state !== 'idle';
 
 export const startSharedTexturePoc = (
   invoke: (channel: string, config: SharedTexturePocConfig) => Promise<unknown>,

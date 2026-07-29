@@ -6,24 +6,60 @@ export {};
 
 const Config = require('../../../config/agora.config').default;
 const {
-  initialSharedTexturePocConfig,
+  createSharedTexturePocConfig,
+  getInitialSharedTextureChannel,
+  shouldStopOnUnmount,
   startSharedTexturePoc,
+  stopSharedTexturePoc,
 } = require('./sharedTexturePocModel');
 
-test('uses the existing App ID, channel, token, and UID configuration', () => {
-  expect(initialSharedTexturePocConfig).toEqual({
-    appId: Config.appId,
-    channelId: Config.channelId,
-    token: Config.token,
-    uid: Config.uid,
+test('reads current Settings values and applies the temporary channel', () => {
+  Config.appId = 'saved-app-id';
+  Config.channelId = 'saved-channel';
+  Config.token = 'saved-token';
+  Config.uid = 73;
+
+  expect(getInitialSharedTextureChannel()).toBe('saved-channel');
+  expect(createSharedTexturePocConfig('temporary-channel')).toEqual({
+    appId: 'saved-app-id',
+    channelId: 'temporary-channel',
+    token: 'saved-token',
+    uid: 73,
   });
 });
 
-test('passes the configuration unchanged to main process', async () => {
+test('reads Settings changed after the model was imported', () => {
+  Config.appId = 'new-app-id';
+  Config.token = 'new-token';
+  Config.uid = 99;
+
+  expect(createSharedTexturePocConfig('page-channel')).toEqual({
+    appId: 'new-app-id',
+    channelId: 'page-channel',
+    token: 'new-token',
+    uid: 99,
+  });
+});
+
+test('maps join and leave to the existing main-process IPC channels', async () => {
   const invoke = jest.fn().mockResolvedValue({ state: 'running' });
-  await startSharedTexturePoc(invoke, initialSharedTexturePocConfig);
+  const config = createSharedTexturePocConfig('temporary-channel');
+
+  await startSharedTexturePoc(invoke, config);
+  await stopSharedTexturePoc(invoke);
+
   expect(invoke).toHaveBeenCalledWith(
     'SHARED_TEXTURE_POC_START',
-    initialSharedTexturePocConfig
+    config
   );
+  expect(invoke).toHaveBeenCalledWith('SHARED_TEXTURE_POC_STOP');
+});
+
+test.each(['joining', 'joined', 'leaving'])(
+  'requests cleanup when unmounted in %s state',
+  (state) => expect(shouldStopOnUnmount(state)).toBe(true)
+);
+
+test('does not request cleanup when unmounted idle', () => {
+  expect(shouldStopOnUnmount('idle')).toBe(false);
 });
