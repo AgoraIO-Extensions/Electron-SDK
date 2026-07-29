@@ -15,6 +15,10 @@ import {
   IVideoEncodedFrameObserver,
   IVideoFrameObserver,
 } from './AgoraMediaBase';
+import {
+  SharedD3D11TextureFrame,
+  SharedD3D11TextureResult,
+} from '../Types';
 
 /**
  * Channel mode.
@@ -258,6 +262,18 @@ export abstract class IMediaEngine {
     frame: ExternalVideoFrame,
     videoTrackId?: number
   ): number;
+
+  /**
+   * Pushes an Electron offscreen shared texture through D3D11.
+   *
+   * @remarks Experimental and Windows-only. The request must contain an NT handle
+   * for a BGRA or RGBA D3D11 shared texture. Other platforms reject the Promise.
+   *
+   * @ignore
+   */
+  abstract pushSharedD3D11Texture(
+    frame: SharedD3D11TextureFrame
+  ): Promise<SharedD3D11TextureResult>;
 
   /**
    * @ignore

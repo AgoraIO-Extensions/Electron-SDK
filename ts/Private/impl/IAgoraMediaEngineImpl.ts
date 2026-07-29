@@ -15,6 +15,11 @@ import {
   IVideoFrameObserver,
 } from '../AgoraMediaBase';
 import { IMediaEngine } from '../IAgoraMediaEngine';
+import {
+  SharedD3D11TextureFrame,
+  SharedD3D11TextureResult,
+} from '../../Types';
+import { AgoraElectronBridge } from '../internal/IrisApiEngine';
 
 // @ts-ignore
 export class IMediaEngineImpl implements IMediaEngine {
@@ -356,6 +361,12 @@ export class IMediaEngineImpl implements IMediaEngine {
     };
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
+  }
+
+  pushSharedD3D11Texture(
+    frame: SharedD3D11TextureFrame
+  ): Promise<SharedD3D11TextureResult> {
+    return AgoraElectronBridge.PushSharedD3D11Texture(frame);
   }
 
   protected getApiTypeFromPushVideoFrame(

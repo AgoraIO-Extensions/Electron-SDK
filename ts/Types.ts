@@ -118,6 +118,32 @@ export interface Result {
 }
 
 /**
+ * Experimental Windows-only D3D11 shared-texture request.
+ *
+ * @ignore
+ */
+export interface SharedD3D11TextureFrame {
+  frameId: number;
+  ntHandle: Buffer;
+  width: number;
+  height: number;
+  /** Electron texture timestamp in microseconds. */
+  timestampUs: number;
+  pixelFormat: 'bgra' | 'rgba';
+}
+
+/**
+ * Result of an experimental D3D11 shared-texture submission.
+ *
+ * @ignore
+ */
+export interface SharedD3D11TextureResult {
+  frameId: number;
+  result: number;
+  adapterLuid?: string;
+}
+
+/**
  * @ignore
  */
 export interface IAgoraElectronBridge {
@@ -143,6 +169,10 @@ export interface IAgoraElectronBridge {
     buffer?: (Uint8Array | undefined)[],
     bufferCount?: number
   ): Result;
+
+  PushSharedD3D11Texture(
+    frame: SharedD3D11TextureFrame
+  ): Promise<SharedD3D11TextureResult>;
 
   InitializeEnv(): void;
 
