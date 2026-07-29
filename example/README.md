@@ -9,7 +9,7 @@ Any scene of this project can run successfully alone.
 ### 📋 Requirements
 
 - Agora.io [Developer Account](https://dashboard.agora.io/signin/)
-- [Node.js 14](https://nodejs.org/en/download/) with C++11 support
+- [Node.js 22.12 or newer](https://nodejs.org/en/download/) with C++11 support
 - [Yarn](https://yarnpkg.com/) package manager
 
 ### 🎉 Steps to run
@@ -24,6 +24,47 @@ cd example
 yarn
 yarn start
 ```
+
+#### Shared Texture PoC Runtime
+
+The Windows shared texture PoC is pinned to Electron `43.2.0`, whose Windows x64
+runtime reports Node `24.18.0`, Chrome `150.0.7871.129`, and native modules ABI
+`148`. Check the ABI before loading the addon:
+
+```powershell
+.\node_modules\.bin\electron.cmd -e "console.log(process.versions.modules)"
+# Expected: 148
+```
+
+Install dependencies before creating the local SDK link. A later install can replace
+the consumer-side link, so rerun the last command whenever dependencies are reinstalled:
+
+```bash
+# Repository root: register this worktree's SDK package.
+yarn link
+
+# Repository root: install the example, then link it to this worktree.
+yarn --cwd example install
+yarn --cwd example link agora-electron-sdk
+```
+
+Confirm that the consumer resolves this worktree instead of a published duplicate:
+
+```bash
+yarn jest example/src/main/__tests__/sharedTextureRuntime.test.js --runInBand
+```
+
+On Windows x64, rebuild the SDK addon and the example's native dependencies against
+the pinned Electron runtime before starting or packaging the example:
+
+```powershell
+# Repository root
+yarn build_windows_x64_release --runtime=electron --runtime-version=43.2.0
+yarn --cwd example rebuild --arch=x64 --version=43.2.0
+```
+
+Do not continue if the ABI check is not exactly `148` or if the runtime test resolves
+`agora-electron-sdk` outside this worktree.
 
 #### (Optional) Build From Local SDK
 
