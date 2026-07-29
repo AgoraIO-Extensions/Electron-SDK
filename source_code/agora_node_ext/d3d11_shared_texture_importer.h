@@ -11,7 +11,8 @@ namespace rtc {
 namespace electron {
 
 struct SharedTextureSubmissionResult {
-  int result;
+  int transport_result;
+  std::string rtc_response;
   std::string adapter_luid;
 };
 

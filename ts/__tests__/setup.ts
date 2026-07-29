@@ -2,6 +2,9 @@ jest.mock('../../build/Release/agora_node_ext', () => {
   return {
     AgoraElectronBridge: function () {
       return {
+        InitializeEnv: jest.fn(),
+        ReleaseEnv: jest.fn(),
+        ReleaseRenderer: jest.fn(),
         CallApi: () => {
           return {
             callApiReturnCode: 0,

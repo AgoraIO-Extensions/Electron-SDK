@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 
 project(agora-electron-sdk)
 
@@ -9,6 +9,7 @@ if (WIN32)
   set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /DEBUG")
   set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG")
   if (MSVC)
+    add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:/Zc:__cplusplus>")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd /Zi /arch:SSE2")
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT /Zi /arch:SSE2")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MT /Zi /arch:SSE2")
@@ -59,18 +60,6 @@ set(TARGET_AGORA_NODE_EXT_FILE_DIR
 file(GLOB TARGET_AGORA_NODE_EXT_FILE LIST_DIRECTORIES false
         ${TARGET_AGORA_NODE_EXT_FILE_DIR}/*
         )
-
-if (BUILD_TESTING)
-  add_executable(shared_texture_request_test
-          ${TARGET_AGORA_NODE_EXT_FILE_DIR}/d3d11_shared_texture_importer.cpp
-          ${TARGET_AGORA_NODE_EXT_FILE_DIR}/shared_texture_request.cpp
-          ${TARGET_AGORA_NODE_EXT_FILE_DIR}/tests/shared_texture_request_test.cpp
-          )
-  target_include_directories(shared_texture_request_test PRIVATE
-          ${TARGET_AGORA_NODE_EXT_FILE_DIR}
-          )
-  add_test(NAME shared_texture_request COMMAND shared_texture_request_test)
-endif ()
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
   set(AGORA_IRIS_PROJECT_ARCH "MAC")
@@ -171,6 +160,26 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 endif ()
 message(=====iris include ===== ${AGORA_IRIS_SDK_HEADER_FILE_DIR})
 message(=======iris windows lib= IRIs == ${AGORA_IRIS_SDK_LIB})
+
+if (BUILD_TESTING)
+  add_executable(shared_texture_request_test
+          ${TARGET_AGORA_NODE_EXT_FILE_DIR}/d3d11_shared_texture_importer.cpp
+          ${TARGET_AGORA_NODE_EXT_FILE_DIR}/shared_texture_request.cpp
+          ${TARGET_AGORA_NODE_EXT_FILE_DIR}/tests/shared_texture_request_test.cpp
+          )
+  target_include_directories(shared_texture_request_test PRIVATE
+          ${TARGET_AGORA_NODE_EXT_FILE_DIR}
+          ${AGORA_IRIS_SDK_HEADER_FILE_DIR}
+          )
+  if (WIN32)
+    target_link_libraries(shared_texture_request_test
+            ${AGORA_IRIS_SDK_LIB}
+            d3d11
+            dxgi
+            )
+  endif ()
+  add_test(NAME shared_texture_request COMMAND shared_texture_request_test)
+endif ()
 
 file(GLOB COMMON_FILE2
         ${AGORA_IRIS_SDK_HEADER_FILE_DIR}/*.h

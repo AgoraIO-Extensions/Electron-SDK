@@ -226,6 +226,46 @@ napi_value RejectPromise(napi_env env, const char *code,
   return promise;
 }
 
+bool ParseRtcResult(napi_env env, const std::string &response, int &result,
+                    std::string &error) {
+  if (response.empty()) {
+    error = "Iris pushVideoFrame returned an empty response";
+    return false;
+  }
+
+  napi_value global;
+  napi_value json;
+  napi_value parse;
+  napi_value response_value;
+  napi_value parsed;
+  napi_value result_value;
+  napi_valuetype result_type;
+  if (napi_get_global(env, &global) != napi_ok ||
+      napi_get_named_property(env, global, "JSON", &json) != napi_ok ||
+      napi_get_named_property(env, json, "parse", &parse) != napi_ok ||
+      napi_create_string_utf8(env, response.c_str(), response.size(),
+                              &response_value) != napi_ok ||
+      napi_call_function(env, json, parse, 1, &response_value, &parsed) !=
+          napi_ok) {
+    bool pending = false;
+    napi_is_exception_pending(env, &pending);
+    if (pending) {
+      napi_value exception;
+      napi_get_and_clear_last_exception(env, &exception);
+    }
+    error = "Iris pushVideoFrame returned invalid JSON";
+    return false;
+  }
+  if (napi_get_named_property(env, parsed, "result", &result_value) != napi_ok ||
+      napi_typeof(env, result_value, &result_type) != napi_ok ||
+      result_type != napi_number ||
+      napi_get_value_int32(env, result_value, &result) != napi_ok) {
+    error = "Iris pushVideoFrame response has no numeric result";
+    return false;
+  }
+  return true;
+}
+
 bool ReadNamedDouble(napi_env env, napi_value object, const char *name,
                      double &result) {
   napi_value value;
@@ -333,6 +373,15 @@ napi_value AgoraElectronBridge::PushSharedD3D11Texture(
                                 submission, error)) {
     return RejectPromise(env, "ERR_SHARED_TEXTURE_SUBMISSION", error);
   }
+  int rtc_result_value = 0;
+  if (!ParseRtcResult(env, submission.rtc_response, rtc_result_value, error)) {
+    return RejectPromise(env, "ERR_SHARED_TEXTURE_RESPONSE", error);
+  }
+  if (rtc_result_value < 0) {
+    return RejectPromise(env, "ERR_SHARED_TEXTURE_SUBMISSION",
+                         "RTC pushVideoFrame failed with result " +
+                             std::to_string(rtc_result_value));
+  }
   bridge->_last_shared_texture_frame_id = request.frame_id;
 
   napi_deferred deferred;
@@ -344,7 +393,7 @@ napi_value AgoraElectronBridge::PushSharedD3D11Texture(
   napi_create_promise(env, &deferred, &promise);
   napi_create_object(env, &response);
   napi_create_double(env, static_cast<double>(request.frame_id), &frame_id);
-  napi_create_int32(env, submission.result, &rtc_result);
+  napi_create_int32(env, rtc_result_value, &rtc_result);
   napi_create_string_utf8(env, submission.adapter_luid.c_str(), NAPI_AUTO_LENGTH,
                           &adapter_luid);
   napi_set_named_property(env, response, "frameId", frame_id);

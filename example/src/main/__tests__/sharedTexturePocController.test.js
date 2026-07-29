@@ -15,7 +15,7 @@ function deferred() {
 function createTexture(frameId) {
   return {
     textureInfo: {
-      ntHandle: Buffer.alloc(8, frameId),
+      handle: { ntHandle: Buffer.alloc(8, frameId) },
       codedSize: { width: 640, height: 360 },
       timestamp: frameId * 1000,
       pixelFormat: 'bgra',
@@ -85,7 +85,7 @@ test('starts the default external texture source before accepting frames', async
   expect(harness.engine.initialize).toHaveBeenCalledWith({ appId: 'app' });
   expect(harness.mediaEngine.setExternalVideoSource).toHaveBeenCalledWith(
     true,
-    true,
+    false,
     0
   );
   expect(harness.engine.joinChannel).toHaveBeenCalledWith(
@@ -93,14 +93,33 @@ test('starts the default external texture source before accepting frames', async
     'channel',
     42,
     expect.objectContaining({
-      publishCameraTrack: true,
-      publishCustomVideoTrack: false,
+      publishCameraTrack: false,
+      publishMicrophoneTrack: false,
+      publishCustomVideoTrack: true,
+      customVideoTrackId: 1,
+      clientRoleType: 1,
     })
   );
   expect(harness.controller.window.options.webPreferences).toEqual({
     offscreen: { useSharedTexture: true },
     backgroundThrottling: false,
   });
+});
+
+test('submits a shared texture from the Electron paint event', async () => {
+  const harness = createHarness();
+  await start(harness);
+  const texture = createTexture(1);
+
+  harness.controller.window.paint({ texture });
+
+  expect(harness.submissions).toHaveLength(1);
+  expect(harness.submissions[0].frame.ntHandle).toEqual(
+    texture.textureInfo.handle.ntHandle
+  );
+  harness.submissions[0].resolve({ frameId: 1, result: 0 });
+  await new Promise(setImmediate);
+  expect(texture.release).toHaveBeenCalledTimes(1);
 });
 
 test('keeps only the latest pending texture and releases every texture once', async () => {
@@ -122,13 +141,15 @@ test('keeps only the latest pending texture and releases every texture once', as
   expect(first.release).toHaveBeenCalledTimes(1);
   expect(harness.submissions).toHaveLength(2);
   expect(harness.submissions[1].frame.frameId).toBe(2);
-  expect(harness.submissions[1].frame.ntHandle).toEqual(third.textureInfo.ntHandle);
+  expect(harness.submissions[1].frame.ntHandle).toEqual(
+    third.textureInfo.handle.ntHandle
+  );
   harness.submissions[1].resolve({ frameId: 2, result: 0 });
   await new Promise(setImmediate);
   expect(third.release).toHaveBeenCalledTimes(1);
 });
 
-test('releases pre-join and failed native frames', async () => {
+test('submits frames before the join callback and releases failed frames', async () => {
   const harness = createHarness();
   const starting = harness.controller.start({
     appId: 'app',
@@ -138,15 +159,48 @@ test('releases pre-join and failed native frames', async () => {
   });
   const early = createTexture(1);
   harness.controller.handlePaint(early);
+  expect(harness.submissions).toHaveLength(1);
+  expect(early.release).not.toHaveBeenCalled();
+  harness.submissions[0].resolve({ frameId: 1, result: 0 });
+  await new Promise(setImmediate);
   expect(early.release).toHaveBeenCalledTimes(1);
   harness.engine.handler.onJoinChannelSuccess();
   await starting;
 
   const failed = createTexture(2);
   harness.controller.handlePaint(failed);
-  harness.submissions[0].reject(new Error('native failed'));
+  harness.submissions[1].reject(new Error('native failed'));
   await new Promise(setImmediate);
   expect(failed.release).toHaveBeenCalledTimes(1);
+});
+
+test('continues with the latest pending frame while join is starting', async () => {
+  const harness = createHarness();
+  const starting = harness.controller.start({
+    appId: 'app',
+    channelId: 'channel',
+    token: '',
+    uid: 42,
+  });
+  const first = createTexture(1);
+  const second = createTexture(2);
+
+  harness.controller.handlePaint(first);
+  harness.controller.handlePaint(second);
+  expect(harness.submissions).toHaveLength(1);
+
+  harness.submissions[0].resolve({ frameId: 1, result: 0 });
+  await new Promise(setImmediate);
+  expect(harness.submissions).toHaveLength(2);
+  expect(harness.submissions[1].frame.ntHandle).toEqual(
+    second.textureInfo.handle.ntHandle
+  );
+
+  harness.submissions[1].resolve({ frameId: 2, result: 0 });
+  harness.engine.handler.onJoinChannelSuccess();
+  await Promise.all([starting, new Promise(setImmediate)]);
+  expect(first.release).toHaveBeenCalledTimes(1);
+  expect(second.release).toHaveBeenCalledTimes(1);
 });
 
 test('stop releases pending and waits for the in-flight frame', async () => {
@@ -185,6 +239,7 @@ test('stop cancels a pending join and cleans resources exactly once', async () =
   harness.controller.handlePaint(texture);
 
   const stopping = harness.controller.stop();
+  harness.submissions[0].resolve({ frameId: 1, result: 0 });
   const settled = await Promise.race([
     Promise.all([startResult, stopping]),
     new Promise((resolve) =>

@@ -63,8 +63,8 @@ int main() {
   request.pixel_format = SharedTexturePixelFormat::kRgba;
   assert(ValidateSharedTextureRequest(request, 0, error));
   assert(BuildSharedTexturePushJson(request) ==
-         "{\"frame\":{\"type\":3,\"format\":4,\"stride\":1920,"
-         "\"height\":1080,\"timestamp\":123,\"textureSliceIndex\":0},"
+         "{\"frame\":{\"type\":1,\"format\":4,\"stride\":1920,"
+         "\"height\":1080,\"timestamp\":0},"
          "\"videoTrackId\":0}");
 
   request.pixel_format = SharedTexturePixelFormat::kBgra;

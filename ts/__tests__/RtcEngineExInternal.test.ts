@@ -1,4 +1,22 @@
 import createAgoraRtcEngine from '../AgoraSdk';
+import { AgoraEnv } from '../Utils';
+
+test('initialize without a window in the main process', () => {
+  const globalWithWindow = global as unknown as { window?: Window };
+  const originalWindow = globalWithWindow.window;
+  const originalWebEnvReady = AgoraEnv.webEnvReady;
+  delete globalWithWindow.window;
+  AgoraEnv.webEnvReady = true;
+
+  const engine = createAgoraRtcEngine();
+  try {
+    expect(() => engine.initialize({ appId: 'app' })).not.toThrow();
+  } finally {
+    engine.release();
+    AgoraEnv.webEnvReady = originalWebEnvReady;
+    if (originalWindow !== undefined) globalWithWindow.window = originalWindow;
+  }
+});
 
 test('addListener', () => {
   const engine = createAgoraRtcEngine();

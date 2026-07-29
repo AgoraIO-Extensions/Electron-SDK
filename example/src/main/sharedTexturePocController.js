@@ -39,7 +39,7 @@ class SharedTexturePocController {
       this.requireSuccess(this.engine.enableVideo(), 'enableVideo');
       this.mediaEngine = this.engine.getMediaEngine();
       this.requireSuccess(
-        this.mediaEngine.setExternalVideoSource(true, true, 0),
+        this.mediaEngine.setExternalVideoSource(true, false, 0),
         'setExternalVideoSource'
       );
 
@@ -50,15 +50,18 @@ class SharedTexturePocController {
           backgroundThrottling: false,
         },
       });
-      this.window.webContents.on('paint', (_event, _dirty, _image, texture) => {
-        if (texture) this.handlePaint(texture);
+      this.window.webContents.on('paint', (details) => {
+        if (details.texture) this.handlePaint(details.texture);
       });
       void this.window.loadFile(this.scenePath);
 
       this.requireSuccess(
         this.engine.joinChannel(token, channelId, uid, {
-          publishCameraTrack: true,
-          publishCustomVideoTrack: false,
+          publishCameraTrack: false,
+          publishMicrophoneTrack: false,
+          publishCustomVideoTrack: true,
+          customVideoTrackId: 1,
+          clientRoleType: 1,
         }),
         'joinChannel'
       );
@@ -84,7 +87,7 @@ class SharedTexturePocController {
   }
 
   handlePaint(texture) {
-    if (this.state !== 'running') {
+    if (!this.canSubmitFrames()) {
       this.releaseOnce(texture);
       return;
     }
@@ -102,11 +105,13 @@ class SharedTexturePocController {
 
   toFrame(texture, frameId) {
     const info = texture && texture.textureInfo;
+    const handle = info && info.handle;
     const size = info && (info.codedSize || info.size);
     const format = info && this.normalizePixelFormat(info.pixelFormat);
     if (
       !info ||
-      !Buffer.isBuffer(info.ntHandle) ||
+      !handle ||
+      !Buffer.isBuffer(handle.ntHandle) ||
       !size ||
       !Number.isInteger(size.width) ||
       !Number.isInteger(size.height) ||
@@ -117,7 +122,7 @@ class SharedTexturePocController {
     }
     return {
       frameId,
-      ntHandle: info.ntHandle,
+      ntHandle: handle.ntHandle,
       width: size.width,
       height: size.height,
       timestampUs: info.timestamp,
@@ -145,12 +150,19 @@ class SharedTexturePocController {
       .finally(() => this.releaseOnce(texture));
     this.inFlight = operation.finally(() => {
       this.inFlight = null;
-      if (this.state === 'running' && this.pendingTexture) {
+      if (this.canSubmitFrames() && this.pendingTexture) {
         const pending = this.pendingTexture;
         this.pendingTexture = null;
         this.submit(pending);
       }
     });
+  }
+
+  canSubmitFrames() {
+    return (
+      (this.state === 'starting' || this.state === 'running') &&
+      this.mediaEngine !== null
+    );
   }
 
   releaseOnce(texture) {
@@ -192,7 +204,7 @@ class SharedTexturePocController {
           try {
             engine.leaveChannel();
             if (mediaEngine) {
-              mediaEngine.setExternalVideoSource(false, true, 0);
+              mediaEngine.setExternalVideoSource(false, false, 0);
             }
           } finally {
             engine.release();

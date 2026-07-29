@@ -122,7 +122,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     callIrisApi.call(this, 'RtcEngine_setAppType', {
       appType: 3,
     });
-    if (AgoraEnv.webEnvReady) {
+    if (AgoraEnv.webEnvReady && typeof window !== 'undefined') {
       // @ts-ignore
       window.AgoraEnv = AgoraEnv;
       if (AgoraEnv.AgoraRendererManager === undefined && RendererManager) {
