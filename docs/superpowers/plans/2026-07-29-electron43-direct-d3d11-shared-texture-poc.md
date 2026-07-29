@@ -20,7 +20,7 @@
 - `source_code/agora_node_ext/agora_electron_bridge.{h,cpp}`: N-API Promise boundary and importer ownership.
 - `example/src/main/sharedTexturePocController.js`: RTC/offscreen lifecycle, latest-only backpressure, and release ledger.
 - `example/src/main/sharedTexturePocIpc.js`: validated renderer/main commands and status events.
-- `example/src/main/sharedTextureScene.html`: deterministic moving test scene.
+- `example/extraResources/sharedTextureScene.html`: deterministic moving test scene packaged outside the main-process bundle.
 - `example/src/renderer/examples/advanced/SharedTexturePoc/*`: existing-style configuration and controls.
 - `docs/poc/d3d11-shared-texture-evidence.md`, `example/README.md`: contracts and Windows runbook.
 
@@ -102,7 +102,7 @@
 **Files:**
 - Create: `example/src/main/sharedTexturePocController.js`
 - Create: `example/src/main/__tests__/sharedTexturePocController.test.js`
-- Create: `example/src/main/sharedTextureScene.html`
+- Create: `example/extraResources/sharedTextureScene.html`
 
 - [ ] Write dependency-injected tests for start/stop, failed join, one in-flight frame, latest-only replacement, native rejection, and exactly-once release on every path.
 - [ ] Run the focused Jest file; expect RED because the controller is absent.

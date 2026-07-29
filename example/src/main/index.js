@@ -9,12 +9,25 @@ import {
   ipcMain,
   systemPreferences,
 } from 'electron';
+import { createAgoraRtcEngine } from 'agora-electron-sdk';
+
+import { SharedTexturePocController } from './sharedTexturePocController';
+import { registerSharedTexturePocIpc } from './sharedTexturePocIpc';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 app.allowRendererProcessReuse = false;
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow;
+let sharedTexturePocController;
+let disposeSharedTexturePocIpc;
+let sharedTextureShutdownComplete = false;
+
+function getSharedTextureScenePath() {
+  return isDevelopment
+    ? path.resolve(__dirname, '../../extraResources/sharedTextureScene.html')
+    : path.join(process.resourcesPath, 'extraResources', 'sharedTextureScene.html');
+}
 
 function createMainWindow() {
   const window = new BrowserWindow({
@@ -84,6 +97,7 @@ function createMainWindow() {
 
 // quit application when all windows are closed
 app.on('window-all-closed', () => {
+  void sharedTexturePocController?.stop();
   // on macOS it is common for applications to stay open until the user explicitly quits
   if (process.platform !== 'darwin') {
     app.quit();
@@ -99,5 +113,27 @@ app.on('activate', () => {
 
 // create main BrowserWindow when electron is ready
 app.on('ready', () => {
+  sharedTexturePocController = new SharedTexturePocController({
+    BrowserWindow,
+    createRtcEngine: createAgoraRtcEngine,
+    scenePath: getSharedTextureScenePath(),
+  });
+  disposeSharedTexturePocIpc = registerSharedTexturePocIpc({
+    ipcMain,
+    controller: sharedTexturePocController,
+  });
   mainWindow = createMainWindow();
+});
+
+app.on('before-quit', (event) => {
+  if (sharedTextureShutdownComplete) return;
+  event.preventDefault();
+  disposeSharedTexturePocIpc?.();
+  disposeSharedTexturePocIpc = null;
+  void Promise.resolve(sharedTexturePocController?.stop())
+    .catch((error) => console.error('Shared Texture PoC cleanup failed', error))
+    .finally(() => {
+      sharedTextureShutdownComplete = true;
+      app.quit();
+    });
 });

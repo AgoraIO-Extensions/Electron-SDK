@@ -5,18 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Shared Texture PoC Scene</title>
     <style>
-      html,
-      body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        overflow: hidden;
-        background: #101418;
-      }
-      canvas {
-        width: 100%;
-        height: 100%;
-      }
+      html, body, canvas { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #101418; }
     </style>
   </head>
   <body>
@@ -24,24 +13,16 @@
     <script>
       const canvas = document.querySelector('canvas');
       const context = canvas.getContext('2d');
-      const resize = () => {
-        canvas.width = innerWidth;
-        canvas.height = innerHeight;
-      };
+      const resize = () => { canvas.width = innerWidth; canvas.height = innerHeight; };
       resize();
       addEventListener('resize', resize);
-
       const draw = (time) => {
         const width = canvas.width;
         const height = canvas.height;
-        context.fillStyle = '#101418';
-        context.fillRect(0, 0, width, height);
-        context.fillStyle = '#ef4444';
-        context.fillRect(0, 0, width / 3, height);
-        context.fillStyle = '#22c55e';
-        context.fillRect(width / 3, 0, width / 3, height);
-        context.fillStyle = '#3b82f6';
-        context.fillRect((width * 2) / 3, 0, width / 3, height);
+        for (const [color, x] of [['#ef4444', 0], ['#22c55e', 1], ['#3b82f6', 2]]) {
+          context.fillStyle = color;
+          context.fillRect((width * x) / 3, 0, width / 3, height);
+        }
         context.fillStyle = '#ffffff';
         context.fillRect((time / 5) % width, height / 2 - 20, 80, 40);
         context.font = '32px monospace';

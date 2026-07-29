@@ -22,6 +22,7 @@ import PushVideoFrame from './PushVideoFrame/PushVideoFrame';
 import RTMPStreaming from './RTMPStreaming/RTMPStreaming';
 import RhythmPlayer from './RhythmPlayer/RhythmPlayer';
 import ScreenShare from './ScreenShare/ScreenShare';
+import SharedTexturePoc from './SharedTexturePoc/SharedTexturePoc';
 import SendMetadata from './SendMetadata/SendMetadata';
 import SendMultiVideoStream from './SendMultiVideoStream/SendMultiVideoStream';
 import Simulcast from './Simulcast/Simulcast';
@@ -131,6 +132,10 @@ const Advanced = {
     {
       name: 'SendMetadata',
       component: SendMetadata,
+    },
+    {
+      name: 'SharedTexturePoc',
+      component: SharedTexturePoc,
     },
     {
       name: 'SendMultiVideoStream',
