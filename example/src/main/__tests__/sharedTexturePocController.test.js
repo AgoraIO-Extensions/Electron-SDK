@@ -168,3 +168,39 @@ test('stop releases pending and waits for the in-flight frame', async () => {
   expect(harness.engine.release).toHaveBeenCalled();
   expect(harness.controller.state).toBe('idle');
 });
+
+test('stop cancels a pending join and cleans resources exactly once', async () => {
+  const harness = createHarness();
+  const texture = createTexture(1);
+  const starting = harness.controller.start({
+    appId: 'app',
+    channelId: 'channel',
+    token: '',
+    uid: 42,
+  });
+  const startResult = starting.then(
+    () => ({ status: 'fulfilled' }),
+    (reason) => ({ status: 'rejected', reason })
+  );
+  harness.controller.handlePaint(texture);
+
+  const stopping = harness.controller.stop();
+  const settled = await Promise.race([
+    Promise.all([startResult, stopping]),
+    new Promise((resolve) =>
+      setTimeout(() => resolve('timed out'), 50)
+    ),
+  ]);
+
+  expect(settled).not.toBe('timed out');
+  expect(settled[0]).toEqual({
+    status: 'rejected',
+    reason: expect.objectContaining({
+      message: 'Shared Texture PoC start cancelled',
+    }),
+  });
+  expect(texture.release).toHaveBeenCalledTimes(1);
+  expect(harness.engine.release).toHaveBeenCalledTimes(1);
+  expect(harness.controller.window).toBeNull();
+  expect(harness.controller.state).toBe('idle');
+});

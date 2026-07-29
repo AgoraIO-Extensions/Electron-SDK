@@ -9,6 +9,8 @@ class SharedTexturePocController {
     this.releasedTextures = new WeakSet();
     this.inFlight = null;
     this.pendingTexture = null;
+    this.cancelPendingJoin = null;
+    this.cleanupPromise = null;
     this.window = null;
     this.engine = null;
     this.mediaEngine = null;
@@ -20,13 +22,18 @@ class SharedTexturePocController {
 
     try {
       this.engine = this.createRtcEngine();
+      let rejectJoin;
       const joined = new Promise((resolve, reject) => {
+        rejectJoin = reject;
         this.engine.registerEventHandler({
           onJoinChannelSuccess: resolve,
           onError: (errorCode, message) =>
             reject(new Error(`RTC error ${errorCode}: ${message || ''}`)),
         });
       });
+      const cancelJoin = () =>
+        rejectJoin(new Error('Shared Texture PoC start cancelled'));
+      this.cancelPendingJoin = cancelJoin;
 
       this.requireSuccess(this.engine.initialize({ appId }), 'initialize');
       this.requireSuccess(this.engine.enableVideo(), 'enableVideo');
@@ -55,7 +62,13 @@ class SharedTexturePocController {
         }),
         'joinChannel'
       );
-      await joined;
+      try {
+        await joined;
+      } finally {
+        if (this.cancelPendingJoin === cancelJoin) {
+          this.cancelPendingJoin = null;
+        }
+      }
       this.state = 'running';
     } catch (error) {
       await this.cleanup();
@@ -149,7 +162,9 @@ class SharedTexturePocController {
   async stop() {
     if (this.state === 'idle') return;
     if (this.state === 'stopping') return this.stopping;
+    const cancelPendingJoin = this.cancelPendingJoin;
     this.state = 'stopping';
+    if (cancelPendingJoin) cancelPendingJoin();
     this.stopping = (async () => {
       if (this.pendingTexture) {
         this.releaseOnce(this.pendingTexture);
@@ -163,20 +178,35 @@ class SharedTexturePocController {
   }
 
   async cleanup() {
-    if (this.engine) {
-      try {
-        this.engine.leaveChannel();
-        if (this.mediaEngine) {
-          this.mediaEngine.setExternalVideoSource(false, true, 0);
-        }
-      } finally {
-        this.engine.release();
-      }
-    }
-    if (this.window) this.window.destroy();
+    if (this.cleanupPromise) return this.cleanupPromise;
+    const engine = this.engine;
+    const mediaEngine = this.mediaEngine;
+    const window = this.window;
     this.engine = null;
     this.mediaEngine = null;
     this.window = null;
+
+    this.cleanupPromise = (async () => {
+      try {
+        if (engine) {
+          try {
+            engine.leaveChannel();
+            if (mediaEngine) {
+              mediaEngine.setExternalVideoSource(false, true, 0);
+            }
+          } finally {
+            engine.release();
+          }
+        }
+      } finally {
+        if (window) window.destroy();
+      }
+    })();
+    try {
+      await this.cleanupPromise;
+    } finally {
+      this.cleanupPromise = null;
+    }
   }
 }
 
