@@ -62,6 +62,7 @@ file(GLOB TARGET_AGORA_NODE_EXT_FILE LIST_DIRECTORIES false
 
 if (BUILD_TESTING)
   add_executable(shared_texture_request_test
+          ${TARGET_AGORA_NODE_EXT_FILE_DIR}/d3d11_shared_texture_importer.cpp
           ${TARGET_AGORA_NODE_EXT_FILE_DIR}/shared_texture_request.cpp
           ${TARGET_AGORA_NODE_EXT_FILE_DIR}/tests/shared_texture_request_test.cpp
           )
@@ -202,6 +203,8 @@ function(build_target_agora_node_ext)
     target_link_libraries(${AGORA_NODE_EXT_NAME}
             ${AGORA_IRIS_SDK_LIB}
             ${CMAKE_JS_LIB}
+            d3d11
+            dxgi
             )
   elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set(CMAKE_BUILD_WITH_INSTALL_RPATH true)

@@ -1,4 +1,5 @@
 #include "../shared_texture_request.h"
+#include "../d3d11_shared_texture_importer.h"
 
 #include <cassert>
 #include <iostream>
@@ -6,6 +7,7 @@
 using agora::rtc::electron::SharedTexturePixelFormat;
 using agora::rtc::electron::SharedTextureRequest;
 using agora::rtc::electron::ValidateSharedTextureRequest;
+using agora::rtc::electron::BuildSharedTexturePushJson;
 
 namespace {
 
@@ -60,6 +62,17 @@ int main() {
   request = ValidRequest();
   request.pixel_format = SharedTexturePixelFormat::kRgba;
   assert(ValidateSharedTextureRequest(request, 0, error));
+  assert(BuildSharedTexturePushJson(request) ==
+         "{\"frame\":{\"type\":3,\"format\":4,\"stride\":1920,"
+         "\"height\":1080,\"timestamp\":123,\"textureSliceIndex\":0},"
+         "\"videoTrackId\":0}");
+
+  request.pixel_format = SharedTexturePixelFormat::kBgra;
+  request.timestamp_us = 999;
+  assert(BuildSharedTexturePushJson(request).find("\"format\":2") !=
+         std::string::npos);
+  assert(BuildSharedTexturePushJson(request).find("\"timestamp\":0") !=
+         std::string::npos);
 
   std::cout << "shared texture request validation passed\n";
   return 0;

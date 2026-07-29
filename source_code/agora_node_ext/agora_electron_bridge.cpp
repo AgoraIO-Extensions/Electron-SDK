@@ -5,6 +5,7 @@
  * @Last Modified time: 2022-08-05 11:12:05
  */
 #include "agora_electron_bridge.h"
+#include "d3d11_shared_texture_importer.h"
 #include "iris_base.h"
 #include "node_iris_event_handler.h"
 #include <iostream>
@@ -326,8 +327,31 @@ napi_value AgoraElectronBridge::PushSharedD3D11Texture(
   }
 
 #if defined(_WIN32)
-  return RejectPromise(env, "ERR_NOT_IMPLEMENTED",
-                       "D3D11 shared texture importer is not available");
+  if (!bridge->_iris_api_engine) { bridge->Init(); }
+  SharedTextureSubmissionResult submission{};
+  if (!SubmitSharedD3D11Texture(request, bridge->_iris_api_engine.get(),
+                                submission, error)) {
+    return RejectPromise(env, "ERR_SHARED_TEXTURE_SUBMISSION", error);
+  }
+  bridge->_last_shared_texture_frame_id = request.frame_id;
+
+  napi_deferred deferred;
+  napi_value promise;
+  napi_value response;
+  napi_value frame_id;
+  napi_value rtc_result;
+  napi_value adapter_luid;
+  napi_create_promise(env, &deferred, &promise);
+  napi_create_object(env, &response);
+  napi_create_double(env, static_cast<double>(request.frame_id), &frame_id);
+  napi_create_int32(env, submission.result, &rtc_result);
+  napi_create_string_utf8(env, submission.adapter_luid.c_str(), NAPI_AUTO_LENGTH,
+                          &adapter_luid);
+  napi_set_named_property(env, response, "frameId", frame_id);
+  napi_set_named_property(env, response, "result", rtc_result);
+  napi_set_named_property(env, response, "adapterLuid", adapter_luid);
+  napi_resolve_deferred(env, deferred, response);
+  return promise;
 #else
   return RejectPromise(env, "ERR_PLATFORM_UNSUPPORTED",
                        "D3D11 shared textures are supported only on Windows");
