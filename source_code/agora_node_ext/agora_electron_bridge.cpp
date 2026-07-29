@@ -8,6 +8,9 @@
 #include "iris_base.h"
 #include "node_iris_event_handler.h"
 #include <iostream>
+#include <cmath>
+#include <cstring>
+#include <limits>
 #include <memory>
 #include <regex>
 
@@ -48,6 +51,7 @@ napi_value AgoraElectronBridge::Init(napi_env env, napi_value exports) {
       DECLARE_NAPI_METHOD("SetAddonLogFile", SetAddonLogFile),
       DECLARE_NAPI_METHOD("InitializeEnv", InitializeEnv),
       DECLARE_NAPI_METHOD("ReleaseEnv", ReleaseEnv),
+      DECLARE_NAPI_METHOD("PushSharedD3D11Texture", PushSharedD3D11Texture),
       DECLARE_NAPI_METHOD("ReleaseRenderer", ReleaseRenderer)};
 
   napi_value cons;
@@ -199,6 +203,135 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
     napi_obj_set_property(env, retObj, _ret_code_str, ret);
   }
   return retObj;
+}
+
+namespace {
+
+napi_value RejectPromise(napi_env env, const char *code,
+                         const std::string &message) {
+  napi_deferred deferred;
+  napi_value promise;
+  napi_create_promise(env, &deferred, &promise);
+
+  napi_value message_value;
+  napi_value error;
+  napi_value code_value;
+  napi_create_string_utf8(env, message.c_str(), NAPI_AUTO_LENGTH,
+                          &message_value);
+  napi_create_error(env, nullptr, message_value, &error);
+  napi_create_string_utf8(env, code, NAPI_AUTO_LENGTH, &code_value);
+  napi_set_named_property(env, error, "code", code_value);
+  napi_reject_deferred(env, deferred, error);
+  return promise;
+}
+
+bool ReadNamedDouble(napi_env env, napi_value object, const char *name,
+                     double &result) {
+  napi_value value;
+  return napi_get_named_property(env, object, name, &value) == napi_ok &&
+         napi_get_value_double(env, value, &result) == napi_ok;
+}
+
+bool ParseSharedTextureRequest(napi_env env, napi_value value,
+                               SharedTextureRequest &request,
+                               std::string &error) {
+  napi_valuetype type;
+  if (napi_typeof(env, value, &type) != napi_ok || type != napi_object) {
+    error = "frame must be an object";
+    return false;
+  }
+
+  napi_value handle_value;
+  bool is_buffer = false;
+  void *handle_data = nullptr;
+  size_t handle_size = 0;
+  if (napi_get_named_property(env, value, "ntHandle", &handle_value) != napi_ok ||
+      napi_is_buffer(env, handle_value, &is_buffer) != napi_ok || !is_buffer ||
+      napi_get_buffer_info(env, handle_value, &handle_data, &handle_size) !=
+          napi_ok) {
+    error = "ntHandle must be a Buffer";
+    return false;
+  }
+  request.handle_size = handle_size;
+  if (handle_size == sizeof(request.nt_handle)) {
+    std::memcpy(request.nt_handle, handle_data, sizeof(request.nt_handle));
+  }
+
+  double frame_id;
+  double width;
+  double height;
+  double timestamp_us;
+  if (!ReadNamedDouble(env, value, "frameId", frame_id) ||
+      !ReadNamedDouble(env, value, "width", width) ||
+      !ReadNamedDouble(env, value, "height", height) ||
+      !ReadNamedDouble(env, value, "timestampUs", timestamp_us) ||
+      !std::isfinite(frame_id) || !std::isfinite(width) ||
+      !std::isfinite(height) || !std::isfinite(timestamp_us) ||
+      std::floor(frame_id) != frame_id || std::floor(width) != width ||
+      std::floor(height) != height || std::floor(timestamp_us) != timestamp_us ||
+      frame_id < 0 || frame_id > 9007199254740991.0 || width < 0 ||
+      width > std::numeric_limits<uint32_t>::max() || height < 0 ||
+      height > std::numeric_limits<uint32_t>::max() ||
+      timestamp_us < 0 || timestamp_us > 9007199254740991.0) {
+    error = "frameId, dimensions, and timestampUs must be safe integers";
+    return false;
+  }
+  request.frame_id = static_cast<uint64_t>(frame_id);
+  request.width = static_cast<uint32_t>(width);
+  request.height = static_cast<uint32_t>(height);
+  request.timestamp_us = static_cast<int64_t>(timestamp_us);
+
+  napi_value format_value;
+  std::string format;
+  if (napi_get_named_property(env, value, "pixelFormat", &format_value) !=
+          napi_ok ||
+      napi_get_value_utf8string(env, format_value, format) != napi_ok) {
+    error = "pixelFormat must be a string";
+    return false;
+  }
+  request.pixel_format = format == "bgra"
+                             ? SharedTexturePixelFormat::kBgra
+                             : format == "rgba" ? SharedTexturePixelFormat::kRgba
+                                                : SharedTexturePixelFormat::kUnknown;
+  return true;
+}
+
+}// namespace
+
+napi_value AgoraElectronBridge::PushSharedD3D11Texture(
+    napi_env env, napi_callback_info info) {
+  size_t argc = 1;
+  napi_value args[1];
+  napi_value jsthis;
+  if (napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr) != napi_ok ||
+      argc != 1) {
+    return RejectPromise(env, "ERR_INVALID_ARGUMENT",
+                         "exactly one frame argument is required");
+  }
+
+  AgoraElectronBridge *bridge = nullptr;
+  if (napi_unwrap(env, jsthis, reinterpret_cast<void **>(&bridge)) != napi_ok ||
+      bridge == nullptr) {
+    return RejectPromise(env, "ERR_NOT_INITIALIZED",
+                         "AgoraElectronBridge is not initialized");
+  }
+
+  SharedTextureRequest request{};
+  std::string error;
+  if (!ParseSharedTextureRequest(env, args[0], request, error) ||
+      !ValidateSharedTextureRequest(request,
+                                    bridge->_last_shared_texture_frame_id,
+                                    error)) {
+    return RejectPromise(env, "ERR_INVALID_ARGUMENT", error);
+  }
+
+#if defined(_WIN32)
+  return RejectPromise(env, "ERR_NOT_IMPLEMENTED",
+                       "D3D11 shared texture importer is not available");
+#else
+  return RejectPromise(env, "ERR_PLATFORM_UNSUPPORTED",
+                       "D3D11 shared textures are supported only on Windows");
+#endif
 }
 
 napi_value AgoraElectronBridge::GetBuffer(napi_env env,

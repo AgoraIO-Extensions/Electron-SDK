@@ -3,6 +3,8 @@ set(CMAKE_CXX_STANDARD 14)
 
 project(agora-electron-sdk)
 
+include(CTest)
+
 if (WIN32)
   set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /DEBUG")
   set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG")
@@ -54,9 +56,20 @@ set(TARGET_AGORA_NODE_EXT_FILE_DIR
         ${SOURCE_CODE_PATH}/agora_node_ext
         )
 
-file(GLOB TARGET_AGORA_NODE_EXT_FILE
+file(GLOB TARGET_AGORA_NODE_EXT_FILE LIST_DIRECTORIES false
         ${TARGET_AGORA_NODE_EXT_FILE_DIR}/*
         )
+
+if (BUILD_TESTING)
+  add_executable(shared_texture_request_test
+          ${TARGET_AGORA_NODE_EXT_FILE_DIR}/shared_texture_request.cpp
+          ${TARGET_AGORA_NODE_EXT_FILE_DIR}/tests/shared_texture_request_test.cpp
+          )
+  target_include_directories(shared_texture_request_test PRIVATE
+          ${TARGET_AGORA_NODE_EXT_FILE_DIR}
+          )
+  add_test(NAME shared_texture_request COMMAND shared_texture_request_test)
+endif ()
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
   set(AGORA_IRIS_PROJECT_ARCH "MAC")

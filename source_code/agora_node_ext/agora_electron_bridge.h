@@ -8,6 +8,7 @@
 #include "iris_engine_base.h"
 #include "iris_rtc_rendering_cxx.h"
 #include "node_base.h"
+#include "shared_texture_request.h"
 #include <exception>
 #include <memory>
 #include <node_api.h>
@@ -40,6 +41,8 @@ class AgoraElectronBridge {
   static napi_value InitializeEnv(napi_env env, napi_callback_info info);
   static napi_value ReleaseEnv(napi_env env, napi_callback_info info);
   static napi_value ReleaseRenderer(napi_env env, napi_callback_info info);
+  static napi_value PushSharedD3D11Texture(napi_env env,
+                                           napi_callback_info info);
 
   void OnApiError(const char *errorMessage);
   void Init();
@@ -55,6 +58,7 @@ class AgoraElectronBridge {
   std::shared_ptr<IApiEngineBase> _iris_api_engine;
   std::shared_ptr<NodeIrisEventHandler> _iris_rtc_event_handler;
   std::shared_ptr<iris::IrisRtcRendering> _iris_rendering;
+  uint64_t _last_shared_texture_frame_id = 0;
 };
 
 }// namespace electron
