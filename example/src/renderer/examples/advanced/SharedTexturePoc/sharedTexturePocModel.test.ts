@@ -7,6 +7,7 @@ export {};
 const Config = require('../../../config/agora.config').default;
 const {
   createSharedTexturePocConfig,
+  getSharedTexturePocAction,
   getInitialSharedTextureChannel,
   shouldStopOnUnmount,
   startSharedTexturePoc,
@@ -62,4 +63,13 @@ test.each(['joining', 'joined', 'leaving'])(
 
 test('does not request cleanup when unmounted idle', () => {
   expect(shouldStopOnUnmount('idle')).toBe(false);
+});
+
+test.each([
+  ['idle', 'join Channel', false],
+  ['joining', 'join Channel', true],
+  ['joined', 'leave Channel', false],
+  ['leaving', 'leave Channel', true],
+])('presents the standard Advanced action for %s', (state, title, disabled) => {
+  expect(getSharedTexturePocAction(state)).toEqual({ title, disabled });
 });

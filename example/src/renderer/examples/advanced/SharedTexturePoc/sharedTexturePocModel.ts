@@ -27,6 +27,16 @@ export const createSharedTexturePocConfig = (
 export const shouldStopOnUnmount = (state: SharedTexturePocLifecycle) =>
   state !== 'idle';
 
+export const getSharedTexturePocAction = (
+  state: SharedTexturePocLifecycle
+) => ({
+  title:
+    state === 'joined' || state === 'leaving'
+      ? 'leave Channel'
+      : 'join Channel',
+  disabled: state === 'joining' || state === 'leaving',
+});
+
 export const startSharedTexturePoc = (
   invoke: (channel: string, config: SharedTexturePocConfig) => Promise<unknown>,
   config: SharedTexturePocConfig
