@@ -18,12 +18,72 @@ import {
 import { AgoraEnv, isSupportWebGL } from '../Utils';
 
 import { IRenderer } from './IRenderer';
-import { generateRendererCacheKey, isUseConnection } from './IRendererCache';
+import {
+  IRendererCache,
+  generateRendererCacheKey,
+  isUseConnection,
+} from './IRendererCache';
 import { RendererCache } from './RendererCache';
 import { WebCodecsRenderer } from './WebCodecsRenderer';
 import { WebCodecsRendererCache } from './WebCodecsRendererCache';
 import { WebGLFallback, WebGLRenderer } from './WebGLRenderer';
 import { YUVCanvasRenderer } from './YUVCanvasRenderer';
+
+type TimerHandle = number | ReturnType<typeof globalThis.setTimeout>;
+
+class RenderLoopScheduler {
+  private caches = new Set<IRendererCache>();
+  private timer?: TimerHandle;
+
+  public register(cache: IRendererCache): void {
+    this.caches.add(cache);
+    this.reschedule();
+  }
+
+  public unregister(cache: IRendererCache): void {
+    this.caches.delete(cache);
+    this.reschedule();
+  }
+
+  public clear(): void {
+    this.caches.clear();
+    this.reschedule();
+  }
+
+  private tick = () => {
+    this.timer = undefined;
+    const now = performance.now();
+
+    for (const cache of this.caches) {
+      if (cache.getTimeUntilNextRender(now) <= 0) {
+        cache.runRenderCycle(now);
+      }
+    }
+
+    this.reschedule();
+  };
+
+  private reschedule(): void {
+    if (this.timer !== undefined) {
+      window.clearTimeout(this.timer);
+      this.timer = undefined;
+    }
+
+    if (this.caches.size === 0) {
+      return;
+    }
+
+    const now = performance.now();
+    let minDelay = Number.POSITIVE_INFINITY;
+
+    for (const cache of this.caches) {
+      minDelay = Math.min(minDelay, cache.getTimeUntilNextRender(now));
+    }
+
+    const delay = Number.isFinite(minDelay) ? Math.max(0, minDelay) : 0;
+    this.timer = window.setTimeout(this.tick, delay);
+  }
+}
 
 /**
  * @ignore
@@ -46,6 +106,7 @@ export class RendererManager {
    * @ignore
    */
   private rendererType: RendererType;
+  private renderLoopScheduler: RenderLoopScheduler;
 
   /**
    * Currently, the remote video frame is observed in the pre-renderer position and you can not change it.
@@ -54,7 +115,7 @@ export class RendererManager {
    */
   private defaultObservedFramePosition: number =
     VideoModulePosition.PositionPreRenderer |
-    VideoModulePosition.PositionPreEncoder;
+    VideoModulePosition.PositionPostCapturer;
 
   constructor() {
     this.renderingFps = 15;
@@ -63,6 +124,7 @@ export class RendererManager {
       renderMode: RenderModeType.RenderModeHidden,
       mirrorMode: VideoMirrorModeType.VideoMirrorModeDisabled,
     };
+    this.renderLoopScheduler = new RenderLoopScheduler();
     this.rendererType = isSupportWebGL()
       ? RendererType.WEBGL
       : RendererType.SOFTWARE;
@@ -90,6 +152,15 @@ export class RendererManager {
 
   public release(): void {
     this.clearRendererCache();
+    this.renderLoopScheduler.clear();
+  }
+
+  public registerRendererCacheForScheduling(cache: RendererCache): void {
+    this.renderLoopScheduler.register(cache);
+  }
+
+  public unregisterRendererCacheForScheduling(cache: RendererCache): void {
+    this.renderLoopScheduler.unregister(cache);
   }
 
   private presetRendererContext(context: RendererContext): RendererContext {
@@ -310,6 +381,21 @@ export class RendererManager {
 
   public setRendererContext(context: RendererContext): boolean {
     const checkedContext = this.presetRendererContext(context);
+
+    if (checkedContext.view) {
+      const renderer = this.findRenderer(checkedContext.view);
+      if (
+        renderer?.rendererType === RendererType.WEBGL &&
+        renderer.context.enableAlphaMask !== checkedContext.enableAlphaMask
+      ) {
+        this.addOrRemoveRenderer({
+          ...renderer.context,
+          ...checkedContext,
+          setupMode: VideoViewSetupMode.VideoViewSetupReplace,
+        });
+        return true;
+      }
+    }
 
     for (const rendererCache of this._rendererCaches) {
       const result = rendererCache.setRendererContext(checkedContext);

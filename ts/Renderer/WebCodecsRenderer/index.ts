@@ -108,10 +108,10 @@ export class WebCodecsRenderer extends IRenderer {
     this.offscreenCanvas.width = _codecConfig.codedWidth!;
     this.offscreenCanvas.height = _codecConfig.codedHeight!;
 
-    this.updateRenderMode();
     this.rotateCanvas({
       rotation: _codecConfig.rotation,
     });
+    this.updateRenderModeIfNeeded();
     if (!this.gl) return;
 
     if (this.gl) {
@@ -143,6 +143,6 @@ export class WebCodecsRenderer extends IRenderer {
 
   protected override rotateCanvas({ rotation }: VideoFrame) {
     if (!this.offscreenCanvas || !this.canvas) return;
-    this.canvas.style.transform += ` rotateZ(${rotation}deg)`;
+    this.setCanvasRotation(rotation ?? 0);
   }
 }

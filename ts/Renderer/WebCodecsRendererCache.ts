@@ -139,6 +139,14 @@ export class WebCodecsRendererCache extends IRendererCache {
     return { hasMoreFrame: false, needRender: false };
   }
 
+  public getTimeUntilNextRender(): number {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  public runRenderCycle(): void {
+    return;
+  }
+
   public renderFrame(): void {
     return;
   }

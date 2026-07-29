@@ -31,7 +31,7 @@ export class YUVCanvasRenderer extends IRenderer {
     }: VideoFrame
   ) {
     this.rotateCanvas({ width, height, rotation });
-    this.updateRenderMode();
+    this.updateRenderModeIfNeeded();
 
     if (!this.frameSink) return;
 
@@ -73,8 +73,6 @@ export class YUVCanvasRenderer extends IRenderer {
 
   protected override rotateCanvas({ width, height, rotation }: VideoFrame) {
     super.rotateCanvas({ width, height, rotation });
-
-    if (!this.canvas) return;
-    this.canvas.style.transform += ` rotateZ(${rotation}deg)`;
+    this.setCanvasRotation(rotation ?? 0);
   }
 }

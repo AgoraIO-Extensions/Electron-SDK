@@ -237,6 +237,11 @@ export default class AgoraView extends HTMLElement {
       ENABLE_ALPHA_MASK_STRING,
     ].includes(attrName);
 
+    if (attrName === ENABLE_ALPHA_MASK_STRING && oldVal !== newVal) {
+      this.initializeRender();
+      return;
+    }
+
     if (isSetRenderOption) {
       AgoraEnv.AgoraRendererManager?.setRendererContext({
         view: this,
