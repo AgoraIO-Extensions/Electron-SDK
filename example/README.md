@@ -27,6 +27,10 @@ yarn start
 
 #### Shared Texture PoC Runtime
 
+Implementation status and Native RTC SDK requirements:
+[English](../docs/shared-texture-poc/README.md) |
+[简体中文](../docs/shared-texture-poc/README.zh-CN.md)
+
 The Windows shared texture PoC is pinned to Electron `43.2.0`, whose Windows x64
 runtime reports Node `24.18.0`, Chrome `150.0.7871.129`, and native modules ABI
 `148`. Check the ABI before loading the addon:
