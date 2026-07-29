@@ -66,6 +66,16 @@ yarn --cwd example rebuild --arch=x64 --version=43.2.0
 Do not continue if the ABI check is not exactly `148` or if the runtime test resolves
 `agora-electron-sdk` outside this worktree.
 
+Start the example, open `Advanced -> SharedTexturePoc`, and enter the same App ID,
+channel, token, and numeric UID used by the other examples. `Start` creates one
+main-process RTC engine and a hidden offscreen window for the packaged moving-color
+scene; `Stop` drains the active submission, releases the Electron texture, leaves the
+channel, and destroys both native objects. Use a second client in the same channel to
+observe the published video.
+
+The renderer page does not create an RTC engine. It sends validated configuration over
+IPC to the main-process controller, which owns the offscreen texture lifetime.
+
 #### (Optional) Build From Local SDK
 
 ```bash

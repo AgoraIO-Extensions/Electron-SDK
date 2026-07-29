@@ -104,3 +104,25 @@ platform-neutral, formatting, and existing regressions. Windows x64 must separat
 verify Electron ABI 148 addon loading, `OpenSharedResource1`, adapter LUID, descriptor
 validation, successful remote video, exactly-once release, D3D debug-layer shutdown,
 and absence of CPU staging/readback.
+
+## Implementation status (2026-07-29)
+
+The implementation is complete through the platform-independent boundary:
+
+- TypeScript exposes `pushSharedD3D11Texture` and forwards only the structured frame.
+- The native bridge validates the request and the Windows importer opens the NT handle.
+- The native importer, not TypeScript, constructs the five-slot Iris buffer array and
+  places `ID3D11Texture2D*` in slot five for the synchronous call.
+- The example packages `extraResources/sharedTextureScene.html`; its renderer page only
+  controls a main-process RTC/controller singleton through validated IPC.
+- The controller permits one native submission in flight, keeps only the latest pending
+  texture, and releases every Electron texture exactly once after submission or drop.
+
+Fresh macOS verification passed: 6 source Jest suites / 48 tests, 3 focused example
+suites / 11 tests, `yarn typecheck`, the platform-neutral C++ validation/JSON executable,
+`yarn --cwd example compile`, and `git diff --check`. The compile emitted the existing
+dynamic `keyv` dependency warning. These results do not validate `_WIN32` compilation.
+
+The PoC remains pending on a Windows x64 host for ABI 148 addon loading, MSVC/Windows
+SDK compilation, a remote-receiver smoke test, PIX capture, adapter/descriptor logging,
+handle-count observation, device-removal status, and D3D debug-layer shutdown output.
