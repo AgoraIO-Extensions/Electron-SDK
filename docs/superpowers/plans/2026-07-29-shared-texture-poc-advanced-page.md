@@ -14,10 +14,9 @@
 
 - `example/src/main/sharedTexturePocController.js`: own and cancel the pending join wait; keep cleanup idempotent.
 - `example/src/main/__tests__/sharedTexturePocController.test.js`: prove concurrent start/stop settles and cleans exactly once.
-- `example/src/renderer/examples/advanced/SharedTexturePoc/sharedTexturePocModel.ts`: build a start request from live Settings `Config` plus a temporary channel.
-- `example/src/renderer/examples/advanced/SharedTexturePoc/sharedTexturePocModel.test.ts`: prove live Config and temporary channel behavior.
+- `example/src/renderer/examples/advanced/SharedTexturePoc/sharedTexturePocModel.ts`: build a start request from live Settings `Config` plus a temporary channel and own the pure lifecycle transition rules.
+- `example/src/renderer/examples/advanced/SharedTexturePoc/sharedTexturePocModel.test.ts`: prove live Config, temporary channel, lifecycle transitions, and unmount-stop decisions without adding React test infrastructure.
 - `example/src/renderer/examples/advanced/SharedTexturePoc/SharedTexturePoc.tsx`: reproduce the Advanced shell and join lifecycle without creating an RTC engine.
-- `example/src/renderer/examples/advanced/SharedTexturePoc/SharedTexturePoc.test.tsx`: exercise UI state and unmount stop behavior with mocked IPC.
 
 ### Task 1: Cancel a controller that is still joining
 
@@ -71,8 +70,10 @@ git commit -m "fix(example): cancel pending shared texture joins"
 
 Replace the module-load snapshot assertion with tests that mutate `Config` after
 module import, call `createSharedTexturePocConfig(channelId)`, and expect the newest
-`appId`, `token`, and `uid` plus the supplied temporary channel. Retain IPC channel
-mapping tests for start and stop.
+`appId`, `token`, and `uid` plus the supplied temporary channel. Add pure transition
+tests for `idle -> joining -> joined -> leaving -> idle`, start failure to `idle`,
+stop failure to `joined`, and `shouldStopOnUnmount` returning true only for active or
+pending states. Retain IPC channel mapping tests for start and stop.
 
 - [ ] **Step 2: Run the model test and verify RED**
 
@@ -85,11 +86,11 @@ complete duplicated form config.
 
 - [ ] **Step 3: Implement the request builder**
 
-Export `getInitialSharedTextureChannel()` and
-`createSharedTexturePocConfig(channelId)`. Read `Config.channelId` only for the
-initial page value; read `Config.appId`, `Config.token`, and `Config.uid` inside the
-request builder. Keep `startSharedTexturePoc` and `stopSharedTexturePoc` as IPC-only
-functions.
+Export `getInitialSharedTextureChannel()`,
+`createSharedTexturePocConfig(channelId)`, the lifecycle transition helpers, and
+`shouldStopOnUnmount(state)`. Read `Config.channelId` only for the initial page value;
+read `Config.appId`, `Config.token`, and `Config.uid` inside the request builder. Keep
+`startSharedTexturePoc` and `stopSharedTexturePoc` as IPC-only functions.
 
 - [ ] **Step 4: Run the model test and verify GREEN**
 
@@ -106,33 +107,33 @@ git commit -m "refactor(example): reuse Settings for shared texture PoC"
 
 **Files:**
 - Modify: `example/src/renderer/examples/advanced/SharedTexturePoc/SharedTexturePoc.tsx`
-- Create: `example/src/renderer/examples/advanced/SharedTexturePoc/SharedTexturePoc.test.tsx`
 
-- [ ] **Step 1: Write failing component tests**
+- [ ] **Step 1: Extend the failing model test with component-facing behavior**
 
-Render the component with mocked `ipcRenderer.invoke`. Assert it contains only the
-channel input, uses `join Channel` / `leave Channel`, disables actions during
-`joining` and `leaving`, submits live Settings values plus the edited channel,
-restores `idle` after start failure, restores `joined` after stop failure, and calls
-stop on unmount while joining or joined. Assert no renderer RTC engine factory is
-imported or called.
+Before changing TSX, add model assertions that the button title is `join Channel` for
+idle and `leave Channel` for joined, pending states disable the action, and ordinary
+state transitions alone never request unmount cleanup. This keeps behavioral logic
+testable with the repository's existing TypeScript Jest transform; the repository has
+no TSX renderer or jsdom setup, so do not add a new test stack for this narrow page.
 
-- [ ] **Step 2: Run component tests and verify RED**
+- [ ] **Step 2: Run the model test and verify RED**
 
 ```bash
-yarn jest example/src/renderer/examples/advanced/SharedTexturePoc/SharedTexturePoc.test.tsx --runInBand
+yarn jest example/src/renderer/examples/advanced/SharedTexturePoc/sharedTexturePocModel.test.ts --runInBand
 ```
 
-Expected: FAIL because the current component renders four custom inputs and has only
-idle/running state.
+Expected: FAIL because the lifecycle presentation helpers do not exist.
 
 - [ ] **Step 3: Implement the standard shell and lifecycle**
 
 Use `AgoraStyle.screen`, `AgoraStyle.content`, `AgoraStyle.rightBar`,
 `LeftOutlined`, `AgoraDivider`, `AgoraTextInput`, and `AgoraButton`, following
 `BaseComponent.render` and `renderChannel`. Keep state local to the component and
-invoke only the model IPC functions. Add an unmount effect that requests stop when
-the latest lifecycle state is not `idle`.
+invoke only the model IPC functions. Maintain the latest lifecycle state in a ref.
+Install exactly one empty-dependency unmount effect (`useEffect(..., [])`) whose
+cleanup consults that ref and calls stop only when `shouldStopOnUnmount` is true.
+Normal lifecycle state transitions must not run effect cleanup. The example compile
+is the structural verification for the TSX mapping.
 
 - [ ] **Step 4: Run component and focused example tests**
 
