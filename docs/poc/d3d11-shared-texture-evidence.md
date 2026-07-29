@@ -1,6 +1,6 @@
 # D3D11 shared-texture Phase 0 evidence
 
-Research date: 2026-07-28
+Research date: 2026-07-28; RTC owner confirmation updated 2026-07-29
 
 This is a gate document, not an implementation specification. No native submission or
 texture-pool code may be written until both lifetime contracts below are confirmed.
@@ -8,8 +8,8 @@ texture-pool code may be written until both lifetime contracts below are confirm
 ## Gate result
 
 - Electron producer lifetime: **UNKNOWN**
-- RTC consumer lifetime: **UNKNOWN**
-- Owned texture release point: **UNKNOWN**
+- RTC consumer lifetime: **CONFIRMED**
+- Owned texture release point: **`pushVideoFrame` return**
 - Phase 0 result: **BLOCKED**
 
 Neither a delay nor a frame-count heuristic is an acceptable substitute for either
@@ -140,32 +140,30 @@ The exact downloaded archive was extracted and these shipped headers were inspec
    `buffers[4]` to `ExternalVideoFrame.d3d11Texture2d`. This proves pointer routing,
    not ownership duration.
 
-### Unknown that blocks the consumer gate
+### Native owner confirmation
 
-Neither exact shipped Windows header documents when the SDK finishes using the supplied
-`ID3D11Texture2D`, and neither API supplies a per-frame release/completion signal.
-Returning an integer from `pushVideoFrame` is not proof that the SDK has stopped using
-the texture. Synchronous consumption must not be inferred.
+The shipped headers do not document the texture lifetime, so the project owner obtained
+an explicit confirmation from the native RTC owner on 2026-07-29. The question and
+answer were:
 
-The RTC native owner must confirm, specifically for native RTC
-`4.5.3.123_32922` through Iris `4.5.3.123-build.2`, one of:
+> Q: After `pushVideoFrame` returns, does the SDK stop accessing the supplied
+> `ID3D11Texture2D*`, allowing the caller to overwrite or release it immediately?
+>
+> A: Yes.
 
-- the SDK completes all access to and does not retain the `ID3D11Texture2D*` before
-  `pushVideoFrame`/`CallIrisApi` returns; or
-- the exact supported completion/release signal that identifies when that particular
-  frame's texture may be reused.
+The same owner also confirmed that RTC does not require keyed-mutex locking for this
+path and reads the texture directly. Therefore the RTC contract for native RTC
+`4.5.3.123_32922` through Iris `4.5.3.123-build.2` is synchronous: after
+`pushVideoFrame` returns, the caller may overwrite or release the texture. No delay,
+later-frame heuristic, or encoder callback is required.
 
-Until that confirmation is recorded, **Owned texture release point: UNKNOWN**. The
-bounded owned-texture pool and native submission code remain blocked. Delay, queue
-depth, encoder callbacks, later-frame arrival, and fixed frame-count assumptions are
-all invalid release points.
+This closes the RTC consumer gate. It does not close the independent Electron producer
+read-readiness gate.
 
 ## Required unblock evidence
 
 1. Electron/Chromium owner or official v33.4.11 documentation confirming D3D11 read
    readiness at `paint` for mutex-free ARGB/ABGR `OffscreenSharedTexture`, including the
    ordering primitive relied upon.
-2. RTC native owner confirmation of the exact per-texture release point for the versions
-   above, or an exact supported completion API.
-3. After both statements exist, update the three gate lines at the top with citations;
-   only then may native submission and the owned texture pool proceed.
+2. After that statement exists, update the Electron gate and Phase 0 result at the top;
+   only then may native submission proceed under the strict production gate.
