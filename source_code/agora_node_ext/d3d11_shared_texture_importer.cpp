@@ -7,16 +7,19 @@ namespace rtc {
 namespace electron {
 
 std::string BuildSharedTexturePushJson(const SharedTextureRequest &request) {
-  const int pixel_format =
-      request.pixel_format == SharedTexturePixelFormat::kBgra ? 2 : 4;
   std::ostringstream json;
-  json << "{\"frame\":{\"type\":1,\"format\":" << pixel_format
+  json << "{\"frame\":{\"type\":3,\"format\":17"
        << ",\"stride\":" << request.width << ",\"height\":"
        << request.height
        // Electron timestamps are process-relative; zero lets the RTC SDK assign
        // an NTP-aligned capture timestamp instead of treating them as old frames.
-       << ",\"timestamp\":0},\"videoTrackId\":0}";
+       << ",\"timestamp\":0,\"textureSliceIndex\":0},"
+       << "\"videoTrackId\":0}";
   return json.str();
+}
+
+SharedTextureCallBuffers BuildSharedTextureCallBuffers(void *texture) {
+  return {{{nullptr, nullptr, nullptr, nullptr, texture}}, {{0, 0, 0, 0, 0}}};
 }
 
 }// namespace electron
@@ -50,49 +53,6 @@ struct OpenedTexture {
   ComPtr<ID3D11Texture2D> texture;
   DXGI_ADAPTER_DESC1 adapter_desc{};
 };
-
-bool ReadTexturePixels(const OpenedTexture &opened,
-                       const D3D11_TEXTURE2D_DESC &source_desc,
-                       std::vector<uint8_t> &pixels, std::string &error) {
-  D3D11_TEXTURE2D_DESC staging_desc = source_desc;
-  staging_desc.Usage = D3D11_USAGE_STAGING;
-  staging_desc.BindFlags = 0;
-  staging_desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-  staging_desc.MiscFlags = 0;
-
-  ComPtr<ID3D11Texture2D> staging_texture;
-  HRESULT hr = opened.device->CreateTexture2D(&staging_desc, nullptr,
-                                               &staging_texture);
-  if (FAILED(hr)) {
-    error = "failed to create a D3D11 staging texture";
-    return false;
-  }
-
-  ComPtr<ID3D11DeviceContext> context;
-  opened.device->GetImmediateContext(&context);
-  if (!context) {
-    error = "failed to get the D3D11 immediate context";
-    return false;
-  }
-  context->CopyResource(staging_texture.Get(), opened.texture.Get());
-
-  D3D11_MAPPED_SUBRESOURCE mapped{};
-  hr = context->Map(staging_texture.Get(), 0, D3D11_MAP_READ, 0, &mapped);
-  if (FAILED(hr)) {
-    error = "failed to map the D3D11 staging texture";
-    return false;
-  }
-
-  const std::size_t row_size = static_cast<std::size_t>(source_desc.Width) * 4;
-  pixels.resize(row_size * source_desc.Height);
-  const auto *source = static_cast<const uint8_t *>(mapped.pData);
-  for (UINT row = 0; row < source_desc.Height; ++row) {
-    std::memcpy(pixels.data() + row * row_size,
-                source + row * mapped.RowPitch, row_size);
-  }
-  context->Unmap(staging_texture.Get(), 0);
-  return true;
-}
 
 std::string FormatLuid(const LUID &luid) {
   std::ostringstream stream;
@@ -198,23 +158,16 @@ bool SubmitSharedD3D11Texture(const SharedTextureRequest &request,
   matches[0].texture->GetDesc(&texture_desc);
   if (!ValidateDescriptor(request, texture_desc, error)) { return false; }
 
-  std::vector<uint8_t> pixels;
-  if (!ReadTexturePixels(matches[0], texture_desc, pixels, error)) {
-    return false;
-  }
-
   const std::string json = BuildSharedTexturePushJson(request);
-  std::array<void *, 5> buffers = {pixels.data(), nullptr, nullptr, nullptr,
-                                    nullptr};
-  std::array<unsigned int, 5> lengths = {
-      static_cast<unsigned int>(pixels.size()), 0, 0, 0, 0};
+  auto call_buffers =
+      BuildSharedTextureCallBuffers(matches[0].texture.Get());
   ApiParam api_param = {"MediaEngine_pushVideoFrame_4e544e2",
                         json.c_str(),
                         static_cast<unsigned int>(json.size()),
                         nullptr,
-                        buffers.data(),
-                        lengths.data(),
-                        static_cast<unsigned int>(buffers.size())};
+                        call_buffers.buffers.data(),
+                        call_buffers.lengths.data(),
+                        static_cast<unsigned int>(call_buffers.buffers.size())};
   result.transport_result = iris_api_engine->CallIrisApi(&api_param);
   result.rtc_response = api_param.result == nullptr ? "" : api_param.result;
   result.adapter_luid = FormatLuid(matches[0].adapter_desc.AdapterLuid);

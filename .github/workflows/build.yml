@@ -31,6 +31,14 @@ jobs:
         run: |
           yarn
 
+      - name: Rebuild Local SDK for Electron
+        run: |
+          yarn build_windows_x64_release --runtime=electron --runtime-version=43.2.0
+
+      - name: Verify Shared Texture Runtime
+        run: |
+          yarn jest example/src/main/__tests__/sharedTextureRuntime.test.js --runInBand --watchman=false
+
       - name: Build Example
         run: |
           yarn dist:win --${{ matrix.arch }}

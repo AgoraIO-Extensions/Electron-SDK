@@ -39,7 +39,7 @@ class SharedTexturePocController {
       this.requireSuccess(this.engine.enableVideo(), 'enableVideo');
       this.mediaEngine = this.engine.getMediaEngine();
       this.requireSuccess(
-        this.mediaEngine.setExternalVideoSource(true, false, 0),
+        this.mediaEngine.setExternalVideoSource(true, true, 0),
         'setExternalVideoSource'
       );
 
@@ -146,7 +146,9 @@ class SharedTexturePocController {
     const operation = Promise.resolve(
       this.mediaEngine.pushSharedD3D11Texture(frame)
     )
-      .catch((error) => this.logger.error('Shared texture submission failed', error))
+      .catch((error) =>
+        this.logger.error('Shared texture submission failed', error)
+      )
       .finally(() => this.releaseOnce(texture));
     this.inFlight = operation.finally(() => {
       this.inFlight = null;
@@ -204,7 +206,7 @@ class SharedTexturePocController {
           try {
             engine.leaveChannel();
             if (mediaEngine) {
-              mediaEngine.setExternalVideoSource(false, false, 0);
+              mediaEngine.setExternalVideoSource(false, true, 0);
             }
           } finally {
             engine.release();

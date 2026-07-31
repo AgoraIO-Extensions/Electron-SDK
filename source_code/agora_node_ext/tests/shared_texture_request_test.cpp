@@ -8,6 +8,7 @@ using agora::rtc::electron::SharedTexturePixelFormat;
 using agora::rtc::electron::SharedTextureRequest;
 using agora::rtc::electron::ValidateSharedTextureRequest;
 using agora::rtc::electron::BuildSharedTexturePushJson;
+using agora::rtc::electron::BuildSharedTextureCallBuffers;
 
 namespace {
 
@@ -63,16 +64,28 @@ int main() {
   request.pixel_format = SharedTexturePixelFormat::kRgba;
   assert(ValidateSharedTextureRequest(request, 0, error));
   assert(BuildSharedTexturePushJson(request) ==
-         "{\"frame\":{\"type\":1,\"format\":4,\"stride\":1920,"
-         "\"height\":1080,\"timestamp\":0},"
+         "{\"frame\":{\"type\":3,\"format\":17,\"stride\":1920,"
+         "\"height\":1080,\"timestamp\":0,\"textureSliceIndex\":0},"
          "\"videoTrackId\":0}");
 
   request.pixel_format = SharedTexturePixelFormat::kBgra;
   request.timestamp_us = 999;
-  assert(BuildSharedTexturePushJson(request).find("\"format\":2") !=
+  assert(BuildSharedTexturePushJson(request).find("\"format\":17") !=
          std::string::npos);
   assert(BuildSharedTexturePushJson(request).find("\"timestamp\":0") !=
          std::string::npos);
+
+  auto *texture = reinterpret_cast<void *>(0x1234);
+  const auto call_buffers = BuildSharedTextureCallBuffers(texture);
+  assert(call_buffers.buffers.size() == 5);
+  assert(call_buffers.lengths.size() == 5);
+  for (std::size_t index = 0; index < 4; ++index) {
+    assert(call_buffers.buffers[index] == nullptr);
+  }
+  assert(call_buffers.buffers[4] == texture);
+  for (const auto length : call_buffers.lengths) {
+    assert(length == 0);
+  }
 
   std::cout << "shared texture request validation passed\n";
   return 0;

@@ -5,8 +5,10 @@
 ## Status
 
 This proof of concept publishes an Electron offscreen-rendered scene to an
-Agora channel on Windows. It is functional and has been verified with a real
-channel, but it is not a zero-CPU-copy implementation yet.
+Agora channel on Windows. This development-package variant restores direct
+`ID3D11Texture2D*` submission so the Native RTC SDK team can validate its new
+D3D11 texture-input implementation. Remote rendering with that Native SDK is
+the handoff acceptance test, not a result claimed by this repository build.
 
 The validated environment is:
 
@@ -33,8 +35,8 @@ The PoC implements the complete publishing workflow:
    adapter, and opens the handle with `ID3D11Device1::OpenSharedResource1`.
 6. The opened texture is validated for dimensions, DXGI format, and
    `D3D11_RESOURCE_MISC_SHARED_NTHANDLE`.
-7. The texture is copied to a staging texture, mapped to CPU memory, and pushed
-   to the RTC SDK as raw BGRA or RGBA video.
+7. The addon passes the opened `ID3D11Texture2D*` synchronously in Iris buffer
+   slot 4 as a D3D11 texture frame. It performs no staging copy or CPU mapping.
 8. Submission errors from both the Iris transport and RTC API result are
    propagated to JavaScript.
 9. Stop and failure paths drain the active submission, release every Electron
@@ -53,35 +55,33 @@ discarded as old frames.
 
 ## Verification Performed
 
-The current implementation has passed:
+The development package is required to pass:
 
 - The repository build under Node `24.18.0`
 - SharedTexture-related Jest tests
 - The native `shared_texture_request` CTest
-- A real-channel publishing smoke test
+- Windows x64 packaging with the Example resolved to this checkout's addon,
+  rebuilt for Electron `43.2.0` ABI `148`
 
-The smoke test reached the `PUBLISHED` state, submitted 97 frames, reported
-approximately 29-34 Kbps upstream video, and showed encoded frame count
-progressing from 23 to 49 to 77 at `800x448`.
+The earlier CPU-readback implementation passed a real-channel smoke test. That
+result does not prove that the direct-texture Native SDK path works. The native
+team must verify increasing encoded-frame counters, bitrate, and moving remote
+video with this package.
 
-## What Is Not Implemented
+## Direct Texture Path
 
-The current path is not zero-copy and is not CPU-readback-free. Every submitted
-frame currently follows this path:
+Every submitted frame follows this path:
 
 ```text
 Electron NT handle
   -> ID3D11Texture2D
-  -> D3D11 staging texture
-  -> Map and row-by-row CPU copy
-  -> raw BGRA/RGBA buffer
+  -> ID3D11Texture2D* in Iris buffer slot 4
   -> RTC SDK
   -> encoder
 ```
 
 The following items are intentionally not claimed by this PoC:
 
-- Direct D3D11 texture input to the RTC encoder
 - Direct Native RTC SDK consumption of Electron's NT handle
 - End-to-end zero-copy encoding
 - GPU-only BGRA/RGBA-to-NV12 conversion
@@ -89,9 +89,16 @@ The following items are intentionally not claimed by this PoC:
 - NV12, P010, multi-plane, or non-Windows shared-texture support
 - An automated remote-client video-content assertion
 
-The per-frame adapter enumeration, D3D11 device creation, staging allocation,
-GPU-to-CPU transfer, and CPU buffer allocation are suitable for validating the
-pipeline, but not for the final high-performance implementation.
+The addon still performs per-frame adapter enumeration and D3D11 device
+creation. This package validates the Native SDK texture contract; it is not the
+final optimized device or texture-pool implementation.
+
+The Electron `HANDLE` is borrowed and never closed by the addon.
+`OpenSharedResource1` supplies an addon-owned COM reference that remains alive
+through the synchronous Iris call. The reference is released after
+`CallIrisApi` returns, after which the JavaScript controller releases Electron's
+texture exactly once. If the Native SDK consumes the texture asynchronously, it
+must retain or copy the resource before returning.
 
 ## Why the Current Native SDK Cannot Use the Texture
 
@@ -102,12 +109,10 @@ The bundled Native SDK headers contain the intended API shape:
 - `ExternalVideoFrame::d3d11Texture2d`
 - `ExternalVideoFrame::textureSliceIndex`
 
-However, the same `setExternalVideoSource` header documents that
-`useTexture=true` is not currently supported. Runtime testing confirms the
-gap: Iris correctly receives a non-null `d3d11Texture2d` pointer, but
-`pushVideoFrame` returns RTC error `-2`. Calling the Iris high-performance C API
-instead of the JSON API would remove bridge overhead, but it would still reach
-the same unsupported Native RTC texture path.
+The previously bundled Native SDK returned RTC error `-2` for this path. This
+development package intentionally enables `useTexture=true` and restores the
+direct pointer call so the native team can test a Native SDK that implements
+the contract below.
 
 ## Required Native RTC SDK Changes
 
@@ -177,16 +182,15 @@ responsibility but introduces a new Windows-specific public contract.
 
 ## Migration After Native Texture Support
 
-Once the Native RTC SDK supports the contract above, the Electron integration
-can be switched without changing the renderer or IPC workflow:
+This development package applies the following integration while keeping the
+renderer and IPC workflow unchanged:
 
-1. Change `setExternalVideoSource(true, false, ...)` to
-   `setExternalVideoSource(true, true, ...)`.
+1. Use `setExternalVideoSource(true, true, ...)`.
 2. Keep opening and validating the Electron NT handle in the addon, unless the
    SDK exposes the direct-handle API.
 3. Submit `VIDEO_BUFFER_TEXTURE` and
    `VIDEO_TEXTURE_ID3D11TEXTURE2D` with the opened texture pointer.
-4. Remove `ReadTexturePixels`, the staging texture, `Map`, and the raw pixel
+4. Do not create `ReadTexturePixels`, a staging texture, `Map`, or a raw pixel
    vector.
 5. Release the Electron texture according to the new Native SDK completion
    contract.

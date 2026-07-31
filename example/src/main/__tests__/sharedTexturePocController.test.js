@@ -1,6 +1,4 @@
-const {
-  SharedTexturePocController,
-} = require('../sharedTexturePocController');
+const { SharedTexturePocController } = require('../sharedTexturePocController');
 
 function deferred() {
   let resolve;
@@ -85,7 +83,7 @@ test('starts the default external texture source before accepting frames', async
   expect(harness.engine.initialize).toHaveBeenCalledWith({ appId: 'app' });
   expect(harness.mediaEngine.setExternalVideoSource).toHaveBeenCalledWith(
     true,
-    false,
+    true,
     0
   );
   expect(harness.engine.joinChannel).toHaveBeenCalledWith(
@@ -219,6 +217,11 @@ test('stop releases pending and waits for the in-flight frame', async () => {
 
   expect(first.release).toHaveBeenCalledTimes(1);
   expect(harness.engine.leaveChannel).toHaveBeenCalled();
+  expect(harness.mediaEngine.setExternalVideoSource).toHaveBeenLastCalledWith(
+    false,
+    true,
+    0
+  );
   expect(harness.engine.release).toHaveBeenCalled();
   expect(harness.controller.state).toBe('idle');
 });
@@ -242,9 +245,7 @@ test('stop cancels a pending join and cleans resources exactly once', async () =
   harness.submissions[0].resolve({ frameId: 1, result: 0 });
   const settled = await Promise.race([
     Promise.all([startResult, stopping]),
-    new Promise((resolve) =>
-      setTimeout(() => resolve('timed out'), 50)
-    ),
+    new Promise((resolve) => setTimeout(() => resolve('timed out'), 50)),
   ]);
 
   expect(settled).not.toBe('timed out');

@@ -5,8 +5,9 @@
 ## 当前状态
 
 这个 PoC 已经可以在 Windows 上把 Electron 离屏渲染的画面发布到 Agora
-频道。完整发送链路已经跑通并经过真实频道验证，但目前还不是无 CPU 回读或
-端到端零拷贝实现。
+频道。这个开发包版本恢复了直接传递 `ID3D11Texture2D*` 的链路，用于 Native
+RTC SDK 同事验证新的 D3D11 纹理输入实现。远端画面是否正常是 Native SDK
+联调的验收项，不是仓库编译本身已经证明的结果。
 
 已验证的环境如下：
 
@@ -32,8 +33,9 @@ PoC 已经实现完整的视频发布流程：
    `ID3D11Device1::OpenSharedResource1` 打开共享 Handle。
 6. 打开纹理后会验证尺寸、DXGI Format 和
    `D3D11_RESOURCE_MISC_SHARED_NTHANDLE` 标记。
-7. 纹理被复制到 staging texture，映射到 CPU 内存，然后以 BGRA 或 RGBA
-   原始视频帧推给 RTC SDK。
+7. Addon 在同步 Iris 调用期间，把打开后的 `ID3D11Texture2D*` 放入第 5 个
+   buffer，作为 D3D11 Texture Frame 推给 RTC SDK；不创建 staging texture，
+   不执行 CPU Map 或整帧拷贝。
 8. Iris 传输层错误和 RTC API 返回值都会传回 JavaScript，不再把 RTC
    失败误判为成功。
 9. 停止或异常时会等待正在提交的帧结束，每个 Electron 纹理只释放一次，
@@ -49,33 +51,32 @@ RTC 帧时间戳目前固定传 `0`。Electron 提供的是相对采集进程的
 
 ## 已完成的验证
 
-当前实现已经通过：
+这个开发包必须通过：
 
 - Node `24.18.0` 下的仓库构建
 - SharedTexture 相关 Jest 测试
 - 原生 `shared_texture_request` CTest
-- 真实 Agora 频道发流冒烟测试
+- Windows x64 打包，并证明 Example 使用当前 checkout 中针对 Electron
+  `43.2.0`、ABI `148` 重编的 Addon
 
-真实频道测试进入了 `PUBLISHED` 状态，共提交 97 帧，上行视频码率约为
-29-34 Kbps，编码帧计数从 23 增长到 49、77，编码分辨率为 `800x448`。
+此前 CPU 回读版本通过过真实频道冒烟测试，但该结果不能证明 direct texture
+Native SDK 链路可用。Native 同事需要用这个包验证编码帧、码率持续增长以及
+远端动态画面。
 
-## 当前没有做到的部分
+## Direct Texture 链路
 
-当前链路不是零拷贝，也没有消除 CPU 回读。每一帧仍然经过以下过程：
+每一帧经过以下过程：
 
 ```text
 Electron NT Handle
   -> ID3D11Texture2D
-  -> D3D11 staging texture
-  -> Map 并逐行复制到 CPU
-  -> BGRA/RGBA 原始内存
+  -> Iris 第 5 个 buffer 中的 ID3D11Texture2D*
   -> RTC SDK
   -> 编码器
 ```
 
 这个 PoC 当前不包含以下能力：
 
-- RTC 编码器直接接收 D3D11 纹理
 - Native RTC SDK 直接消费 Electron NT Handle
 - 端到端零拷贝编码
 - 在 GPU 上完成 BGRA/RGBA 到 NV12 的转换
@@ -83,9 +84,13 @@ Electron NT Handle
 - NV12、P010、多平面纹理或非 Windows 共享纹理支持
 - 自动化远端画面内容校验
 
-目前每帧都会枚举 Adapter、创建 D3D11 Device、分配 staging texture、执行
-GPU 到 CPU 传输并分配 CPU Buffer。这适合验证链路正确性，不适合作为最终的
-高性能实现。
+Addon 仍然会逐帧枚举 Adapter 并创建 D3D11 Device。这个开发包用于验证 Native
+SDK 的纹理契约，不是最终的 Device 或 Texture Pool 性能优化版本。
+
+Electron `HANDLE` 只被借用，Addon 不会关闭它。`OpenSharedResource1` 创建由
+Addon 持有的 COM 引用，该引用覆盖同步 `CallIrisApi` 调用；调用返回后释放 COM
+引用，随后 JavaScript 控制器只调用一次 Electron `texture.release()`。如果
+Native SDK 异步消费纹理，必须在返回前自行持有或复制资源。
 
 ## 当前 Native SDK 为什么不能直接使用纹理
 
@@ -96,11 +101,9 @@ GPU 到 CPU 传输并分配 CPU Buffer。这适合验证链路正确性，不适
 - `ExternalVideoFrame::d3d11Texture2d`
 - `ExternalVideoFrame::textureSliceIndex`
 
-但是同一版本 `setExternalVideoSource` 的头文件明确说明
-`useTexture=true` 当前不支持。实际运行也验证了这个缺口：Iris 已经收到非空的
-`d3d11Texture2d` 指针，但 `pushVideoFrame` 返回 RTC 错误 `-2`。改用 Iris
-高性能 C API 只能减少桥接开销，最终仍然会进入同一个尚未支持的 Native RTC
-纹理输入链路。
+此前随包 Native SDK 在这条链路上返回 RTC 错误 `-2`。这个开发包会明确启用
+`useTexture=true` 并恢复直接指针调用，供 Native 同事使用已经实现下面契约的
+Native SDK 进行验证。
 
 ## Native RTC SDK 需要修改的部分
 
@@ -162,16 +165,14 @@ Native RTC SDK 也可以选择直接接收 NT Handle。这样的接口不能只�
 
 ## Native 纹理支持完成后的迁移方式
 
-Native RTC SDK 实现上述能力后，Renderer 和 IPC 流程不需要改变，只需调整
-Electron 原生发送链路：
+这个开发包保持 Renderer 和 IPC 流程不变，并采用下面的 Electron 原生发送链路：
 
-1. 把 `setExternalVideoSource(true, false, ...)` 改为
-   `setExternalVideoSource(true, true, ...)`。
+1. 使用 `setExternalVideoSource(true, true, ...)`。
 2. 如果 SDK 没有提供直接 Handle API，Addon 继续负责打开并验证 Electron NT
    Handle。
 3. 使用 `VIDEO_BUFFER_TEXTURE`、`VIDEO_TEXTURE_ID3D11TEXTURE2D` 和打开后的
    纹理指针提交帧。
-4. 删除 `ReadTexturePixels`、staging texture、`Map` 和 CPU 像素 Vector。
+4. 不包含 `ReadTexturePixels`、staging texture、`Map` 或 CPU 像素 Vector。
 5. 按 Native SDK 新定义的完成契约释放 Electron 纹理。
 
 现有的帧背压、递增 Frame ID、错误透传、频道发布配置和停止清理逻辑可以保留。
