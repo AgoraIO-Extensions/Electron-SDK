@@ -12,7 +12,7 @@ jobs:
   build-windows:
     strategy:
       matrix:
-        arch: [ia32, x64]
+        arch: [x64]
     runs-on: windows-2022
     env:
       npm_config_arch: ${{ matrix.arch }}
