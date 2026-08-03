@@ -174,8 +174,6 @@ if (BUILD_TESTING)
   if (WIN32)
     target_link_libraries(shared_texture_request_test
             ${AGORA_IRIS_SDK_LIB}
-            d3d11
-            dxgi
             )
   endif ()
   add_test(NAME shared_texture_request COMMAND shared_texture_request_test)

@@ -35,6 +35,11 @@ jobs:
         run: |
           yarn build_windows_x64_release --runtime=electron --runtime-version=43.2.0
 
+      - name: Verify Direct NT Handle Contract
+        run: |
+          cmake --build build --config Release --target shared_texture_request_test
+          ctest --test-dir build -C Release -R shared_texture_request --output-on-failure
+
       - name: Verify Shared Texture Runtime
         run: |
           yarn jest example/src/main/__tests__/sharedTextureRuntime.test.js --runInBand --watchman=false

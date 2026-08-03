@@ -5,8 +5,8 @@
 ## 当前状态
 
 这个 PoC 已经可以在 Windows 上把 Electron 离屏渲染的画面发布到 Agora
-频道。这个开发包版本恢复了直接传递 `ID3D11Texture2D*` 的链路，用于 Native
-RTC SDK 同事验证新的 D3D11 纹理输入实现。远端画面是否正常是 Native SDK
+频道。这个临时开发包通过 Iris 的 `d3d11Texture2d` 槽位原样传递 Electron NT
+Handle 数值，用于 Native RTC SDK 同事验证在 SDK 内部打开 Handle。远端画面是否正常是 Native SDK
 联调的验收项，不是仓库编译本身已经证明的结果。
 
 已验证的环境如下：
@@ -29,13 +29,11 @@ PoC 已经实现完整的视频发布流程：
    持续渲染动态测试画面。
 4. Electron 43 通过 `details.texture` 提供每一帧，共享纹理的 Windows NT
    Handle 位于 `texture.textureInfo.handle.ntHandle`。
-5. Node 原生扩展验证帧参数，查找匹配的 DXGI Adapter，并通过
-   `ID3D11Device1::OpenSharedResource1` 打开共享 Handle。
-6. 打开纹理后会验证尺寸、DXGI Format 和
-   `D3D11_RESOURCE_MISC_SHARED_NTHANDLE` 标记。
-7. Addon 在同步 Iris 调用期间，把打开后的 `ID3D11Texture2D*` 放入第 5 个
-   buffer，作为 D3D11 Texture Frame 推给 RTC SDK；不创建 staging texture，
-   不执行 CPU Map 或整帧拷贝。
+5. Node 原生扩展验证帧参数，把 8 字节 Handle 数据解码为完全相同的数值。
+6. Addon 把原始 NT Handle 数值而不是其地址放入 Iris 第 5 个 buffer；Addon
+   不创建 D3D11 Device，也不打开资源。
+7. Native RTC SDK 在 Iris 同步调用返回前打开并验证 Handle；后续处理需要的
+   COM 引用由 Native SDK 自己持有。
 8. Iris 传输层错误和 RTC API 返回值都会传回 JavaScript，不再把 RTC
    失败误判为成功。
 9. 停止或异常时会等待正在提交的帧结束，每个 Electron 纹理只释放一次，
@@ -69,30 +67,27 @@ Native SDK 链路可用。Native 同事需要用这个包验证编码帧、码�
 
 ```text
 Electron NT Handle
-  -> ID3D11Texture2D
-  -> Iris 第 5 个 buffer 中的 ID3D11Texture2D*
+  -> Iris 第 5 个 buffer 中完全相同的 Handle 数值
+  -> Native SDK OpenSharedResource1
+  -> Native SDK 持有的 ID3D11Texture2D
   -> RTC SDK
   -> 编码器
 ```
 
 这个 PoC 当前不包含以下能力：
 
-- Native RTC SDK 直接消费 Electron NT Handle
 - 端到端零拷贝编码
 - 在 GPU 上完成 BGRA/RGBA 到 NV12 的转换
 - 跨帧复用 D3D11 Device、Adapter 或纹理池
 - NV12、P010、多平面纹理或非 Windows 共享纹理支持
 - 自动化远端画面内容校验
 
-Addon 仍然会逐帧枚举 Adapter 并创建 D3D11 Device。这个开发包用于验证 Native
-SDK 的纹理契约，不是最终的 Device 或 Texture Pool 性能优化版本。
+Electron `HANDLE` 只被借用，Addon 和 Native SDK 都不能关闭它。Native SDK
+必须在同步 `CallIrisApi` 返回前打开或复制 Handle；如果后续异步处理，则持有
+自己的 COM 引用。随后 JavaScript 控制器只调用一次 Electron
+`texture.release()`，Native SDK 最终只释放自己持有的资源。
 
-Electron `HANDLE` 只被借用，Addon 不会关闭它。`OpenSharedResource1` 创建由
-Addon 持有的 COM 引用，该引用覆盖同步 `CallIrisApi` 调用；调用返回后释放 COM
-引用，随后 JavaScript 控制器只调用一次 Electron `texture.release()`。如果
-Native SDK 异步消费纹理，必须在返回前自行持有或复制资源。
-
-## 当前 Native SDK 为什么不能直接使用纹理
+## 临时 Native SDK 契约
 
 随包 Native SDK 的头文件已经预留了接口结构：
 
@@ -102,19 +97,21 @@ Native SDK 异步消费纹理，必须在返回前自行持有或复制资源。
 - `ExternalVideoFrame::textureSliceIndex`
 
 此前随包 Native SDK 在这条链路上返回 RTC 错误 `-2`。这个开发包会明确启用
-`useTexture=true` 并恢复直接指针调用，供 Native 同事使用已经实现下面契约的
-Native SDK 进行验证。
+`useTexture=true`，并临时复用 `d3d11Texture2d` 传输槽承载 NT Handle 数值。
 
 ## Native RTC SDK 需要修改的部分
 
-推荐的最小改动是实现现有 `ExternalVideoFrame` 的 Windows D3D11 契约。
-Electron Addon 继续打开 NT Handle，然后向 SDK 传递同一进程内的 COM 指针：
+这个开发包约定 Native 把 `d3d11Texture2d` 解释为 NT Handle 数值，并在
+`pushVideoFrame` 返回前打开它：
 
 ```cpp
 ExternalVideoFrame frame;
 frame.type = ExternalVideoFrame::VIDEO_BUFFER_TEXTURE;
 frame.format = VIDEO_TEXTURE_ID3D11TEXTURE2D;
-frame.d3d11Texture2d = opened_texture.Get();
+HANDLE nt_handle = reinterpret_cast<HANDLE>(frame.d3d11Texture2d);
+ComPtr<ID3D11Texture2D> opened_texture;
+HRESULT hr = device1->OpenSharedResource1(
+    nt_handle, IID_PPV_ARGS(&opened_texture));
 frame.textureSliceIndex = 0;
 frame.stride = width;
 frame.height = height;
@@ -126,8 +123,8 @@ media_engine->pushVideoFrame(&frame, video_track_id);
 Native RTC SDK 必须实现以下行为：
 
 1. Windows 支持 `setExternalVideoSource(true, true, VIDEO_FRAME)`。
-2. `pushVideoFrame` 接受 `VIDEO_BUFFER_TEXTURE`、
-   `VIDEO_TEXTURE_ID3D11TEXTURE2D` 和有效的 `ID3D11Texture2D*`。
+2. 在这个临时包中，把 `d3d11Texture2d` 当作原始 NT Handle 数值，不能当作
+   `HANDLE` 变量的地址，也不能当作 `ID3D11Texture2D*`。
 3. 明确支持的 DXGI Format。Electron 链路至少需要 BGRA；RGBA 要么直接支持，
    要么明确拒绝，让 Electron Addon 在 GPU 上执行格式转换。
 4. 色彩转换、缩放和向硬件编码输入 Surface 的传输全部保留在 GPU 上。
@@ -141,10 +138,10 @@ Native RTC SDK 必须实现以下行为：
 在 Electron Addon 可以安全调用 `texture.release()` 之前，Native SDK 必须定义
 清楚以下契约：
 
-- SDK 在读取资源期间必须对 `ID3D11Texture2D` 执行 `AddRef` 并持有它，或者在
-  `pushVideoFrame` 返回前把内容同步排入或复制到 SDK 自己的纹理。
-- 如果 SDK 异步消费纹理，并且方法返回时源纹理还不能释放，SDK 必须提供完成
-  回调或 Release Token。
+- SDK 必须在 `pushVideoFrame` 返回前调用 `OpenSharedResource1` 或复制借用的
+  Handle，并在读取期间持有自己的 COM 引用。
+- SDK 不能关闭 Electron 的原始 Handle。
+- 打开或资源验证失败必须在同步调用内返回负数 RTC 结果，不能把帧误报为接受。
 - 契约必须明确 Chromium 从什么时候开始可以复用源纹理。
 - SDK 必须定义 Electron BGRA/RGBA 共享纹理的 GPU 同步方式；这个接口没有为
   这两种格式提供 keyed mutex。
@@ -153,25 +150,19 @@ Native RTC SDK 必须实现以下行为：
 意义上的完全零拷贝，但可以消除最昂贵的 GPU→CPU→GPU 往返，同时建立明确的
 资源所有权边界。
 
-### 可选的直接 Handle 接口
+### 直接 Handle 的兼容边界
 
-Native RTC SDK 也可以选择直接接收 NT Handle。这样的接口不能只有 Handle，
-还应包含宽高、DXGI Format、Texture Slice、Adapter LUID、时间戳以及完成或释放
-契约。SDK 随后在兼容的 D3D11 Device 上自行调用 `OpenSharedResource1`。
-
-通过已经存在的 `d3d11Texture2d` 字段传 `ID3D11Texture2D*`，API 改动更小。
-直接传 NT Handle 可以让 Device 选择和资源所有权全部归 RTC SDK 管理，但会
-增加一个 Windows 专用的公开接口契约。
+复用 `d3d11Texture2d` 是 Electron 与 Native 团队之间的临时 PoC 约定，不是
+该字段公开语义的永久修改。正式的直接 Handle API 应使用独立字段，并定义宽高、
+DXGI Format、Texture Slice、Adapter 选择、同步和完成语义。
 
 ## Native 纹理支持完成后的迁移方式
 
 这个开发包保持 Renderer 和 IPC 流程不变，并采用下面的 Electron 原生发送链路：
 
 1. 使用 `setExternalVideoSource(true, true, ...)`。
-2. 如果 SDK 没有提供直接 Handle API，Addon 继续负责打开并验证 Electron NT
-   Handle。
-3. 使用 `VIDEO_BUFFER_TEXTURE`、`VIDEO_TEXTURE_ID3D11TEXTURE2D` 和打开后的
-   纹理指针提交帧。
+2. 在 Iris 第 5 个 buffer 中原样传递 Electron NT Handle 数值。
+3. Native SDK 在同步调用返回前打开并验证 Handle。
 4. 不包含 `ReadTexturePixels`、staging texture、`Map` 或 CPU 像素 Vector。
 5. 按 Native SDK 新定义的完成契约释放 Electron 纹理。
 

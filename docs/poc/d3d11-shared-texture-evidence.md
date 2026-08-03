@@ -69,40 +69,44 @@ does not change the source-proven ordering above.
 
 The exact RTC owner confirmed:
 
-- `ExternalVideoFrame.d3d11Texture2d` accepts an `ID3D11Texture2D*`.
+- For this temporary Native SDK build, the Iris slot mapped to
+  `ExternalVideoFrame.d3d11Texture2d` accepts the original NT handle value.
 - RTC does not require `D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX` or an
   `IDXGIKeyedMutex` handshake.
-- `pushVideoFrame` consumes the pointer synchronously. After the call returns, RTC no
-  longer accesses the texture, and the caller may overwrite or release it immediately.
+- `pushVideoFrame` must open or duplicate the borrowed handle synchronously. After the
+  call returns, Electron may release its texture; any later RTC access uses the Native
+  SDK's own COM reference.
 
 The existing Iris ABI uses five buffer slots for `pushVideoFrame`; slot five carries
-`d3d11Texture2d`. The PoC must pass the opened texture pointer in slot five and keep
-the COM reference alive only through the synchronous Iris call.
+`d3d11Texture2d`. The PoC passes the unchanged NT handle value in slot five, not the
+address of a `HANDLE` variable. Native must open or duplicate it before the synchronous
+Iris call returns and own any retained COM reference.
 
 ## Approved direct path
 
 ```text
 Electron paint
   -> copy the NT handle value while the texture object is alive
-  -> ID3D11Device1::OpenSharedResource1
-  -> validate adapter LUID, dimensions, and BGRA/RGBA DXGI format
-  -> frame.d3d11Texture2d = ID3D11Texture2D*
+  -> frame.d3d11Texture2d = unchanged NT handle value
   -> synchronous Iris pushVideoFrame
+  -> Native ID3D11Device1::OpenSharedResource1
+  -> Native validates adapter, dimensions, and BGRA/RGBA DXGI format
+  -> Native retains its own ID3D11Texture2D COM reference if needed
   -> return
-  -> release COM reference
   -> texture.release() exactly once
 ```
 
-The importer must use a D3D11 device on the adapter compatible with the shared
-resource. Ambiguous or missing adapter matches, descriptor mismatches, unsupported
-formats, or Iris failures are explicit errors; there is no silent CPU fallback.
+The Native SDK must use a D3D11 device on an adapter compatible with the shared
+resource. Handle-open failures, descriptor mismatches, unsupported formats, or Iris
+failures are explicit synchronous errors; there is no silent CPU fallback. Native owns
+and eventually releases every COM reference it retains.
 
 ## Verification boundary
 
 macOS can verify TypeScript contracts, controller behavior, validation code that is
 platform-neutral, formatting, and existing regressions. Windows x64 must separately
-verify Electron ABI 148 addon loading, `OpenSharedResource1`, adapter LUID, descriptor
-validation, successful remote video, exactly-once release, D3D debug-layer shutdown,
+verify Electron ABI 148 addon loading, handle-bit preservation, Native-side
+`OpenSharedResource1`, successful remote video, exactly-once release, D3D debug-layer shutdown,
 and absence of CPU staging/readback.
 
 ## Implementation status (2026-07-29)
@@ -110,9 +114,10 @@ and absence of CPU staging/readback.
 The implementation is complete through the platform-independent boundary:
 
 - TypeScript exposes `pushSharedD3D11Texture` and forwards only the structured frame.
-- The native bridge validates the request and the Windows importer opens the NT handle.
+- The native bridge validates the request and decodes the eight handle bytes without
+  changing their value.
 - The native importer, not TypeScript, constructs the five-slot Iris buffer array and
-  places `ID3D11Texture2D*` in slot five for the synchronous call.
+  places the NT handle value in slot five for the synchronous call.
 - The example packages `extraResources/sharedTextureScene.html`; its renderer page only
   controls a main-process RTC/controller singleton through validated IPC.
 - The controller permits one native submission in flight, keeps only the latest pending

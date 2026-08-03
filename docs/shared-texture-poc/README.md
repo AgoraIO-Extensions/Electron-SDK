@@ -5,9 +5,9 @@
 ## Status
 
 This proof of concept publishes an Electron offscreen-rendered scene to an
-Agora channel on Windows. This development-package variant restores direct
-`ID3D11Texture2D*` submission so the Native RTC SDK team can validate its new
-D3D11 texture-input implementation. Remote rendering with that Native SDK is
+Agora channel on Windows. This temporary development-package variant passes
+Electron's original NT handle value through the `d3d11Texture2d` Iris slot so
+the Native RTC SDK team can validate opening it internally. Remote rendering with that Native SDK is
 the handoff acceptance test, not a result claimed by this repository build.
 
 The validated environment is:
@@ -31,12 +31,12 @@ The PoC implements the complete publishing workflow:
    `offscreen.useSharedTexture: true`.
 4. Electron 43 supplies each frame as `details.texture`. The Windows NT handle
    is read from `texture.textureInfo.handle.ntHandle`.
-5. The native addon validates the frame metadata, finds the matching DXGI
-   adapter, and opens the handle with `ID3D11Device1::OpenSharedResource1`.
-6. The opened texture is validated for dimensions, DXGI format, and
-   `D3D11_RESOURCE_MISC_SHARED_NTHANDLE`.
-7. The addon passes the opened `ID3D11Texture2D*` synchronously in Iris buffer
-   slot 4 as a D3D11 texture frame. It performs no staging copy or CPU mapping.
+5. The native addon validates the frame metadata and decodes the eight handle
+   bytes without changing their value.
+6. The addon places the original NT handle value, not its address, in Iris
+   buffer slot 4. It does not create a D3D11 device or open the resource.
+7. The Native RTC SDK opens and validates the handle synchronously before the
+   Iris call returns. It owns any COM reference retained for later processing.
 8. Submission errors from both the Iris transport and RTC API result are
    propagated to JavaScript.
 9. Stop and failure paths drain the active submission, release every Electron
@@ -74,33 +74,28 @@ Every submitted frame follows this path:
 
 ```text
 Electron NT handle
-  -> ID3D11Texture2D
-  -> ID3D11Texture2D* in Iris buffer slot 4
+  -> unchanged handle value in Iris buffer slot 4
+  -> Native SDK OpenSharedResource1
+  -> Native-owned ID3D11Texture2D
   -> RTC SDK
   -> encoder
 ```
 
 The following items are intentionally not claimed by this PoC:
 
-- Direct Native RTC SDK consumption of Electron's NT handle
 - End-to-end zero-copy encoding
 - GPU-only BGRA/RGBA-to-NV12 conversion
 - D3D11 device, adapter, or texture-pool reuse across frames
 - NV12, P010, multi-plane, or non-Windows shared-texture support
 - An automated remote-client video-content assertion
 
-The addon still performs per-frame adapter enumeration and D3D11 device
-creation. This package validates the Native SDK texture contract; it is not the
-final optimized device or texture-pool implementation.
+The Electron `HANDLE` is borrowed. Neither the addon nor the Native SDK may
+close it. Before synchronous `CallIrisApi` returns, the Native SDK must open or
+duplicate the handle and retain its own COM reference if processing continues
+asynchronously. The JavaScript controller then releases Electron's texture
+exactly once; the SDK eventually releases only its own resource.
 
-The Electron `HANDLE` is borrowed and never closed by the addon.
-`OpenSharedResource1` supplies an addon-owned COM reference that remains alive
-through the synchronous Iris call. The reference is released after
-`CallIrisApi` returns, after which the JavaScript controller releases Electron's
-texture exactly once. If the Native SDK consumes the texture asynchronously, it
-must retain or copy the resource before returning.
-
-## Why the Current Native SDK Cannot Use the Texture
+## Temporary Native SDK Contract
 
 The bundled Native SDK headers contain the intended API shape:
 
@@ -110,21 +105,22 @@ The bundled Native SDK headers contain the intended API shape:
 - `ExternalVideoFrame::textureSliceIndex`
 
 The previously bundled Native SDK returned RTC error `-2` for this path. This
-development package intentionally enables `useTexture=true` and restores the
-direct pointer call so the native team can test a Native SDK that implements
-the contract below.
+development package intentionally enables `useTexture=true` and temporarily
+uses the existing `d3d11Texture2d` transport slot for the NT handle value.
 
 ## Required Native RTC SDK Changes
 
-The preferred minimal change is to implement the existing
-`ExternalVideoFrame` D3D11 contract. The Electron addon can continue opening
-the NT handle and pass an in-process COM pointer:
+For this package, Native interprets `d3d11Texture2d` as an NT handle value and
+opens it before returning from `pushVideoFrame`:
 
 ```cpp
 ExternalVideoFrame frame;
 frame.type = ExternalVideoFrame::VIDEO_BUFFER_TEXTURE;
 frame.format = VIDEO_TEXTURE_ID3D11TEXTURE2D;
-frame.d3d11Texture2d = opened_texture.Get();
+HANDLE nt_handle = reinterpret_cast<HANDLE>(frame.d3d11Texture2d);
+ComPtr<ID3D11Texture2D> opened_texture;
+HRESULT hr = device1->OpenSharedResource1(
+    nt_handle, IID_PPV_ARGS(&opened_texture));
 frame.textureSliceIndex = 0;
 frame.stride = width;
 frame.height = height;
@@ -136,8 +132,8 @@ media_engine->pushVideoFrame(&frame, video_track_id);
 The Native RTC SDK must provide all of the following behavior:
 
 1. Support `setExternalVideoSource(true, true, VIDEO_FRAME)` on Windows.
-2. Accept `VIDEO_BUFFER_TEXTURE` with
-   `VIDEO_TEXTURE_ID3D11TEXTURE2D` and a valid `ID3D11Texture2D*`.
+2. Treat `d3d11Texture2d` as the original NT handle value for this temporary
+   package, not as a pointer to a `HANDLE` variable or an `ID3D11Texture2D*`.
 3. Define the accepted DXGI formats. BGRA must work for the Electron path;
    RGBA must either be supported or rejected explicitly so the addon can use a
    GPU conversion step.
@@ -155,11 +151,12 @@ The Native RTC SDK must provide all of the following behavior:
 This contract is required before the addon can safely call
 `texture.release()`:
 
-- The SDK must `AddRef` and own the `ID3D11Texture2D` for as long as it reads
-  the resource, or synchronously enqueue/copy the frame into an SDK-owned
-  texture before `pushVideoFrame` returns.
-- If consumption is asynchronous and the source texture cannot be released on
-  return, the SDK must provide a completion callback or release token.
+- The SDK must call `OpenSharedResource1` or duplicate the borrowed handle
+  before `pushVideoFrame` returns and retain its own COM reference for as long
+  as it reads the resource.
+- The SDK must never close Electron's original handle.
+- Open or validation failures must be returned synchronously as a negative RTC
+  result so Electron does not treat the frame as accepted.
 - The contract must state when Chromium may reuse the source texture.
 - The SDK must define GPU synchronization for Electron BGRA/RGBA shared
   textures, which do not expose a keyed mutex through this API.
@@ -168,17 +165,12 @@ A GPU-to-GPU `CopyResource` into an SDK-owned texture pool is an acceptable
 first implementation. It is not strictly zero-copy, but it removes the costly
 GPU-to-CPU-to-GPU round trip and gives the SDK a clear ownership boundary.
 
-### Optional Direct-Handle API
+### Direct-Handle Compatibility Boundary
 
-Alternatively, the Native RTC SDK can accept the NT handle directly. Such an
-API needs more than the handle value; it should also carry width, height, DXGI
-format, texture slice, adapter LUID, timestamp, and a completion/release
-contract. The SDK would then call `OpenSharedResource1` on a compatible D3D11
-device internally.
-
-Passing `ID3D11Texture2D*` through the already-declared field is the smaller API
-change. Passing the NT handle makes device selection and ownership an SDK
-responsibility but introduces a new Windows-specific public contract.
+This reuse of `d3d11Texture2d` is a temporary PoC agreement with the Native SDK
+team, not the published meaning of that field. A production direct-handle API
+should use a dedicated field and define width, height, DXGI format, texture
+slice, adapter selection, synchronization, and completion semantics.
 
 ## Migration After Native Texture Support
 
@@ -186,10 +178,9 @@ This development package applies the following integration while keeping the
 renderer and IPC workflow unchanged:
 
 1. Use `setExternalVideoSource(true, true, ...)`.
-2. Keep opening and validating the Electron NT handle in the addon, unless the
-   SDK exposes the direct-handle API.
-3. Submit `VIDEO_BUFFER_TEXTURE` and
-   `VIDEO_TEXTURE_ID3D11TEXTURE2D` with the opened texture pointer.
+2. Pass the Electron NT handle value unchanged in Iris buffer slot 4.
+3. Open and validate that handle inside the Native SDK before the synchronous
+   call returns.
 4. Do not create `ReadTexturePixels`, a staging texture, `Map`, or a raw pixel
    vector.
 5. Release the Electron texture according to the new Native SDK completion
