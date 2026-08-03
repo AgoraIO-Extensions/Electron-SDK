@@ -2,7 +2,7 @@
 
 ## Goal
 
-Produce a Windows x64 development package for native SDK integration testing. The package must use Electron's offscreen-rendering NT handle path and pass the opened `ID3D11Texture2D*` directly to Iris `pushVideoFrame`.
+Produce a Windows x64 development package for native SDK integration testing. The package must use Electron's offscreen-rendering NT handle path and pass the original NT `HANDLE` value directly to Iris `pushVideoFrame`. The native SDK owns opening that handle as an `ID3D11Texture2D`.
 
 ## Scope
 
@@ -16,17 +16,17 @@ Produce a Windows x64 development package for native SDK integration testing. Th
 
 1. Electron OSR emits a texture containing `textureInfo.handle.ntHandle`.
 2. The main-process controller sends the handle metadata through `pushSharedD3D11Texture`.
-3. The addon validates the request and opens the NT handle with `ID3D11Device1::OpenSharedResource1`.
-4. The addon validates dimensions, pixel format, and `D3D11_RESOURCE_MISC_SHARED_NTHANDLE`.
-5. The addon calls `MediaEngine_pushVideoFrame_4e544e2` with exactly five buffers. Slots 0-3 are null, slot 4 is the opened `ID3D11Texture2D*`, and all five lengths are zero.
+3. The addon validates the request and decodes the eight handle bytes without changing the value.
+4. The addon calls `MediaEngine_pushVideoFrame_4e544e2` with exactly five buffers. Slots 0-3 are null, slot 4 is the original NT `HANDLE` represented as a `void*`, and all five lengths are zero.
+5. Before `CallIrisApi` returns, the native SDK opens or duplicates the borrowed handle with its D3D11 device and validates the resulting resource.
 6. The complete Iris JSON contract is `frame.type=3`, `frame.format=17` (`VIDEO_TEXTURE_ID3D11TEXTURE2D`), `frame.stride=width`, `frame.height=height`, `frame.timestamp=0`, `frame.textureSliceIndex=0`, and `videoTrackId=0`. Electron's process-relative timestamp remains intentionally unused.
-7. The texture remains alive until the Iris call returns; the controller releases Electron's texture after the asynchronous addon operation settles.
+7. Electron's texture and original handle remain alive until the synchronous Iris call returns. The controller releases Electron's texture after the Promise-returning addon call settles; an SDK-owned COM reference created during the call may outlive Electron's texture.
 
-No staging texture, CPU mapping, pixel allocation, keyed mutex, delayed-release heuristic, asynchronous native worker, or CPU fallback is introduced.
+No Addon-side D3D11 device, adapter enumeration, `OpenSharedResource1`, staging texture, CPU mapping, pixel allocation, keyed mutex, delayed-release heuristic, asynchronous native worker, or CPU fallback is introduced.
 
 ## Ownership
 
-Electron owns the input `HANDLE`; the addon borrows it and never closes it. `OpenSharedResource1` creates an addon-owned COM reference. Iris consumes the `ID3D11Texture2D*` synchronously during `CallIrisApi`; the COM reference is released only after that call returns. The resolved or rejected JavaScript Promise then permits the controller to call Electron `texture.release()` exactly once. Validating any longer asynchronous Native SDK ownership contract is explicitly delegated to the native team using this package.
+Electron owns the input `HANDLE`; neither the addon nor the native SDK closes it. Iris and the native SDK receive the unchanged borrowed handle value during `CallIrisApi`. Before that synchronous call returns, the native SDK must open or duplicate the handle and retain its own COM reference if consumption continues asynchronously. The resolved or rejected JavaScript Promise then permits the controller to call Electron `texture.release()` exactly once; the SDK-owned COM resource may outlive Electron's texture and is eventually released by the SDK.
 
 ## Compatibility Boundary
 
@@ -34,15 +34,15 @@ This is a Windows x64 PoC package. It intentionally exercises the direct D3D11 t
 
 ## Failure Handling
 
-The addon rejects invalid handles, mismatched dimensions or formats, resources without `D3D11_RESOURCE_MISC_SHARED_NTHANDLE`, and ambiguous adapter matches. It preserves the Iris transport result and response string separately, rejects nonzero transport results, rejects empty or malformed RTC responses, and rejects negative RTC results. Failures are returned to JavaScript and the Electron texture is still released exactly once.
+The addon rejects malformed requests, including handle buffers whose size is not exactly eight bytes. It cannot validate the D3D11 resource before submission because opening the handle is intentionally delegated to the native SDK. `OpenSharedResource1`, invalid-handle, and resource-validation failures must become a negative RTC result before `CallIrisApi` returns. The addon preserves the Iris transport result and response string separately, rejects nonzero transport results, rejects empty or malformed RTC responses, and rejects negative RTC results. Failures are returned to JavaScript and the Electron texture is still released exactly once.
 
 ## Verification
 
-- A small parameter-assembly seam is tested with a fake texture pointer and fake Iris caller: exactly five buffers, slots 0-3 null, slot 4 equal to the texture pointer, all lengths zero, synchronous pointer lifetime, and preservation of both Iris transport and RTC response results.
+- A small parameter-assembly seam is tested on Windows x64 with native-endian bytes for a `uintptr_t` value whose upper 32 bits are nonzero. A `static_assert` requires an eight-byte `uintptr_t`; the test asserts exactly five buffers, null slots 0-3, `reinterpret_cast<uintptr_t>(slot4)` equal to the original bits, slot 4 unequal to the address of the handle-byte storage, all lengths zero, and preservation of both Iris transport and RTC response results.
 - Focused C++ tests assert the complete texture-frame JSON contract.
 - Existing controller and TypeScript tests remain green.
 - The Example compiles locally.
-- Static verification confirms the importer contains `OpenSharedResource1` and contains none of `ReadTexturePixels`, staging creation, `CopyResource`, `Map`, or CPU pixel allocation.
+- Static verification confirms the importer contains none of `OpenSharedResource1`, D3D11 device creation, Adapter enumeration, `ReadTexturePixels`, staging creation, `CopyResource`, `Map`, or CPU pixel allocation.
 - Windows packaging rebuilds the checkout's addon against Electron `43.2.0` ABI `148`, links the Example to this checkout, passes `sharedTextureRuntime.test.js`, builds the x64 ZIP, and uploads it successfully. The package must not resolve the published SDK dependency.
 - The final handoff includes the exact commit, workflow run, and artifact link.
 - CI packaging proves provenance, ABI compatibility, compilation, and artifact creation. Successful remote video rendering is intentionally delegated to the native team because this package exists to validate their updated texture-consumption implementation.
