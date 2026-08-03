@@ -5,6 +5,28 @@ export interface SharedTexturePocConfig {
   channelId: string;
   token: string;
   uid: number;
+  frameRate: 30 | 60;
+  captureWindowState: SharedTextureCaptureWindowState;
+}
+
+export type SharedTextureCaptureWindowState =
+  | 'hidden'
+  | 'visible'
+  | 'minimized';
+
+export interface SharedTexturePocStatus {
+  state: string;
+  health: 'healthy' | 'degraded' | 'failed';
+  failureReason?: string | null;
+  degradationReasons: string[];
+  paintCount: number;
+  submittedCount: number;
+  submissionFailureCount: number;
+  rtc: {
+    encodedFrameCount: number;
+    sentFrameRate: number;
+    txVideoKBitRate: number;
+  };
 }
 
 export type SharedTexturePocLifecycle =
@@ -16,13 +38,33 @@ export type SharedTexturePocLifecycle =
 export const getInitialSharedTextureChannel = () => Config.channelId;
 
 export const createSharedTexturePocConfig = (
-  channelId: string
+  channelId: string,
+  frameRate: 30 | 60 = 30,
+  captureWindowState: SharedTextureCaptureWindowState = 'hidden'
 ): SharedTexturePocConfig => ({
   appId: Config.appId,
   channelId,
   token: Config.token,
   uid: Config.uid,
+  frameRate,
+  captureWindowState,
 });
+
+export const subscribeSharedTexturePocStatus = (
+  ipc: {
+    on: (channel: string, listener: (...args: any[]) => void) => unknown;
+    removeListener: (
+      channel: string,
+      listener: (...args: any[]) => void
+    ) => unknown;
+  },
+  onStatus: (status: SharedTexturePocStatus) => void
+) => {
+  const listener = (_event: unknown, status: SharedTexturePocStatus) =>
+    onStatus(status);
+  ipc.on('SHARED_TEXTURE_POC_STATUS', listener);
+  return () => ipc.removeListener('SHARED_TEXTURE_POC_STATUS', listener);
+};
 
 export const shouldStopOnUnmount = (state: SharedTexturePocLifecycle) =>
   state !== 'idle';

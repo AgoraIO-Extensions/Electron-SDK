@@ -25,8 +25,9 @@ PoC 已经实现完整的视频发布流程：
    主进程。
 2. 主进程创建 RTC Engine、启用外部视频源，并以主播身份发布自定义视频轨。
    这个 case 不发布摄像头和麦克风轨。
-3. 隐藏的离屏 `BrowserWindow` 使用 `offscreen.useSharedTexture: true`
-   持续渲染动态测试画面。
+3. 离屏 `BrowserWindow` 使用 `offscreen.useSharedTexture: true` 承载真实 DOM
+   canvas。页面调用 `transferControlToOffscreen()`，由独立 Worker 持有
+   WebGL2、渲染资源以及基于 timer 的 30/60 fps 绘制循环。
 4. Electron 43 通过 `details.texture` 提供每一帧，共享纹理的 Windows NT
    Handle 位于 `texture.textureInfo.handle.ntHandle`。
 5. Node 原生扩展验证帧参数，把 8 字节 Handle 数据解码为完全相同的数值。
@@ -46,6 +47,44 @@ PoC 已经实现完整的视频发布流程：
 RTC 帧时间戳目前固定传 `0`。Electron 提供的是相对采集进程的时间，而 RTC
 链路需要自己的对齐时间基准。让 SDK 自动设置时间戳可以避免后续帧被当作旧帧
 丢弃。
+
+## Worker 拓扑与诊断
+
+PoC 现在验证的是客户架构中能够进入 Electron compositor 的变体：
+
+```text
+DOM canvas -> transferControlToOffscreen -> Worker WebGL2
+  -> Electron compositor -> shared-texture paint -> Native RTC
+```
+
+它不能捕获完全由 Worker 创建、没有 DOM canvas 或 `WebContents` 的独立
+`OffscreenCanvas`，因为该 Surface 不会进入 Electron compositor。客户仍可让
+Worker 持有 WebGL2，但需要从 Electron renderer 页面创建并 transfer canvas。
+
+Advanced 页面可以临时选择 30/60 fps，以及 hidden、visible、minimized 三种采集
+窗口状态。主进程调用 `webContents.setFrameRate()` 并通过 `getFrameRate()` 回读；
+Worker 独立使用 timer 控制目标绘制节奏。这些选项用于测量，不代表平台保证。
+
+每五秒以及每次健康状态变化都会输出以下数据：
+
+- Worker 帧序号、绘制间隔、`performance.timeOrigin` 和 `performance.now()`
+- Electron compositor 微秒时间戳，以及主进程 epoch/monotonic 时间
+- Paint、提交、替换等待帧、无效帧、提交失败和 drain timeout 计数，以及滚动
+  P50/P95/P99/最大间隔
+- RTC `encodedFrameCount`、`sentFrameRate` 和 `txVideoKBitRate`
+
+提交给 RTC 的 timestamp 仍明确为 `0`。只有 Native 额外记录 SDK 分配的时间戳、
+时钟来源、单位和赋值点后，才能声称完成 Native 时钟关联。
+
+超过 500 ms 没有 paint、renderer unresponsive、GPU 子进程退出或 WebGL context
+loss 会进入 degraded。后续有效 paint 会清除 paint/GPU 原因；WebGL 必须先报告
+context restored，再收到有效 paint 才会恢复。Renderer 退出或 Worker 终止错误会
+停止本轮运行：最多等待已经返回的异步提交两秒，释放纹理、离开 RTC 并报告
+`failed`。
+
+这个两秒上限不能中断同步阻塞在 `CallIrisApi` 内部的 Native 代码，因为该调用在
+JavaScript 拿到 Promise 前执行。要恢复这种故障，需要 Native 提供可取消接口，
+或把阻塞调用移出 Electron 主线程。
 
 ## 已完成的验证
 
@@ -184,7 +223,9 @@ DXGI Format、Texture Slice、Adapter 选择、同步和完成语义。
 ## 相关文件
 
 - `example/src/main/sharedTexturePocController.js`
+- `example/src/main/sharedTexturePocTelemetry.js`
 - `example/extraResources/sharedTextureScene.html`
+- `example/extraResources/sharedTextureSceneWorker.js`
 - `source_code/agora_node_ext/agora_electron_bridge.cpp`
 - `source_code/agora_node_ext/d3d11_shared_texture_importer.cpp`
 - `source_code/agora_node_ext/shared_texture_request.cpp`
@@ -192,3 +233,16 @@ DXGI Format、Texture Slice、Adapter 选择、同步和完成语义。
 - `native/Agora_Native_SDK_for_Windows_FULL/sdk/high_level_api/include/IAgoraMediaEngine.h`
 
 运行日志位于 `%LOCALAPPDATA%\Agora\electron`。
+
+## Windows 测量矩阵
+
+hidden、visible、minimized 分别在 30 和 60 fps 下至少运行十分钟。令
+`T = 1000 / fps`，要求 `abs(P50 - T) / T <= 0.10`、`P99 < 3 * T`，且不存在
+超过 500 ms 的无法解释停顿。Worker draw、paint、submission、编码帧、发送帧率
+和码率必须持续增长，同时远端画面保持运动。
+
+使用 `WEBGL_lose_context` 验证 context 恢复，使用
+`forcefullyCrashRenderer()` 验证 renderer 的有界清理。这些测试和 GPU 子进程
+退出都不能证明真实 D3D11 device removal。只有实际观察到
+`DXGI_ERROR_DEVICE_REMOVED` 或 `DXGI_ERROR_DEVICE_RESET`，才能声称验证了
+device-loss 恢复。

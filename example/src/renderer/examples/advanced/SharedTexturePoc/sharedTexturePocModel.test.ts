@@ -5,11 +5,13 @@
 export {};
 
 const Config = require('../../../config/agora.config').default;
+
 const {
   createSharedTexturePocConfig,
   getSharedTexturePocAction,
   getInitialSharedTextureChannel,
   shouldStopOnUnmount,
+  subscribeSharedTexturePocStatus,
   startSharedTexturePoc,
   stopSharedTexturePoc,
 } = require('./sharedTexturePocModel');
@@ -26,6 +28,8 @@ test('reads current Settings values and applies the temporary channel', () => {
     channelId: 'temporary-channel',
     token: 'saved-token',
     uid: 73,
+    frameRate: 30,
+    captureWindowState: 'hidden',
   });
 });
 
@@ -39,7 +43,39 @@ test('reads Settings changed after the model was imported', () => {
     channelId: 'page-channel',
     token: 'new-token',
     uid: 99,
+    frameRate: 30,
+    captureWindowState: 'hidden',
   });
+});
+
+test('includes temporary pacing options without changing Settings', () => {
+  expect(createSharedTexturePocConfig('page-channel', 60, 'minimized')).toEqual(
+    expect.objectContaining({
+      channelId: 'page-channel',
+      frameRate: 60,
+      captureWindowState: 'minimized',
+    })
+  );
+});
+
+test('subscribes to status and removes the exact listener', () => {
+  const ipc = { on: jest.fn(), removeListener: jest.fn() };
+  const onStatus = jest.fn();
+  const dispose = subscribeSharedTexturePocStatus(ipc, onStatus);
+  const listener = ipc.on.mock.calls[0][1];
+
+  expect(ipc.on).toHaveBeenCalledWith(
+    'SHARED_TEXTURE_POC_STATUS',
+    expect.any(Function)
+  );
+  listener({}, { health: 'healthy', paintCount: 4 });
+  expect(onStatus).toHaveBeenCalledWith({ health: 'healthy', paintCount: 4 });
+
+  dispose();
+  expect(ipc.removeListener).toHaveBeenCalledWith(
+    'SHARED_TEXTURE_POC_STATUS',
+    listener
+  );
 });
 
 test('maps join and leave to the existing main-process IPC channels', async () => {
@@ -49,10 +85,7 @@ test('maps join and leave to the existing main-process IPC channels', async () =
   await startSharedTexturePoc(invoke, config);
   await stopSharedTexturePoc(invoke);
 
-  expect(invoke).toHaveBeenCalledWith(
-    'SHARED_TEXTURE_POC_START',
-    config
-  );
+  expect(invoke).toHaveBeenCalledWith('SHARED_TEXTURE_POC_START', config);
   expect(invoke).toHaveBeenCalledWith('SHARED_TEXTURE_POC_STOP');
 });
 

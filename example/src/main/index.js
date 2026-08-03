@@ -2,6 +2,7 @@ import path from 'path';
 import { format as formatUrl } from 'url';
 
 import 'agora-electron-sdk/js/Private/ipc/main.js';
+import { createAgoraRtcEngine } from 'agora-electron-sdk';
 import {
   BrowserWindow,
   app,
@@ -9,7 +10,6 @@ import {
   ipcMain,
   systemPreferences,
 } from 'electron';
-import { createAgoraRtcEngine } from 'agora-electron-sdk';
 
 import { SharedTexturePocController } from './sharedTexturePocController';
 import { registerSharedTexturePocIpc } from './sharedTexturePocIpc';
@@ -26,7 +26,19 @@ let sharedTextureShutdownComplete = false;
 function getSharedTextureScenePath() {
   return isDevelopment
     ? path.resolve(__dirname, '../../extraResources/sharedTextureScene.html')
-    : path.join(process.resourcesPath, 'extraResources', 'sharedTextureScene.html');
+    : path.join(
+        process.resourcesPath,
+        'extraResources',
+        'sharedTextureScene.html'
+      );
+}
+
+function subscribeGpuProcessGone(listener) {
+  const handler = (_event, details) => {
+    if (details.type === 'GPU') listener(details);
+  };
+  app.on('child-process-gone', handler);
+  return () => app.removeListener('child-process-gone', handler);
 }
 
 function createMainWindow() {
@@ -117,6 +129,7 @@ app.on('ready', () => {
     BrowserWindow,
     createRtcEngine: createAgoraRtcEngine,
     scenePath: getSharedTextureScenePath(),
+    subscribeGpuProcessGone,
   });
   disposeSharedTexturePocIpc = registerSharedTexturePocIpc({
     ipcMain,

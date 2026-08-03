@@ -1,35 +1,73 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Shared Texture PoC Scene</title>
+    <title>Shared Texture PoC Worker Scene</title>
     <style>
-      html, body, canvas { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #101418; }
+      html,
+      body,
+      canvas {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: #101418;
+      }
     </style>
   </head>
   <body>
-    <canvas></canvas>
+    <canvas id="shared-texture-canvas"></canvas>
     <script>
-      const canvas = document.querySelector('canvas');
-      const context = canvas.getContext('2d');
-      const resize = () => { canvas.width = innerWidth; canvas.height = innerHeight; };
-      resize();
-      addEventListener('resize', resize);
-      const draw = (time) => {
-        const width = canvas.width;
-        const height = canvas.height;
-        for (const [color, x] of [['#ef4444', 0], ['#22c55e', 1], ['#3b82f6', 2]]) {
-          context.fillStyle = color;
-          context.fillRect((width * x) / 3, 0, width / 3, height);
-        }
-        context.fillStyle = '#ffffff';
-        context.fillRect((time / 5) % width, height / 2 - 20, 80, 40);
-        context.font = '32px monospace';
-        context.fillText(String(Math.floor(time)), 24, 48);
-        requestAnimationFrame(draw);
+      const DIAGNOSTIC_PREFIX = 'AGORA_SHARED_TEXTURE_POC_V1 ';
+      const requestedFrameRate = Number(
+        new URLSearchParams(location.search).get('frameRate') || 30
+      );
+      const canvas = document.querySelector('#shared-texture-canvas');
+      const offscreenCanvas = canvas.transferControlToOffscreen();
+      const worker = new Worker('./sharedTextureSceneWorker.js');
+      const resize = () => {
+        worker.postMessage({
+          type: 'resize',
+          width: Math.max(1, Math.round(innerWidth * devicePixelRatio)),
+          height: Math.max(1, Math.round(innerHeight * devicePixelRatio)),
+        });
       };
-      requestAnimationFrame(draw);
+      const hostFailure = (type, message) => ({
+        version: 1,
+        type,
+        sequence: 0,
+        requestedFrameRate,
+        timeOriginMs: performance.timeOrigin,
+        monotonicTimeMs: performance.now(),
+        drawIntervalsMs: [],
+        contextState: 'failed',
+        message,
+      });
+      const report = (diagnostic) => {
+        console.log(DIAGNOSTIC_PREFIX + JSON.stringify(diagnostic));
+      };
+
+      worker.addEventListener('message', (event) => report(event.data));
+      worker.addEventListener('error', (event) =>
+        report(hostFailure('error', event.message || 'Worker error'))
+      );
+      worker.addEventListener('messageerror', () =>
+        report(
+          hostFailure('messageerror', 'Worker message could not be decoded')
+        )
+      );
+      addEventListener('resize', resize);
+      worker.postMessage(
+        {
+          type: 'init',
+          canvas: offscreenCanvas,
+          width: Math.max(1, Math.round(innerWidth * devicePixelRatio)),
+          height: Math.max(1, Math.round(innerHeight * devicePixelRatio)),
+          requestedFrameRate,
+        },
+        [offscreenCanvas]
+      );
     </script>
   </body>
 </html>

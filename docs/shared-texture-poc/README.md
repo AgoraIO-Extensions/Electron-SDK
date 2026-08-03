@@ -27,8 +27,10 @@ The PoC implements the complete publishing workflow:
 2. The main process creates the RTC engine, enables an external video source,
    and joins as a broadcaster with a custom video track. Camera and microphone
    publishing are disabled for this case.
-3. A hidden offscreen `BrowserWindow` renders a moving test scene with
-   `offscreen.useSharedTexture: true`.
+3. An offscreen `BrowserWindow` hosts a real DOM canvas with
+   `offscreen.useSharedTexture: true`. The page calls
+   `transferControlToOffscreen()` and a dedicated Worker owns WebGL2, rendering,
+   and its timer-driven 30/60 fps loop.
 4. Electron 43 supplies each frame as `details.texture`. The Windows NT handle
    is read from `texture.textureInfo.handle.ntHandle`.
 5. The native addon validates the frame metadata and decodes the eight handle
@@ -52,6 +54,52 @@ RTC timestamps are currently sent as `0`. Electron timestamps are relative to
 the capture process, while the RTC pipeline expects its own aligned time base.
 Letting the SDK assign the timestamp prevents subsequent frames from being
 discarded as old frames.
+
+## Worker Topology And Diagnostics
+
+The PoC now exercises the compositor-compatible version of the customer's
+topology:
+
+```text
+DOM canvas -> transferControlToOffscreen -> Worker WebGL2
+  -> Electron compositor -> shared-texture paint -> Native RTC
+```
+
+It does not capture a standalone Worker-created `OffscreenCanvas` that has no
+DOM canvas or `WebContents`; such a surface never enters Electron's compositor.
+The customer can retain Worker ownership of WebGL2, but must create and transfer
+the canvas from an Electron renderer page.
+
+The Advanced page allows temporary selection of 30 or 60 fps and a hidden,
+visible, or minimized capture window. These modes are for measurement. The
+controller calls `webContents.setFrameRate()` and verifies `getFrameRate()`;
+the Worker independently uses a timer-driven target cadence.
+
+Every five seconds and on health transitions, status includes:
+
+- Worker frame sequence, draw intervals, `performance.timeOrigin`, and
+  `performance.now()`
+- Electron compositor timestamp in microseconds and main-process epoch and
+  monotonic timestamps
+- Paint, submission, replacement, invalid-frame, failure, and drain-timeout
+  counts, plus rolling P50/P95/P99/max intervals
+- RTC `encodedFrameCount`, `sentFrameRate`, and `txVideoKBitRate`
+
+The submitted RTC timestamp remains explicitly `0`. Native clock correlation is
+not proved unless Native additionally logs its assigned timestamp, clock source,
+unit, and assignment point.
+
+Health becomes degraded after a 500 ms paint gap, renderer unresponsiveness,
+GPU child-process exit, or WebGL context loss. A later valid paint clears paint
+and GPU degradation. WebGL degradation clears only after both context restoration
+and a valid paint. Renderer exit or a terminal Worker error stops the run,
+drains an already-returned submission for up to two seconds, releases textures,
+leaves RTC, and reports `failed`.
+
+The two-second bound cannot interrupt Native code blocked synchronously inside
+`CallIrisApi`, because that call runs before JavaScript receives a Promise.
+Recovering that case requires a cancellable Native API or moving the blocking
+call off the Electron main thread.
 
 ## Verification Performed
 
@@ -208,7 +256,9 @@ conditions pass:
 ## Relevant Files
 
 - `example/src/main/sharedTexturePocController.js`
+- `example/src/main/sharedTexturePocTelemetry.js`
 - `example/extraResources/sharedTextureScene.html`
+- `example/extraResources/sharedTextureSceneWorker.js`
 - `source_code/agora_node_ext/agora_electron_bridge.cpp`
 - `source_code/agora_node_ext/d3d11_shared_texture_importer.cpp`
 - `source_code/agora_node_ext/shared_texture_request.cpp`
@@ -216,3 +266,17 @@ conditions pass:
 - `native/Agora_Native_SDK_for_Windows_FULL/sdk/high_level_api/include/IAgoraMediaEngine.h`
 
 Runtime logs are written to `%LOCALAPPDATA%\Agora\electron`.
+
+## Windows Measurement Matrix
+
+Run hidden, visible, and minimized at both 30 and 60 fps for at least ten
+minutes per combination. With `T = 1000 / fps`, require
+`abs(P50 - T) / T <= 0.10`, `P99 < 3 * T`, and no unexplained gap above 500 ms.
+Worker draw, paint, submission, encoded-frame, frame-rate, and bitrate metrics
+must continue advancing while a receiver shows motion.
+
+Use `WEBGL_lose_context` to verify context restoration and
+`forcefullyCrashRenderer()` to verify bounded renderer cleanup. These tests and
+a GPU child-process exit are not evidence of real D3D11 device removal. Do not
+claim device-loss recovery until a test actually observes
+`DXGI_ERROR_DEVICE_REMOVED` or `DXGI_ERROR_DEVICE_RESET`.
