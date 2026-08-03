@@ -1785,10 +1785,10 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-agora-electron-sdk@4.5.2-build.166-rc.1:
-  version "4.5.2-build.166-rc.1"
-  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.5.2-build.166-rc.1.tgz#b0a532058f57427be15da68c93d86c2ff661e2c3"
-  integrity sha512-UmVtJ8ikXsvqmtE3oLnuv/5eek5XcnYNFYVyzs/KRZ2ekRzMtMt1PaPGwovg495wseKYZB8Y6C/d0U2FxOM3pQ==
+agora-electron-sdk@4.6.2:
+  version "4.6.2"
+  resolved "https://registry.npmjs.org/agora-electron-sdk/-/agora-electron-sdk-4.6.2.tgz#6ea9e0340242f3a0bc8aba3c9cad6cc2176ce6d8"
+  integrity sha512-X2RQTzQHpKWivYuwMEm2fz2tow2STvijRWjjd7Vx38o7BkcM/mhIxeRJDW6xTbW/Q+O8w82+M0K1Sh9jFDtXOA==
   dependencies:
     archive-type "^4.0.0"
     buffer "^6.0.3"
@@ -4548,9 +4548,9 @@ fast-levenshtein@^3.0.0:
     fastest-levenshtein "^1.0.7"
 
 fast-uri@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/fast-uri/-/fast-uri-3.0.1.tgz#cddd2eecfc83a71c1be2cc2ef2061331be8a7134"
-  integrity sha512-MWipKbbYiYI0UC7cl8m/i/IWTqfC8YXsqjzybjddLsFjStroQzsHXkc73JutMvBiXmOvapk+axIl79ig5t55Bw==
+  version "3.1.5"
+  resolved "https://registry.npmjs.org/fast-uri/-/fast-uri-3.1.5.tgz#610f37419a030270430cecd68d74e3d4d96725d0"
+  integrity sha512-gHwA1O9LDIcKunMKhObS/HimwtehO1nPUECKAu5TpKgaO19fcWEl4bliWe1jWxVFvIXztJjjQ4L8XQ1EU9f7Jw==
 
 fastest-levenshtein@^1.0.7:
   version "1.0.16"
