@@ -130,6 +130,8 @@ export interface SharedD3D11TextureFrame {
   /** Electron texture timestamp in microseconds. */
   timestampUs: number;
   pixelFormat: 'bgra' | 'rgba';
+  /** Opens a native window that previews the Electron NT handle before RTC. */
+  directHandlePreview?: boolean;
 }
 
 /**

@@ -458,6 +458,7 @@ test('submits a shared texture from the Electron paint event', async () => {
   expect(harness.submissions[0].frame.ntHandle).toEqual(
     texture.textureInfo.handle.ntHandle
   );
+  expect(harness.submissions[0].frame.directHandlePreview).toBe(true);
   harness.submissions[0].resolve({ frameId: 1, result: 0 });
   await new Promise(setImmediate);
   expect(texture.release).toHaveBeenCalledTimes(1);

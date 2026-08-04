@@ -323,6 +323,7 @@ class SharedTexturePocController {
       height: size.height,
       timestampUs: info.timestamp,
       pixelFormat: format,
+      directHandlePreview: true,
     };
   }
 

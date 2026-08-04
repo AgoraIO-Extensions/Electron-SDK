@@ -5,6 +5,7 @@
  * @Last Modified time: 2022-08-05 11:12:05
  */
 #include "agora_electron_bridge.h"
+#include "d3d11_shared_texture_preview.h"
 #include "d3d11_shared_texture_importer.h"
 #include "iris_base.h"
 #include "node_iris_event_handler.h"
@@ -334,6 +335,26 @@ bool ParseSharedTextureRequest(napi_env env, napi_value value,
                              ? SharedTexturePixelFormat::kBgra
                              : format == "rgba" ? SharedTexturePixelFormat::kRgba
                                                 : SharedTexturePixelFormat::kUnknown;
+
+  bool has_preview = false;
+  if (napi_has_named_property(env, value, "directHandlePreview",
+                              &has_preview) != napi_ok) {
+    error = "could not read directHandlePreview";
+    return false;
+  }
+  if (has_preview) {
+    napi_value preview_value;
+    napi_valuetype preview_type;
+    if (napi_get_named_property(env, value, "directHandlePreview",
+                                &preview_value) != napi_ok ||
+        napi_typeof(env, preview_value, &preview_type) != napi_ok ||
+        preview_type != napi_boolean ||
+        napi_get_value_bool(env, preview_value,
+                            &request.direct_handle_preview) != napi_ok) {
+      error = "directHandlePreview must be a boolean";
+      return false;
+    }
+  }
   return true;
 }
 
@@ -368,6 +389,10 @@ napi_value AgoraElectronBridge::PushSharedD3D11Texture(
 
 #if defined(_WIN32)
   if (!bridge->_iris_api_engine) { bridge->Init(); }
+  if (request.direct_handle_preview &&
+      !RenderSharedD3D11TexturePreview(request, error)) {
+    return RejectPromise(env, "ERR_SHARED_TEXTURE_PREVIEW", error);
+  }
   SharedTextureSubmissionResult submission{};
   if (!SubmitSharedD3D11Texture(request, bridge->_iris_api_engine.get(),
                                 submission, error)) {
@@ -801,6 +826,7 @@ void AgoraElectronBridge::Init() {
 }
 
 void AgoraElectronBridge::Release() {
+  CloseSharedD3D11TexturePreview();
   if (_iris_api_engine) {
     // reset
     _iris_rendering.reset();

@@ -18,6 +18,7 @@ struct SharedTextureRequest {
   uint32_t height;
   int64_t timestamp_us;
   SharedTexturePixelFormat pixel_format;
+  bool direct_handle_preview;
 };
 
 bool ValidateSharedTextureRequest(const SharedTextureRequest &request,

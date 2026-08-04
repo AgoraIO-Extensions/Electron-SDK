@@ -129,6 +129,24 @@ Electron NT handle
   -> encoder
 ```
 
+### Raw-handle preview diagnostic
+
+While `SharedTexturePoc` is running, the addon also opens a native Windows
+window titled `Raw Electron NT Handle Preview`. Before calling Iris, the addon
+opens the same frame's NT handle with `OpenSharedResource1`, copies it into the
+preview swap chain with GPU `CopySubresourceRegion`, waits for that copy, and
+displays it. This preview bypasses Iris, the RTC SDK, the encoder, and the
+network entirely:
+
+- A moving preview with frozen remote video isolates the problem to the Native
+  RTC SDK or a later stage.
+- A frozen preview means the Worker, Electron compositor, or exported handle
+  content still needs investigation.
+
+The preview adds one GPU copy and a synchronization wait. It is a content
+diagnostic, not a zero-copy performance measurement, and it does not replace
+the unchanged original handle sent to RTC.
+
 The following items are intentionally not claimed by this PoC:
 
 - End-to-end zero-copy encoding
@@ -261,6 +279,7 @@ conditions pass:
 - `example/extraResources/sharedTextureSceneWorker.js`
 - `source_code/agora_node_ext/agora_electron_bridge.cpp`
 - `source_code/agora_node_ext/d3d11_shared_texture_importer.cpp`
+- `source_code/agora_node_ext/d3d11_shared_texture_preview.cpp`
 - `source_code/agora_node_ext/shared_texture_request.cpp`
 - `native/Agora_Native_SDK_for_Windows_FULL/sdk/high_level_api/include/AgoraMediaBase.h`
 - `native/Agora_Native_SDK_for_Windows_FULL/sdk/high_level_api/include/IAgoraMediaEngine.h`

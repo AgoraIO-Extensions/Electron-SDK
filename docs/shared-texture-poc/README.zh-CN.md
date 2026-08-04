@@ -113,6 +113,21 @@ Electron NT Handle
   -> 编码器
 ```
 
+### 原始 Handle 预览诊断
+
+`SharedTexturePoc` 运行时还会打开标题为 `Raw Electron NT Handle Preview`
+的 Windows 原生窗口。Addon 在调用 Iris 前直接对同一帧 NT Handle 执行
+`OpenSharedResource1`，通过 GPU `CopySubresourceRegion` 复制到预览 swap chain，
+等待复制完成后显示。这个预览完全绕过 Iris、RTC SDK、编码器和网络：
+
+- 预览连续而远端冻结，说明 Electron 产生的 Handle 内容正常，问题位于 Native
+  RTC SDK 或后续链路。
+- 预览本身也冻结，说明需要继续检查 Worker、Electron compositor 或 Handle
+  导出内容。
+
+预览路径会增加一次 GPU Copy 和同步等待，只用于内容诊断，不能用于衡量零拷贝
+链路的性能，也不会替换 RTC 仍然接收的原始 Handle。
+
 这个 PoC 当前不包含以下能力：
 
 - 端到端零拷贝编码
@@ -228,6 +243,7 @@ DXGI Format、Texture Slice、Adapter 选择、同步和完成语义。
 - `example/extraResources/sharedTextureSceneWorker.js`
 - `source_code/agora_node_ext/agora_electron_bridge.cpp`
 - `source_code/agora_node_ext/d3d11_shared_texture_importer.cpp`
+- `source_code/agora_node_ext/d3d11_shared_texture_preview.cpp`
 - `source_code/agora_node_ext/shared_texture_request.cpp`
 - `native/Agora_Native_SDK_for_Windows_FULL/sdk/high_level_api/include/AgoraMediaBase.h`
 - `native/Agora_Native_SDK_for_Windows_FULL/sdk/high_level_api/include/IAgoraMediaEngine.h`
