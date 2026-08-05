@@ -226,6 +226,40 @@ export class AudioParameters {
 }
 
 /**
+ * The AudioDeviceInfo class contains the audio device ID and device name.
+ */
+export class AudioDeviceInfo {
+  /**
+   * Device name.
+   */
+  deviceName?: string;
+  /**
+   * Audio device type, such as: built-in, USB, HDMI, etc.
+   */
+  deviceTypeName?: string;
+  /**
+   * Device ID.
+   */
+  deviceId?: string;
+  /**
+   * @ignore
+   */
+  vendorId?: string;
+  /**
+   * @ignore
+   */
+  productId?: string;
+  /**
+   * @ignore
+   */
+  isCurrentSelected?: boolean;
+  /**
+   * @ignore
+   */
+  isPlayoutDevice?: boolean;
+}
+
+/**
  * Usage mode of audio data.
  */
 export enum RawAudioFrameOpModeType {
@@ -237,6 +271,78 @@ export enum RawAudioFrameOpModeType {
    * 2: Read-write mode. You modify the raw audio returned by the SDK and send it back to the SDK for encoding and transmission. For example, if you have your own audio effects module and want to pre-process the data (e.g., voice changing), you can use this mode.
    */
   RawAudioFrameOpModeReadWrite = 2,
+}
+
+/**
+ * The Metadata type of the observer. Currently supports video Metadata only.
+ */
+export enum MetadataType {
+  /**
+   * -1: Unknown Metadata type.
+   */
+  UnknownMetadata = -1,
+  /**
+   * 0: Metadata type is video.
+   */
+  VideoMetadata = 0,
+}
+
+/**
+ * @ignore
+ */
+export enum MaxMetadataSizeType {
+  /**
+   * @ignore
+   */
+  InvalidMetadataSizeInByte = -1,
+  /**
+   * @ignore
+   */
+  DefaultMetadataSizeInByte = 512,
+  /**
+   * @ignore
+   */
+  MaxMetadataSizeInByte = 1024,
+}
+
+/**
+ * Media metadata.
+ */
+export class Metadata {
+  /**
+   * Channel name.
+   */
+  channelId?: string;
+  /**
+   * User ID.
+   *  For receivers: ID of the remote user who sent this Metadata.
+   *  For senders: Ignore this field.
+   */
+  uid?: number;
+  /**
+   * Buffer size of the received or sent Metadata.
+   */
+  size?: number;
+  /**
+   * Buffer address of the received Metadata.
+   */
+  buffer?: Uint8Array;
+  /**
+   * Timestamp when the Metadata is sent, in milliseconds.
+   */
+  timeStampMs?: number;
+}
+
+/**
+ * Metadata observer.
+ */
+export interface IMetadataObserver {
+  /**
+   * Triggered when metadata is received on the receiving end.
+   *
+   * @param metadata The received metadata. See Metadata.
+   */
+  onMetadataReceived?(metadata: Metadata): void;
 }
 
 /**
@@ -1489,7 +1595,7 @@ export interface IVideoEncodedFrameObserver {
    */
   onEncodedVideoFrameReceived?(
     channelId: string,
-    uid: number,
+    uid: string,
     imageBuffer: Uint8Array,
     length: number,
     videoEncodedFrameInfo: EncodedVideoFrameInfo

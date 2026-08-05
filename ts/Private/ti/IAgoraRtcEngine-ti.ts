@@ -105,10 +105,6 @@ export const IRtcEngineEventHandler = t.iface([], {
   "onRenewTokenResult": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("token", "string"), t.param("code", "RenewTokenErrorCode"))),
 });
 
-export const IMetadataObserver = t.iface([], {
-  "onMetadataReceived": t.opt(t.func("void", t.param("metadata", "Metadata"))),
-});
-
 export const IDirectCdnStreamingEventHandler = t.iface([], {
   "onDirectCdnStreamingStateChanged": t.opt(t.func("void", t.param("state", "DirectCdnStreamingState"), t.param("reason", "DirectCdnStreamingReason"), t.param("message", "string"))),
   "onDirectCdnStreamingStats": t.opt(t.func("void", t.param("stats", "DirectCdnStreamingStats"))),
@@ -116,7 +112,6 @@ export const IDirectCdnStreamingEventHandler = t.iface([], {
 
 const exportedTypeSuite: t.ITypeSuite = {
   IRtcEngineEventHandler,
-  IMetadataObserver,
   IDirectCdnStreamingEventHandler,
 };
 export default exportedTypeSuite;

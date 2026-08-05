@@ -1,8 +1,7 @@
 import { IAudioEncodedFrameObserver } from '../AgoraBase';
-import { IAudioSpectrumObserver } from '../AgoraMediaBase';
+import { IAudioSpectrumObserver, IMetadataObserver } from '../AgoraMediaBase';
 import {
   IDirectCdnStreamingEventHandler,
-  IMetadataObserver,
   IRtcEngineEventHandler,
 } from '../IAgoraRtcEngine';
 
@@ -12,9 +11,11 @@ export type IRtcEngineEvent = IRtcEngineEventHandler &
   IAudioEncodedFrameObserver &
   IAudioSpectrumObserver;
 
+export type IRtcEngineEventType = Extract<keyof IRtcEngineEvent, string>;
+
 declare module '../IAgoraRtcEngine' {
   interface IRtcEngine {
-    _addListenerPreCheck<EventType extends keyof IRtcEngineEvent>(
+    _addListenerPreCheck<EventType extends IRtcEngineEventType>(
       eventType: EventType
     ): boolean;
 
@@ -29,7 +30,7 @@ declare module '../IAgoraRtcEngine' {
      * // Add one onJoinChannelSuccess listener
      * engine.addListener('onJoinChannelSuccess', onJoinChannelSuccess);
      */
-    addListener<EventType extends keyof IRtcEngineEvent>(
+    addListener<EventType extends IRtcEngineEventType>(
       eventType: EventType,
       listener: IRtcEngineEvent[EventType]
     ): void;
@@ -47,7 +48,7 @@ declare module '../IAgoraRtcEngine' {
      * // Remove the onJoinChannelSuccess listener
      * engine.removeListener('onJoinChannelSuccess', onJoinChannelSuccess);
      */
-    removeListener<EventType extends keyof IRtcEngineEvent>(
+    removeListener<EventType extends IRtcEngineEventType>(
       eventType: EventType,
       listener?: IRtcEngineEvent[EventType]
     ): void;
@@ -57,7 +58,7 @@ declare module '../IAgoraRtcEngine' {
      *
      * @param eventType The name of the target event to listen for. See IRtcEngineEvent.
      */
-    removeAllListeners<EventType extends keyof IRtcEngineEvent>(
+    removeAllListeners<EventType extends IRtcEngineEventType>(
       eventType?: EventType
     ): void;
   }
