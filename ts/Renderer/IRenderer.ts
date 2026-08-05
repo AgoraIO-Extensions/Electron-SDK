@@ -10,6 +10,15 @@ export abstract class IRenderer {
   context: RendererContext = {};
   private _frameCount = 0;
   private _startTime: number | null = null;
+  private _lastRenderModeMetrics?: {
+    containerWidth: number;
+    containerHeight: number;
+    canvasWidth: number;
+    canvasHeight: number;
+    renderMode: RenderModeType | undefined;
+  };
+  private _scaleTransform = 'scale(1)';
+  private _rotationDegrees = 0;
 
   public bind(context: RendererContext) {
     this.parentElement = context.view;
@@ -26,6 +35,7 @@ export abstract class IRenderer {
     this.canvas = document.createElement('canvas');
     this.canvas.style.display = 'none';
     this.container.appendChild(this.canvas);
+    this.resetRenderModeState();
   }
 
   public unbind() {
@@ -42,6 +52,7 @@ export abstract class IRenderer {
     this.canvas = undefined;
     this.container = undefined;
     this.parentElement = undefined;
+    this.resetRenderModeState();
   }
 
   public drawFrame(
@@ -58,7 +69,8 @@ export abstract class IRenderer {
   public setContext(context: RendererContext) {
     if (this.context.renderMode !== context.renderMode) {
       this.context.renderMode = context.renderMode;
-      this.updateRenderMode();
+      this.resetRenderModeMetrics();
+      this.updateRenderModeIfNeeded();
     }
 
     if (this.context.mirrorMode !== context.mirrorMode) {
@@ -96,7 +108,44 @@ export abstract class IRenderer {
       // Scale canvas to fit container's width on fit mode
       scale = isHidden ? heightScale : widthScale;
     }
-    this.canvas.style.transform = `scale(${scale})`;
+    this._scaleTransform = `scale(${scale})`;
+    this.applyCanvasTransform();
+  }
+
+  protected updateRenderModeIfNeeded(): void {
+    if (!this.canvas || !this.container) return;
+
+    const metrics = {
+      containerWidth: this.container.clientWidth,
+      containerHeight: this.container.clientHeight,
+      canvasWidth: this.canvas.width,
+      canvasHeight: this.canvas.height,
+      renderMode: this.context.renderMode,
+    };
+
+    const previousMetrics = this._lastRenderModeMetrics;
+    if (
+      previousMetrics &&
+      previousMetrics.containerWidth === metrics.containerWidth &&
+      previousMetrics.containerHeight === metrics.containerHeight &&
+      previousMetrics.canvasWidth === metrics.canvasWidth &&
+      previousMetrics.canvasHeight === metrics.canvasHeight &&
+      previousMetrics.renderMode === metrics.renderMode
+    ) {
+      return;
+    }
+
+    this.updateRenderMode();
+    this._lastRenderModeMetrics = metrics;
+  }
+
+  protected resetRenderModeMetrics(): void {
+    this._lastRenderModeMetrics = undefined;
+  }
+
+  protected setCanvasRotation(rotation: number = 0): void {
+    this._rotationDegrees = rotation;
+    this.applyCanvasTransform();
   }
 
   protected updateMirrorMode(): void {
@@ -124,6 +173,21 @@ export abstract class IRenderer {
         `Invalid rotation: ${rotation}, only 0, 90, 180, 270 are supported`
       );
     }
+  }
+
+  private applyCanvasTransform(): void {
+    if (!this.canvas) return;
+
+    const rotationTransform = this._rotationDegrees
+      ? ` rotateZ(${this._rotationDegrees}deg)`
+      : '';
+    this.canvas.style.transform = `${this._scaleTransform}${rotationTransform}`;
+  }
+
+  private resetRenderModeState(): void {
+    this._lastRenderModeMetrics = undefined;
+    this._scaleTransform = 'scale(1)';
+    this._rotationDegrees = 0;
   }
 
   public getFps(): number {

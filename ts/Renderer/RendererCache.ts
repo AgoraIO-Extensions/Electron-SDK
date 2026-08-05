@@ -13,7 +13,6 @@ export class RendererCache extends IRendererCache {
 
   // 渲染相关属性
   private _renderingFps: number = 0;
-  private _renderingTimer?: number;
   private _isRendering: boolean = false;
   private _lastRenderTime: number = 0;
 
@@ -242,41 +241,10 @@ export class RendererCache extends IRendererCache {
    * 开始独立渲染循环
    */
   public startRendering() {
-    if (this._renderingTimer || this._isRendering) return;
+    if (this._isRendering) return;
 
     this._isRendering = true;
-
-    const renderingLooper = () => {
-      if (!this._isRendering) return;
-
-      const currentTime = performance.now();
-      const timeSinceLastRender = this._lastRenderTime
-        ? currentTime - this._lastRenderTime
-        : 0;
-      const frameInterval = 1000 / this._renderingFps;
-
-      // 如果距离上次渲染的时间不足一帧间隔，等待
-      if (this._lastRenderTime && timeSinceLastRender < frameInterval) {
-        const waitTime = frameInterval - timeSinceLastRender;
-        this._renderingTimer = window.setTimeout(renderingLooper, waitTime);
-        return;
-      }
-
-      // 记录当前时间作为本次循环的开始时间
-      this._lastRenderTime = currentTime;
-      // Fetch at most one frame per tick and render it once. When frames pile
-      // up, favor UI responsiveness over draining the entire backlog.
-      const { needRender } = this.fetchVideoFrame();
-      if (needRender) {
-        this.renderFrame();
-      }
-
-      // 安排下一帧
-      this._renderingTimer = window.setTimeout(renderingLooper, 0);
-    };
-
-    // 启动渲染循环
-    this._renderingTimer = window.setTimeout(renderingLooper, 0);
+    AgoraEnv.AgoraRendererManager?.registerRendererCacheForScheduling(this);
   }
 
   /**
@@ -289,16 +257,32 @@ export class RendererCache extends IRendererCache {
 
   public stopRendering() {
     if (!this._isRendering) return;
-
-    if (this._renderingTimer) {
-      window.clearTimeout(this._renderingTimer);
-      this._renderingTimer = undefined;
-    }
-
+    AgoraEnv.AgoraRendererManager?.unregisterRendererCacheForScheduling(this);
     this._isRendering = false;
   }
 
   public release(): void {
     super.release();
+  }
+
+  public getTimeUntilNextRender(now: number = performance.now()): number {
+    if (!this._isRendering || this._renderingFps <= 0) {
+      return Number.POSITIVE_INFINITY;
+    }
+    if (!this._lastRenderTime) {
+      return 0;
+    }
+    const frameInterval = 1000 / this._renderingFps;
+    return frameInterval - (now - this._lastRenderTime);
+  }
+
+  public runRenderCycle(now: number = performance.now()): void {
+    if (!this._isRendering) return;
+
+    this._lastRenderTime = now;
+    const { needRender } = this.fetchVideoFrame();
+    if (needRender) {
+      this.renderFrame();
+    }
   }
 }

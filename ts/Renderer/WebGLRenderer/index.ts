@@ -1,11 +1,11 @@
 import {
   ColorSpace,
-  PrimaryID,
+  MatrixID,
   RangeID,
   VideoFrame,
 } from '../../Private/AgoraMediaBase';
 import { RendererContext, RendererType } from '../../Types';
-import { logWarn } from '../../Utils';
+import { logDebug, logWarn } from '../../Utils';
 import { IRenderer } from '../IRenderer';
 
 export type WebGLFallback = (renderer: WebGLRenderer, error: Error) => void;
@@ -81,6 +81,11 @@ interface ColorSpaceParams {
   bUCoeff: number;
 }
 
+interface EffectiveColorSpace {
+  matrix: MatrixID;
+  range: RangeID;
+}
+
 export class WebGLRenderer extends IRenderer {
   gl: WebGLRenderingContext | WebGL2RenderingContext | null;
   program: WebGLProgram | null;
@@ -94,6 +99,17 @@ export class WebGLRenderer extends IRenderer {
   texCoordBuffer: WebGLBuffer | null;
   surfaceBuffer: WebGLBuffer | null;
   fallback?: WebGLFallback;
+  private resolutionLocation: WebGLUniformLocation | null = null;
+  private lastFrameLayout?: {
+    width: number;
+    height: number;
+    rotation: number;
+    yStride: number;
+    uStride: number;
+    vStride: number;
+  };
+  private textureStorageInitialized = false;
+  private alphaTextureStorageInitialized = false;
 
   // Color space uniform locations
   private colorSpaceUniforms: {
@@ -104,6 +120,7 @@ export class WebGLRenderer extends IRenderer {
     gVCoeff?: WebGLUniformLocation | null;
     bUCoeff?: WebGLUniformLocation | null;
   } = {};
+  private lastAppliedColorSpaceKey?: string;
 
   constructor(fallback?: WebGLFallback) {
     super();
@@ -227,49 +244,37 @@ export class WebGLRenderer extends IRenderer {
       colorSpace,
     }: VideoFrame
   ) {
-    this.rotateCanvas({ width, height, rotation });
-    this.updateRenderMode();
-
     if (!this.gl || !this.program) return;
+
+    const layoutChanged =
+      !this.lastFrameLayout ||
+      this.lastFrameLayout.width !== width ||
+      this.lastFrameLayout.height !== height ||
+      this.lastFrameLayout.rotation !== rotation ||
+      this.lastFrameLayout.yStride !== yStride ||
+      this.lastFrameLayout.uStride !== uStride ||
+      this.lastFrameLayout.vStride !== vStride;
+
+    if (layoutChanged) {
+      this.lastFrameLayout = {
+        width: width!,
+        height: height!,
+        rotation: rotation!,
+        yStride: yStride!,
+        uStride: uStride!,
+        vStride: vStride!,
+      };
+      this.rotateCanvas({ width, height, rotation });
+    }
+
+    this.updateRenderModeIfNeeded();
 
     // Set color space conversion parameters based on frame properties
     this.setColorSpaceUniforms(colorSpace);
 
-    const left = 0,
-      top = 0,
-      right = yStride! - width!,
-      bottom = 0;
-
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texCoordBuffer);
-    const xWidth = width! + left + right;
-    const xHeight = height! + top + bottom;
-    this.gl.bufferData(
-      this.gl.ARRAY_BUFFER,
-      new Float32Array([
-        left / xWidth,
-        bottom / xHeight,
-        1 - right / xWidth,
-        bottom / xHeight,
-        left / xWidth,
-        1 - top / xHeight,
-        left / xWidth,
-        1 - top / xHeight,
-        1 - right / xWidth,
-        bottom / xHeight,
-        1 - right / xWidth,
-        1 - top / xHeight,
-      ]),
-      this.gl.STATIC_DRAW
-    );
-    this.gl.enableVertexAttribArray(this.texCoordLocation!);
-    this.gl.vertexAttribPointer(
-      this.texCoordLocation!,
-      2,
-      this.gl.FLOAT,
-      false,
-      0,
-      0
-    );
+    if (this.context.enableAlphaMask) {
+      this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+    }
 
     this.gl.pixelStorei(this.gl.UNPACK_ALIGNMENT, 1);
 
@@ -278,27 +283,40 @@ export class WebGLRenderer extends IRenderer {
       stride: number;
       height: number;
       pixels: ArrayBufferView | null;
+      needsAllocation: boolean;
     };
 
-    const activeTexture = (
-      textureIndex: number,
-      { texture, stride, height, pixels }: TextureInfo
-    ) => {
+    const activeTexture = (textureIndex: number, info: TextureInfo) => {
       if (!this.gl) return;
+      const { texture, stride, height, pixels, needsAllocation } = info;
 
       this.gl.activeTexture(textureIndex);
       this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-      this.gl.texImage2D(
-        this.gl.TEXTURE_2D,
-        0,
-        this.gl.LUMINANCE,
-        stride,
-        height,
-        0,
-        this.gl.LUMINANCE,
-        this.gl.UNSIGNED_BYTE,
-        pixels
-      );
+      if (pixels && pixels.byteLength > 0 && needsAllocation) {
+        this.gl.texImage2D(
+          this.gl.TEXTURE_2D,
+          0,
+          this.gl.LUMINANCE,
+          stride,
+          height,
+          0,
+          this.gl.LUMINANCE,
+          this.gl.UNSIGNED_BYTE,
+          pixels
+        );
+      } else if (pixels && pixels.byteLength > 0) {
+        this.gl.texSubImage2D(
+          this.gl.TEXTURE_2D,
+          0,
+          0,
+          0,
+          stride,
+          height,
+          this.gl.LUMINANCE,
+          this.gl.UNSIGNED_BYTE,
+          pixels
+        );
+      }
     };
 
     const textures: Record<number, TextureInfo> = {
@@ -307,18 +325,21 @@ export class WebGLRenderer extends IRenderer {
         stride: yStride!,
         height: height!,
         pixels: yBuffer!,
+        needsAllocation: !this.textureStorageInitialized || layoutChanged,
       },
       [this.gl.TEXTURE1]: {
         texture: this.uTexture,
         stride: uStride!,
         height: height! / 2,
         pixels: uBuffer!,
+        needsAllocation: !this.textureStorageInitialized || layoutChanged,
       },
       [this.gl.TEXTURE2]: {
         texture: this.vTexture,
         stride: vStride!,
         height: height! / 2,
         pixels: vBuffer!,
+        needsAllocation: !this.textureStorageInitialized || layoutChanged,
       },
     };
     if (alphaBuffer && alphaBuffer.length > 0 && this.context.enableAlphaMask) {
@@ -327,16 +348,22 @@ export class WebGLRenderer extends IRenderer {
         stride: width!,
         height: height!,
         pixels: alphaBuffer,
+        needsAllocation: !this.alphaTextureStorageInitialized || layoutChanged,
       };
       this.gl.uniform1i(this.hasAlpha, 1);
     } else {
       this.gl.uniform1i(this.hasAlpha, 0);
+      this.alphaTextureStorageInitialized = false;
     }
 
     for (const textureIndex in textures) {
       if (textures.hasOwnProperty(textureIndex)) {
         activeTexture(+textureIndex, textures[textureIndex]!);
       }
+    }
+    this.textureStorageInitialized = true;
+    if (textures[this.gl.TEXTURE3]) {
+      this.alphaTextureStorageInitialized = true;
     }
 
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
@@ -345,9 +372,16 @@ export class WebGLRenderer extends IRenderer {
   }
 
   protected override rotateCanvas({ width, height, rotation }: VideoFrame) {
-    super.rotateCanvas({ width, height, rotation });
-
     if (!this.gl || !this.program) return;
+
+    const canvasSizeChanged =
+      rotation === 0 || rotation === 180
+        ? this.canvas?.width !== width || this.canvas?.height !== height
+        : this.canvas?.height !== width || this.canvas?.width !== height;
+
+    if (canvasSizeChanged) {
+      super.rotateCanvas({ width, height, rotation });
+    }
 
     this.gl.viewport(0, 0, width!, height!);
 
@@ -418,11 +452,42 @@ export class WebGLRenderer extends IRenderer {
       this.gl.STATIC_DRAW
     );
 
-    const resolutionLocation = this.gl.getUniformLocation(
-      this.program,
-      'u_resolution'
+    const left = 0,
+      top = 0,
+      right = (this.lastFrameLayout?.yStride ?? width!) - width!,
+      bottom = 0;
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texCoordBuffer);
+    const xWidth = width! + left + right;
+    const xHeight = height! + top + bottom;
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      new Float32Array([
+        left / xWidth,
+        bottom / xHeight,
+        1 - right / xWidth,
+        bottom / xHeight,
+        left / xWidth,
+        1 - top / xHeight,
+        left / xWidth,
+        1 - top / xHeight,
+        1 - right / xWidth,
+        bottom / xHeight,
+        1 - right / xWidth,
+        1 - top / xHeight,
+      ]),
+      this.gl.STATIC_DRAW
     );
-    this.gl.uniform2f(resolutionLocation, width!, height!);
+    this.gl.enableVertexAttribArray(this.texCoordLocation!);
+    this.gl.vertexAttribPointer(
+      this.texCoordLocation!,
+      2,
+      this.gl.FLOAT,
+      false,
+      0,
+      0
+    );
+
+    this.gl.uniform2f(this.resolutionLocation, width!, height!);
   }
 
   private initTextures() {
@@ -438,6 +503,10 @@ export class WebGLRenderer extends IRenderer {
     );
 
     this.hasAlpha = this.gl.getUniformLocation(this.program, 'hasAlpha');
+    this.resolutionLocation = this.gl.getUniformLocation(
+      this.program,
+      'u_resolution'
+    );
 
     // Get color space uniform locations
     this.colorSpaceUniforms.yOffset = this.gl.getUniformLocation(
@@ -520,6 +589,7 @@ export class WebGLRenderer extends IRenderer {
   private releaseTextures() {
     this.gl?.deleteProgram(this.program);
     this.program = null;
+    this.lastAppliedColorSpaceKey = undefined;
 
     this.positionLocation = undefined;
     this.texCoordLocation = undefined;
@@ -537,6 +607,10 @@ export class WebGLRenderer extends IRenderer {
     this.gl?.deleteBuffer(this.surfaceBuffer);
     this.texCoordBuffer = null;
     this.surfaceBuffer = null;
+    this.resolutionLocation = null;
+    this.lastFrameLayout = undefined;
+    this.textureStorageInitialized = false;
+    this.alphaTextureStorageInitialized = false;
   }
 
   private handleContextLost = (event: Event) => {
@@ -570,28 +644,28 @@ export class WebGLRenderer extends IRenderer {
    * Get color space conversion parameters based on color space and range
    */
   private getColorSpaceParams(colorSpace?: ColorSpace): ColorSpaceParams {
-    // Default to BT.601 Limited if not specified
-    const primaries = colorSpace?.primaries ?? PrimaryID.PrimaryidBt709;
-    const range = colorSpace?.range ?? RangeID.RangeidLimited;
+    const { matrix, range } = this.getEffectiveColorSpace(colorSpace);
 
-    // Y offset and scale based on ran
+    // Y offset and scale based on range
     let yOffset: number;
     let yScale: number;
+    const isBt2020 =
+      matrix === MatrixID.MatrixidBt2020Ncl ||
+      matrix === MatrixID.MatrixidBt2020Cl;
 
     if (range === RangeID.RangeidFull) {
       yOffset = 0.0;
       yScale = 1.0;
     } else {
-      // Limited range: Y [16, 235] -> [0, 1]
-      yOffset = 16.0 / 255.0; // 0.0625
-      yScale = 255.0 / (235.0 - 16.0); // 1.1643
+      yOffset = 16.0 / 255.0;
+      yScale = isBt2020 ? 1.0 : 255.0 / (235.0 - 16.0);
     }
 
     // Color space conversion coefficients
     let rVCoeff: number, gUCoeff: number, gVCoeff: number, bUCoeff: number;
 
-    switch (primaries) {
-      case PrimaryID.PrimaryidBt709:
+    switch (matrix) {
+      case MatrixID.MatrixidBt709:
         if (range === RangeID.RangeidFull) {
           // BT.709 Full Range
           rVCoeff = 1.5748;
@@ -607,23 +681,18 @@ export class WebGLRenderer extends IRenderer {
         }
         break;
 
-      case PrimaryID.PrimaryidBt2020:
-        if (range === RangeID.RangeidFull) {
-          // BT.2020 Full Range
-          rVCoeff = 1.4746;
-          gUCoeff = -0.164553;
-          gVCoeff = -0.571353;
-          bUCoeff = 1.8814;
-        } else {
-          // BT.2020 Limited Range
-          rVCoeff = 1.678674;
-          gUCoeff = -0.187326;
-          gVCoeff = -0.650424;
-          bUCoeff = 2.141772;
-        }
+      case MatrixID.MatrixidBt2020Ncl:
+      case MatrixID.MatrixidBt2020Cl:
+        // BT.2020 Full Range
+        rVCoeff = 1.4746;
+        gUCoeff = -0.164553;
+        gVCoeff = -0.571353;
+        bUCoeff = 1.8814;
         break;
 
-      case PrimaryID.PrimaryidSmpte170m || PrimaryID.PrimaryidBt470bg:
+      case MatrixID.MatrixidSmpte170m:
+      case MatrixID.MatrixidBt470bg:
+      case MatrixID.MatrixidUnspecified:
         if (range === RangeID.RangeidFull) {
           // BT.601 Full Range
           rVCoeff = 1.402;
@@ -640,17 +709,17 @@ export class WebGLRenderer extends IRenderer {
         break;
       default:
         if (range === RangeID.RangeidFull) {
-          // BT.601 Full Range
-          rVCoeff = 1.402;
-          gUCoeff = -0.344136;
-          gVCoeff = -0.714136;
-          bUCoeff = 1.772;
+          // BT.709 Full Range
+          rVCoeff = 1.5748;
+          gUCoeff = -0.187324;
+          gVCoeff = -0.468124;
+          bUCoeff = 1.8556;
         } else {
-          // BT.601 Limited Range (your original values)
-          rVCoeff = 1.596027;
-          gUCoeff = -0.391762;
-          gVCoeff = -0.812968;
-          bUCoeff = 2.017232;
+          // BT.709 Limited Range
+          rVCoeff = 1.792741;
+          gUCoeff = -0.213249;
+          gVCoeff = -0.532909;
+          bUCoeff = 2.112402;
         }
         break;
     }
@@ -665,11 +734,28 @@ export class WebGLRenderer extends IRenderer {
     };
   }
 
+  private getEffectiveColorSpace(colorSpace?: ColorSpace): EffectiveColorSpace {
+    return {
+      matrix: colorSpace?.matrix ?? MatrixID.MatrixidBt470bg,
+      range: colorSpace?.range ?? RangeID.RangeidLimited,
+    };
+  }
+
+  private getColorSpaceKey(colorSpace?: ColorSpace): string {
+    const { matrix, range } = this.getEffectiveColorSpace(colorSpace);
+    return `${matrix}:${range}`;
+  }
+
   /**
    * Set color space uniform values in the shader
    */
   private setColorSpaceUniforms(colorSpace?: ColorSpace): void {
     if (!this.gl || !this.program) return;
+
+    const colorSpaceKey = this.getColorSpaceKey(colorSpace);
+    if (this.lastAppliedColorSpaceKey === colorSpaceKey) {
+      return;
+    }
 
     const params = this.getColorSpaceParams(colorSpace);
 
@@ -691,5 +777,12 @@ export class WebGLRenderer extends IRenderer {
     if (this.colorSpaceUniforms.bUCoeff) {
       this.gl.uniform1f(this.colorSpaceUniforms.bUCoeff, params.bUCoeff);
     }
+
+    if (this.lastAppliedColorSpaceKey !== undefined) {
+      logDebug(
+        `WebGLRenderer color space changed: ${this.lastAppliedColorSpaceKey} -> ${colorSpaceKey}`
+      );
+    }
+    this.lastAppliedColorSpaceKey = colorSpaceKey;
   }
 }
