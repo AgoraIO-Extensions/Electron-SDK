@@ -14,8 +14,10 @@ import {
   IAudioSpectrumObserver,
   IFaceInfoObserver,
   IMediaRecorderObserver,
+  IMetadataObserver,
   IVideoEncodedFrameObserver,
   IVideoFrameObserver,
+  Metadata,
   VideoFrame,
   VideoSourceType,
 } from '../AgoraMediaBase';
@@ -31,9 +33,7 @@ import {
 } from '../IAgoraMusicContentCenter';
 import {
   IDirectCdnStreamingEventHandler,
-  IMetadataObserver,
   IRtcEngineEventHandler,
-  Metadata,
 } from '../IAgoraRtcEngine';
 import { processIAudioEncodedFrameObserver } from '../impl/AgoraBaseImpl';
 import {
@@ -43,6 +43,7 @@ import {
   processIAudioSpectrumObserver,
   processIFaceInfoObserver,
   processIMediaRecorderObserver,
+  processIMetadataObserver,
   processIVideoEncodedFrameObserver,
   processIVideoFrameObserver,
 } from '../impl/AgoraMediaBaseImpl';
@@ -52,7 +53,6 @@ import { processIMediaPlayerSourceObserver } from '../impl/IAgoraMediaPlayerSour
 import { processIMusicContentCenterEventHandler } from '../impl/IAgoraMusicContentCenterImpl';
 import {
   processIDirectCdnStreamingEventHandler,
-  processIMetadataObserver,
   processIRtcEngineEventHandler,
 } from '../impl/IAgoraRtcEngineImpl';
 

@@ -27,7 +27,9 @@ import {
 } from '../AgoraBase';
 import {
   IAudioSpectrumObserver,
+  IMetadataObserver,
   MediaSourceType,
+  MetadataType,
   RenderModeType,
   VideoSourceType,
 } from '../AgoraMediaBase';
@@ -40,12 +42,10 @@ import {
   ChannelMediaOptions,
   DirectCdnStreamingMediaOptions,
   IDirectCdnStreamingEventHandler,
-  IMetadataObserver,
   IRtcEngineEventHandler,
   IVideoDeviceManager,
   IVideoEffectObject,
   LeaveChannelOptions,
-  MetadataType,
   RtcEngineContext,
   SDKBuildInfo,
   ScreenCaptureSourceInfo,
@@ -54,7 +54,10 @@ import {
 import { RtcConnection } from '../IAgoraRtcEngineEx';
 import { ILocalSpatialAudioEngine } from '../IAgoraSpatialAudio';
 import { IAudioDeviceManager } from '../IAudioDeviceManager';
-import { IRtcEngineEvent } from '../extension/IAgoraRtcEngineExtension';
+import {
+  IRtcEngineEvent,
+  IRtcEngineEventType,
+} from '../extension/IAgoraRtcEngineExtension';
 import { IRtcEngineExImpl } from '../impl/IAgoraRtcEngineExImpl';
 import { IVideoDeviceManagerImpl } from '../impl/IAgoraRtcEngineImpl';
 import AgoraBaseTI from '../ti/AgoraBase-ti';
@@ -227,7 +230,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     super.release(sync);
   }
 
-  _addListenerPreCheck<EventType extends keyof IRtcEngineEvent>(
+  _addListenerPreCheck<EventType extends IRtcEngineEventType>(
     eventType: EventType
   ): boolean {
     if (
@@ -287,7 +290,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return true;
   }
 
-  addListener<EventType extends keyof IRtcEngineEvent>(
+  addListener<EventType extends IRtcEngineEventType>(
     eventType: EventType,
     listener: IRtcEngineEvent[EventType]
   ) {
@@ -305,7 +308,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     addScopedEventListener(this, eventType, listener as Function, callback);
   }
 
-  removeListener<EventType extends keyof IRtcEngineEvent>(
+  removeListener<EventType extends IRtcEngineEventType>(
     eventType: EventType,
     listener?: IRtcEngineEvent[EventType]
   ) {
@@ -316,7 +319,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     );
   }
 
-  removeAllListeners<EventType extends keyof IRtcEngineEvent>(
+  removeAllListeners<EventType extends IRtcEngineEventType>(
     eventType?: EventType
   ) {
     removeAllScopedEventListeners(this, eventType);
