@@ -4,6 +4,10 @@
 import * as t from "ts-interface-checker";
 // tslint:disable:object-literal-key-quotes
 
+export const IMetadataObserver = t.iface([], {
+  "onMetadataReceived": t.opt(t.func("void", t.param("metadata", "Metadata"))),
+});
+
 export const IAudioPcmFrameSink = t.iface([], {
   "onFrame": t.opt(t.func("void", t.param("frame", "AudioPcmFrame"))),
 });
@@ -25,7 +29,7 @@ export const IAudioSpectrumObserver = t.iface([], {
 });
 
 export const IVideoEncodedFrameObserver = t.iface([], {
-  "onEncodedVideoFrameReceived": t.opt(t.func("void", t.param("channelId", "string"), t.param("uid", "number"), t.param("imageBuffer", "Uint8Array"), t.param("length", "number"), t.param("videoEncodedFrameInfo", "EncodedVideoFrameInfo"))),
+  "onEncodedVideoFrameReceived": t.opt(t.func("void", t.param("channelId", "string"), t.param("uid", "string"), t.param("imageBuffer", "Uint8Array"), t.param("length", "number"), t.param("videoEncodedFrameInfo", "EncodedVideoFrameInfo"))),
 });
 
 export const IVideoFrameObserver = t.iface([], {
@@ -46,6 +50,7 @@ export const IMediaRecorderObserver = t.iface([], {
 });
 
 const exportedTypeSuite: t.ITypeSuite = {
+  IMetadataObserver,
   IAudioPcmFrameSink,
   IAudioFrameObserverBase,
   IAudioFrameObserver,

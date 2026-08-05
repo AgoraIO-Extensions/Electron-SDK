@@ -5,11 +5,26 @@ import {
   IAudioSpectrumObserver,
   IFaceInfoObserver,
   IMediaRecorderObserver,
+  IMetadataObserver,
   IVideoEncodedFrameObserver,
   IVideoFrameMetaInfo,
   IVideoFrameObserver,
   MetaInfoKey,
 } from '../AgoraMediaBase';
+export function processIMetadataObserver(
+  handler: IMetadataObserver,
+  event: string,
+  jsonParams: any
+) {
+  switch (event) {
+    case 'onMetadataReceived':
+      if (handler.onMetadataReceived !== undefined) {
+        handler.onMetadataReceived(jsonParams.metadata);
+      }
+      break;
+  }
+}
+
 // @ts-ignore
 export class IVideoFrameMetaInfoImpl implements IVideoFrameMetaInfo {
   getMetaInfoStr(key: MetaInfoKey): string {

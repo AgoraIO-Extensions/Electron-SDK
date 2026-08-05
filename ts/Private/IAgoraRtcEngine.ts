@@ -122,7 +122,10 @@ import {
   ContentInspectResult,
   ExtensionContext,
   IAudioSpectrumObserver,
+  IMetadataObserver,
   MediaSourceType,
+  Metadata,
+  MetadataType,
   RawAudioFrameOpModeType,
   RenderModeType,
   SnapshotConfig,
@@ -2990,78 +2993,6 @@ export class RtcEngineContext {
    * Whether to automatically register Agora extensions when initializing IRtcEngine : true : (Default) Automatically register Agora extensions when initializing IRtcEngine. false : Do not register Agora extensions when initializing IRtcEngine. You need to call enableExtension to register them.
    */
   autoRegisterAgoraExtensions?: boolean;
-}
-
-/**
- * The Metadata type of the observer. Currently supports video Metadata only.
- */
-export enum MetadataType {
-  /**
-   * -1: Unknown Metadata type.
-   */
-  UnknownMetadata = -1,
-  /**
-   * 0: Metadata type is video.
-   */
-  VideoMetadata = 0,
-}
-
-/**
- * @ignore
- */
-export enum MaxMetadataSizeType {
-  /**
-   * @ignore
-   */
-  InvalidMetadataSizeInByte = -1,
-  /**
-   * @ignore
-   */
-  DefaultMetadataSizeInByte = 512,
-  /**
-   * @ignore
-   */
-  MaxMetadataSizeInByte = 1024,
-}
-
-/**
- * Media metadata.
- */
-export class Metadata {
-  /**
-   * Channel name.
-   */
-  channelId?: string;
-  /**
-   * User ID.
-   *  For receivers: ID of the remote user who sent this Metadata.
-   *  For senders: Ignore this field.
-   */
-  uid?: number;
-  /**
-   * Buffer size of the received or sent Metadata.
-   */
-  size?: number;
-  /**
-   * Buffer address of the received Metadata.
-   */
-  buffer?: Uint8Array;
-  /**
-   * Timestamp when the Metadata is sent, in milliseconds.
-   */
-  timeStampMs?: number;
-}
-
-/**
- * Metadata observer.
- */
-export interface IMetadataObserver {
-  /**
-   * Triggered when metadata is received on the receiving end.
-   *
-   * @param metadata The received metadata. See Metadata.
-   */
-  onMetadataReceived?(metadata: Metadata): void;
 }
 
 /**
@@ -7786,24 +7717,6 @@ export class VideoDeviceInfo {
    * Device ID.
    */
   deviceId?: string;
-  /**
-   * Device name.
-   */
-  deviceName?: string;
-}
-
-/**
- * The AudioDeviceInfo class contains the audio device ID and device name.
- */
-export class AudioDeviceInfo {
-  /**
-   * Device ID.
-   */
-  deviceId?: string;
-  /**
-   * Audio device type, such as: built-in, USB, HDMI, etc.
-   */
-  deviceTypeName?: string;
   /**
    * Device name.
    */

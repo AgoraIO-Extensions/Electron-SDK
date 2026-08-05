@@ -69,7 +69,10 @@ import {
 import {
   ContentInspectConfig,
   IAudioSpectrumObserver,
+  IMetadataObserver,
   MediaSourceType,
+  Metadata,
+  MetadataType,
   RawAudioFrameOpModeType,
   RenderModeType,
   SnapshotConfig,
@@ -92,15 +95,12 @@ import {
   DirectCdnStreamingMediaOptions,
   FeatureType,
   IDirectCdnStreamingEventHandler,
-  IMetadataObserver,
   IRtcEngine,
   IRtcEngineEventHandler,
   IVideoDeviceManager,
   IVideoEffectObject,
   ImageTrackOptions,
   LeaveChannelOptions,
-  Metadata,
-  MetadataType,
   PriorityType,
   RtcEngineContext,
   SDKBuildInfo,
@@ -1357,20 +1357,6 @@ export class IVideoEffectObjectImpl implements IVideoEffectObject {
     key: string
   ): string {
     return 'VideoEffectObject_getVideoEffectBoolParam_ccad422';
-  }
-}
-
-export function processIMetadataObserver(
-  handler: IMetadataObserver,
-  event: string,
-  jsonParams: any
-) {
-  switch (event) {
-    case 'onMetadataReceived':
-      if (handler.onMetadataReceived !== undefined) {
-        handler.onMetadataReceived(jsonParams.metadata);
-      }
-      break;
   }
 }
 

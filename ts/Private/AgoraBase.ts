@@ -3146,6 +3146,18 @@ export class LocalAudioStats {
    * Acoustic Echo Cancellation (AEC) delay (ms), i.e., the delay between audio playback locally and the signal captured locally as estimated by the AEC module.
    */
   aecEstimatedDelay?: number;
+  /**
+   * @ignore
+   */
+  aedVoiceRes?: number;
+  /**
+   * @ignore
+   */
+  aedMusicRes?: number;
+  /**
+   * @ignore
+   */
+  edThpState?: number;
 }
 
 /**
