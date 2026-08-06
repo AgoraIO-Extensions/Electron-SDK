@@ -2,11 +2,11 @@ import './extension/IAudioDeviceManagerExtension';
 import { AudioDeviceInfo } from './AgoraMediaBase';
 
 /**
- * The maximum length of the device ID.
+ * Maximum length of the device ID.
  */
 export enum MaxDeviceIdLengthType {
   /**
-   * The maximum length of the device ID is 512 bytes.
+   * The maximum length of the device ID is 512 characters.
    */
   MaxDeviceIdLength = 512,
 }
@@ -16,83 +16,85 @@ export enum MaxDeviceIdLengthType {
  */
 export abstract class IAudioDeviceManager {
   /**
-   * Enumerates the audio playback devices.
+   * Gets the list of all playback devices in the system.
    *
    * @returns
-   * Success: Returns an AudioDeviceInfo array, which includes all the audio playback devices.
-   *  Failure: An empty array.
+   * If the method call succeeds, returns an array of AudioDeviceInfo, containing the device ID and device name of all audio playback devices.
+   *  If the method call fails: returns an empty list.
    */
   abstract enumeratePlaybackDevices(): AudioDeviceInfo[];
 
   /**
-   * Enumerates the audio capture devices.
+   * Gets the list of all audio recording devices in the system.
    *
    * @returns
-   * Success: An AudioDeviceInfo array, which includes all the audio capture devices.
-   *  Failure: An empty array.
+   * If the method call succeeds, returns an array of AudioDeviceInfo, containing the device ID and device name of all audio recording devices.
+   *  If the method call fails: returns an empty list.
    */
   abstract enumerateRecordingDevices(): AudioDeviceInfo[];
 
   /**
-   * Sets the audio playback device.
+   * Specifies the playback device.
    *
-   * You can call this method to change the audio route currently being used, but this does not change the default audio route. For example, if the default audio route is speaker 1, you call this method to set the audio route as speaker 2 before joinging a channel and then start a device test, the SDK conducts device test on speaker 2. After the device test is completed and you join a channel, the SDK still uses speaker 1, the default audio route.
+   * This method changes the current audio route but does not change the system default audio route. For example, if the system default audio route is Speaker 1, and you call this method before joining a channel to set the current audio route to Speaker 2, the SDK will test Speaker 2 during device testing. After testing, when you join the channel, the SDK will still use the system default audio route, i.e., Speaker 1.
    *
-   * @param deviceId The ID of the specified audio playback device. You can get the device ID by calling enumeratePlaybackDevices. Connecting or disconnecting the audio device does not change the value of deviceId. The maximum length is MaxDeviceIdLengthType.
+   * @param deviceId Specifies the playback device. Obtained via enumeratePlaybackDevices. Plugging/unplugging devices does not affect deviceId.
+   * Maximum length: MaxDeviceIdLengthType.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setPlaybackDevice(deviceId: string): number;
 
   /**
-   * Retrieves the audio playback device associated with the device ID.
+   * Gets the current playback device.
    *
    * @returns
-   * The current audio playback device.
+   * The current playback device.
    */
   abstract getPlaybackDevice(): string;
 
   /**
-   * Retrieves the information of the audio playback device.
+   * Gets playback device information.
    *
    * @returns
-   * An AudioDeviceInfo object, which contains the ID and device name of the audio devices.
+   * The AudioDeviceInfo object containing the device ID and name of the playback device.
    */
   abstract getPlaybackDeviceInfo(): AudioDeviceInfo;
 
   /**
-   * Sets the volume of the audio playback device.
+   * Sets the playback device volume.
    *
-   * This method applies to Windows only.
+   * (Windows only)
    *
-   * @param volume The volume of the audio playback device. The value range is [0,255].
+   * @param volume Volume of the playback device. The value range is [0,255].
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setPlaybackDeviceVolume(volume: number): number;
 
   /**
-   * Retrieves the volume of the audio playback device.
+   * Gets the playback device volume.
    *
    * @returns
-   * The volume of the audio playback device. The value range is [0,255].
+   * Playback device volume. Value range: [0,255].
    */
   abstract getPlaybackDeviceVolume(): number;
 
   /**
-   * Sets the audio capture device.
+   * Specifies the audio recording device.
    *
-   * You can call this method to change the audio route currently being used, but this does not change the default audio route. For example, if the default audio route is microphone, you call this method to set the audio route as bluetooth earphones before joinging a channel and then start a device test, the SDK conducts device test on the bluetooth earphones. After the device test is completed and you join a channel, the SDK still uses the microphone for audio capturing.
+   * This method changes the current audio recording device without changing the system default audio recording device. Suppose the system default audio recording device is Microphone 1. If you call this method before joining a channel and set the current audio route to Bluetooth Headset 1, the SDK will test Bluetooth Headset 1 during device testing. After testing, when you join a channel, the SDK still uses the system default audio recording device, i.e., Microphone 1.
    *
-   * @param deviceId The ID of the audio capture device. You can get the Device ID by calling enumerateRecordingDevices. Connecting or disconnecting the audio device does not change the value of deviceId. The maximum length is MaxDeviceIdLengthType.
+   * @param deviceId The Device ID of the audio recording device. You can get it through enumerateRecordingDevices. Plugging or unplugging the device does not affect the deviceId.
+   * Maximum length is MaxDeviceIdLengthType.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setRecordingDevice(deviceId: string): number;
 
@@ -100,61 +102,65 @@ export abstract class IAudioDeviceManager {
    * Gets the current audio recording device.
    *
    * @returns
-   * The current audio recording device.
+   * Current audio recording device.
    */
   abstract getRecordingDevice(): string;
 
   /**
-   * Retrieves the information of the audio recording device.
+   * Gets audio recording device information.
    *
    * @returns
-   * An AudioDeviceInfo object, which includes the device ID and device name.
+   * AudioDeviceInfo object containing the device ID and device name of the recording device.
    */
   abstract getRecordingDeviceInfo(): AudioDeviceInfo;
 
   /**
-   * Sets the volume of the audio capture device.
+   * Sets the volume of the audio recording device.
    *
-   * This method is for Windows and macOS only.
+   * (Windows and macOS only)
    *
-   * @param volume The volume of the audio recording device. The value range is [0,255]. 0 means no sound, 255 means maximum volume.
+   * @param volume Volume of the audio recording device. Range: [0,255]. 0 means mute, 255 means maximum volume.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setRecordingDeviceVolume(volume: number): number;
 
   /**
-   * Retrieves the volume of the audio recording device.
+   * Gets the volume of the recording device.
    *
-   * This method applies to Windows only.
+   * (Windows only)
    *
    * @returns
-   * The volume of the audio recording device. The value range is [0,255].
+   * Recording device volume. Value range: [0,255].
    */
   abstract getRecordingDeviceVolume(): number;
 
   /**
-   * Sets the loopback device.
+   * Specifies the loopback capture device.
    *
-   * The SDK uses the current playback device as the loopback device by default. If you want to specify another audio device as the loopback device, call this method, and set deviceId to the loopback device you want to specify. You can call this method to change the audio route currently being used, but this does not change the default audio route. For example, if the default audio route is microphone, you call this method to set the audio route as a sound card before joinging a channel and then start a device test, the SDK conducts device test on the sound card. After the device test is completed and you join a channel, the SDK still uses the microphone for audio capturing. This method is for Windows and macOS only. The scenarios where this method is applicable are as follows: Use app A to play music through a Bluetooth headset; when using app B for a video conference, play through the speakers.
-   *  If the loopback device is set as the Bluetooth headset, the SDK publishes the music in app A to the remote end.
-   *  If the loopback device is set as the speaker, the SDK does not publish the music in app A to the remote end.
-   *  If you set the loopback device as the Bluetooth headset, and then use a wired headset to play the music in app A, you need to call this method again, set the loopback device as the wired headset, and the SDK continues to publish the music in app A to remote end.
+   * By default, the SDK uses the current playback device as the loopback capture device. To specify another audio device as the loopback capture device, call this method and set deviceId to the desired device.
+   * This method changes the current recording device but does not change the system default recording device. For example, if the system default recording device is Microphone 1, and you call this method before joining a channel to set the current audio route to Sound Card 1, the SDK will test Sound Card 1 during device testing. After testing, when you join the channel, the SDK will still use the system default recording device, i.e., Microphone 1. (Windows and macOS only)
+   * Applicable scenarios:
+   * App A plays music through a Bluetooth headset; App B conducts a video conference through a speaker.
+   *  If the loopback capture device is set to the Bluetooth headset, the SDK will publish the music from App A to the remote end.
+   *  If the loopback capture device is set to the speaker, the SDK will not publish the music from App A to the remote end.
+   *  If you switch from Bluetooth headset to wired headset for App A after setting the loopback device to Bluetooth headset, you need to call this method again to set the loopback device to the wired headset. The SDK will then continue to publish the music from App A to the remote end.
    *
-   * @param deviceId Specifies the loopback device of the SDK. You can get the device ID by calling enumeratePlaybackDevices. Connecting or disconnecting the audio device does not change the value of deviceId. The maximum length is MaxDeviceIdLengthType.
+   * @param deviceId Specifies the loopback capture device for the SDK. Obtained via enumeratePlaybackDevices. Plugging/unplugging devices does not affect deviceId.
+   * Maximum length: MaxDeviceIdLengthType.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setLoopbackDevice(deviceId: string): number;
 
   /**
    * Gets the current loopback device.
    *
-   * This method is for Windows and macOS only.
+   * This method is applicable only to Windows and macOS.
    *
    * @returns
    * The ID of the current loopback device.
@@ -162,181 +168,184 @@ export abstract class IAudioDeviceManager {
   abstract getLoopbackDevice(): string;
 
   /**
-   * Mutes the audio playback device.
+   * Sets the playback device to mute.
    *
-   * @param mute Whether to mute the audio playback device: true : Mute the audio playback device. false : Unmute the audio playback device.
+   * @param mute Whether to mute the playback device: true : Mute the playback device. false : Do not mute the playback device.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setPlaybackDeviceMute(mute: boolean): number;
 
   /**
-   * Retrieves whether the audio playback device is muted.
+   * Gets the mute status of the current playback device.
    *
    * @returns
-   * true : The audio playback device is muted. false : The audio playback device is unmuted.
+   * true : The playback device is muted. false : The playback device is not muted.
    */
   abstract getPlaybackDeviceMute(): boolean;
 
   /**
-   * Sets the mute status of the audio capture device.
+   * Mutes the current audio recording device.
    *
-   * @param mute Whether to mute the audio recording device: true : Mute the audio capture device. false : Unmute the audio capture device.
+   * @param mute Whether to mute the audio recording device: true : The device is muted. false : The device is not muted.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract setRecordingDeviceMute(mute: boolean): number;
 
   /**
-   * Gets whether the audio capture device is muted.
+   * Gets the mute status of the current recording device.
    *
    * @returns
-   * true : The microphone is muted. false : The microphone is unmuted.
+   * true : The recording device is muted. false : The recording device is not muted.
    */
   abstract getRecordingDeviceMute(): boolean;
 
   /**
    * Starts the audio playback device test.
    *
-   * This method tests whether the audio device for local playback works properly. Once a user starts the test, the SDK plays an audio file specified by the user. If the user can hear the audio, the playback device works properly. After calling this method, the SDK triggers the onAudioVolumeIndication callback every 100 ms, reporting uid = 1 and the volume information of the playback device. The difference between this method and the startEchoTest method is that the former checks if the local audio playback device is working properly, while the latter can check the audio and video devices and network conditions. Call this method before joining a channel. After the test is completed, call stopPlaybackDeviceTest to stop the test before joining a channel.
+   * This method tests whether the local audio playback device is working properly. After the test starts, the SDK plays the specified audio file. If the tester can hear the sound, it indicates that the playback device is functioning correctly.
+   * After calling this method, the SDK triggers the onAudioVolumeIndication callback every 100 ms to report the volume information of uid = 1 and the playback device.
+   * The difference between this method and startEchoTest is that this method tests whether the local audio playback device is working properly, while the latter tests whether the audio/video devices and network are functioning correctly. You must call this method before joining a channel. After testing is complete, if you need to join a channel, make sure to call stopPlaybackDeviceTest to stop the device test first.
    *
-   * @param testAudioFilePath The path of the audio file. The data format is string in UTF-8.
-   *  Supported file formats: wav, mp3, m4a, and aac.
-   *  Supported file sample rates: 8000, 16000, 32000, 44100, and 48000 Hz.
+   * @param testAudioFilePath The absolute path of the audio file. The path string must be encoded in UTF-8.
+   *  Supported file formats: wav, mp3, m4a, aac.
+   *  Supported sampling rates: 8000, 16000, 32000, 44100, 48000.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract startPlaybackDeviceTest(testAudioFilePath: string): number;
 
   /**
    * Stops the audio playback device test.
    *
-   * This method stops the audio playback device test. You must call this method to stop the test after calling the startPlaybackDeviceTest method. Call this method before joining a channel.
+   * This method stops the audio playback device test. After calling startPlaybackDeviceTest, you must call this method to stop the test. You must call this method before joining a channel.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract stopPlaybackDeviceTest(): number;
 
   /**
-   * Starts the audio capturing device test.
+   * Starts the audio recording device test.
    *
-   * This method tests whether the audio capturing device works properly. After calling this method, the SDK triggers the onAudioVolumeIndication callback at the time interval set in this method, which reports uid = 0 and the volume information of the capturing device. The difference between this method and the startEchoTest method is that the former checks if the local audio capturing device is working properly, while the latter can check the audio and video devices and network conditions. Call this method before joining a channel. After the test is completed, call stopRecordingDeviceTest to stop the test before joining a channel.
+   * This method tests whether the local audio recording device is working properly. After calling this method, the SDK triggers the onAudioVolumeIndication callback at the specified interval to report the volume information of uid = 0 and the recording device.
+   * The difference between this method and startEchoTest is that this method tests whether the local audio recording device is working properly, while the latter tests whether the audio/video devices and network are functioning correctly. You must call this method before joining a channel. After testing is complete, if you need to join a channel, make sure to call stopRecordingDeviceTest to stop the device test first.
    *
-   * @param indicationInterval The interval (ms) for triggering the onAudioVolumeIndication callback. This value should be set to greater than 10, otherwise, you will not receive the onAudioVolumeIndication callback and the SDK returns the error code -2. Agora recommends that you set this value to 100.
+   * @param indicationInterval The interval at which the SDK triggers the onAudioVolumeIndication callback, in milliseconds. The minimum value is 10; otherwise, the onAudioVolumeIndication callback will not be received and the SDK will return error code -2. Agora recommends setting this value to 100.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
-   *  -2: Invalid parameters. Check your parameter settings.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
+   *  -2: Invalid parameter settings. Please reset the parameters.
    */
   abstract startRecordingDeviceTest(indicationInterval: number): number;
 
   /**
-   * Stops the audio capturing device test.
+   * Stops the audio recording device test.
    *
-   * This method stops the audio capturing device test. You must call this method to stop the test after calling the startRecordingDeviceTest method. Call this method before joining a channel.
+   * This method stops the audio recording device test. After calling startRecordingDeviceTest, you must call this method to stop the test. You must call this method before joining a channel.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract stopRecordingDeviceTest(): number;
 
   /**
-   * Starts an audio device loopback test.
+   * Starts the audio device loopback test.
    *
-   * This method tests whether the local audio capture device and playback device are working properly. After starting the test, the audio capture device records the local audio, and the audio playback device plays the captured audio. The SDK triggers two independent onAudioVolumeIndication callbacks at the time interval set in this method, which reports the volume information of the capture device (uid = 0) and the volume information of the playback device (uid = 1) respectively.
-   *  You can call this method either before or after joining a channel.
-   *  This method only takes effect when called by the host.
-   *  This method tests local audio devices and does not report the network conditions.
-   *  When you finished testing, call stopAudioDeviceLoopbackTest to stop the audio device loopback test.
+   * This method tests whether the audio recording and playback devices are working properly. Once the test starts, the recording device captures local audio and the playback device plays it back. The SDK triggers two onAudioVolumeIndication callbacks at the specified interval to report the volume levels of the recording device (uid = 0) and the playback device (uid = 1).
+   *  This method can be called before or after joining a channel.
+   *  This method is only available to hosts.
+   *  This method only performs local audio device testing and does not involve network connections.
+   *  After the test is complete, you must call stopAudioDeviceLoopbackTest to stop the loopback test.
    *
-   * @param indicationInterval The time interval (ms) at which the SDK triggers the onAudioVolumeIndication callback. Agora recommends setting a value greater than 200 ms. This value must not be less than 10 ms; otherwise, you can not receive the onAudioVolumeIndication callback.
+   * @param indicationInterval The interval at which the SDK triggers the onAudioVolumeIndication callback, in milliseconds. It is recommended to set it to greater than 200 ms. Must not be less than 10 ms, otherwise the onAudioVolumeIndication callback will not be received.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract startAudioDeviceLoopbackTest(indicationInterval: number): number;
 
   /**
    * Stops the audio device loopback test.
    *
-   * You can call this method either before or after joining a channel.
-   *  This method only takes effect when called by the host.
-   *  Ensure that you call this method to stop the loopback test after calling the startAudioDeviceLoopbackTest method.
+   * This method can be called before or after joining a channel.
+   *  This method is only available to hosts.
+   *  After calling startAudioDeviceLoopbackTest, you must call this method to stop the audio device loopback test.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract stopAudioDeviceLoopbackTest(): number;
 
   /**
-   * Sets the audio playback device used by the SDK to follow the system default audio playback device.
+   * Sets whether the SDK's playback device follows the system default playback device.
    *
-   * @param enable Whether to follow the system default audio playback device: true : Follow the system default audio playback device. The SDK immediately switches the audio playback device when the system default audio playback device changes. false : Do not follow the system default audio playback device. The SDK switches the audio playback device to the system default audio playback device only when the currently used audio playback device is disconnected.
+   * @param enable Whether to follow the system default playback device: true : Follow. When the system default playback device changes, the SDK immediately switches the playback device. false : Do not follow. The SDK switches to the system default playback device only when the current playback device is removed.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract followSystemPlaybackDevice(enable: boolean): number;
 
   /**
-   * Sets the audio recording device used by the SDK to follow the system default audio recording device.
+   * Sets whether the SDK's recording device follows the system default recording device.
    *
-   * @param enable Whether to follow the system default audio recording device: true : Follow the system default audio playback device. The SDK immediately switches the audio recording device when the system default audio recording device changes. false : Do not follow the system default audio playback device. The SDK switches the audio recording device to the system default audio recording device only when the currently used audio recording device is disconnected.
+   * @param enable Whether to follow the system default recording device: true : Follow. When the system default recording device changes, the SDK immediately switches the recording device. false : Do not follow. The SDK switches to the system default recording device only when the current recording device is removed.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract followSystemRecordingDevice(enable: boolean): number;
 
   /**
    * Sets whether the loopback device follows the system default playback device.
    *
-   * This method is for Windows and macOS only.
+   * This method is applicable only to Windows and macOS.
    *
-   * @param enable Whether to follow the system default audio playback device: true : Follow the system default audio playback device. When the default playback device of the system is changed, the SDK immediately switches to the loopback device. false : Do not follow the system default audio playback device. The SDK switches the audio loopback device to the system default audio playback device only when the current audio playback device is disconnected.
+   * @param enable Whether to follow the system default playback device: true : Follow. When the system default playback device changes, the SDK immediately switches the loopback device. false : Do not follow. The SDK switches to the system default playback device only when the current loopback device is removed.
    *
    * @returns
    * 0: Success.
-   *  < 0: Failure.
+   *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    */
   abstract followSystemLoopbackDevice(enable: boolean): number;
 
   /**
-   * Releases all the resources occupied by the IAudioDeviceManager object.
+   * Releases all resources occupied by the IAudioDeviceManager object.
    */
   abstract release(): void;
 
   /**
-   * Gets the default audio playback device.
+   * Gets the system default playback device.
    *
-   * This method is for Windows and macOS only.
+   * This method is applicable only to Windows and macOS.
    *
    * @returns
-   * The details about the default audio playback device. See AudioDeviceInfo.
+   * Information of the default playback device. See AudioDeviceInfo.
    */
   abstract getPlaybackDefaultDevice(): AudioDeviceInfo;
 
   /**
-   * Gets the default audio capture device.
+   * Gets the system default audio recording device.
    *
-   * This method is for Windows and macOS only.
+   * (Windows and macOS only)
    *
    * @returns
-   * The details about the default audio capture device. See AudioDeviceInfo.
+   * Information about the default recording device. See AudioDeviceInfo.
    */
   abstract getRecordingDefaultDevice(): AudioDeviceInfo;
 }
