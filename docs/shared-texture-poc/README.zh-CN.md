@@ -44,9 +44,14 @@ PoC 已经实现完整的视频发布流程：
 如果等待期间又产生新帧，更旧的等待帧会立即释放。加入频道期间和加入成功后
 都允许提交画面。
 
-RTC 帧时间戳目前固定传 `0`。Electron 提供的是相对采集进程的时间，而 RTC
-链路需要自己的对齐时间基准。让 SDK 自动设置时间戳可以避免后续帧被当作旧帧
-丢弃。
+每个有效 compositor 帧的 `paint` 事件到达主进程时，都会调用
+`getCurrentMonotonicTimeInMs()` 取得 Agora SDK 单调时间。这个毫秒值会作为 RTC
+视频时间戳提交；Electron compositor 时间戳仍单独保留，只用于诊断。
+
+本 PoC 不采集自定义音频，因此它本身不能证明 A/V 同步已经完成。Favorited 还需
+使用同一个 Agora SDK 单调时钟设置 `AudioFrame.renderTimeMs`，并验证长时间漂移。
+此前的 `timestamp = 0` 只是兼容措施，用于避免误传不相关的 Electron 时钟值而被
+当作旧帧丢弃。
 
 ## Worker 拓扑与诊断
 
@@ -61,6 +66,19 @@ DOM canvas -> transferControlToOffscreen -> Worker WebGL2
 `OffscreenCanvas`，因为该 Surface 不会进入 Electron compositor。客户仍可让
 Worker 持有 WebGL2，但需要从 Electron renderer 页面创建并 transfer canvas。
 
+## 目标责任边界
+
+- Favorited 把 Studio 最终画面渲染到全窗口 canvas，并负责源采集、场景合成、
+  窗口/进程编排、预览、A/V 时钟映射，以及 renderer/WebGL/推流恢复。
+- 跨平台 Agora Electron API 接收 compositor 纹理，并向 Favorited 暴露完成
+  A/V 映射所需的 Agora 单调时钟。
+- Agora 负责 Windows NT Handle/D3D11 互操作，以及后续 macOS
+  IOSurface/Metal 互操作。在 Electron 释放源纹理之前，Agora 必须同步消费它，
+  或把它持有/GPU copy 到 Agora 自有资源。
+- Agora 负责 Native 纹理导入、过期 Handle、D3D11 device loss 和 SDK 资源
+  恢复，并向 Favorited 返回可处理的错误。Favorited 不编写平台相关 Native
+  互操作代码。
+
 Advanced 页面可以临时选择 30/60 fps，以及 hidden、visible、minimized 三种采集
 窗口状态。主进程调用 `webContents.setFrameRate()` 并通过 `getFrameRate()` 回读；
 Worker 独立使用 timer 控制目标绘制节奏。这些选项用于测量，不代表平台保证。
@@ -73,8 +91,9 @@ Worker 独立使用 timer 控制目标绘制节奏。这些选项用于测量，
   P50/P95/P99/最大间隔
 - RTC `encodedFrameCount`、`sentFrameRate` 和 `txVideoKBitRate`
 
-提交给 RTC 的 timestamp 仍明确为 `0`。只有 Native 额外记录 SDK 分配的时间戳、
-时钟来源、单位和赋值点后，才能声称完成 Native 时钟关联。
+遥测会同时记录 Electron compositor 的微秒时间戳，以及实际提交的 Agora 单调
+毫秒时间戳。只有自定义音频也使用同一时钟，并通过长时间测试测量漂移后，才能
+声称完成 A/V 同步验证。
 
 超过 500 ms 没有 paint、renderer unresponsive、GPU 子进程退出或 WebGL context
 loss 会进入 degraded。后续有效 paint 会清除 paint/GPU 原因；WebGL 必须先报告
@@ -169,7 +188,7 @@ HRESULT hr = device1->OpenSharedResource1(
 frame.textureSliceIndex = 0;
 frame.stride = width;
 frame.height = height;
-frame.timestamp = 0;
+frame.timestamp = rtc_timestamp_ms;
 
 media_engine->pushVideoFrame(&frame, video_track_id);
 ```
@@ -186,6 +205,8 @@ Native RTC SDK 必须实现以下行为：
    不匹配返回明确错误。
 6. 正确处理 D3D11 Device Lost 和纹理尺寸变化，不能继续持有失效资源。
 7. 返回真实 RTC 提交结果；返回 `0` 表示 SDK 已按约定接受该纹理。
+8. 把 `getCurrentMonotonicTimeInMs()` 取得的 `rtcTimestampMs` 原样设置为
+   `ExternalVideoFrame::timestamp`。
 
 ### 生命周期与同步契约
 

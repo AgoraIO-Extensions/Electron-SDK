@@ -17,6 +17,7 @@ struct SharedTextureRequest {
   uint32_t width;
   uint32_t height;
   int64_t timestamp_us;
+  int64_t rtc_timestamp_ms;
   SharedTexturePixelFormat pixel_format;
   bool direct_handle_preview;
 };

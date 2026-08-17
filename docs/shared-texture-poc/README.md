@@ -50,10 +50,17 @@ texture. Older pending frames are released instead of building an unbounded
 queue. Frames can be submitted while the channel is joining as well as after
 join succeeds.
 
-RTC timestamps are currently sent as `0`. Electron timestamps are relative to
-the capture process, while the RTC pipeline expects its own aligned time base.
-Letting the SDK assign the timestamp prevents subsequent frames from being
-discarded as old frames.
+Each valid compositor frame is now timestamped with
+`getCurrentMonotonicTimeInMs()` when its `paint` event reaches the main process.
+That Agora SDK monotonic value, in milliseconds, is submitted as the RTC video
+timestamp. Electron's compositor timestamp remains separate and is used only
+for diagnostics.
+
+This PoC does not capture custom audio, so it does not by itself prove A/V
+synchronization. Favorited must timestamp `AudioFrame.renderTimeMs` with the
+same Agora SDK monotonic clock and validate long-running drift. The previous
+`timestamp = 0` behavior was only a compatibility measure to avoid passing an
+unrelated Electron clock value that could be rejected as old.
 
 ## Worker Topology And Diagnostics
 
@@ -70,6 +77,20 @@ DOM canvas or `WebContents`; such a surface never enters Electron's compositor.
 The customer can retain Worker ownership of WebGL2, but must create and transfer
 the canvas from an Electron renderer page.
 
+## Target Ownership Boundary
+
+- Favorited renders the final Studio frame into the full-window canvas, and
+  owns source capture, scene composition, window/process orchestration,
+  preview, A/V clock mapping, and renderer/WebGL/stream recovery.
+- The platform-neutral Agora Electron API accepts the compositor texture and
+  exposes the Agora monotonic clock needed by Favorited's A/V mapping.
+- Agora owns Windows NT-handle/D3D11 interop and eventual macOS IOSurface/Metal
+  interop. Before Electron releases the source texture, Agora must synchronously
+  consume it or retain/GPU-copy it into an Agora-owned resource.
+- Agora owns native texture-import, stale-handle, D3D11 device-loss, and SDK
+  resource recovery, and reports actionable failures to Favorited. Favorited
+  writes no platform-specific native interop code.
+
 The Advanced page allows temporary selection of 30 or 60 fps and a hidden,
 visible, or minimized capture window. These modes are for measurement. The
 controller calls `webContents.setFrameRate()` and verifies `getFrameRate()`;
@@ -85,9 +106,10 @@ Every five seconds and on health transitions, status includes:
   counts, plus rolling P50/P95/P99/max intervals
 - RTC `encodedFrameCount`, `sentFrameRate`, and `txVideoKBitRate`
 
-The submitted RTC timestamp remains explicitly `0`. Native clock correlation is
-not proved unless Native additionally logs its assigned timestamp, clock source,
-unit, and assignment point.
+Telemetry records both the Electron compositor timestamp in microseconds and
+the submitted Agora monotonic timestamp in milliseconds. A/V synchronization
+is not proved until custom audio uses the same clock and a long-running test
+measures drift.
 
 Health becomes degraded after a 500 ms paint gap, renderer unresponsiveness,
 GPU child-process exit, or WebGL context loss. A later valid paint clears paint
@@ -190,7 +212,7 @@ HRESULT hr = device1->OpenSharedResource1(
 frame.textureSliceIndex = 0;
 frame.stride = width;
 frame.height = height;
-frame.timestamp = 0;
+frame.timestamp = rtc_timestamp_ms;
 
 media_engine->pushVideoFrame(&frame, video_track_id);
 ```
@@ -211,6 +233,8 @@ The Native RTC SDK must provide all of the following behavior:
    resources.
 7. Return the actual RTC submission result, with `0` meaning the texture was
    accepted under the documented lifetime contract.
+8. Preserve the `rtcTimestampMs` value obtained from
+   `getCurrentMonotonicTimeInMs()` as `ExternalVideoFrame::timestamp`.
 
 ### Lifetime and Synchronization Contract
 

@@ -38,6 +38,7 @@ function createHarness(overrides = {}) {
   const engine = {
     initialize: jest.fn(() => 0),
     enableVideo: jest.fn(() => 0),
+    getCurrentMonotonicTimeInMs: jest.fn(() => 4242),
     getMediaEngine: jest.fn(() => mediaEngine),
     registerEventHandler: jest.fn((handler) => {
       engine.handler = handler;
@@ -188,13 +189,30 @@ test('records paint, submission, and RTC statistics in status snapshots', async 
       paintCount: 1,
       submittedCount: 1,
       lastElectronTimestampUs: 1000,
-      rtcTimestamp: 0,
+      rtcTimestamp: 4242,
       rtc: {
         encodedFrameCount: 10,
         sentFrameRate: 30,
         txVideoKBitRate: 256,
       },
     })
+  );
+  expect(harness.engine.getCurrentMonotonicTimeInMs).toHaveBeenCalledTimes(1);
+  expect(harness.submissions[0].frame.rtcTimestampMs).toBe(4242);
+});
+
+test('rejects a frame when the SDK monotonic clock is unavailable', async () => {
+  const harness = createHarness();
+  harness.engine.getCurrentMonotonicTimeInMs.mockReturnValue(-7);
+  await start(harness);
+  const texture = createTexture(1);
+
+  harness.controller.handlePaint(texture);
+
+  expect(harness.mediaEngine.pushSharedD3D11Texture).not.toHaveBeenCalled();
+  expect(texture.release).toHaveBeenCalledTimes(1);
+  expect(harness.controller.getTelemetrySnapshot().submissionFailureCount).toBe(
+    1
   );
 });
 
@@ -466,6 +484,10 @@ test('submits a shared texture from the Electron paint event', async () => {
 
 test('keeps only the latest pending texture and releases every texture once', async () => {
   const harness = createHarness();
+  harness.engine.getCurrentMonotonicTimeInMs
+    .mockReturnValueOnce(100)
+    .mockReturnValueOnce(200)
+    .mockReturnValueOnce(300);
   await start(harness);
   const first = createTexture(1);
   const second = createTexture(2);
@@ -486,6 +508,8 @@ test('keeps only the latest pending texture and releases every texture once', as
   expect(harness.submissions[1].frame.ntHandle).toEqual(
     third.textureInfo.handle.ntHandle
   );
+  expect(harness.submissions[1].frame.rtcTimestampMs).toBe(300);
+  expect(harness.engine.getCurrentMonotonicTimeInMs).toHaveBeenCalledTimes(3);
   harness.submissions[1].resolve({ frameId: 2, result: 0 });
   await new Promise(setImmediate);
   expect(third.release).toHaveBeenCalledTimes(1);

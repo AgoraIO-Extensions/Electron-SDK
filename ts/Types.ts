@@ -129,6 +129,8 @@ export interface SharedD3D11TextureFrame {
   height: number;
   /** Electron texture timestamp in microseconds. */
   timestampUs: number;
+  /** Agora SDK monotonic timestamp in milliseconds. */
+  rtcTimestampMs: number;
   pixelFormat: 'bgra' | 'rgba';
   /** Opens a native window that previews the Electron NT handle before RTC. */
   directHandlePreview?: boolean;

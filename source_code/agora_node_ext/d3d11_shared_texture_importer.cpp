@@ -13,9 +13,8 @@ std::string BuildSharedTexturePushJson(const SharedTextureRequest &request) {
   json << "{\"frame\":{\"type\":3,\"format\":17"
        << ",\"stride\":" << request.width << ",\"height\":"
        << request.height
-       // Electron timestamps are process-relative; zero lets the RTC SDK assign
-       // an NTP-aligned capture timestamp instead of treating them as old frames.
-       << ",\"timestamp\":0,\"textureSliceIndex\":0},"
+       << ",\"timestamp\":" << request.rtc_timestamp_ms
+       << ",\"textureSliceIndex\":0},"
        << "\"videoTrackId\":0}";
   return json.str();
 }

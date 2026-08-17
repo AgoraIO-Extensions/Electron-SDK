@@ -24,6 +24,10 @@ bool ValidateSharedTextureRequest(const SharedTextureRequest &request,
     error = "timestampUs must be nonnegative";
     return false;
   }
+  if (request.rtc_timestamp_ms < 0) {
+    error = "rtcTimestampMs must be nonnegative";
+    return false;
+  }
   if (request.frame_id <= last_frame_id) {
     error = "frameId must increase monotonically";
     return false;

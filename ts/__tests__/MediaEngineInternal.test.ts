@@ -8,6 +8,7 @@ test('pushSharedD3D11Texture forwards the native request', async () => {
     width: 1920,
     height: 1080,
     timestampUs: 123456,
+    rtcTimestampMs: 4242,
     pixelFormat: 'bgra' as const,
   };
   const nativeResult = { frameId: 7, result: 0 };

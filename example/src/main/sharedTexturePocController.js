@@ -42,6 +42,7 @@ class SharedTexturePocController {
     this.releasedTextures = new WeakSet();
     this.inFlight = null;
     this.pendingTexture = null;
+    this.pendingFrame = null;
     this.cancelPendingJoin = null;
     this.cleanupPromise = null;
     this.window = null;
@@ -77,6 +78,7 @@ class SharedTexturePocController {
     this.cleanupPromise = null;
     this.nextFrameId = 1;
     this.pendingTexture = null;
+    this.pendingFrame = null;
     this.inFlight = null;
     this.telemetry = createTelemetry({
       nowMs: this.nowMs,
@@ -267,7 +269,13 @@ class SharedTexturePocController {
       this.releaseOnce(texture);
       return;
     }
-    const frame = this.toFrame(texture, this.nextFrameId);
+    const rtcTimestampMs = this.getRtcTimestampMs();
+    if (rtcTimestampMs === null) {
+      this.telemetry.recordSubmissionFailure();
+      this.releaseOnce(texture);
+      return;
+    }
+    const frame = this.toFrame(texture, this.nextFrameId, rtcTimestampMs);
     if (!frame) {
       this.telemetry.recordInvalidFrame();
       this.releaseOnce(texture);
@@ -277,6 +285,7 @@ class SharedTexturePocController {
     this.lastValidPaintMs = monotonicMs;
     this.telemetry.recordPaint({
       timestampUs: frame.timestampUs,
+      rtcTimestampMs: frame.rtcTimestampMs,
       monotonicMs,
     });
     let healthChanged = this.telemetry.clearDegradation('paint-timeout');
@@ -294,12 +303,30 @@ class SharedTexturePocController {
         this.releaseOnce(this.pendingTexture);
       }
       this.pendingTexture = texture;
+      this.pendingFrame = frame;
       return;
     }
-    this.submit(texture);
+    this.submit(texture, frame);
   }
 
-  toFrame(texture, frameId) {
+  getRtcTimestampMs() {
+    let value;
+    try {
+      value = this.engine.getCurrentMonotonicTimeInMs();
+    } catch (error) {
+      this.logger.error('Failed to get Agora SDK monotonic time', error);
+      return null;
+    }
+    if (!Number.isSafeInteger(value) || value < 0) {
+      this.logger.error(
+        `Failed to get Agora SDK monotonic time: invalid result ${value}`
+      );
+      return null;
+    }
+    return value;
+  }
+
+  toFrame(texture, frameId, rtcTimestampMs) {
     const info = texture && texture.textureInfo;
     const handle = info && info.handle;
     const size = info && (info.codedSize || info.size);
@@ -322,6 +349,7 @@ class SharedTexturePocController {
       width: size.width,
       height: size.height,
       timestampUs: info.timestamp,
+      rtcTimestampMs,
       pixelFormat: format,
       directHandlePreview: true,
     };
@@ -334,15 +362,10 @@ class SharedTexturePocController {
     return null;
   }
 
-  submit(texture) {
+  submit(texture, frame) {
     const generation = this.generation;
     const telemetry = this.telemetry;
-    const frame = this.toFrame(texture, this.nextFrameId++);
-    if (!frame) {
-      telemetry.recordInvalidFrame();
-      this.releaseOnce(texture);
-      return;
-    }
+    this.nextFrameId++;
     const startedAt = this.monotonicMs();
     const submission = { generation, texture, promise: null };
     let nativeResult;
@@ -371,8 +394,10 @@ class SharedTexturePocController {
       this.inFlight = null;
       if (this.canSubmitFrames() && this.pendingTexture) {
         const pending = this.pendingTexture;
+        const pendingFrame = this.pendingFrame;
         this.pendingTexture = null;
-        this.submit(pending);
+        this.pendingFrame = null;
+        this.submit(pending, pendingFrame);
       }
     });
     this.inFlight = submission;
@@ -469,6 +494,7 @@ class SharedTexturePocController {
     if (this.pendingTexture) {
       this.releaseOnce(this.pendingTexture);
       this.pendingTexture = null;
+      this.pendingFrame = null;
     }
     const submission = this.inFlight;
     if (!submission || submission.generation !== generation) return;

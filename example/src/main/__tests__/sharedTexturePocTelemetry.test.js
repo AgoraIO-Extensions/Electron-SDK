@@ -50,10 +50,18 @@ test('rejects invalid worker clock and interval fields', () => {
 test('keeps only the latest 600 samples and reports quantiles', () => {
   const telemetry = createTelemetry({ nowMs: () => 2000, hrtimeNs: () => 9n });
   let monotonicMs = 0;
-  telemetry.recordPaint({ timestampUs: 0, monotonicMs });
+  telemetry.recordPaint({
+    timestampUs: 0,
+    rtcTimestampMs: 1000,
+    monotonicMs,
+  });
   for (let value = 1; value <= 605; value += 1) {
     monotonicMs += value;
-    telemetry.recordPaint({ timestampUs: value, monotonicMs });
+    telemetry.recordPaint({
+      timestampUs: value,
+      rtcTimestampMs: 1000 + value,
+      monotonicMs,
+    });
   }
 
   const snapshot = telemetry.snapshot();
@@ -70,7 +78,7 @@ test('keeps only the latest 600 samples and reports quantiles', () => {
   expect(snapshot.paintMonotonicNs).toBe('9');
   expect(snapshot.snapshotEpochMs).toBe(2000);
   expect(snapshot.snapshotMonotonicNs).toBe('9');
-  expect(snapshot.rtcTimestamp).toBe(0);
+  expect(snapshot.rtcTimestamp).toBe(1605);
 });
 
 test('tracks submission, RTC, Worker clock, and health fields', () => {

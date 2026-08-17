@@ -26,6 +26,7 @@ SharedTextureRequest ValidRequest() {
   request.width = 1920;
   request.height = 1080;
   request.timestamp_us = 123456;
+  request.rtc_timestamp_ms = 4242;
   request.pixel_format = SharedTexturePixelFormat::kBgra;
   return request;
 }
@@ -60,6 +61,10 @@ int main() {
   ExpectInvalid(request);
 
   request = ValidRequest();
+  request.rtc_timestamp_ms = -1;
+  ExpectInvalid(request);
+
+  request = ValidRequest();
   request.frame_id = 7;
   assert(!ValidateSharedTextureRequest(request, 7, error));
 
@@ -72,14 +77,14 @@ int main() {
   assert(ValidateSharedTextureRequest(request, 0, error));
   assert(BuildSharedTexturePushJson(request) ==
          "{\"frame\":{\"type\":3,\"format\":17,\"stride\":1920,"
-         "\"height\":1080,\"timestamp\":0,\"textureSliceIndex\":0},"
+         "\"height\":1080,\"timestamp\":4242,\"textureSliceIndex\":0},"
          "\"videoTrackId\":0}");
 
   request.pixel_format = SharedTexturePixelFormat::kBgra;
   request.timestamp_us = 999;
   assert(BuildSharedTexturePushJson(request).find("\"format\":17") !=
          std::string::npos);
-  assert(BuildSharedTexturePushJson(request).find("\"timestamp\":0") !=
+  assert(BuildSharedTexturePushJson(request).find("\"timestamp\":4242") !=
          std::string::npos);
 
   static_assert(sizeof(uintptr_t) == 8,

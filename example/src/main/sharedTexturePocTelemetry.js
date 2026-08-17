@@ -90,6 +90,7 @@ function createTelemetry({
   let drainTimeoutCount = 0;
   let lastPaintMonotonicMs = null;
   let lastElectronTimestampUs = null;
+  let rtcTimestamp = null;
   let paintEpochMs = null;
   let paintMonotonicNs = null;
   let worker = null;
@@ -101,12 +102,13 @@ function createTelemetry({
   };
 
   return {
-    recordPaint({ timestampUs, monotonicMs }) {
+    recordPaint({ timestampUs, rtcTimestampMs, monotonicMs }) {
       if (lastPaintMonotonicMs !== null) {
         pushBounded(paintIntervals, monotonicMs - lastPaintMonotonicMs);
       }
       lastPaintMonotonicMs = monotonicMs;
       lastElectronTimestampUs = timestampUs;
+      rtcTimestamp = rtcTimestampMs;
       paintEpochMs = nowMs();
       paintMonotonicNs = String(hrtimeNs());
       paintCount += 1;
@@ -177,7 +179,7 @@ function createTelemetry({
         paintMonotonicNs,
         snapshotEpochMs: nowMs(),
         snapshotMonotonicNs: String(hrtimeNs()),
-        rtcTimestamp: 0,
+        rtcTimestamp,
         paintIntervalsMs: summarize(paintIntervals),
         submissionLatencyMs: summarize(submissionLatencies),
         worker: worker

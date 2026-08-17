@@ -303,25 +303,32 @@ bool ParseSharedTextureRequest(napi_env env, napi_value value,
   double width;
   double height;
   double timestamp_us;
+  double rtc_timestamp_ms;
   if (!ReadNamedDouble(env, value, "frameId", frame_id) ||
       !ReadNamedDouble(env, value, "width", width) ||
       !ReadNamedDouble(env, value, "height", height) ||
       !ReadNamedDouble(env, value, "timestampUs", timestamp_us) ||
+      !ReadNamedDouble(env, value, "rtcTimestampMs", rtc_timestamp_ms) ||
       !std::isfinite(frame_id) || !std::isfinite(width) ||
       !std::isfinite(height) || !std::isfinite(timestamp_us) ||
+      !std::isfinite(rtc_timestamp_ms) ||
       std::floor(frame_id) != frame_id || std::floor(width) != width ||
       std::floor(height) != height || std::floor(timestamp_us) != timestamp_us ||
+      std::floor(rtc_timestamp_ms) != rtc_timestamp_ms ||
       frame_id < 0 || frame_id > 9007199254740991.0 || width < 0 ||
       width > std::numeric_limits<uint32_t>::max() || height < 0 ||
       height > std::numeric_limits<uint32_t>::max() ||
-      timestamp_us < 0 || timestamp_us > 9007199254740991.0) {
-    error = "frameId, dimensions, and timestampUs must be safe integers";
+      timestamp_us < 0 || timestamp_us > 9007199254740991.0 ||
+      rtc_timestamp_ms < 0 || rtc_timestamp_ms > 9007199254740991.0) {
+    error = "frameId, dimensions, timestampUs, and rtcTimestampMs must be "
+            "safe integers";
     return false;
   }
   request.frame_id = static_cast<uint64_t>(frame_id);
   request.width = static_cast<uint32_t>(width);
   request.height = static_cast<uint32_t>(height);
   request.timestamp_us = static_cast<int64_t>(timestamp_us);
+  request.rtc_timestamp_ms = static_cast<int64_t>(rtc_timestamp_ms);
 
   napi_value format_value;
   std::string format;
