@@ -77,6 +77,35 @@ DOM canvas or `WebContents`; such a surface never enters Electron's compositor.
 The customer can retain Worker ownership of WebGL2, but must create and transfer
 the canvas from an Electron renderer page.
 
+## Hidden Capture Window And Background Frame Rate
+
+The current design requires a dedicated offscreen `BrowserWindow` as the
+compositor host. This is not a user-visible preview window. In production it is
+created with `show: false`, remains alive for the capture session, and is kept
+independent from the application's visible windows. Minimizing, covering, or
+backgrounding the main UI must not minimize or destroy this capture window.
+
+The production configuration uses all three controls below:
+
+- `show: false` keeps the capture window hidden from creation without using a
+  minimized visible window.
+- `backgroundThrottling: false` disables normal renderer background throttling.
+- `webContents.setFrameRate(30 | 60)` sets the target compositor cadence, while
+  the Worker runs its own timer-driven WebGL2 draw loop at the same target rate.
+
+The `visible` and `minimized` capture-window modes in the PoC exist only for
+comparison testing. The production recommendation is the dedicated
+`show: false` mode; the capture window should not follow the main window's
+visibility or minimized state.
+
+These settings request continued background rendering, but they are not a hard
+real-time or cross-platform frame-rate guarantee. Acceptance must measure each
+stage separately: Worker draw intervals, Electron shared-texture `paint`
+intervals, Native submissions, and RTC sent/encoded frame rate. The PoC reports
+these metrics and marks health degraded after a paint gap longer than 500 ms.
+Windows D3D11 is the currently implemented path. macOS background pacing and
+IOSurface/Metal transport require separate validation.
+
 ## Target Ownership Boundary
 
 - Favorited renders the final Studio frame into the full-window canvas, and
@@ -91,10 +120,10 @@ the canvas from an Electron renderer page.
   resource recovery, and reports actionable failures to Favorited. Favorited
   writes no platform-specific native interop code.
 
-The Advanced page allows temporary selection of 30 or 60 fps and a hidden,
-visible, or minimized capture window. These modes are for measurement. The
-controller calls `webContents.setFrameRate()` and verifies `getFrameRate()`;
-the Worker independently uses a timer-driven target cadence.
+The Advanced page allows temporary selection of 30 or 60 fps and the three
+measurement modes described above. The controller calls
+`webContents.setFrameRate()` and verifies `getFrameRate()`; the Worker
+independently uses a timer-driven target cadence.
 
 Every five seconds and on health transitions, status includes:
 

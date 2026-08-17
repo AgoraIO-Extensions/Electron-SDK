@@ -66,6 +66,29 @@ DOM canvas -> transferControlToOffscreen -> Worker WebGL2
 `OffscreenCanvas`，因为该 Surface 不会进入 Electron compositor。客户仍可让
 Worker 持有 WebGL2，但需要从 Electron renderer 页面创建并 transfer canvas。
 
+## 隐藏采集窗口与后台帧率
+
+当前方案需要一个专用的离屏 `BrowserWindow` 作为 compositor 宿主。它不是展示给
+用户的预览窗口。生产环境中应从创建开始使用 `show: false`，在整个采集期间保持
+存活，并与应用的可见窗口解耦。主界面被最小化、遮挡或切到后台时，不能连带最小化
+或销毁这个采集窗口。
+
+生产配置同时使用以下三层控制：
+
+- `show: false`：采集窗口从创建起保持隐藏，不依赖把可见窗口最小化。
+- `backgroundThrottling: false`：关闭 renderer 常规的后台节流。
+- `webContents.setFrameRate(30 | 60)`：设置 compositor 目标帧率；Worker 同时使用
+  独立 timer，以相同目标帧率运行 WebGL2 绘制循环。
+
+PoC 中的 `visible` 和 `minimized` 采集窗口模式只用于对照测试。生产建议始终使用
+独立的 `show: false` 模式，不让采集窗口跟随主窗口的显示或最小化状态。
+
+这些配置用于请求持续后台渲染，但不构成硬实时或跨平台帧率保证。验收必须分别
+测量 Worker 绘制间隔、Electron shared-texture `paint` 间隔、Native 提交，以及 RTC
+发送/编码帧率。PoC 会输出这些指标，并在超过 500 ms 没有 `paint` 时把健康状态
+标记为 degraded。当前实现的是 Windows D3D11 路径；macOS 后台节奏和
+IOSurface/Metal 传输需要单独验证。
+
 ## 目标责任边界
 
 - Favorited 把 Studio 最终画面渲染到全窗口 canvas，并负责源采集、场景合成、
@@ -79,9 +102,9 @@ Worker 持有 WebGL2，但需要从 Electron renderer 页面创建并 transfer c
   恢复，并向 Favorited 返回可处理的错误。Favorited 不编写平台相关 Native
   互操作代码。
 
-Advanced 页面可以临时选择 30/60 fps，以及 hidden、visible、minimized 三种采集
-窗口状态。主进程调用 `webContents.setFrameRate()` 并通过 `getFrameRate()` 回读；
-Worker 独立使用 timer 控制目标绘制节奏。这些选项用于测量，不代表平台保证。
+Advanced 页面可以临时选择 30/60 fps 和上述三种测量模式。主进程调用
+`webContents.setFrameRate()` 并通过 `getFrameRate()` 回读；Worker 独立使用 timer
+控制目标绘制节奏。
 
 每五秒以及每次健康状态变化都会输出以下数据：
 
