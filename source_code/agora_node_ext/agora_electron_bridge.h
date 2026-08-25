@@ -41,8 +41,7 @@ class AgoraElectronBridge {
   static napi_value InitializeEnv(napi_env env, napi_callback_info info);
   static napi_value ReleaseEnv(napi_env env, napi_callback_info info);
   static napi_value ReleaseRenderer(napi_env env, napi_callback_info info);
-  static napi_value PushSharedD3D11Texture(napi_env env,
-                                           napi_callback_info info);
+  static napi_value PushSharedTexture(napi_env env, napi_callback_info info);
 
   void OnApiError(const char *errorMessage);
   void Init();

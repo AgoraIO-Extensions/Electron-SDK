@@ -4,10 +4,10 @@
 
 ## 当前状态
 
-这个 PoC 已经可以在 Windows 上把 Electron 离屏渲染的画面发布到 Agora
-频道。这个临时开发包通过 Iris 的 `d3d11Texture2d` 槽位原样传递 Electron NT
-Handle 数值，用于 Native RTC SDK 同事验证在 SDK 内部打开 Handle。远端画面是否正常是 Native SDK
-联调的验收项，不是仓库编译本身已经证明的结果。
+这个 PoC 已实现 Electron 离屏画面的平台原生共享纹理发布链路。Windows 通过
+Iris 的 `d3d11Texture2d` 槽位原样传递 NT Handle；macOS 把 Electron 提供的本地
+`IOSurfaceRef` 转成 `IOSurfaceID`，由 Native lookup 并 retain。Windows 远端发布
+已经验证；macOS 远端画面仍是联调验收项，不能由仓库编译成功替代。
 
 已验证的环境如下：
 
@@ -27,14 +27,16 @@ PoC 已经实现完整的视频发布流程：
    这个 case 不发布摄像头和麦克风轨。
 3. 离屏 `BrowserWindow` 使用 `offscreen.useSharedTexture: true` 承载真实 DOM
    canvas。页面调用 `transferControlToOffscreen()`，由独立 Worker 持有
-   WebGL2、渲染资源以及基于 timer 的 30/60 fps 绘制循环。
-4. Electron 43 通过 `details.texture` 提供每一帧，共享纹理的 Windows NT
-   Handle 位于 `texture.textureInfo.handle.ntHandle`。
-5. Node 原生扩展验证帧参数，把 8 字节 Handle 数据解码为完全相同的数值。
-6. Addon 把原始 NT Handle 数值而不是其地址放入 Iris 第 5 个 buffer；Addon
-   不创建 D3D11 Device，也不打开资源。
-7. Native RTC SDK 在 Iris 同步调用返回前打开并验证 Handle；后续处理需要的
-   COM 引用由 Native SDK 自己持有。
+   WebGL2、渲染资源以及基于 timer 的 30/48/60 fps 绘制循环。
+4. Electron 43 通过 `details.texture` 提供每一帧。Windows 使用
+   `texture.textureInfo.handle.ntHandle`，macOS 使用
+   `texture.textureInfo.handle.ioSurface`。
+5. Node 原生扩展验证帧参数并解码 8 字节 native handle；macOS 通过 IOSurface
+   API 获取 ID、宽高和 stride。
+6. Windows 把原始 NT Handle 数值放入 Iris 第 5 个 buffer；macOS 不传 CPU
+   像素 buffer，而是在 `ExternalVideoFrame` JSON 中提交 `iosurfaceId`。
+7. Native 在 Iris 返回前打开 D3D11 资源，或者 lookup 并 retain IOSurface；
+   随后 Electron 才释放借用的纹理。
 8. Iris 传输层错误和 RTC API 返回值都会传回 JavaScript，不再把 RTC
    失败误判为成功。
 9. 停止或异常时会等待正在提交的帧结束，每个 Electron 纹理只释放一次，
@@ -52,6 +54,92 @@ PoC 已经实现完整的视频发布流程：
 使用同一个 Agora SDK 单调时钟设置 `AudioFrame.renderTimeMs`，并验证长时间漂移。
 此前的 `timestamp = 0` 只是兼容措施，用于避免误传不相关的 Electron 时钟值而被
 当作旧帧丢弃。
+
+## macOS IOSurface 适配
+
+### 进程与 API 边界
+
+macOS 链路不会要求客户 Renderer 编写平台互操作代码。Worker 和 Renderer 只负责
+WebGL 绘制；Electron GPU Process 产生 compositor IOSurface，随后离屏 `paint`
+事件把进程内 `IOSurfaceRef` Buffer 交给 Electron Main/Browser Process。
+Renderer 不会获取或解析这个引用。
+
+```text
+Worker WebGL2
+  -> Electron GPU Process / compositor
+  -> 主进程 webContents paint 事件
+  -> texture.textureInfo.handle.ioSurface
+  -> AgoraElectronBridge.PushSharedTexture
+  -> Addon IOSurfaceGetID
+  -> Iris ExternalVideoFrame.iosurfaceId
+  -> Native IOSurfaceLookup + retain
+  -> RTC encoder
+```
+
+`PushSharedTexture` 是手写在 `IAgoraElectronBridge` 上的 Electron Native Addon
+API，不会加入生成的 `IMediaEngine` 文件，因此 Native SDK codegen 不会删除它。
+同一个主进程 Controller 在 Windows 和 macOS 调用该 API，只负责选择 Electron
+对应的平台 Handle 字段：`ntHandle` 或 `ioSurface`。
+
+`IOSurfaceRef` 指针只在 Electron 交付它的当前进程中有效，并且只被借用。PoC
+不会通过 Electron IPC 传递这个指针。Addon 与 `paint` 回调位于同一个主进程，
+因此会立即把它转换为 Native RTC 所需的数值型 `IOSurfaceID`。
+
+### 帧元数据与提交
+
+Addon 会在调用 Iris 前验证每一帧 macOS 输入：
+
+- Native Handle Buffer 必须包含一个 64 位 `IOSurfaceRef` 数值。
+- `IOSurfaceGetWidth()` 和 `IOSurfaceGetHeight()` 必须与 Electron
+  `textureInfo.codedSize` 一致。
+- 使用 `IOSurfaceGetBytesPerRow()` 计算像素单位的 `stride`。BGRA/RGBA 每像素
+  四字节，不能假设 `stride == width`。
+- Electron `bgra` 对应 `VIDEO_CVPIXEL_BGRA`（`14`），`rgba` 对应
+  `VIDEO_PIXEL_RGBA`（`4`）。本 PoC 暂不启用 NV12、P010 和多平面输入。
+- `timestamp` 使用 `getCurrentMonotonicTimeInMs()`；Electron compositor 时间戳
+  只用于诊断，不能作为 RTC 时钟。
+- IOSurface 链路不传 CPU 像素 Buffer，也不在 Electron 侧执行 `readPixels`、
+  staging-buffer 回读或整帧内存复制。
+
+匹配的 CSD-79710 Native SDK 契约明确说明 SDK 会执行 `IOSurfaceLookup` 并 retain
+导入资源。Iris 同步返回真实 RTC 结果；调用成功或失败后，Controller 才调用
+`texture.release()`。Controller 同时只允许一个提交中的帧，并且只保留一个最新
+等待帧，避免提前释放和无限排队。
+
+### 帧率、后台运行与恢复
+
+页面选择的 30、48 或 60 fps 会同时应用到三个阶段：
+
+- Worker WebGL 绘制循环
+- Electron `webContents.setFrameRate()` compositor 目标
+- RTC `setVideoEncoderConfiguration({ frameRate })` encoder 目标
+
+`sentFrameRate` 是 RTC 实际观测值，不是硬保证；网络或设备自适应仍可能降低它。
+隐藏采集窗口使用 `show: false` 和 `backgroundThrottling: false`，但每种目标模式
+仍需在支持的 macOS 硬件上实测。
+
+现有健康状态会报告 Renderer 退出、WebGL Context Loss、GPU Process 退出和 paint
+间隔超时。IOSurface ID 不会跨帧缓存，因此 `paint` 恢复后会自然取得当前 Surface。
+Native lookup 或导入错误会返回为提交失败。真实 macOS GPU Reset 后的完整恢复仍是
+验收项。
+
+### 已验证范围
+
+macOS 实现已经完成以下验证：
+
+- Electron Addon 同时包含 `arm64`/`x86_64`，并链接 `IOSurface.framework`。
+- 匹配的 Iris `ExternalVideoFrame` serializer 包含 `iosurfaceId`，Native RTC SDK
+  包含 CSD-79710 能力。
+- Native 测试创建真实 IOSurface，通过相同的 8 字节 Handle 表示提交其指针，
+  并验证生成的 ID、stride、帧元数据以及为空的 Iris Pointer Buffer。
+- Electron 43.2.0 成功启动；真实频道日志持续出现变化的 IOSurface ID、BGRA
+  格式 `14`、`800 x 600` 元数据以及 RTC 返回值 `0`。
+- 本地 30 fps 冒烟测试中，paint P50 约为 `33.3 ms`、提交失败为 0；对齐 encoder
+  配置后，RTC `sentFrameRate` 达到 `30`。
+
+以上证据证明 Electron 到 Native 的 IOSurface 传输和 encoder 提交链路已经贯通；
+但不能单独证明远端画面内容正确、端到端严格零拷贝、跨 Metal Device 零拷贝、
+长时间 A/V 漂移达标或 GPU Reset 恢复。这些仍属于客户验收测试。
 
 ## Worker 拓扑与诊断
 
@@ -77,8 +165,10 @@ Worker 持有 WebGL2，但需要从 Electron renderer 页面创建并 transfer c
 
 - `show: false`：采集窗口从创建起保持隐藏，不依赖把可见窗口最小化。
 - `backgroundThrottling: false`：关闭 renderer 常规的后台节流。
-- `webContents.setFrameRate(30 | 60)`：设置 compositor 目标帧率；Worker 同时使用
+- `webContents.setFrameRate(30 | 48 | 60)`：设置 compositor 目标帧率；Worker 同时使用
   独立 timer，以相同目标帧率运行 WebGL2 绘制循环。
+- `setVideoEncoderConfiguration({ frameRate })`：把相同目标设置给 RTC encoder；
+  如果不设置，SDK 默认按 15 fps 编码，并在编码前丢弃多余输入帧。
 
 PoC 中的 `visible` 和 `minimized` 采集窗口模式只用于对照测试。生产建议始终使用
 独立的 `show: false` 模式，不让采集窗口跟随主窗口的显示或最小化状态。
@@ -86,8 +176,8 @@ PoC 中的 `visible` 和 `minimized` 采集窗口模式只用于对照测试。�
 这些配置用于请求持续后台渲染，但不构成硬实时或跨平台帧率保证。验收必须分别
 测量 Worker 绘制间隔、Electron shared-texture `paint` 间隔、Native 提交，以及 RTC
 发送/编码帧率。PoC 会输出这些指标，并在超过 500 ms 没有 `paint` 时把健康状态
-标记为 degraded。当前实现的是 Windows D3D11 路径；macOS 后台节奏和
-IOSurface/Metal 传输需要单独验证。
+标记为 degraded。Windows D3D11 与 macOS IOSurface 传输都已实现；macOS 后台
+节奏和远端发布仍需在目标平台实测。
 
 ## 目标责任边界
 
@@ -95,14 +185,14 @@ IOSurface/Metal 传输需要单独验证。
   窗口/进程编排、预览、A/V 时钟映射，以及 renderer/WebGL/推流恢复。
 - 跨平台 Agora Electron API 接收 compositor 纹理，并向 Favorited 暴露完成
   A/V 映射所需的 Agora 单调时钟。
-- Agora 负责 Windows NT Handle/D3D11 互操作，以及后续 macOS
-  IOSurface/Metal 互操作。在 Electron 释放源纹理之前，Agora 必须同步消费它，
+- Agora 负责 Windows NT Handle/D3D11 和 macOS IOSurface/Metal 互操作。在
+  Electron 释放源纹理之前，Agora 必须同步消费它，
   或把它持有/GPU copy 到 Agora 自有资源。
 - Agora 负责 Native 纹理导入、过期 Handle、D3D11 device loss 和 SDK 资源
   恢复，并向 Favorited 返回可处理的错误。Favorited 不编写平台相关 Native
   互操作代码。
 
-Advanced 页面可以临时选择 30/60 fps 和上述三种测量模式。主进程调用
+Advanced 页面可以临时选择 30/48/60 fps 和上述三种测量模式。主进程调用
 `webContents.setFrameRate()` 并通过 `getFrameRate()` 回读；Worker 独立使用 timer
 控制目标绘制节奏。
 
@@ -137,6 +227,8 @@ JavaScript 拿到 Promise 前执行。要恢复这种故障，需要 Native 提�
 - 原生 `shared_texture_request` CTest
 - Windows x64 打包，并证明 Example 使用当前 checkout 中针对 Electron
   `43.2.0`、ABI `148` 重编的 Addon
+- macOS universal addon 使用能够序列化
+  `ExternalVideoFrame.iosurfaceId` 的 Iris 成功编译
 
 此前 CPU 回读版本通过过真实频道冒烟测试，但该结果不能证明 direct texture
 Native SDK 链路可用。Native 同事需要用这个包验证编码帧、码率持续增长以及
@@ -153,6 +245,16 @@ Electron NT Handle
   -> Native SDK 持有的 ID3D11Texture2D
   -> RTC SDK
   -> 编码器
+```
+
+macOS 对应链路如下：
+
+```text
+Electron IOSurfaceRef
+  -> Addon IOSurfaceGetID / 宽高 / stride
+  -> Iris ExternalVideoFrame.iosurfaceId
+  -> Native SDK IOSurfaceLookup + retain
+  -> RTC SDK -> 编码器
 ```
 
 ### 原始 Handle 预览诊断
@@ -175,7 +277,7 @@ Electron NT Handle
 - 端到端零拷贝编码
 - 在 GPU 上完成 BGRA/RGBA 到 NV12 的转换
 - 跨帧复用 D3D11 Device、Adapter 或纹理池
-- NV12、P010、多平面纹理或非 Windows 共享纹理支持
+- NV12、P010 或多平面共享纹理支持
 - 自动化远端画面内容校验
 
 Electron `HANDLE` 只被借用，Addon 和 Native SDK 都不能关闭它。Native SDK
@@ -288,6 +390,7 @@ DXGI Format、Texture Slice、Adapter 选择、同步和完成语义。
 - `source_code/agora_node_ext/agora_electron_bridge.cpp`
 - `source_code/agora_node_ext/d3d11_shared_texture_importer.cpp`
 - `source_code/agora_node_ext/d3d11_shared_texture_preview.cpp`
+- `source_code/agora_node_ext/iosurface_shared_texture_importer.cpp`
 - `source_code/agora_node_ext/shared_texture_request.cpp`
 - `native/Agora_Native_SDK_for_Windows_FULL/sdk/high_level_api/include/AgoraMediaBase.h`
 - `native/Agora_Native_SDK_for_Windows_FULL/sdk/high_level_api/include/IAgoraMediaEngine.h`
@@ -296,7 +399,7 @@ DXGI Format、Texture Slice、Adapter 选择、同步和完成语义。
 
 ## Windows 测量矩阵
 
-hidden、visible、minimized 分别在 30 和 60 fps 下至少运行十分钟。令
+hidden、visible、minimized 分别在 30、48 和 60 fps 下至少运行十分钟。令
 `T = 1000 / fps`，要求 `abs(P50 - T) / T <= 0.10`、`P99 < 3 * T`，且不存在
 超过 500 ms 的无法解释停顿。Worker draw、paint、submission、编码帧、发送帧率
 和码率必须持续增长，同时远端画面保持运动。

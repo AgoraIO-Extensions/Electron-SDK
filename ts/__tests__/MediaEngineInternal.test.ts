@@ -1,25 +1,4 @@
 import createAgoraRtcEngine from '../AgoraSdk';
-import { AgoraElectronBridge } from '../Private/internal/IrisApiEngine';
-
-test('pushSharedD3D11Texture forwards the native request', async () => {
-  const frame = {
-    frameId: 7,
-    ntHandle: Buffer.alloc(8, 1),
-    width: 1920,
-    height: 1080,
-    timestampUs: 123456,
-    rtcTimestampMs: 4242,
-    pixelFormat: 'bgra' as const,
-  };
-  const nativeResult = { frameId: 7, result: 0 };
-  const bridge = AgoraElectronBridge as any;
-  bridge.PushSharedD3D11Texture.mockResolvedValueOnce(nativeResult);
-
-  await expect(
-    createAgoraRtcEngine().getMediaEngine().pushSharedD3D11Texture(frame)
-  ).resolves.toEqual(nativeResult);
-  expect(bridge.PushSharedD3D11Texture).toHaveBeenCalledWith(frame);
-});
 
 test('addListener', () => {
   const engine = createAgoraRtcEngine().getMediaEngine();

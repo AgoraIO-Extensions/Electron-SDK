@@ -20,8 +20,10 @@ jest.mock('@ant-design/icons', () => ({
 jest.mock('../../../components/ui', () => ({
   AgoraButton: ({ title }: any) => <button>{title}</button>,
   AgoraDivider: () => <hr />,
-  AgoraDropdown: ({ title, value }: any) => (
-    <div data-control={title}>{String(value)}</div>
+  AgoraDropdown: ({ items, title, value }: any) => (
+    <div data-control={title}>
+      {String(value)} {items.map((item: any) => item.label).join(' ')}
+    </div>
   ),
   AgoraStyle: { screen: 'screen', content: 'content', rightBar: 'right' },
   AgoraText: ({ children }: any) => <div>{children}</div>,
@@ -63,6 +65,7 @@ test('renders pacing controls and the latest stream status', () => {
   );
 
   expect(markup).toContain('data-control="Frame rate"');
+  expect(markup).toContain('48 fps');
   expect(markup).toContain('data-control="Capture window"');
   expect(markup).toContain('healthy');
   expect(markup).toContain('Paint: 120');

@@ -11,8 +11,8 @@ constexpr uint32_t kMaxTextureDimension = 16384;
 bool ValidateSharedTextureRequest(const SharedTextureRequest &request,
                                   uint64_t last_frame_id,
                                   std::string &error) {
-  if (request.handle_size != sizeof(request.nt_handle)) {
-    error = "ntHandle must contain exactly 8 bytes";
+  if (request.handle_size != sizeof(request.native_handle)) {
+    error = "nativeHandle must contain exactly 8 bytes";
     return false;
   }
   if (request.width == 0 || request.width > kMaxTextureDimension ||

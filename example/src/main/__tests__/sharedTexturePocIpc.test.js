@@ -64,7 +64,7 @@ test('accepts only supported frame rates and capture window states', async () =>
     channelId: 'channel',
     token: '',
     uid: 1,
-    frameRate: 60,
+    frameRate: 48,
     captureWindowState: 'minimized',
   };
 

@@ -11,7 +11,9 @@ class SharedTexturePocController {
   constructor({
     BrowserWindow,
     createRtcEngine,
+    nativeBridge,
     scenePath,
+    platform = process.platform,
     logger = console,
     onStatus = () => {},
     subscribeGpuProcessGone = () => () => {},
@@ -25,7 +27,9 @@ class SharedTexturePocController {
   }) {
     this.BrowserWindow = BrowserWindow;
     this.createRtcEngine = createRtcEngine;
+    this.nativeBridge = nativeBridge;
     this.scenePath = scenePath;
+    this.platform = platform;
     this.logger = logger;
     this.onStatus = onStatus;
     this.subscribeGpuProcessGone = subscribeGpuProcessGone;
@@ -68,7 +72,9 @@ class SharedTexturePocController {
     if (this.state !== 'idle' && this.state !== 'failed') {
       throw new Error('Shared Texture PoC is busy');
     }
-    if (![30, 60].includes(frameRate)) throw new Error('Invalid frame rate');
+    if (![30, 48, 60].includes(frameRate)) {
+      throw new Error('Invalid frame rate');
+    }
     if (!['hidden', 'visible', 'minimized'].includes(captureWindowState)) {
       throw new Error('Invalid capture window state');
     }
@@ -117,6 +123,10 @@ class SharedTexturePocController {
       this.requireSuccess(
         this.mediaEngine.setExternalVideoSource(true, true, 0),
         'setExternalVideoSource'
+      );
+      this.requireSuccess(
+        this.engine.setVideoEncoderConfiguration({ frameRate }),
+        'setVideoEncoderConfiguration'
       );
 
       this.window = new this.BrowserWindow({
@@ -329,12 +339,18 @@ class SharedTexturePocController {
   toFrame(texture, frameId, rtcTimestampMs) {
     const info = texture && texture.textureInfo;
     const handle = info && info.handle;
+    const nativeHandle =
+      this.platform === 'win32'
+        ? handle && handle.ntHandle
+        : this.platform === 'darwin'
+        ? handle && handle.ioSurface
+        : null;
     const size = info && (info.codedSize || info.size);
     const format = info && this.normalizePixelFormat(info.pixelFormat);
     if (
       !info ||
       !handle ||
-      !Buffer.isBuffer(handle.ntHandle) ||
+      !Buffer.isBuffer(nativeHandle) ||
       !size ||
       !Number.isInteger(size.width) ||
       !Number.isInteger(size.height) ||
@@ -345,13 +361,13 @@ class SharedTexturePocController {
     }
     return {
       frameId,
-      ntHandle: handle.ntHandle,
+      nativeHandle,
       width: size.width,
       height: size.height,
       timestampUs: info.timestamp,
       rtcTimestampMs,
       pixelFormat: format,
-      directHandlePreview: true,
+      directHandlePreview: this.platform === 'win32',
     };
   }
 
@@ -370,7 +386,7 @@ class SharedTexturePocController {
     const submission = { generation, texture, promise: null };
     let nativeResult;
     try {
-      nativeResult = this.mediaEngine.pushSharedD3D11Texture(frame);
+      nativeResult = this.nativeBridge.PushSharedTexture(frame);
     } catch (error) {
       telemetry.recordSubmissionFailure();
       this.releaseOnce(texture);

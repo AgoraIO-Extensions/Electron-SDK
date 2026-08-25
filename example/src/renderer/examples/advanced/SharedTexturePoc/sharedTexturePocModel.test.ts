@@ -49,10 +49,10 @@ test('reads Settings changed after the model was imported', () => {
 });
 
 test('includes temporary pacing options without changing Settings', () => {
-  expect(createSharedTexturePocConfig('page-channel', 60, 'minimized')).toEqual(
+  expect(createSharedTexturePocConfig('page-channel', 48, 'minimized')).toEqual(
     expect.objectContaining({
       channelId: 'page-channel',
-      frameRate: 60,
+      frameRate: 48,
       captureWindowState: 'minimized',
     })
   );

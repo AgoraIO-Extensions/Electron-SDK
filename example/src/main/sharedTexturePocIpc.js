@@ -19,8 +19,8 @@ function validateConfig(config) {
     throw new TypeError('uid must be a nonnegative integer');
   }
   const frameRate = config.frameRate == null ? 30 : config.frameRate;
-  if (frameRate !== 30 && frameRate !== 60) {
-    throw new TypeError('frameRate must be 30 or 60');
+  if (![30, 48, 60].includes(frameRate)) {
+    throw new TypeError('frameRate must be 30, 48, or 60');
   }
   const captureWindowState = config.captureWindowState || 'hidden';
   if (!['hidden', 'visible', 'minimized'].includes(captureWindowState)) {

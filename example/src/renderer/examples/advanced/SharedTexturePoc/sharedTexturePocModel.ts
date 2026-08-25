@@ -5,7 +5,7 @@ export interface SharedTexturePocConfig {
   channelId: string;
   token: string;
   uid: number;
-  frameRate: 30 | 60;
+  frameRate: 30 | 48 | 60;
   captureWindowState: SharedTextureCaptureWindowState;
 }
 
@@ -39,7 +39,7 @@ export const getInitialSharedTextureChannel = () => Config.channelId;
 
 export const createSharedTexturePocConfig = (
   channelId: string,
-  frameRate: 30 | 60 = 30,
+  frameRate: 30 | 48 | 60 = 30,
   captureWindowState: SharedTextureCaptureWindowState = 'hidden'
 ): SharedTexturePocConfig => ({
   appId: Config.appId,

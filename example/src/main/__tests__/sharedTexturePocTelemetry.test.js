@@ -39,6 +39,9 @@ test('parses only the versioned worker diagnostic protocol', () => {
 });
 
 test('rejects invalid worker clock and interval fields', () => {
+  expect(parseWorkerDiagnostic(workerLine({ requestedFrameRate: 48 }))).toEqual(
+    expect.objectContaining({ requestedFrameRate: 48 })
+  );
   expect(() => parseWorkerDiagnostic(workerLine({ sequence: -1 }))).toThrow(
     'Invalid shared texture Worker diagnostic'
   );

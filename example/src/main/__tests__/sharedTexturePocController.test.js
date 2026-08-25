@@ -13,7 +13,10 @@ function deferred() {
 function createTexture(frameId) {
   return {
     textureInfo: {
-      handle: { ntHandle: Buffer.alloc(8, frameId) },
+      handle: {
+        ntHandle: Buffer.alloc(8, frameId),
+        ioSurface: Buffer.alloc(8, frameId),
+      },
       codedSize: { width: 640, height: 360 },
       timestamp: frameId * 1000,
       pixelFormat: 'bgra',
@@ -27,17 +30,20 @@ function createHarness(overrides = {}) {
   const submissions = [];
   const statusSnapshots = [];
   const gpuListeners = [];
-  const mediaEngine = {
-    setExternalVideoSource: jest.fn(() => 0),
-    pushSharedD3D11Texture: jest.fn((frame) => {
+  const nativeBridge = {
+    PushSharedTexture: jest.fn((frame) => {
       const submission = deferred();
       submissions.push({ frame, ...submission });
       return submission.promise;
     }),
   };
+  const mediaEngine = {
+    setExternalVideoSource: jest.fn(() => 0),
+  };
   const engine = {
     initialize: jest.fn(() => 0),
     enableVideo: jest.fn(() => 0),
+    setVideoEncoderConfiguration: jest.fn(() => 0),
     getCurrentMonotonicTimeInMs: jest.fn(() => 4242),
     getMediaEngine: jest.fn(() => mediaEngine),
     registerEventHandler: jest.fn((handler) => {
@@ -87,6 +93,8 @@ function createHarness(overrides = {}) {
   const controller = new SharedTexturePocController({
     BrowserWindow: FakeBrowserWindow,
     createRtcEngine: () => engine,
+    nativeBridge,
+    platform: 'win32',
     scenePath: '/test/sharedTextureScene.html',
     logger: { error: jest.fn() },
     onStatus: (snapshot) => statusSnapshots.push(snapshot),
@@ -97,6 +105,7 @@ function createHarness(overrides = {}) {
     controller,
     engine,
     mediaEngine,
+    nativeBridge,
     submissions,
     join,
     statusSnapshots,
@@ -127,6 +136,9 @@ test('starts the default external texture source before accepting frames', async
     true,
     0
   );
+  expect(harness.engine.setVideoEncoderConfiguration).toHaveBeenCalledWith({
+    frameRate: 30,
+  });
   expect(harness.engine.joinChannel).toHaveBeenCalledWith(
     '',
     'channel',
@@ -162,11 +174,26 @@ test.each([
     expect(
       harness.controller.window.webContents.setFrameRate
     ).toHaveBeenCalledWith(60);
+    expect(harness.engine.setVideoEncoderConfiguration).toHaveBeenCalledWith({
+      frameRate: 60,
+    });
     expect(harness.controller.window.minimize).toHaveBeenCalledTimes(
       minimized ? 1 : 0
     );
   }
 );
+
+test('configures the compositor and encoder at 48 fps', async () => {
+  const harness = createHarness();
+  await start(harness, { frameRate: 48 });
+
+  expect(
+    harness.controller.window.webContents.setFrameRate
+  ).toHaveBeenCalledWith(48);
+  expect(harness.engine.setVideoEncoderConfiguration).toHaveBeenCalledWith({
+    frameRate: 48,
+  });
+});
 
 test('records paint, submission, and RTC statistics in status snapshots', async () => {
   let monotonic = 100;
@@ -209,7 +236,7 @@ test('rejects a frame when the SDK monotonic clock is unavailable', async () => 
 
   harness.controller.handlePaint(texture);
 
-  expect(harness.mediaEngine.pushSharedD3D11Texture).not.toHaveBeenCalled();
+  expect(harness.nativeBridge.PushSharedTexture).not.toHaveBeenCalled();
   expect(texture.release).toHaveBeenCalledTimes(1);
   expect(harness.controller.getTelemetrySnapshot().submissionFailureCount).toBe(
     1
@@ -473,10 +500,27 @@ test('submits a shared texture from the Electron paint event', async () => {
   harness.controller.window.paint({ texture });
 
   expect(harness.submissions).toHaveLength(1);
-  expect(harness.submissions[0].frame.ntHandle).toEqual(
+  expect(harness.submissions[0].frame.nativeHandle).toEqual(
     texture.textureInfo.handle.ntHandle
   );
   expect(harness.submissions[0].frame.directHandlePreview).toBe(true);
+  harness.submissions[0].resolve({ frameId: 1, result: 0 });
+  await new Promise(setImmediate);
+  expect(texture.release).toHaveBeenCalledTimes(1);
+});
+
+test('submits the Electron IOSurface on macOS', async () => {
+  const harness = createHarness({ platform: 'darwin' });
+  await start(harness);
+  const texture = createTexture(1);
+
+  harness.controller.handlePaint(texture);
+
+  expect(harness.submissions).toHaveLength(1);
+  expect(harness.submissions[0].frame.nativeHandle).toEqual(
+    texture.textureInfo.handle.ioSurface
+  );
+  expect(harness.submissions[0].frame.directHandlePreview).toBe(false);
   harness.submissions[0].resolve({ frameId: 1, result: 0 });
   await new Promise(setImmediate);
   expect(texture.release).toHaveBeenCalledTimes(1);
@@ -505,7 +549,7 @@ test('keeps only the latest pending texture and releases every texture once', as
   expect(first.release).toHaveBeenCalledTimes(1);
   expect(harness.submissions).toHaveLength(2);
   expect(harness.submissions[1].frame.frameId).toBe(2);
-  expect(harness.submissions[1].frame.ntHandle).toEqual(
+  expect(harness.submissions[1].frame.nativeHandle).toEqual(
     third.textureInfo.handle.ntHandle
   );
   expect(harness.submissions[1].frame.rtcTimestampMs).toBe(300);
@@ -558,7 +602,7 @@ test('continues with the latest pending frame while join is starting', async () 
   harness.submissions[0].resolve({ frameId: 1, result: 0 });
   await new Promise(setImmediate);
   expect(harness.submissions).toHaveLength(2);
-  expect(harness.submissions[1].frame.ntHandle).toEqual(
+  expect(harness.submissions[1].frame.nativeHandle).toEqual(
     second.textureInfo.handle.ntHandle
   );
 

@@ -35,9 +35,9 @@ std::string HResultError(const char *operation, HRESULT result) {
 
 HANDLE DecodeHandle(const SharedTextureRequest &request) {
   uintptr_t value = 0;
-  static_assert(sizeof(value) == sizeof(request.nt_handle),
+  static_assert(sizeof(value) == sizeof(request.native_handle),
                 "The preview supports only 64-bit native handles");
-  std::memcpy(&value, request.nt_handle, sizeof(value));
+  std::memcpy(&value, request.native_handle, sizeof(value));
   return reinterpret_cast<HANDLE>(value);
 }
 

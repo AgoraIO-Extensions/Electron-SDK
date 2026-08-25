@@ -12,7 +12,7 @@ function isWorkerDiagnostic(value) {
     typeof value.type === 'string' &&
     Number.isInteger(value.sequence) &&
     value.sequence >= 0 &&
-    (value.requestedFrameRate === 30 || value.requestedFrameRate === 60) &&
+    [30, 48, 60].includes(value.requestedFrameRate) &&
     isFiniteNumber(value.timeOriginMs) &&
     isFiniteNumber(value.monotonicTimeMs) &&
     Array.isArray(value.drawIntervalsMs) &&

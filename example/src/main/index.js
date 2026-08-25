@@ -3,6 +3,7 @@ import { format as formatUrl } from 'url';
 
 import 'agora-electron-sdk/js/Private/ipc/main.js';
 import { createAgoraRtcEngine } from 'agora-electron-sdk';
+import { AgoraElectronBridge } from 'agora-electron-sdk/js/Private/internal/IrisApiEngine.js';
 import {
   BrowserWindow,
   app,
@@ -128,6 +129,7 @@ app.on('ready', () => {
   sharedTexturePocController = new SharedTexturePocController({
     BrowserWindow,
     createRtcEngine: createAgoraRtcEngine,
+    nativeBridge: AgoraElectronBridge,
     scenePath: getSharedTextureScenePath(),
     subscribeGpuProcessGone,
   });

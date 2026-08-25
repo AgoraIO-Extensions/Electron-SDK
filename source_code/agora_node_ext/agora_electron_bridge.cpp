@@ -7,6 +7,7 @@
 #include "agora_electron_bridge.h"
 #include "d3d11_shared_texture_preview.h"
 #include "d3d11_shared_texture_importer.h"
+#include "iosurface_shared_texture_importer.h"
 #include "iris_base.h"
 #include "node_iris_event_handler.h"
 #include <iostream>
@@ -53,7 +54,7 @@ napi_value AgoraElectronBridge::Init(napi_env env, napi_value exports) {
       DECLARE_NAPI_METHOD("SetAddonLogFile", SetAddonLogFile),
       DECLARE_NAPI_METHOD("InitializeEnv", InitializeEnv),
       DECLARE_NAPI_METHOD("ReleaseEnv", ReleaseEnv),
-      DECLARE_NAPI_METHOD("PushSharedD3D11Texture", PushSharedD3D11Texture),
+      DECLARE_NAPI_METHOD("PushSharedTexture", PushSharedTexture),
       DECLARE_NAPI_METHOD("ReleaseRenderer", ReleaseRenderer)};
 
   napi_value cons;
@@ -287,16 +288,17 @@ bool ParseSharedTextureRequest(napi_env env, napi_value value,
   bool is_buffer = false;
   void *handle_data = nullptr;
   size_t handle_size = 0;
-  if (napi_get_named_property(env, value, "ntHandle", &handle_value) != napi_ok ||
+  if (napi_get_named_property(env, value, "nativeHandle", &handle_value) != napi_ok ||
       napi_is_buffer(env, handle_value, &is_buffer) != napi_ok || !is_buffer ||
       napi_get_buffer_info(env, handle_value, &handle_data, &handle_size) !=
           napi_ok) {
-    error = "ntHandle must be a Buffer";
+    error = "nativeHandle must be a Buffer";
     return false;
   }
   request.handle_size = handle_size;
-  if (handle_size == sizeof(request.nt_handle)) {
-    std::memcpy(request.nt_handle, handle_data, sizeof(request.nt_handle));
+  if (handle_size == sizeof(request.native_handle)) {
+    std::memcpy(request.native_handle, handle_data,
+                sizeof(request.native_handle));
   }
 
   double frame_id;
@@ -367,7 +369,7 @@ bool ParseSharedTextureRequest(napi_env env, napi_value value,
 
 }// namespace
 
-napi_value AgoraElectronBridge::PushSharedD3D11Texture(
+napi_value AgoraElectronBridge::PushSharedTexture(
     napi_env env, napi_callback_info info) {
   size_t argc = 1;
   napi_value args[1];
@@ -394,17 +396,27 @@ napi_value AgoraElectronBridge::PushSharedD3D11Texture(
     return RejectPromise(env, "ERR_INVALID_ARGUMENT", error);
   }
 
-#if defined(_WIN32)
   if (!bridge->_iris_api_engine) { bridge->Init(); }
+  SharedTextureSubmissionResult submission{};
+#if defined(_WIN32)
   if (request.direct_handle_preview &&
       !RenderSharedD3D11TexturePreview(request, error)) {
     return RejectPromise(env, "ERR_SHARED_TEXTURE_PREVIEW", error);
   }
-  SharedTextureSubmissionResult submission{};
   if (!SubmitSharedD3D11Texture(request, bridge->_iris_api_engine.get(),
                                 submission, error)) {
     return RejectPromise(env, "ERR_SHARED_TEXTURE_SUBMISSION", error);
   }
+#elif defined(__APPLE__)
+  if (!SubmitSharedIOSurfaceTexture(request, bridge->_iris_api_engine.get(),
+                                    submission, error)) {
+    return RejectPromise(env, "ERR_SHARED_TEXTURE_SUBMISSION", error);
+  }
+#else
+  return RejectPromise(env, "ERR_PLATFORM_UNSUPPORTED",
+                       "shared textures are supported only on Windows and macOS");
+#endif
+
   int rtc_result_value = 0;
   if (!ParseRtcResult(env, submission.rtc_response, rtc_result_value, error)) {
     return RejectPromise(env, "ERR_SHARED_TEXTURE_RESPONSE", error);
@@ -433,10 +445,6 @@ napi_value AgoraElectronBridge::PushSharedD3D11Texture(
   napi_set_named_property(env, response, "adapterLuid", adapter_luid);
   napi_resolve_deferred(env, deferred, response);
   return promise;
-#else
-  return RejectPromise(env, "ERR_PLATFORM_UNSUPPORTED",
-                       "D3D11 shared textures are supported only on Windows");
-#endif
 }
 
 napi_value AgoraElectronBridge::GetBuffer(napi_env env,

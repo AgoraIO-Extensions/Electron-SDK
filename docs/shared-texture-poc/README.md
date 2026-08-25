@@ -4,11 +4,12 @@
 
 ## Status
 
-This proof of concept publishes an Electron offscreen-rendered scene to an
-Agora channel on Windows. This temporary development-package variant passes
-Electron's original NT handle value through the `d3d11Texture2d` Iris slot so
-the Native RTC SDK team can validate opening it internally. Remote rendering with that Native SDK is
-the handoff acceptance test, not a result claimed by this repository build.
+This proof of concept publishes an Electron offscreen-rendered scene through
+the platform-native shared-texture path. Windows passes Electron's original NT
+handle through the `d3d11Texture2d` Iris slot. macOS converts Electron's local
+`IOSurfaceRef` to an `IOSurfaceID`, which Native looks up and retains. Windows
+remote publishing has been validated; macOS remote rendering remains the
+handoff acceptance test and is not claimed by a successful repository build.
 
 The validated environment is:
 
@@ -30,15 +31,18 @@ The PoC implements the complete publishing workflow:
 3. An offscreen `BrowserWindow` hosts a real DOM canvas with
    `offscreen.useSharedTexture: true`. The page calls
    `transferControlToOffscreen()` and a dedicated Worker owns WebGL2, rendering,
-   and its timer-driven 30/60 fps loop.
-4. Electron 43 supplies each frame as `details.texture`. The Windows NT handle
-   is read from `texture.textureInfo.handle.ntHandle`.
-5. The native addon validates the frame metadata and decodes the eight handle
-   bytes without changing their value.
-6. The addon places the original NT handle value, not its address, in Iris
-   buffer slot 4. It does not create a D3D11 device or open the resource.
-7. The Native RTC SDK opens and validates the handle synchronously before the
-   Iris call returns. It owns any COM reference retained for later processing.
+   and its timer-driven 30/48/60 fps loop.
+4. Electron 43 supplies each frame as `details.texture`. Windows uses
+   `texture.textureInfo.handle.ntHandle`; macOS uses
+   `texture.textureInfo.handle.ioSurface`.
+5. The native addon validates the frame metadata and decodes the eight native
+   handle bytes. On macOS it obtains the ID, dimensions, and stride with the
+   IOSurface API.
+6. Windows places the original NT handle value in Iris buffer slot 4. macOS
+   submits `iosurfaceId` in the `ExternalVideoFrame` JSON with no CPU pixel
+   buffer.
+7. Native opens the D3D11 resource or looks up and retains the IOSurface before
+   the Iris call returns, so Electron can then release its borrowed texture.
 8. Submission errors from both the Iris transport and RTC API result are
    propagated to JavaScript.
 9. Stop and failure paths drain the active submission, release every Electron
@@ -61,6 +65,104 @@ synchronization. Favorited must timestamp `AudioFrame.renderTimeMs` with the
 same Agora SDK monotonic clock and validate long-running drift. The previous
 `timestamp = 0` behavior was only a compatibility measure to avoid passing an
 unrelated Electron clock value that could be rejected as old.
+
+## macOS IOSurface Adaptation
+
+### Process And API Boundary
+
+The macOS path keeps platform interop out of the customer renderer. The Worker
+and renderer only draw WebGL content. Electron's GPU process produces the
+compositor IOSurface, then the offscreen `paint` event delivers a process-local
+`IOSurfaceRef` Buffer to the Electron main/browser process. The renderer never
+receives or interprets that reference.
+
+```text
+Worker WebGL2
+  -> Electron GPU process / compositor
+  -> main-process webContents paint event
+  -> texture.textureInfo.handle.ioSurface
+  -> AgoraElectronBridge.PushSharedTexture
+  -> addon IOSurfaceGetID
+  -> Iris ExternalVideoFrame.iosurfaceId
+  -> Native IOSurfaceLookup + retain
+  -> RTC encoder
+```
+
+`PushSharedTexture` is a hand-written Electron native-addon API declared on
+`IAgoraElectronBridge`. It is intentionally not added to generated
+`IMediaEngine` files, so Native SDK code generation cannot remove it. The same
+main-process controller calls this API on Windows and macOS; it only selects
+Electron's platform handle field (`ntHandle` or `ioSurface`).
+
+The `IOSurfaceRef` pointer is borrowed and valid only in the process where
+Electron delivered it. The PoC never sends that pointer through Electron IPC.
+The addon, which is loaded in the same main process, immediately converts it to
+the numeric `IOSurfaceID` required by Native RTC.
+
+### Frame Metadata And Submission
+
+The addon validates every macOS frame before calling Iris:
+
+- The native-handle Buffer must contain one 64-bit `IOSurfaceRef` value.
+- `IOSurfaceGetWidth()` and `IOSurfaceGetHeight()` must match Electron's
+  `textureInfo.codedSize`.
+- `IOSurfaceGetBytesPerRow()` is converted to `stride` in pixels. BGRA/RGBA use
+  four bytes per pixel; the code does not assume `stride == width`.
+- Electron `bgra` maps to `VIDEO_CVPIXEL_BGRA` (`14`), and `rgba` maps to
+  `VIDEO_PIXEL_RGBA` (`4`). NV12, P010, and multi-plane input are not enabled in
+  this PoC.
+- `timestamp` uses `getCurrentMonotonicTimeInMs()`. Electron's compositor
+  timestamp remains diagnostic metadata and is never used as the RTC clock.
+- The IOSurface path supplies no CPU pixel buffer and performs no Electron-side
+  `readPixels`, staging-buffer readback, or full-frame memory copy.
+
+The matching CSD-79710 Native SDK contract states that it performs
+`IOSurfaceLookup` and retains the imported resource. Iris returns the actual RTC
+result synchronously. Only after that call succeeds or fails does the controller
+call `texture.release()`. The controller allows one active submission and keeps
+only the latest pending frame, preventing early release and unbounded queueing.
+
+### Frame Rate, Background Operation, And Recovery
+
+The selected 30, 48, or 60 fps value is applied to all three pacing stages:
+
+- Worker WebGL draw loop
+- Electron `webContents.setFrameRate()` compositor target
+- RTC `setVideoEncoderConfiguration({ frameRate })` encoder target
+
+`sentFrameRate` remains an observed RTC statistic rather than a hard guarantee;
+network or device adaptation can reduce it. The hidden capture window uses
+`show: false` and `backgroundThrottling: false`, but each target mode must still
+be measured on supported macOS hardware.
+
+Renderer termination, WebGL context loss, GPU-process exit, and paint gaps are
+reported by the existing health state. No IOSurface ID is cached across frames,
+so resumed `paint` events naturally provide current surfaces. Native lookup or
+import errors are returned as submission failures. Full recovery from an actual
+macOS GPU reset remains an acceptance test.
+
+### Verified Scope
+
+The macOS implementation has been verified with:
+
+- A universal `arm64`/`x86_64` Electron addon linked with
+  `IOSurface.framework`.
+- A matching Iris build whose `ExternalVideoFrame` serializer includes
+  `iosurfaceId`, and a CSD-79710-capable Native RTC SDK.
+- A native test that creates a real IOSurface, passes its pointer through the
+  same eight-byte handle representation, and verifies the generated ID, stride,
+  metadata, and empty Iris pointer buffers.
+- Electron 43.2.0 startup and live-channel submission logs containing changing
+  IOSurface IDs, BGRA format `14`, `800 x 600` metadata, and RTC result `0`.
+- A local 30 fps smoke run with paint P50 near `33.3 ms`, no submission
+  failures, and RTC `sentFrameRate` reaching `30` after encoder pacing was
+  aligned.
+
+This evidence proves the Electron-to-Native IOSurface transport and encoder
+submission path. It does not by itself claim remote visual correctness,
+end-to-end zero-copy encoding, zero-copy operation across different Metal
+devices, long-running A/V drift compliance, or GPU-reset recovery. Those remain
+customer acceptance measurements.
 
 ## Worker Topology And Diagnostics
 
@@ -90,8 +192,11 @@ The production configuration uses all three controls below:
 - `show: false` keeps the capture window hidden from creation without using a
   minimized visible window.
 - `backgroundThrottling: false` disables normal renderer background throttling.
-- `webContents.setFrameRate(30 | 60)` sets the target compositor cadence, while
+- `webContents.setFrameRate(30 | 48 | 60)` sets the target compositor cadence, while
   the Worker runs its own timer-driven WebGL2 draw loop at the same target rate.
+- `setVideoEncoderConfiguration({ frameRate })` applies the same target to the
+  RTC encoder; without it, the SDK defaults to 15 fps and drops excess input
+  frames before encoding.
 
 The `visible` and `minimized` capture-window modes in the PoC exist only for
 comparison testing. The production recommendation is the dedicated
@@ -103,8 +208,8 @@ real-time or cross-platform frame-rate guarantee. Acceptance must measure each
 stage separately: Worker draw intervals, Electron shared-texture `paint`
 intervals, Native submissions, and RTC sent/encoded frame rate. The PoC reports
 these metrics and marks health degraded after a paint gap longer than 500 ms.
-Windows D3D11 is the currently implemented path. macOS background pacing and
-IOSurface/Metal transport require separate validation.
+Windows D3D11 and macOS IOSurface transport are implemented. macOS background
+pacing and remote publishing still require platform validation.
 
 ## Target Ownership Boundary
 
@@ -113,14 +218,14 @@ IOSurface/Metal transport require separate validation.
   preview, A/V clock mapping, and renderer/WebGL/stream recovery.
 - The platform-neutral Agora Electron API accepts the compositor texture and
   exposes the Agora monotonic clock needed by Favorited's A/V mapping.
-- Agora owns Windows NT-handle/D3D11 interop and eventual macOS IOSurface/Metal
-  interop. Before Electron releases the source texture, Agora must synchronously
+- Agora owns Windows NT-handle/D3D11 and macOS IOSurface/Metal interop. Before
+  Electron releases the source texture, Agora must synchronously
   consume it or retain/GPU-copy it into an Agora-owned resource.
 - Agora owns native texture-import, stale-handle, D3D11 device-loss, and SDK
   resource recovery, and reports actionable failures to Favorited. Favorited
   writes no platform-specific native interop code.
 
-The Advanced page allows temporary selection of 30 or 60 fps and the three
+The Advanced page allows temporary selection of 30, 48, or 60 fps and the three
 measurement modes described above. The controller calls
 `webContents.setFrameRate()` and verifies `getFrameRate()`; the Worker
 independently uses a timer-driven target cadence.
@@ -161,6 +266,8 @@ The development package is required to pass:
 - The native `shared_texture_request` CTest
 - Windows x64 packaging with the Example resolved to this checkout's addon,
   rebuilt for Electron `43.2.0` ABI `148`
+- macOS universal addon compilation against an Iris build that serializes
+  `ExternalVideoFrame.iosurfaceId`
 
 The earlier CPU-readback implementation passed a real-channel smoke test. That
 result does not prove that the direct-texture Native SDK path works. The native
@@ -178,6 +285,16 @@ Electron NT handle
   -> Native-owned ID3D11Texture2D
   -> RTC SDK
   -> encoder
+```
+
+On macOS the corresponding path is:
+
+```text
+Electron IOSurfaceRef
+  -> addon IOSurfaceGetID / dimensions / stride
+  -> Iris ExternalVideoFrame.iosurfaceId
+  -> Native SDK IOSurfaceLookup + retain
+  -> RTC SDK -> encoder
 ```
 
 ### Raw-handle preview diagnostic
@@ -203,7 +320,7 @@ The following items are intentionally not claimed by this PoC:
 - End-to-end zero-copy encoding
 - GPU-only BGRA/RGBA-to-NV12 conversion
 - D3D11 device, adapter, or texture-pool reuse across frames
-- NV12, P010, multi-plane, or non-Windows shared-texture support
+- NV12, P010, or multi-plane shared-texture support
 - An automated remote-client video-content assertion
 
 The Electron `HANDLE` is borrowed. Neither the addon nor the Native SDK may
@@ -333,6 +450,7 @@ conditions pass:
 - `source_code/agora_node_ext/agora_electron_bridge.cpp`
 - `source_code/agora_node_ext/d3d11_shared_texture_importer.cpp`
 - `source_code/agora_node_ext/d3d11_shared_texture_preview.cpp`
+- `source_code/agora_node_ext/iosurface_shared_texture_importer.cpp`
 - `source_code/agora_node_ext/shared_texture_request.cpp`
 - `native/Agora_Native_SDK_for_Windows_FULL/sdk/high_level_api/include/AgoraMediaBase.h`
 - `native/Agora_Native_SDK_for_Windows_FULL/sdk/high_level_api/include/IAgoraMediaEngine.h`
@@ -341,7 +459,7 @@ Runtime logs are written to `%LOCALAPPDATA%\Agora\electron`.
 
 ## Windows Measurement Matrix
 
-Run hidden, visible, and minimized at both 30 and 60 fps for at least ten
+Run hidden, visible, and minimized at 30, 48, and 60 fps for at least ten
 minutes per combination. With `T = 1000 / fps`, require
 `abs(P50 - T) / T <= 0.10`, `P99 < 3 * T`, and no unexplained gap above 500 ms.
 Worker draw, paint, submission, encoded-frame, frame-rate, and bitrate metrics

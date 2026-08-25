@@ -31,13 +31,13 @@ interface SharedTexturePocViewProps {
   captureWindowState: SharedTextureCaptureWindowState;
   channelId: string;
   error: string;
-  frameRate: 30 | 60;
+  frameRate: 30 | 48 | 60;
   hideRightBar: boolean;
   lifecycle: SharedTexturePocLifecycle;
   status: SharedTexturePocStatus | null;
   onCaptureWindowStateChange: (value: SharedTextureCaptureWindowState) => void;
   onChannelChange: (value: string) => void;
-  onFrameRateChange: (value: 30 | 60) => void;
+  onFrameRateChange: (value: 30 | 48 | 60) => void;
   onToggleChannel: () => void;
   onToggleRightBar: () => void;
 }
@@ -103,9 +103,10 @@ export function SharedTexturePocView({
           enabled={lifecycle === 'idle'}
           items={[
             { label: '30 fps', value: 30 },
+            { label: '48 fps', value: 48 },
             { label: '60 fps', value: 60 },
           ]}
-          onValueChange={(value) => onFrameRateChange(value as 30 | 60)}
+          onValueChange={(value) => onFrameRateChange(value as 30 | 48 | 60)}
           title="Frame rate"
           value={frameRate}
         />
@@ -138,7 +139,7 @@ export default function SharedTexturePoc() {
   const [lifecycle, setLifecycle] = useState<SharedTexturePocLifecycle>('idle');
   const [hideRightBar, setHideRightBar] = useState(false);
   const [error, setError] = useState('');
-  const [frameRate, setFrameRate] = useState<30 | 60>(30);
+  const [frameRate, setFrameRate] = useState<30 | 48 | 60>(30);
   const [captureWindowState, setCaptureWindowState] =
     useState<SharedTextureCaptureWindowState>('hidden');
   const [status, setStatus] = useState<SharedTexturePocStatus | null>(null);

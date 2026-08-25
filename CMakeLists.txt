@@ -87,6 +87,7 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 
   set(AGORA_IRIS_FRAMEWORKS
           "-framework AgoraRtcWrapper"
+          "-framework IOSurface"
           )
 elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
   if (${CMAKE_OSX_ARCHITECTURES} STREQUAL "i386")
@@ -164,6 +165,7 @@ message(=======iris windows lib= IRIs == ${AGORA_IRIS_SDK_LIB})
 if (BUILD_TESTING)
   add_executable(shared_texture_request_test
           ${TARGET_AGORA_NODE_EXT_FILE_DIR}/d3d11_shared_texture_importer.cpp
+          ${TARGET_AGORA_NODE_EXT_FILE_DIR}/iosurface_shared_texture_importer.cpp
           ${TARGET_AGORA_NODE_EXT_FILE_DIR}/shared_texture_request.cpp
           ${TARGET_AGORA_NODE_EXT_FILE_DIR}/tests/shared_texture_request_test.cpp
           )
@@ -174,6 +176,11 @@ if (BUILD_TESTING)
   if (WIN32)
     target_link_libraries(shared_texture_request_test
             ${AGORA_IRIS_SDK_LIB}
+            )
+  elseif (APPLE)
+    target_link_libraries(shared_texture_request_test
+            "-framework IOSurface"
+            "-framework CoreFoundation"
             )
   endif ()
   add_test(NAME shared_texture_request COMMAND shared_texture_request_test)

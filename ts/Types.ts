@@ -118,13 +118,14 @@ export interface Result {
 }
 
 /**
- * Experimental Windows-only D3D11 shared-texture request.
+ * Experimental Electron offscreen shared-texture request.
  *
  * @ignore
  */
-export interface SharedD3D11TextureFrame {
+export interface SharedTextureFrame {
   frameId: number;
-  ntHandle: Buffer;
+  /** Platform-native handle from Electron's SharedTextureHandle. */
+  nativeHandle: Buffer;
   width: number;
   height: number;
   /** Electron texture timestamp in microseconds. */
@@ -132,16 +133,16 @@ export interface SharedD3D11TextureFrame {
   /** Agora SDK monotonic timestamp in milliseconds. */
   rtcTimestampMs: number;
   pixelFormat: 'bgra' | 'rgba';
-  /** Opens a native window that previews the Electron NT handle before RTC. */
+  /** Opens a native preview window on Windows before RTC submission. */
   directHandlePreview?: boolean;
 }
 
 /**
- * Result of an experimental D3D11 shared-texture submission.
+ * Result of an experimental shared-texture submission.
  *
  * @ignore
  */
-export interface SharedD3D11TextureResult {
+export interface SharedTextureResult {
   frameId: number;
   result: number;
   adapterLuid?: string;
@@ -174,9 +175,7 @@ export interface IAgoraElectronBridge {
     bufferCount?: number
   ): Result;
 
-  PushSharedD3D11Texture(
-    frame: SharedD3D11TextureFrame
-  ): Promise<SharedD3D11TextureResult>;
+  PushSharedTexture(frame: SharedTextureFrame): Promise<SharedTextureResult>;
 
   InitializeEnv(): void;
 
