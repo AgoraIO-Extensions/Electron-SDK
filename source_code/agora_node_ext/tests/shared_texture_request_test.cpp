@@ -1,5 +1,6 @@
 #include "../shared_texture_request.h"
 #include "../d3d11_shared_texture_importer.h"
+#include "../iosurface_shared_texture_copy.h"
 #include "../iosurface_shared_texture_importer.h"
 
 #ifdef NDEBUG
@@ -25,6 +26,8 @@ using agora::rtc::electron::BuildSharedTextureCallBuffers;
 using agora::rtc::electron::SubmitSharedTextureCall;
 #if defined(__APPLE__)
 using agora::rtc::electron::BuildIOSurfaceTexturePushJson;
+using agora::rtc::electron::CreateGlobalIOSurfaceGpuCopy;
+using agora::rtc::electron::ReleaseGlobalIOSurface;
 #endif
 
 namespace {
@@ -164,6 +167,30 @@ int main() {
                                IOSurfaceGetBytesPerRow(surface) / 4)) !=
          std::string::npos);
   assert(iosurface_submission.rtc_response == "{\"result\":0}");
+
+  request.iosurface_id = IOSurfaceGetID(surface);
+  std::memset(request.native_handle, 0, sizeof(request.native_handle));
+  FakeIrisEngine lookup_iris_engine;
+  SharedTextureSubmissionResult lookup_submission{};
+  assert(agora::rtc::electron::SubmitSharedIOSurfaceTexture(
+      request, &lookup_iris_engine, lookup_submission, error));
+  assert(lookup_iris_engine.json.find(
+             "\"iosurfaceId\":" + std::to_string(request.iosurface_id)) !=
+         std::string::npos);
+
+  uint32_t global_surface_id = 0;
+  void *retained_global_surface = nullptr;
+  std::memcpy(request.native_handle, &surface_pointer, sizeof(surface_pointer));
+  assert(CreateGlobalIOSurfaceGpuCopy(
+      request.native_handle, sizeof(request.native_handle),
+      SharedTexturePixelFormat::kBgra, global_surface_id,
+      retained_global_surface, error));
+  IOSurfaceRef global_surface = IOSurfaceLookup(global_surface_id);
+  assert(global_surface != nullptr);
+  assert(IOSurfaceGetWidth(global_surface) == request.width);
+  assert(IOSurfaceGetHeight(global_surface) == request.height);
+  CFRelease(global_surface);
+  ReleaseGlobalIOSurface(retained_global_surface);
   CFRelease(surface);
 #endif
 

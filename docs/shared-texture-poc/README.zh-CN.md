@@ -42,13 +42,31 @@ PoC 已经实现完整的视频发布流程：
 9. 停止或异常时会等待正在提交的帧结束，每个 Electron 纹理只释放一次，
    随后离开频道、释放 Engine 并销毁离屏窗口。
 
+### Engine 所在进程示例
+
+Advanced 菜单现在提供两个互斥运行的示例：
+
+- `SharedTexturePoc` 保持原有行为：Electron 主进程创建、加入和释放 RTC Engine，
+  并在主进程提交每个共享纹理。
+- `SharedTextureRendererPoc` 在可见 Renderer 进程中创建、加入和释放独立 RTC
+  Engine。主进程只持有离屏采集窗口、接收 `paint`、逐帧转发，并在 Renderer
+  确认 RTC 提交完成后释放 Electron 纹理。
+
+RTC Engine 对象不会跨进程共享，因此 Renderer 示例在 Renderer 中完成完整 Engine
+生命周期。Windows 由主进程连同进程内 NT Handle 一起发送 PID，Renderer Addon
+先调用 `DuplicateHandle`，再把复制后的 Handle 交给 Native。macOS 由主进程 Addon
+使用 Metal 把借用的 `IOSurfaceRef` GPU copy 到短生命周期的 global IOSurface，
+Renderer 收到它的 `IOSurfaceID` 后调用 `IOSurfaceLookup`。Electron IPC 不会传递
+任何仅在源进程有效的指针，提交完成后会立即释放这份 Surface。
+
 控制器同时只保留一个正在提交的帧和一个最新等待帧，不会形成无限队列。
 如果等待期间又产生新帧，更旧的等待帧会立即释放。加入频道期间和加入成功后
 都允许提交画面。
 
-每个有效 compositor 帧的 `paint` 事件到达主进程时，都会调用
-`getCurrentMonotonicTimeInMs()` 取得 Agora SDK 单调时间。这个毫秒值会作为 RTC
-视频时间戳提交；Electron compositor 时间戳仍单独保留，只用于诊断。
+每个有效 compositor 帧都使用实际提交该帧的 Engine 调用
+`getCurrentMonotonicTimeInMs()`。主进程示例在 `paint` 时打时间戳；Renderer 示例
+在收到转发帧后、调用 `PushSharedTexture` 前打时间戳。这个毫秒值会作为 RTC 视频
+时间戳提交并回传到遥测；Electron compositor 时间戳仍单独保留，只用于诊断。
 
 本 PoC 不采集自定义音频，因此它本身不能证明 A/V 同步已经完成。Favorited 还需
 使用同一个 Agora SDK 单调时钟设置 `AudioFrame.renderTimeMs`，并验证长时间漂移。
@@ -59,10 +77,10 @@ PoC 已经实现完整的视频发布流程：
 
 ### 进程与 API 边界
 
-macOS 链路不会要求客户 Renderer 编写平台互操作代码。Worker 和 Renderer 只负责
-WebGL 绘制；Electron GPU Process 产生 compositor IOSurface，随后离屏 `paint`
-事件把进程内 `IOSurfaceRef` Buffer 交给 Electron Main/Browser Process。
-Renderer 不会获取或解析这个引用。
+macOS 链路不会要求客户 Renderer 解析平台指针。Worker 和 Renderer 只负责 WebGL
+绘制；Electron GPU Process 产生 compositor IOSurface，随后离屏 `paint` 事件把
+进程内 `IOSurfaceRef` Buffer 交给 Electron Main/Browser Process。Renderer Engine
+示例只接收数值型 `IOSurfaceID`，不会获取这个引用。
 
 ```text
 Worker WebGL2
@@ -76,20 +94,23 @@ Worker WebGL2
   -> RTC encoder
 ```
 
-`PushSharedTexture` 是手写在 `IAgoraElectronBridge` 上的 Electron Native Addon
-API，不会加入生成的 `IMediaEngine` 文件，因此 Native SDK codegen 不会删除它。
-同一个主进程 Controller 在 Windows 和 macOS 调用该 API，只负责选择 Electron
-对应的平台 Handle 字段：`ntHandle` 或 `ioSurface`。
+`PushSharedTexture`、`CreateSharedIOSurface` 和 `ReleaseSharedIOSurface` 都是手写在 `IAgoraElectronBridge` 上的
+Electron Native Addon API，不会加入生成的 `IMediaEngine` 文件，因此 Native SDK
+codegen 不会删除它们。主进程示例直接调用 `PushSharedTexture`；Renderer 示例在
+macOS 主进程调用 `CreateSharedIOSurface`，随后在两个平台的 Renderer 中调用
+`PushSharedTexture`。
 
 `IOSurfaceRef` 指针只在 Electron 交付它的当前进程中有效，并且只被借用。PoC
 不会通过 Electron IPC 传递这个指针。Addon 与 `paint` 回调位于同一个主进程，
 因此会立即把它转换为 Native RTC 所需的数值型 `IOSurfaceID`。
+这适用于主进程示例；Renderer 示例则创建前述 global Metal copy。
 
 ### 帧元数据与提交
 
 Addon 会在调用 Iris 前验证每一帧 macOS 输入：
 
-- Native Handle Buffer 必须包含一个 64 位 `IOSurfaceRef` 数值。
+- 同进程提交时，Native Handle Buffer 必须包含一个 64 位 `IOSurfaceRef` 数值；
+  跨进程 Renderer 提交则额外提供已经解析的 `ioSurfaceId`。
 - `IOSurfaceGetWidth()` 和 `IOSurfaceGetHeight()` 必须与 Electron
   `textureInfo.codedSize` 一致。
 - 使用 `IOSurfaceGetBytesPerRow()` 计算像素单位的 `stride`。BGRA/RGBA 每像素
@@ -100,6 +121,23 @@ Addon 会在调用 Iris 前验证每一帧 macOS 输入：
   只用于诊断，不能作为 RTC 时钟。
 - IOSurface 链路不传 CPU 像素 Buffer，也不在 Electron 侧执行 `readPixels`、
   staging-buffer 回读或整帧内存复制。
+- Renderer Engine 示例需要一次 Metal GPU copy，把 Electron 原始 compositor
+  Surface 转成可跨进程 lookup 的 global IOSurface；主进程 Engine 示例仍直接使用
+  原始 Surface，不需要这次 copy。
+- Global IOSurface 仅供这个 PoC bridge 使用，不会跨帧缓存，并在 Renderer 提交完成
+  后立即释放。生产实现应在具备对应互操作能力后优先采用受限的 Mach-port 传输。
+
+本地 Electron 43.2、800 x 600、30 fps 实测中，连续 120 个 compositor 帧始终在
+两个原始 IOSurface ID 之间交替。整个实验期间对这两个原始 Surface 执行
+`CFRetain` 且不释放，也没有改变轮转模式或产生第三个 Surface。这说明 Core
+Foundation 引用计数只能维持对象生命，不能阻止 Chromium 复用；真正控制复用的
+是 Electron `texture.release()` 和 compositor 同步。
+
+双 Surface 只是当前环境观测，不是永久平台契约。resize、设备丢失、Context
+重建或 Chromium 改动都可能替换 Surface 池。未来无 copy 的 Renderer 实现可以为
+每个已观测池成员传递一次 Mach right，逐帧只发送当前 Surface 身份，但必须动态
+注册新 Surface、淘汰旧 Surface，并保持 producer-consumer 同步。仅通过普通
+Electron IPC 发送 ID 仍然不足。
 
 匹配的 CSD-79710 Native SDK 契约明确说明 SDK 会执行 `IOSurfaceLookup` 并 retain
 导入资源。Iris 同步返回真实 RTC 结果；调用成功或失败后，Controller 才调用

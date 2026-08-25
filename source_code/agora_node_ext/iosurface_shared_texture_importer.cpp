@@ -24,9 +24,13 @@ bool ReadIOSurfaceInfo(const SharedTextureRequest &request,
   static_assert(sizeof(value) == sizeof(request.native_handle),
                 "The PoC supports only 64-bit native handles");
   std::memcpy(&value, request.native_handle, sizeof(value));
-  auto surface = reinterpret_cast<IOSurfaceRef>(value);
+  const bool looked_up = request.iosurface_id != 0;
+  auto surface = looked_up
+                     ? IOSurfaceLookup(request.iosurface_id)
+                     : reinterpret_cast<IOSurfaceRef>(value);
   if (surface == nullptr) {
-    error = "ioSurface contains a null IOSurfaceRef";
+    error = looked_up ? "IOSurfaceLookup failed"
+                      : "ioSurface contains a null IOSurfaceRef";
     return false;
   }
 
@@ -34,16 +38,19 @@ bool ReadIOSurfaceInfo(const SharedTextureRequest &request,
   const size_t height = IOSurfaceGetHeight(surface);
   const size_t bytes_per_row = IOSurfaceGetBytesPerRow(surface);
   if (width != request.width || height != request.height) {
+    if (looked_up) { CFRelease(surface); }
     error = "IOSurface dimensions do not match Electron textureInfo";
     return false;
   }
   if (bytes_per_row == 0 || bytes_per_row % 4 != 0
       || bytes_per_row / 4 > std::numeric_limits<uint32_t>::max()) {
+    if (looked_up) { CFRelease(surface); }
     error = "IOSurface BGRA/RGBA stride is invalid";
     return false;
   }
 
   iosurface_id = IOSurfaceGetID(surface);
+  if (looked_up) { CFRelease(surface); }
   if (iosurface_id == 0) {
     error = "IOSurfaceGetID returned 0";
     return false;

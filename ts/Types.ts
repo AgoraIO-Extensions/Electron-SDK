@@ -135,6 +135,10 @@ export interface SharedTextureFrame {
   pixelFormat: 'bgra' | 'rgba';
   /** Opens a native preview window on Windows before RTC submission. */
   directHandlePreview?: boolean;
+  /** Process that owns nativeHandle. Windows duplicates it into the caller. */
+  sourceProcessId?: number;
+  /** Cross-process IOSurface identifier resolved by the Electron main process. */
+  ioSurfaceId?: number;
 }
 
 /**
@@ -176,6 +180,13 @@ export interface IAgoraElectronBridge {
   ): Result;
 
   PushSharedTexture(frame: SharedTextureFrame): Promise<SharedTextureResult>;
+
+  CreateSharedIOSurface(
+    nativeHandle: Buffer,
+    pixelFormat: 'bgra' | 'rgba'
+  ): number;
+
+  ReleaseSharedIOSurface(ioSurfaceId: number): void;
 
   InitializeEnv(): void;
 

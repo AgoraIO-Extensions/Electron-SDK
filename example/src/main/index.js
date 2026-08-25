@@ -14,6 +14,7 @@ import {
 
 import { SharedTexturePocController } from './sharedTexturePocController';
 import { registerSharedTexturePocIpc } from './sharedTexturePocIpc';
+import { registerSharedTextureRendererPocIpc } from './sharedTextureRendererPocIpc';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 app.allowRendererProcessReuse = false;
@@ -22,6 +23,7 @@ app.allowRendererProcessReuse = false;
 let mainWindow;
 let sharedTexturePocController;
 let disposeSharedTexturePocIpc;
+let disposeSharedTextureRendererPocIpc;
 let sharedTextureShutdownComplete = false;
 
 function getSharedTextureScenePath() {
@@ -137,6 +139,25 @@ app.on('ready', () => {
     ipcMain,
     controller: sharedTexturePocController,
   });
+  disposeSharedTextureRendererPocIpc = registerSharedTextureRendererPocIpc({
+    ipcMain,
+    controller: sharedTexturePocController,
+    prepareFrame: (frame) =>
+      process.platform === 'darwin'
+        ? {
+            ...frame,
+            ioSurfaceId: AgoraElectronBridge.CreateSharedIOSurface(
+              frame.nativeHandle,
+              frame.pixelFormat
+            ),
+          }
+        : frame,
+    releaseFrame: (frame) => {
+      if (process.platform === 'darwin' && frame.ioSurfaceId) {
+        AgoraElectronBridge.ReleaseSharedIOSurface(frame.ioSurfaceId);
+      }
+    },
+  });
   mainWindow = createMainWindow();
 });
 
@@ -145,6 +166,8 @@ app.on('before-quit', (event) => {
   event.preventDefault();
   disposeSharedTexturePocIpc?.();
   disposeSharedTexturePocIpc = null;
+  disposeSharedTextureRendererPocIpc?.();
+  disposeSharedTextureRendererPocIpc = null;
   void Promise.resolve(sharedTexturePocController?.stop())
     .catch((error) => console.error('Shared Texture PoC cleanup failed', error))
     .finally(() => {

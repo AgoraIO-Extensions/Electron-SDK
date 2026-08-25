@@ -11,7 +11,9 @@
 #include "shared_texture_request.h"
 #include <exception>
 #include <memory>
+#include <mutex>
 #include <node_api.h>
+#include <unordered_map>
 
 namespace agora {
 namespace rtc {
@@ -42,6 +44,10 @@ class AgoraElectronBridge {
   static napi_value ReleaseEnv(napi_env env, napi_callback_info info);
   static napi_value ReleaseRenderer(napi_env env, napi_callback_info info);
   static napi_value PushSharedTexture(napi_env env, napi_callback_info info);
+  static napi_value CreateSharedIOSurface(napi_env env,
+                                          napi_callback_info info);
+  static napi_value ReleaseSharedIOSurface(napi_env env,
+                                           napi_callback_info info);
 
   void OnApiError(const char *errorMessage);
   void Init();
@@ -58,6 +64,8 @@ class AgoraElectronBridge {
   std::shared_ptr<NodeIrisEventHandler> _iris_rtc_event_handler;
   std::shared_ptr<iris::IrisRtcRendering> _iris_rendering;
   uint64_t _last_shared_texture_frame_id = 0;
+  std::mutex _shared_iosurfaces_mutex;
+  std::unordered_map<uint32_t, void *> _shared_iosurfaces;
 };
 
 }// namespace electron

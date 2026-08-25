@@ -14,6 +14,7 @@ class SharedTexturePocController {
     nativeBridge,
     scenePath,
     platform = process.platform,
+    sourceProcessId = process.pid,
     logger = console,
     onStatus = () => {},
     subscribeGpuProcessGone = () => () => {},
@@ -30,6 +31,7 @@ class SharedTexturePocController {
     this.nativeBridge = nativeBridge;
     this.scenePath = scenePath;
     this.platform = platform;
+    this.sourceProcessId = sourceProcessId;
     this.logger = logger;
     this.onStatus = onStatus;
     this.subscribeGpuProcessGone = subscribeGpuProcessGone;
@@ -52,6 +54,7 @@ class SharedTexturePocController {
     this.window = null;
     this.engine = null;
     this.mediaEngine = null;
+    this.externalSubmit = null;
     this.telemetry = createTelemetry({ nowMs, hrtimeNs });
     this.lastValidPaintMs = null;
     this.webglRestored = false;
@@ -69,30 +72,7 @@ class SharedTexturePocController {
     frameRate = 30,
     captureWindowState = 'hidden',
   }) {
-    if (this.state !== 'idle' && this.state !== 'failed') {
-      throw new Error('Shared Texture PoC is busy');
-    }
-    if (![30, 48, 60].includes(frameRate)) {
-      throw new Error('Invalid frame rate');
-    }
-    if (!['hidden', 'visible', 'minimized'].includes(captureWindowState)) {
-      throw new Error('Invalid capture window state');
-    }
-
-    const generation = ++this.generation;
-    this.state = 'starting';
-    this.cleanupPromise = null;
-    this.nextFrameId = 1;
-    this.pendingTexture = null;
-    this.pendingFrame = null;
-    this.inFlight = null;
-    this.telemetry = createTelemetry({
-      nowMs: this.nowMs,
-      hrtimeNs: this.hrtimeNs,
-    });
-    this.lastValidPaintMs = this.monotonicMs();
-    this.webglRestored = false;
-    this.emitStatus();
+    const generation = this.beginRun(frameRate, captureWindowState);
 
     try {
       this.engine = this.createRtcEngine();
@@ -129,25 +109,11 @@ class SharedTexturePocController {
         'setVideoEncoderConfiguration'
       );
 
-      this.window = new this.BrowserWindow({
-        show: captureWindowState !== 'hidden',
-        webPreferences: {
-          offscreen: { useSharedTexture: true },
-          backgroundThrottling: false,
-        },
-      });
-      this.attachRunListeners(generation);
-      this.window.webContents.setFrameRate(frameRate);
-      if (this.window.webContents.getFrameRate() !== frameRate) {
-        throw new Error(
-          `Failed to configure compositor frame rate ${frameRate}`
-        );
-      }
-      if (captureWindowState === 'minimized') this.window.minimize();
-      const sceneLoaded = this.window.loadFile(this.scenePath, {
-        query: { frameRate: String(frameRate) },
-      });
-      this.startTimers(generation);
+      const sceneLoaded = this.startCaptureWindow(
+        generation,
+        frameRate,
+        captureWindowState
+      );
 
       this.requireSuccess(
         this.engine.joinChannel(token, channelId, uid, {
@@ -178,6 +144,80 @@ class SharedTexturePocController {
       }
       throw error;
     }
+  }
+
+  async startRendererCapture(
+    { frameRate = 30, captureWindowState = 'hidden' },
+    submitFrame
+  ) {
+    if (typeof submitFrame !== 'function') {
+      throw new TypeError('submitFrame is required');
+    }
+    const generation = this.beginRun(frameRate, captureWindowState);
+    this.externalSubmit = submitFrame;
+    try {
+      await this.startCaptureWindow(generation, frameRate, captureWindowState);
+      if (this.generation === generation && this.state === 'starting') {
+        this.state = 'running';
+        this.emitStatus();
+      }
+    } catch (error) {
+      await this.cleanup(generation);
+      if (this.generation === generation && this.state !== 'failed') {
+        this.state = 'idle';
+      }
+      throw error;
+    }
+  }
+
+  beginRun(frameRate, captureWindowState) {
+    if (this.state !== 'idle' && this.state !== 'failed') {
+      throw new Error('Shared Texture PoC is busy');
+    }
+    if (![30, 48, 60].includes(frameRate)) {
+      throw new Error('Invalid frame rate');
+    }
+    if (!['hidden', 'visible', 'minimized'].includes(captureWindowState)) {
+      throw new Error('Invalid capture window state');
+    }
+
+    const generation = ++this.generation;
+    this.state = 'starting';
+    this.cleanupPromise = null;
+    this.nextFrameId = 1;
+    this.pendingTexture = null;
+    this.pendingFrame = null;
+    this.inFlight = null;
+    this.externalSubmit = null;
+    this.telemetry = createTelemetry({
+      nowMs: this.nowMs,
+      hrtimeNs: this.hrtimeNs,
+    });
+    this.lastValidPaintMs = this.monotonicMs();
+    this.webglRestored = false;
+    this.emitStatus();
+    return generation;
+  }
+
+  startCaptureWindow(generation, frameRate, captureWindowState) {
+    this.window = new this.BrowserWindow({
+      show: captureWindowState !== 'hidden',
+      webPreferences: {
+        offscreen: { useSharedTexture: true },
+        backgroundThrottling: false,
+      },
+    });
+    this.attachRunListeners(generation);
+    this.window.webContents.setFrameRate(frameRate);
+    if (this.window.webContents.getFrameRate() !== frameRate) {
+      throw new Error(`Failed to configure compositor frame rate ${frameRate}`);
+    }
+    if (captureWindowState === 'minimized') this.window.minimize();
+    const sceneLoaded = this.window.loadFile(this.scenePath, {
+      query: { frameRate: String(frameRate) },
+    });
+    this.startTimers(generation);
+    return sceneLoaded;
   }
 
   attachRunListeners(generation) {
@@ -320,6 +360,7 @@ class SharedTexturePocController {
   }
 
   getRtcTimestampMs() {
+    if (this.externalSubmit) return 0;
     let value;
     try {
       value = this.engine.getCurrentMonotonicTimeInMs();
@@ -368,6 +409,7 @@ class SharedTexturePocController {
       rtcTimestampMs,
       pixelFormat: format,
       directHandlePreview: this.platform === 'win32',
+      sourceProcessId: this.sourceProcessId,
     };
   }
 
@@ -386,16 +428,33 @@ class SharedTexturePocController {
     const submission = { generation, texture, promise: null };
     let nativeResult;
     try {
-      nativeResult = this.nativeBridge.PushSharedTexture(frame);
+      nativeResult = this.externalSubmit
+        ? this.externalSubmit(frame)
+        : this.nativeBridge.PushSharedTexture(frame);
     } catch (error) {
-      telemetry.recordSubmissionFailure();
+      telemetry.recordSubmissionFailure(error);
+      telemetry.addDegradation('submission-failed');
       this.releaseOnce(texture);
       this.logger.error('Shared texture submission failed', error);
+      this.emitStatus();
       return;
     }
     const operation = Promise.resolve(nativeResult)
+      .then((result) => {
+        if (
+          this.generation === generation &&
+          telemetry.clearDegradation('submission-failed')
+        ) {
+          this.emitStatus();
+        }
+        return result;
+      })
       .catch((error) => {
-        if (this.generation === generation) telemetry.recordSubmissionFailure();
+        if (this.generation === generation) {
+          telemetry.recordSubmissionFailure(error);
+          telemetry.addDegradation('submission-failed');
+          this.emitStatus();
+        }
         this.logger.error('Shared texture submission failed', error);
       })
       .finally(() => {
@@ -422,7 +481,7 @@ class SharedTexturePocController {
   canSubmitFrames() {
     return (
       (this.state === 'starting' || this.state === 'running') &&
-      this.mediaEngine !== null
+      (this.mediaEngine !== null || this.externalSubmit !== null)
     );
   }
 
@@ -450,6 +509,18 @@ class SharedTexturePocController {
 
   getTelemetrySnapshot() {
     return { state: this.state, ...this.telemetry.snapshot() };
+  }
+
+  recordRendererRtcStats(stats) {
+    this.telemetry.recordRtcStats(stats);
+  }
+
+  recordRendererRtcTimestamp(value) {
+    this.telemetry.recordRtcTimestamp(value);
+  }
+
+  recordRendererLocalVideoStats(stats) {
+    this.telemetry.recordLocalVideoStats(stats);
   }
 
   async failRun(reason, generation = this.generation) {
@@ -534,6 +605,7 @@ class SharedTexturePocController {
     this.stopRunObservers();
     const engine = this.engine;
     const mediaEngine = this.mediaEngine;
+    this.externalSubmit = null;
     const window = this.window;
     this.engine = null;
     this.mediaEngine = null;

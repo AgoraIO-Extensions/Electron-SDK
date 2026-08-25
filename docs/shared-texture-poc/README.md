@@ -49,16 +49,37 @@ The PoC implements the complete publishing workflow:
    texture exactly once, leave the channel, release the engine, and destroy the
    offscreen window.
 
+### Engine Process Examples
+
+The Advanced menu now contains two mutually exclusive examples:
+
+- `SharedTexturePoc` keeps the original behavior: the Electron main process
+  creates, joins, and releases the RTC engine and submits each shared texture.
+- `SharedTextureRendererPoc` creates, joins, and releases a separate RTC engine
+  in the visible renderer process. The main process only owns the offscreen
+  capture window, receives `paint`, forwards one frame at a time, and releases
+  Electron's texture after the renderer acknowledges the RTC submission.
+
+RTC engine objects are not shared between processes. The renderer example
+therefore performs the complete engine lifecycle in the renderer. On Windows,
+the main process sends its PID with the process-local NT handle; the renderer
+addon calls `DuplicateHandle` before passing the duplicated handle to Native.
+On macOS, the main-process addon uses Metal to GPU-copy the borrowed
+`IOSurfaceRef` into a short-lived global IOSurface; the renderer receives its
+`IOSurfaceID` and calls `IOSurfaceLookup`. No process-local pointer is sent
+through Electron IPC, and the copied surface is released after submission.
+
 The controller keeps at most one submission in flight and one latest pending
 texture. Older pending frames are released instead of building an unbounded
 queue. Frames can be submitted while the channel is joining as well as after
 join succeeds.
 
-Each valid compositor frame is now timestamped with
-`getCurrentMonotonicTimeInMs()` when its `paint` event reaches the main process.
-That Agora SDK monotonic value, in milliseconds, is submitted as the RTC video
-timestamp. Electron's compositor timestamp remains separate and is used only
-for diagnostics.
+Each valid compositor frame uses `getCurrentMonotonicTimeInMs()` from the
+engine that submits it. The main-process example stamps at `paint`; the renderer
+example stamps immediately after receiving the forwarded frame and before
+`PushSharedTexture`. That Agora SDK monotonic value, in milliseconds, is
+submitted as the RTC video timestamp and returned in telemetry. Electron's
+compositor timestamp remains separate and is used only for diagnostics.
 
 This PoC does not capture custom audio, so it does not by itself prove A/V
 synchronization. Favorited must timestamp `AudioFrame.renderTimeMs` with the
@@ -70,11 +91,11 @@ unrelated Electron clock value that could be rejected as old.
 
 ### Process And API Boundary
 
-The macOS path keeps platform interop out of the customer renderer. The Worker
+The macOS path keeps pointer interop out of the customer renderer. The Worker
 and renderer only draw WebGL content. Electron's GPU process produces the
 compositor IOSurface, then the offscreen `paint` event delivers a process-local
-`IOSurfaceRef` Buffer to the Electron main/browser process. The renderer never
-receives or interprets that reference.
+`IOSurfaceRef` Buffer to the Electron main/browser process. The renderer-owned
+Engine example receives only the numeric `IOSurfaceID`, never that reference.
 
 ```text
 Worker WebGL2
@@ -88,22 +109,26 @@ Worker WebGL2
   -> RTC encoder
 ```
 
-`PushSharedTexture` is a hand-written Electron native-addon API declared on
-`IAgoraElectronBridge`. It is intentionally not added to generated
-`IMediaEngine` files, so Native SDK code generation cannot remove it. The same
-main-process controller calls this API on Windows and macOS; it only selects
-Electron's platform handle field (`ntHandle` or `ioSurface`).
+`PushSharedTexture`, `CreateSharedIOSurface`, and `ReleaseSharedIOSurface` are hand-written Electron native-addon
+APIs declared on `IAgoraElectronBridge`. They are intentionally not added to generated
+`IMediaEngine` files, so Native SDK code generation cannot remove them. The
+main-process example calls `PushSharedTexture` directly. The renderer example
+uses `CreateSharedIOSurface` in main on macOS, then calls `PushSharedTexture` in the
+renderer on both platforms.
 
 The `IOSurfaceRef` pointer is borrowed and valid only in the process where
 Electron delivered it. The PoC never sends that pointer through Electron IPC.
 The addon, which is loaded in the same main process, immediately converts it to
-the numeric `IOSurfaceID` required by Native RTC.
+the numeric `IOSurfaceID` required by Native RTC for the main-process example.
+For the renderer example, it creates the global Metal copy described above.
 
 ### Frame Metadata And Submission
 
 The addon validates every macOS frame before calling Iris:
 
-- The native-handle Buffer must contain one 64-bit `IOSurfaceRef` value.
+- The native-handle Buffer must contain one 64-bit `IOSurfaceRef` value for
+  same-process submission. Cross-process renderer submission supplies the
+  separately resolved `ioSurfaceId`.
 - `IOSurfaceGetWidth()` and `IOSurfaceGetHeight()` must match Electron's
   `textureInfo.codedSize`.
 - `IOSurfaceGetBytesPerRow()` is converted to `stride` in pixels. BGRA/RGBA use
@@ -115,6 +140,28 @@ The addon validates every macOS frame before calling Iris:
   timestamp remains diagnostic metadata and is never used as the RTC clock.
 - The IOSurface path supplies no CPU pixel buffer and performs no Electron-side
   `readPixels`, staging-buffer readback, or full-frame memory copy.
+- The renderer-owned Engine example requires one Metal GPU copy into a global
+  IOSurface because Electron's original compositor surface cannot be looked up
+  directly from another process. The main-process Engine example remains the
+  direct original-surface path.
+- Global IOSurfaces are used only by this PoC bridge, are never cached, and are
+  released as soon as renderer submission finishes. Production code should
+  prefer a scoped Mach-port transport when that interop is available.
+
+In a local Electron 43.2 test at 800 x 600 and 30 fps, 120 compositor frames
+alternated between exactly two original IOSurface IDs. Retaining both original
+surfaces with `CFRetain` for the entire test did not change that rotation or
+create a third surface. This shows that Core Foundation reference counts keep
+the objects alive but do not reserve them from Chromium; Electron's
+`texture.release()` and compositor synchronization control reuse.
+
+The two-surface observation is not a permanent platform contract. Resize,
+device loss, context recreation, or Chromium changes may replace the pool. A
+future no-copy renderer implementation could transfer a Mach right once for
+each observed pool member and send only the current surface identity per frame,
+but it must dynamically register new surfaces, retire old ones, and preserve
+producer-consumer synchronization. Sending an ID through ordinary Electron IPC
+remains insufficient.
 
 The matching CSD-79710 Native SDK contract states that it performs
 `IOSurfaceLookup` and retains the imported resource. Iris returns the actual RTC

@@ -22,9 +22,10 @@ import PushVideoFrame from './PushVideoFrame/PushVideoFrame';
 import RTMPStreaming from './RTMPStreaming/RTMPStreaming';
 import RhythmPlayer from './RhythmPlayer/RhythmPlayer';
 import ScreenShare from './ScreenShare/ScreenShare';
-import SharedTexturePoc from './SharedTexturePoc/SharedTexturePoc';
 import SendMetadata from './SendMetadata/SendMetadata';
 import SendMultiVideoStream from './SendMultiVideoStream/SendMultiVideoStream';
+import SharedTexturePoc from './SharedTexturePoc/SharedTexturePoc';
+import SharedTextureRendererPoc from './SharedTextureRendererPoc/SharedTextureRendererPoc';
 import Simulcast from './Simulcast/Simulcast';
 import SpatialAudio from './SpatialAudio/SpatialAudio';
 import StreamMessage from './StreamMessage/StreamMessage';
@@ -136,6 +137,10 @@ const Advanced = {
     {
       name: 'SharedTexturePoc',
       component: SharedTexturePoc,
+    },
+    {
+      name: 'SharedTextureRendererPoc',
+      component: SharedTextureRendererPoc,
     },
     {
       name: 'SendMultiVideoStream',

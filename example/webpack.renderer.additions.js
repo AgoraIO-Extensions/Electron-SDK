@@ -81,6 +81,7 @@ module.exports = function (config) {
     // ...config.externals,
     'webpack',
     'agora-electron-sdk',
+    'agora-electron-sdk/js/Private/internal/IrisApiEngine.js',
     'koffi',
     'ref-napi',
   ];

@@ -3,6 +3,10 @@ set(CMAKE_CXX_STANDARD 20)
 
 project(agora-electron-sdk)
 
+if (APPLE)
+  enable_language(OBJCXX)
+endif ()
+
 include(CTest)
 
 if (WIN32)
@@ -20,8 +24,8 @@ else ()
 endif ()
 
 if (APPLE AND NOT IOS)
-  set(CMAKE_XCODE_ATTRIBUTE_MACOSX_DEPLOYMENT_TARGET "10.10")
-  set(CMAKE_OSX_DEPLOYMENT_TARGET 10.10)
+  set(CMAKE_XCODE_ATTRIBUTE_MACOSX_DEPLOYMENT_TARGET "10.13")
+  set(CMAKE_OSX_DEPLOYMENT_TARGET 10.13)
   set(CMAKE_XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym")
 elseif (UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC")
@@ -60,6 +64,9 @@ set(TARGET_AGORA_NODE_EXT_FILE_DIR
 file(GLOB TARGET_AGORA_NODE_EXT_FILE LIST_DIRECTORIES false
         ${TARGET_AGORA_NODE_EXT_FILE_DIR}/*
         )
+if (NOT APPLE)
+  list(FILTER TARGET_AGORA_NODE_EXT_FILE EXCLUDE REGEX "\\.mm$")
+endif ()
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
   set(AGORA_IRIS_PROJECT_ARCH "MAC")
@@ -178,9 +185,13 @@ if (BUILD_TESTING)
             ${AGORA_IRIS_SDK_LIB}
             )
   elseif (APPLE)
+    target_sources(shared_texture_request_test PRIVATE
+            ${TARGET_AGORA_NODE_EXT_FILE_DIR}/iosurface_shared_texture_copy.mm
+            )
     target_link_libraries(shared_texture_request_test
             "-framework IOSurface"
             "-framework CoreFoundation"
+            "-framework Metal"
             )
   endif ()
   add_test(NAME shared_texture_request COMMAND shared_texture_request_test)
@@ -205,6 +216,7 @@ function(build_target_agora_node_ext)
             )
     target_link_libraries(${AGORA_NODE_EXT_NAME}
             ${AGORA_IRIS_FRAMEWORKS}
+            "-framework Metal"
             ${CMAKE_JS_LIB}
             )
   elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")

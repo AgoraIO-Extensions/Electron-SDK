@@ -20,6 +20,8 @@ struct SharedTextureRequest {
   int64_t rtc_timestamp_ms;
   SharedTexturePixelFormat pixel_format;
   bool direct_handle_preview;
+  uint32_t source_process_id;
+  uint32_t iosurface_id;
 };
 
 bool ValidateSharedTextureRequest(const SharedTextureRequest &request,

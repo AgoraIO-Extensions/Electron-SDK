@@ -22,6 +22,7 @@ export interface SharedTexturePocStatus {
   paintCount: number;
   submittedCount: number;
   submissionFailureCount: number;
+  lastSubmissionError?: string | null;
   rtc: {
     encodedFrameCount: number;
     sentFrameRate: number;

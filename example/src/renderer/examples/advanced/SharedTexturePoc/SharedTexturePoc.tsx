@@ -28,6 +28,7 @@ import {
 const invoke = ipcRenderer.invoke.bind(ipcRenderer);
 
 interface SharedTexturePocViewProps {
+  title?: string;
   captureWindowState: SharedTextureCaptureWindowState;
   channelId: string;
   error: string;
@@ -43,6 +44,7 @@ interface SharedTexturePocViewProps {
 }
 
 export function SharedTexturePocView({
+  title = 'Shared Texture PoC',
   captureWindowState,
   channelId,
   error,
@@ -60,13 +62,18 @@ export function SharedTexturePocView({
   return (
     <AgoraView className={AgoraStyle.screen}>
       <AgoraView className={AgoraStyle.content}>
-        <AgoraText>{`Shared Texture PoC: ${lifecycle}`}</AgoraText>
+        <AgoraText>{`${title}: ${lifecycle}`}</AgoraText>
         {status ? (
           <>
             <AgoraText>{`Stream health: ${status.health}`}</AgoraText>
             <AgoraText>{`Paint: ${status.paintCount}`}</AgoraText>
             <AgoraText>{`Submitted: ${status.submittedCount}`}</AgoraText>
             <AgoraText>{`Submission failures: ${status.submissionFailureCount}`}</AgoraText>
+            {status.lastSubmissionError ? (
+              <AgoraText
+                style={{ color: '#cf1322' }}
+              >{`Last submission error: ${status.lastSubmissionError}`}</AgoraText>
+            ) : undefined}
             <AgoraText>{`Encoded: ${status.rtc.encodedFrameCount}`}</AgoraText>
             <AgoraText>{`Sent frame rate: ${status.rtc.sentFrameRate}`}</AgoraText>
             <AgoraText>{`Video bitrate: ${status.rtc.txVideoKBitRate} Kbps`}</AgoraText>

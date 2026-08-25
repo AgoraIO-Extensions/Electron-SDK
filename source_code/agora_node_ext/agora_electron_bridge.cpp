@@ -8,6 +8,7 @@
 #include "d3d11_shared_texture_preview.h"
 #include "d3d11_shared_texture_importer.h"
 #include "iosurface_shared_texture_importer.h"
+#include "iosurface_shared_texture_copy.h"
 #include "iris_base.h"
 #include "node_iris_event_handler.h"
 #include <iostream>
@@ -16,6 +17,13 @@
 #include <limits>
 #include <memory>
 #include <regex>
+
+#if defined(_WIN32)
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#endif
 
 namespace agora {
 
@@ -55,6 +63,8 @@ napi_value AgoraElectronBridge::Init(napi_env env, napi_value exports) {
       DECLARE_NAPI_METHOD("InitializeEnv", InitializeEnv),
       DECLARE_NAPI_METHOD("ReleaseEnv", ReleaseEnv),
       DECLARE_NAPI_METHOD("PushSharedTexture", PushSharedTexture),
+      DECLARE_NAPI_METHOD("CreateSharedIOSurface", CreateSharedIOSurface),
+      DECLARE_NAPI_METHOD("ReleaseSharedIOSurface", ReleaseSharedIOSurface),
       DECLARE_NAPI_METHOD("ReleaseRenderer", ReleaseRenderer)};
 
   napi_value cons;
@@ -139,6 +149,10 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
   status = napi_get_value_utf8string(env, args[0], funcName);
   status = napi_get_value_utf8string(env, args[1], parameter);
   status = napi_get_value_uint32(env, args[3], &bufferCount);
+
+  if (funcName.rfind("RtcEngine_initialize", 0) == 0) {
+    agoraElectronBridge->_last_shared_texture_frame_id = 0;
+  }
 
   if (strcmp(parameter.c_str(), "") == 0) { parameter = "{}"; }
 
@@ -275,6 +289,61 @@ bool ReadNamedDouble(napi_env env, napi_value object, const char *name,
          napi_get_value_double(env, value, &result) == napi_ok;
 }
 
+#if defined(_WIN32)
+class ScopedWinHandle {
+ public:
+  ~ScopedWinHandle() {
+    if (_handle != nullptr) { CloseHandle(_handle); }
+  }
+
+  void Reset(HANDLE handle) { _handle = handle; }
+
+ private:
+  HANDLE _handle = nullptr;
+};
+
+bool DuplicateSharedTextureHandle(SharedTextureRequest &request,
+                                  ScopedWinHandle &duplicated_handle,
+                                  std::string &error) {
+  if (request.source_process_id == 0 ||
+      request.source_process_id == GetCurrentProcessId()) {
+    return true;
+  }
+
+  uintptr_t source_handle_bits = 0;
+  std::memcpy(&source_handle_bits, request.native_handle,
+              sizeof(source_handle_bits));
+  HANDLE source_process =
+      OpenProcess(PROCESS_DUP_HANDLE, FALSE, request.source_process_id);
+  if (source_process == nullptr) {
+    error = "could not open shared texture source process: " +
+            std::to_string(GetLastError());
+    return false;
+  }
+
+  HANDLE target_handle = nullptr;
+  const BOOL duplicated =
+      DuplicateHandle(source_process, reinterpret_cast<HANDLE>(source_handle_bits),
+                      GetCurrentProcess(), &target_handle, 0, FALSE,
+                      DUPLICATE_SAME_ACCESS);
+  const DWORD duplicate_error = duplicated ? ERROR_SUCCESS : GetLastError();
+  CloseHandle(source_process);
+  if (!duplicated) {
+    error = "could not duplicate shared texture handle: " +
+            std::to_string(duplicate_error);
+    return false;
+  }
+
+  duplicated_handle.Reset(target_handle);
+  const uintptr_t target_handle_bits =
+      reinterpret_cast<uintptr_t>(target_handle);
+  std::memcpy(request.native_handle, &target_handle_bits,
+              sizeof(target_handle_bits));
+  request.source_process_id = GetCurrentProcessId();
+  return true;
+}
+#endif
+
 bool ParseSharedTextureRequest(napi_env env, napi_value value,
                                SharedTextureRequest &request,
                                std::string &error) {
@@ -364,6 +433,43 @@ bool ParseSharedTextureRequest(napi_env env, napi_value value,
       return false;
     }
   }
+
+  bool has_source_process = false;
+  if (napi_has_named_property(env, value, "sourceProcessId",
+                              &has_source_process) != napi_ok) {
+    error = "could not read sourceProcessId";
+    return false;
+  }
+  if (has_source_process) {
+    double source_process_id;
+    if (!ReadNamedDouble(env, value, "sourceProcessId", source_process_id) ||
+        !std::isfinite(source_process_id) ||
+        std::floor(source_process_id) != source_process_id ||
+        source_process_id < 0 ||
+        source_process_id > std::numeric_limits<uint32_t>::max()) {
+      error = "sourceProcessId must be a uint32 integer";
+      return false;
+    }
+    request.source_process_id = static_cast<uint32_t>(source_process_id);
+  }
+
+  bool has_iosurface_id = false;
+  if (napi_has_named_property(env, value, "ioSurfaceId", &has_iosurface_id) !=
+      napi_ok) {
+    error = "could not read ioSurfaceId";
+    return false;
+  }
+  if (has_iosurface_id) {
+    double iosurface_id;
+    if (!ReadNamedDouble(env, value, "ioSurfaceId", iosurface_id) ||
+        !std::isfinite(iosurface_id) ||
+        std::floor(iosurface_id) != iosurface_id || iosurface_id < 0 ||
+        iosurface_id > std::numeric_limits<uint32_t>::max()) {
+      error = "ioSurfaceId must be a uint32 integer";
+      return false;
+    }
+    request.iosurface_id = static_cast<uint32_t>(iosurface_id);
+  }
   return true;
 }
 
@@ -399,6 +505,10 @@ napi_value AgoraElectronBridge::PushSharedTexture(
   if (!bridge->_iris_api_engine) { bridge->Init(); }
   SharedTextureSubmissionResult submission{};
 #if defined(_WIN32)
+  ScopedWinHandle duplicated_handle;
+  if (!DuplicateSharedTextureHandle(request, duplicated_handle, error)) {
+    return RejectPromise(env, "ERR_SHARED_TEXTURE_HANDLE", error);
+  }
   if (request.direct_handle_preview &&
       !RenderSharedD3D11TexturePreview(request, error)) {
     return RejectPromise(env, "ERR_SHARED_TEXTURE_PREVIEW", error);
@@ -445,6 +555,118 @@ napi_value AgoraElectronBridge::PushSharedTexture(
   napi_set_named_property(env, response, "adapterLuid", adapter_luid);
   napi_resolve_deferred(env, deferred, response);
   return promise;
+}
+
+napi_value AgoraElectronBridge::CreateSharedIOSurface(
+    napi_env env, napi_callback_info info) {
+#if defined(__APPLE__)
+  size_t argc = 2;
+  napi_value args[2];
+  napi_value jsthis;
+  if (napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr) != napi_ok ||
+      argc != 2) {
+    napi_throw_type_error(env, "ERR_INVALID_ARGUMENT",
+                          "nativeHandle and pixelFormat are required");
+    return nullptr;
+  }
+  AgoraElectronBridge *bridge = nullptr;
+  if (napi_unwrap(env, jsthis, reinterpret_cast<void **>(&bridge)) != napi_ok ||
+      bridge == nullptr) {
+    napi_throw_error(env, "ERR_NOT_INITIALIZED",
+                     "AgoraElectronBridge is not initialized");
+    return nullptr;
+  }
+  bool is_buffer = false;
+  void *handle_data = nullptr;
+  size_t handle_size = 0;
+  if (napi_is_buffer(env, args[0], &is_buffer) != napi_ok || !is_buffer ||
+      napi_get_buffer_info(env, args[0], &handle_data, &handle_size) !=
+          napi_ok ||
+      handle_size != sizeof(uintptr_t)) {
+    napi_throw_type_error(env, "ERR_INVALID_ARGUMENT",
+                          "nativeHandle must contain exactly 8 bytes");
+    return nullptr;
+  }
+  std::string pixel_format_value;
+  if (napi_get_value_utf8string(env, args[1], pixel_format_value) != napi_ok) {
+    napi_throw_type_error(env, "ERR_INVALID_ARGUMENT",
+                          "pixelFormat must be a string");
+    return nullptr;
+  }
+  const SharedTexturePixelFormat pixel_format =
+      pixel_format_value == "bgra"
+          ? SharedTexturePixelFormat::kBgra
+          : pixel_format_value == "rgba" ? SharedTexturePixelFormat::kRgba
+                                          : SharedTexturePixelFormat::kUnknown;
+  if (pixel_format == SharedTexturePixelFormat::kUnknown) {
+    napi_throw_type_error(env, "ERR_INVALID_ARGUMENT",
+                          "pixelFormat must be bgra or rgba");
+    return nullptr;
+  }
+
+  uint32_t iosurface_id = 0;
+  void *retained_surface = nullptr;
+  std::string error;
+  if (!CreateGlobalIOSurfaceGpuCopy(
+          static_cast<const uint8_t *>(handle_data), handle_size, pixel_format,
+          iosurface_id, retained_surface, error)) {
+    napi_throw_error(env, "ERR_SHARED_TEXTURE_HANDLE",
+                     error.c_str());
+    return nullptr;
+  }
+  {
+    std::lock_guard<std::mutex> lock(bridge->_shared_iosurfaces_mutex);
+    bridge->_shared_iosurfaces.emplace(iosurface_id, retained_surface);
+  }
+  napi_value result;
+  napi_create_uint32(env, iosurface_id, &result);
+  return result;
+#else
+  napi_throw_error(env, "ERR_PLATFORM_UNSUPPORTED",
+                   "CreateSharedIOSurface is supported only on macOS");
+  return nullptr;
+#endif
+}
+
+napi_value AgoraElectronBridge::ReleaseSharedIOSurface(
+    napi_env env, napi_callback_info info) {
+#if defined(__APPLE__)
+  size_t argc = 1;
+  napi_value args[1];
+  napi_value jsthis;
+  if (napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr) != napi_ok ||
+      argc != 1) {
+    napi_throw_type_error(env, "ERR_INVALID_ARGUMENT",
+                          "exactly one ioSurfaceId argument is required");
+    return nullptr;
+  }
+  AgoraElectronBridge *bridge = nullptr;
+  uint32_t iosurface_id = 0;
+  if (napi_unwrap(env, jsthis, reinterpret_cast<void **>(&bridge)) != napi_ok ||
+      bridge == nullptr ||
+      napi_get_value_uint32(env, args[0], &iosurface_id) != napi_ok) {
+    napi_throw_type_error(env, "ERR_INVALID_ARGUMENT",
+                          "ioSurfaceId must be a uint32 integer");
+    return nullptr;
+  }
+  void *retained_surface = nullptr;
+  {
+    std::lock_guard<std::mutex> lock(bridge->_shared_iosurfaces_mutex);
+    const auto found = bridge->_shared_iosurfaces.find(iosurface_id);
+    if (found != bridge->_shared_iosurfaces.end()) {
+      retained_surface = found->second;
+      bridge->_shared_iosurfaces.erase(found);
+    }
+  }
+  ReleaseGlobalIOSurface(retained_surface);
+  napi_value result;
+  napi_get_undefined(env, &result);
+  return result;
+#else
+  napi_throw_error(env, "ERR_PLATFORM_UNSUPPORTED",
+                   "ReleaseSharedIOSurface is supported only on macOS");
+  return nullptr;
+#endif
 }
 
 napi_value AgoraElectronBridge::GetBuffer(napi_env env,
@@ -842,6 +1064,13 @@ void AgoraElectronBridge::Init() {
 
 void AgoraElectronBridge::Release() {
   CloseSharedD3D11TexturePreview();
+  {
+    std::lock_guard<std::mutex> lock(_shared_iosurfaces_mutex);
+    for (const auto &entry : _shared_iosurfaces) {
+      ReleaseGlobalIOSurface(entry.second);
+    }
+    _shared_iosurfaces.clear();
+  }
   if (_iris_api_engine) {
     // reset
     _iris_rendering.reset();

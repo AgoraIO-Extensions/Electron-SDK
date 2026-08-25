@@ -95,6 +95,7 @@ function createTelemetry({
   let paintMonotonicNs = null;
   let worker = null;
   let failureReason = null;
+  let lastSubmissionError = null;
   const rtc = {
     encodedFrameCount: 0,
     sentFrameRate: 0,
@@ -108,7 +109,7 @@ function createTelemetry({
       }
       lastPaintMonotonicMs = monotonicMs;
       lastElectronTimestampUs = timestampUs;
-      rtcTimestamp = rtcTimestampMs;
+      if (rtcTimestampMs > 0) rtcTimestamp = rtcTimestampMs;
       paintEpochMs = nowMs();
       paintMonotonicNs = String(hrtimeNs());
       paintCount += 1;
@@ -117,14 +118,23 @@ function createTelemetry({
       submittedCount += 1;
       pushBounded(submissionLatencies, latencyMs);
     },
+    recordRtcTimestamp(value) {
+      if (Number.isSafeInteger(value) && value >= 0) rtcTimestamp = value;
+    },
     recordPendingReplacement() {
       replacedPendingCount += 1;
     },
     recordInvalidFrame() {
       invalidFrameCount += 1;
     },
-    recordSubmissionFailure() {
+    recordSubmissionFailure(error) {
       submissionFailureCount += 1;
+      lastSubmissionError =
+        error == null
+          ? lastSubmissionError
+          : error instanceof Error
+          ? error.message
+          : String(error);
     },
     recordDrainTimeout() {
       drainTimeoutCount += 1;
@@ -173,6 +183,7 @@ function createTelemetry({
         replacedPendingCount,
         invalidFrameCount,
         submissionFailureCount,
+        lastSubmissionError,
         drainTimeoutCount,
         lastElectronTimestampUs,
         paintEpochMs,

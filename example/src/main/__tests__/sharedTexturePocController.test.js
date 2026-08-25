@@ -195,6 +195,34 @@ test('configures the compositor and encoder at 48 fps', async () => {
   });
 });
 
+test('captures for a renderer-owned Engine without creating one in main', async () => {
+  const harness = createHarness({ sourceProcessId: 2468 });
+  const submission = deferred();
+  const submitFrame = jest.fn(() => submission.promise);
+
+  await harness.controller.startRendererCapture(
+    { frameRate: 48, captureWindowState: 'hidden' },
+    submitFrame
+  );
+  const texture = createTexture(1);
+  harness.controller.handlePaint(texture);
+
+  expect(harness.engine.initialize).not.toHaveBeenCalled();
+  expect(submitFrame).toHaveBeenCalledWith(
+    expect.objectContaining({
+      frameId: 1,
+      rtcTimestampMs: 0,
+      sourceProcessId: 2468,
+    })
+  );
+  submission.resolve({ frameId: 1, result: 0 });
+  await new Promise(setImmediate);
+  expect(texture.release).toHaveBeenCalledTimes(1);
+
+  await harness.controller.stop();
+  expect(harness.engine.release).not.toHaveBeenCalled();
+});
+
 test('records paint, submission, and RTC statistics in status snapshots', async () => {
   let monotonic = 100;
   const harness = createHarness({ monotonicMs: () => monotonic });
@@ -226,6 +254,12 @@ test('records paint, submission, and RTC statistics in status snapshots', async 
   );
   expect(harness.engine.getCurrentMonotonicTimeInMs).toHaveBeenCalledTimes(1);
   expect(harness.submissions[0].frame.rtcTimestampMs).toBe(4242);
+});
+
+test('records the RTC timestamp assigned by a renderer-owned Engine', () => {
+  const harness = createHarness();
+  harness.controller.recordRendererRtcTimestamp(5150);
+  expect(harness.controller.getTelemetrySnapshot().rtcTimestamp).toBe(5150);
 });
 
 test('rejects a frame when the SDK monotonic clock is unavailable', async () => {
