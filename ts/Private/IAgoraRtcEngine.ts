@@ -1090,10 +1090,6 @@ export class ScreenCaptureSourceInfo {
    * (Windows only) ID of the screen where the window is located. If the window spans multiple screens, it refers to the screen with the largest intersecting area. If the window is outside the visible screen, the value is -2.
    */
   sourceDisplayId?: number;
-  /**
-   * @ignore
-   */
-  process_id?: number;
 }
 
 /**
@@ -1182,14 +1178,6 @@ export class ChannelMediaOptions {
    * The ID of the custom audio track to be published. The default value is 0. You can get the custom audio track ID by calling the createCustomAudioTrack method.
    */
   publishCustomAudioTrackId?: number;
-  /**
-   * @ignore
-   */
-  publishLoopbackAudioTrack?: boolean;
-  /**
-   * @ignore
-   */
-  publishLoopbackAudioTrackId?: number;
   /**
    * Sets whether to publish custom captured video: true : Publish the custom captured video. false : Do not publish the custom captured video.
    */
@@ -1629,6 +1617,11 @@ export interface IRtcEngineEventHandler {
     height: number,
     elapsed: number
   ): void;
+
+  /**
+   * @ignore
+   */
+  onVideoBlackFrameDetected?(source: VideoSourceType, reason: number): void;
 
   /**
    * Occurs when the first local video frame is published.
@@ -7429,10 +7422,6 @@ export enum MediaDeviceStateType {
    * 8: Device is unplugged.
    */
   MediaDeviceStateUnplugged = 8,
-  /**
-   * @ignore
-   */
-  MediaDeviceStateDefaultDeviceChangedReady = 9,
 }
 
 /**
