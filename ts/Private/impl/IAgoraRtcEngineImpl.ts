@@ -276,6 +276,12 @@ export function processIRtcEngineEventHandler(
       }
       break;
 
+    case 'onVideoBlackFrameDetected':
+      if (handler.onVideoBlackFrameDetected !== undefined) {
+        handler.onVideoBlackFrameDetected(jsonParams.source, jsonParams.reason);
+      }
+      break;
+
     case 'onFirstLocalVideoFramePublished':
       if (handler.onFirstLocalVideoFramePublished !== undefined) {
         handler.onFirstLocalVideoFramePublished(
