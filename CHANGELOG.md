@@ -1,5 +1,12 @@
 
 
+## [4.2.7-build.143-dev.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.7-build.140-rc.1...v4.2.7-build.143-dev.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* normalize preview version for Terra ([#1458](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1458)) ([#1463](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1463)) ([fd29e39](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/fd29e3945f4329a3e7695edb8c56690fc2d3ad4f))
+
 ## [4.2.7-build.140-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.7-build.138-rc.2...v4.2.7-build.140-rc.1) (2026-05-15)
 
 ## [4.2.7-build.138-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.7-build.138-rc.1...v4.2.7-build.138-rc.2) (2026-04-10)
