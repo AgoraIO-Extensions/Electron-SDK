@@ -61,6 +61,7 @@ def doPublish(buildVariables) {
     }
     def codesignResult = build(job: 'CodeSign', parameters: [
         text(name: 'PACKAGE_URLS', value: codesignUrls.join('\n')),
+        string(name: 'SIGN_PACKAGE_WHITELIST', value: '*_windows_*.zip'),
         string(name: 'SIGN_FILE_WHITELIST', value: '*.node'),
     ], propagate: false)
     if (!codesignResult || codesignResult.result != 'SUCCESS') {
