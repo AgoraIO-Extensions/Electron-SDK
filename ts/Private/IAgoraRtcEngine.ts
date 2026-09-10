@@ -1115,14 +1115,6 @@ export class ChannelMediaOptions {
    */
   publishCustomAudioTrackId?: number;
   /**
-   * @ignore
-   */
-  publishLoopbackAudioTrack?: boolean;
-  /**
-   * @ignore
-   */
-  publishLoopbackAudioTrackId?: number;
-  /**
    * Sets whether to publish custom captured video: true : Publish the custom captured video. false : Do not publish the custom captured video.
    */
   publishCustomVideoTrack?: boolean;
