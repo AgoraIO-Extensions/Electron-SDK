@@ -1,5 +1,13 @@
 
 
+## [4.5.3-build.2-rc.5](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.2-rc.4...v4.5.3-build.2-rc.5) (2026-09-10)
+
+
+### Bug Fixes
+
+* address extract-zip path traversal ([d6abd2f](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/d6abd2f2e2f42b5ac0c9caa2f8b169317952f644))
+* vendor safe zip extraction ([c14f4a7](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/c14f4a77837981b5517f40b9acdb14322ed5adb1))
+
 ## [4.5.3-build.2-rc.4](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.2-rc.3...v4.5.3-build.2-rc.4) (2026-07-23)
 
 
