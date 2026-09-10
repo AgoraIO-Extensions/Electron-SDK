@@ -3,8 +3,9 @@
 const os = require('os');
 const path = require('path');
 
-const extract = require('extract-zip');
 const fs = require('fs-extra');
+
+const extract = require('./extractZipSafely');
 
 const toArchivePath = (filePath) => filePath.split(path.sep).join('/');
 

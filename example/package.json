@@ -4,9 +4,6 @@
   "description": "Agora Electron API Example",
   "author": "Agora.io",
   "license": "MIT",
-  "resolutions": {
-    "extract-zip": "github:AIEpisteme/extract-zip#bbaf7d9ec16e7d78a89485ca9f261c301e1b1790"
-  },
   "scripts": {
     "postinstall": "npm run rebuild",
     "start": "electron-webpack dev",
