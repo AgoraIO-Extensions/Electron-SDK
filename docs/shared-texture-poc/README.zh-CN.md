@@ -4,10 +4,15 @@
 
 ## 当前状态
 
-这个 PoC 已实现 Electron 离屏画面的平台原生共享纹理发布链路。Windows 通过
-Iris 的 `d3d11Texture2d` 槽位原样传递 NT Handle；macOS 把 Electron 提供的本地
-`IOSurfaceRef` 转成 `IOSurfaceID`，由 Native lookup 并 retain。Windows 远端发布
-已经验证；macOS 远端画面仍是联调验收项，不能由仓库编译成功替代。
+这个 PoC 通过平台中立的 Electron API 发布离屏画面。Electron 只把平台共享纹理
+标识交给 Iris。Iris 在调用 Native `pushVideoFrame` 前，将 Windows NT Handle
+打开并 GPU Copy 到 Iris 自有的 `ID3D11Texture2D`，或者把 macOS IOSurface
+包装成 `CVPixelBufferRef`。Native 不再接收 Electron NT Handle 或 IOSurfaceID。
+
+采集窗口显式请求 Electron 的 `argb` Shared Texture 输出，并验证实际
+`textureInfo.pixelFormat`。Windows 接受 `bgra`，macOS 接受 `bgra` 或 `rgba`。
+`rgbaf16` 仍明确不支持；这些帧会被释放并计入 invalid frame，不会自动转换或
+错误标记。
 
 已验证的环境如下：
 
@@ -15,7 +20,7 @@ Iris 的 `d3d11Texture2d` 槽位原样传递 NT Handle；macOS 把 Electron 提�
 - Electron `43.2.0`
 - Electron Node `24.18.0`，原生模块 ABI `148`
 - Agora Electron SDK `4.5.3-build.123-rc.2`
-- Agora Native RTC SDK Core `4.5.3.123`
+- 基于 `4.5.2.175` 的 CSD-79710 Native RTC 开发包 `1289436`
 
 ## 当前已经做到的部分
 
@@ -27,16 +32,19 @@ PoC 已经实现完整的视频发布流程：
    这个 case 不发布摄像头和麦克风轨。
 3. 离屏 `BrowserWindow` 使用 `offscreen.useSharedTexture: true` 承载真实 DOM
    canvas。页面调用 `transferControlToOffscreen()`，由独立 Worker 持有
-   WebGL2、渲染资源以及基于 timer 的 30/48/60 fps 绘制循环。
+   WebGL2、渲染资源以及基于 timer 的 30/48/60 fps 绘制循环。窗口显式设置
+   `sharedTexturePixelFormat: 'argb'`，并验证 `paint` 实际输出在 Windows 必须是
+   BGRA，在 macOS 可以是 BGRA 或 RGBA。
 4. Electron 43 通过 `details.texture` 提供每一帧。Windows 使用
    `texture.textureInfo.handle.ntHandle`，macOS 使用
    `texture.textureInfo.handle.ioSurface`。
-5. Node 原生扩展验证帧参数并解码 8 字节 native handle；macOS 通过 IOSurface
-   API 获取 ID、宽高和 stride。
-6. Windows 把原始 NT Handle 数值放入 Iris 第 5 个 buffer；macOS 不传 CPU
-   像素 buffer，而是在 `ExternalVideoFrame` JSON 中提交 `iosurfaceId`。
-7. Native 在 Iris 返回前打开 D3D11 资源，或者 lookup 并 retain IOSurface；
-   随后 Electron 才释放借用的纹理。
+5. Node 原生扩展验证帧参数，并把共享纹理标识交给手写的 Iris
+   `MediaEngine_pushSharedTexture` API。
+6. Windows 由 Iris 打开 NT Handle、使用 keyed mutex 同步，并 GPU Copy 到 Iris
+   自有的 `ID3D11Texture2D`；macOS 由 Iris lookup IOSurface 并创建
+   IOSurface-backed `CVPixelBufferRef`。
+7. Iris 使用转换后的 D3D11 Texture 指针或 `ExternalVideoFrame.pixelBuffer`
+   调用 Native `pushVideoFrame`。Iris 同步返回后 Electron 才释放借用纹理。
 8. Iris 传输层错误和 RTC API 返回值都会传回 JavaScript，不再把 RTC
    失败误判为成功。
 9. 停止或异常时会等待正在提交的帧结束，每个 Electron 纹理只释放一次，
@@ -52,12 +60,21 @@ Advanced 菜单现在提供两个互斥运行的示例：
   Engine。主进程只持有离屏采集窗口、接收 `paint`、逐帧转发，并在 Renderer
   确认 RTC 提交完成后释放 Electron 纹理。
 
+这两个示例区分的是 Engine 所在进程，不是两条不同的像素格式链路。它们接受相同
+的 Shared Texture 格式；Iris 只要给 Native 设置了
+`ExternalVideoFrame.pixelBuffer`，就会把 `format` 设置为
+`VIDEO_PIXEL_DEFAULT`。这个 Native 契约不会让 CVPixelBuffer 或平台纹理自动具备
+Electron 跨进程传递能力。主进程 Engine 示例不存在 Main 到 Renderer 的纹理边界；
+Renderer Engine 示例仍需先跨越该边界，之后 Iris 才创建 CVPixelBuffer。
+
 RTC Engine 对象不会跨进程共享，因此 Renderer 示例在 Renderer 中完成完整 Engine
 生命周期。Windows 由主进程连同进程内 NT Handle 一起发送 PID，Renderer Addon
-先调用 `DuplicateHandle`，再把复制后的 Handle 交给 Native。macOS 由主进程 Addon
+先调用 `DuplicateHandle`，再把复制后的 Handle 交给 Iris。macOS 由主进程 Addon
 使用 Metal 把借用的 `IOSurfaceRef` GPU copy 到短生命周期的 global IOSurface，
 Renderer 收到它的 `IOSurfaceID` 后调用 `IOSurfaceLookup`。Electron IPC 不会传递
 任何仅在源进程有效的指针，提交完成后会立即释放这份 Surface。
+两个示例都会保留，便于集成方明确选择 Engine 归属，而不是把 Renderer 链路误解为
+必选架构。
 
 控制器同时只保留一个正在提交的帧和一个最新等待帧，不会形成无限队列。
 如果等待期间又产生新帧，更旧的等待帧会立即释放。加入频道期间和加入成功后
@@ -89,21 +106,24 @@ Worker WebGL2
   -> texture.textureInfo.handle.ioSurface
   -> AgoraElectronBridge.PushSharedTexture
   -> Addon IOSurfaceGetID
-  -> Iris ExternalVideoFrame.iosurfaceId
-  -> Native IOSurfaceLookup + retain
+  -> Iris MediaEngine_pushSharedTexture
+  -> Iris IOSurfaceLookup + CVPixelBufferCreateWithIOSurface
+  -> Native ExternalVideoFrame.pixelBuffer
   -> RTC encoder
 ```
 
 `PushSharedTexture`、`CreateSharedIOSurface` 和 `ReleaseSharedIOSurface` 都是手写在 `IAgoraElectronBridge` 上的
-Electron Native Addon API，不会加入生成的 `IMediaEngine` 文件，因此 Native SDK
-codegen 不会删除它们。主进程示例直接调用 `PushSharedTexture`；Renderer 示例在
+Electron Native Addon API，不会加入生成的 `IMediaEngine` 文件，因此 Electron
+codegen 不会删除它们。Iris 的 `MediaEngine_pushSharedTexture` 也注册在手写的
+`IMediaEngineWrapper`，不进入生成文件。主进程示例直接调用 `PushSharedTexture`；Renderer 示例在
 macOS 主进程调用 `CreateSharedIOSurface`，随后在两个平台的 Renderer 中调用
 `PushSharedTexture`。
 
 `IOSurfaceRef` 指针只在 Electron 交付它的当前进程中有效，并且只被借用。PoC
 不会通过 Electron IPC 传递这个指针。Addon 与 `paint` 回调位于同一个主进程，
-因此会立即把它转换为 Native RTC 所需的数值型 `IOSurfaceID`。
-这适用于主进程示例；Renderer 示例则创建前述 global Metal copy。
+因此会立即把它转换为交给 Iris 的数值型 `IOSurfaceID`。Renderer 示例则创建前述
+global Metal copy。这个 ID 只用于 Electron 到 Iris 的传输，不会写入 Native
+Video Frame 字段。
 
 ### 帧元数据与提交
 
@@ -113,10 +133,15 @@ Addon 会在调用 Iris 前验证每一帧 macOS 输入：
   跨进程 Renderer 提交则额外提供已经解析的 `ioSurfaceId`。
 - `IOSurfaceGetWidth()` 和 `IOSurfaceGetHeight()` 必须与 Electron
   `textureInfo.codedSize` 一致。
-- 使用 `IOSurfaceGetBytesPerRow()` 计算像素单位的 `stride`。BGRA/RGBA 每像素
-  四字节，不能假设 `stride == width`。
-- Electron `bgra` 对应 `VIDEO_CVPIXEL_BGRA`（`14`），`rgba` 对应
-  `VIDEO_PIXEL_RGBA`（`4`）。本 PoC 暂不启用 NV12、P010 和多平面输入。
+- Iris 验证 IOSurface 宽高、创建 IOSurface-backed `CVPixelBufferRef`，并确认
+  Electron 的 BGRA/RGBA 元数据与实际 `kCVPixelFormatType_32BGRA`/
+  `kCVPixelFormatType_32RGBA` 一致。
+- macOS 默认没有注册 32-bit RGBA 的 CVPixelBuffer 描述，因此 Iris 会在第一次包装
+  RGBA IOSurface 前，通过公开 CoreVideo API 注册一次该格式描述。
+- Iris 使用 `VIDEO_BUFFER_TEXTURE + VIDEO_PIXEL_DEFAULT` 提交，由 Native 从
+  `CVPixelBufferRef` 读取实际像素格式。
+- RGBAF16、NV12、P010 和多平面输入暂不启用。Iris 不做隐式格式转换；格式不匹配
+  或不支持的帧会在提交 Native 前失败。
 - `timestamp` 使用 `getCurrentMonotonicTimeInMs()`；Electron compositor 时间戳
   只用于诊断，不能作为 RTC 时钟。
 - IOSurface 链路不传 CPU 像素 Buffer，也不在 Electron 侧执行 `readPixels`、
@@ -139,10 +164,11 @@ Foundation 引用计数只能维持对象生命，不能阻止 Chromium 复用�
 注册新 Surface、淘汰旧 Surface，并保持 producer-consumer 同步。仅通过普通
 Electron IPC 发送 ID 仍然不足。
 
-匹配的 CSD-79710 Native SDK 契约明确说明 SDK 会执行 `IOSurfaceLookup` 并 retain
-导入资源。Iris 同步返回真实 RTC 结果；调用成功或失败后，Controller 才调用
-`texture.release()`。Controller 同时只允许一个提交中的帧，并且只保留一个最新
-等待帧，避免提前释放和无限排队。
+匹配的 Native SDK 契约支持
+`ExternalVideoFrame.pixelBuffer + VIDEO_BUFFER_TEXTURE + VIDEO_PIXEL_DEFAULT`，
+并从 CVPixelBuffer 自身读取 BGRA/RGBA 格式。Iris 在同步 `pushVideoFrame` 调用期间
+持有 CVPixelBuffer，并在 Native 返回后释放。调用成功或失败后，Controller 才调用
+`texture.release()`。Controller 同时只允许一个提交中的帧，并且只保留一个最新等待帧。
 
 ### 帧率、后台运行与恢复
 
@@ -158,7 +184,7 @@ Electron IPC 发送 ID 仍然不足。
 
 现有健康状态会报告 Renderer 退出、WebGL Context Loss、GPU Process 退出和 paint
 间隔超时。IOSurface ID 不会跨帧缓存，因此 `paint` 恢复后会自然取得当前 Surface。
-Native lookup 或导入错误会返回为提交失败。真实 macOS GPU Reset 后的完整恢复仍是
+Iris lookup 或转换错误会返回为提交失败。真实 macOS GPU Reset 后的完整恢复仍是
 验收项。
 
 ### 已验证范围
@@ -166,16 +192,15 @@ Native lookup 或导入错误会返回为提交失败。真实 macOS GPU Reset �
 macOS 实现已经完成以下验证：
 
 - Electron Addon 同时包含 `arm64`/`x86_64`，并链接 `IOSurface.framework`。
-- 匹配的 Iris `ExternalVideoFrame` serializer 包含 `iosurfaceId`，Native RTC SDK
-  包含 CSD-79710 能力。
-- Native 测试创建真实 IOSurface，通过相同的 8 字节 Handle 表示提交其指针，
-  并验证生成的 ID、stride、帧元数据以及为空的 Iris Pointer Buffer。
-- Electron 43.2.0 成功启动；真实频道日志持续出现变化的 IOSurface ID、BGRA
-  格式 `14`、`800 x 600` 元数据以及 RTC 返回值 `0`。
-- 本地 30 fps 冒烟测试中，paint P50 约为 `33.3 ms`、提交失败为 0；对齐 encoder
-  配置后，RTC `sentFrameRate` 达到 `30`。
+- 匹配的 Iris 双架构构建中，`ExternalVideoFrame` serializer 包含
+  `pixelBuffer`，手写 Wrapper 暴露 `MediaEngine_pushSharedTexture`。
+- Iris 测试分别创建真实 BGRA/RGBA IOSurface-backed CVPixelBuffer，并验证 Native
+  Mock 收到 `ExternalVideoFrame.pixelBuffer`、`VIDEO_PIXEL_DEFAULT`、宽高、时间戳和
+  Track ID。
+- Electron 原生请求测试验证新的 Iris Event、平台 Handle 槽位、帧元数据和 RTC
+  结果同步透传。
 
-以上证据证明 Electron 到 Native 的 IOSurface 传输和 encoder 提交链路已经贯通；
+以上证据证明 Electron 到 Iris 再到 Native 的接口边界和编译链路已经贯通；
 但不能单独证明远端画面内容正确、端到端严格零拷贝、跨 Metal Device 零拷贝、
 长时间 A/V 漂移达标或 GPU Reset 恢复。这些仍属于客户验收测试。
 
@@ -223,10 +248,10 @@ PoC 中的 `visible` 和 `minimized` 采集窗口模式只用于对照测试。�
   窗口/进程编排、预览、A/V 时钟映射，以及 renderer/WebGL/推流恢复。
 - 跨平台 Agora Electron API 接收 compositor 纹理，并向 Favorited 暴露完成
   A/V 映射所需的 Agora 单调时钟。
-- Agora 负责 Windows NT Handle/D3D11 和 macOS IOSurface/Metal 互操作。在
-  Electron 释放源纹理之前，Agora 必须同步消费它，
-  或把它持有/GPU copy 到 Agora 自有资源。
-- Agora 负责 Native 纹理导入、过期 Handle、D3D11 device loss 和 SDK 资源
+- Iris 负责 Windows NT Handle/D3D11 和 macOS IOSurface/CVPixelBuffer 互操作。
+  Native 只接收 `ID3D11Texture2D*` 或 `CVPixelBufferRef`，不接收 Electron
+  shared handle。
+- Agora 负责纹理导入、过期 Handle、D3D11 device loss 和 SDK 资源
   恢复，并向 Favorited 返回可处理的错误。Favorited 不编写平台相关 Native
   互操作代码。
 
@@ -266,7 +291,7 @@ JavaScript 拿到 Promise 前执行。要恢复这种故障，需要 Native 提�
 - Windows x64 打包，并证明 Example 使用当前 checkout 中针对 Electron
   `43.2.0`、ABI `148` 重编的 Addon
 - macOS universal addon 使用能够序列化
-  `ExternalVideoFrame.iosurfaceId` 的 Iris 成功编译
+  `ExternalVideoFrame.pixelBuffer` 的 Iris 成功编译
 
 此前 CPU 回读版本通过过真实频道冒烟测试，但该结果不能证明 direct texture
 Native SDK 链路可用。Native 同事需要用这个包验证编码帧、码率持续增长以及
@@ -278,9 +303,10 @@ Native SDK 链路可用。Native 同事需要用这个包验证编码帧、码�
 
 ```text
 Electron NT Handle
-  -> Iris 第 5 个 buffer 中完全相同的 Handle 数值
-  -> Native SDK OpenSharedResource1
-  -> Native SDK 持有的 ID3D11Texture2D
+  -> Iris MediaEngine_pushSharedTexture
+  -> Iris OpenSharedResource1 + keyed-mutex GPU CopyResource
+  -> Iris 持有的 ID3D11Texture2D
+  -> Native ExternalVideoFrame.d3d11Texture2d
   -> RTC SDK
   -> 编码器
 ```
@@ -289,9 +315,10 @@ macOS 对应链路如下：
 
 ```text
 Electron IOSurfaceRef
-  -> Addon IOSurfaceGetID / 宽高 / stride
-  -> Iris ExternalVideoFrame.iosurfaceId
-  -> Native SDK IOSurfaceLookup + retain
+  -> Addon IOSurfaceGetID
+  -> Iris MediaEngine_pushSharedTexture
+  -> Iris IOSurfaceLookup + CVPixelBufferCreateWithIOSurface
+  -> Native ExternalVideoFrame.pixelBuffer
   -> RTC SDK -> 编码器
 ```
 
@@ -308,46 +335,43 @@ Electron IOSurfaceRef
   导出内容。
 
 预览路径会增加一次 GPU Copy 和同步等待，只用于内容诊断，不能用于衡量零拷贝
-链路的性能，也不会替换 RTC 仍然接收的原始 Handle。
+链路的性能。Iris 会独立打开并转换提交给 RTC 的 Handle。
 
 这个 PoC 当前不包含以下能力：
 
 - 端到端零拷贝编码
 - 在 GPU 上完成 BGRA/RGBA 到 NV12 的转换
-- 跨帧复用 D3D11 Device、Adapter 或纹理池
+- 完整的 D3D11 Device Lost 恢复
 - NV12、P010 或多平面共享纹理支持
 - 自动化远端画面内容校验
 
-Electron `HANDLE` 只被借用，Addon 和 Native SDK 都不能关闭它。Native SDK
-必须在同步 `CallIrisApi` 返回前打开或复制 Handle；如果后续异步处理，则持有
-自己的 COM 引用。随后 JavaScript 控制器只调用一次 Electron
-`texture.release()`，Native SDK 最终只释放自己持有的资源。
+Electron `HANDLE` 只被借用。Iris 打开但不关闭它，把内容复制到 Iris 自有的
+keyed-mutex Texture，再把该 Texture 的 COM 指针交给 Native。同步 Iris 调用返回后，
+JavaScript Controller 才释放 Electron Texture。macOS 上，Iris 通过 CVPixelBuffer
+持有 lookup 后的 IOSurface，直到 Native `pushVideoFrame` 返回。
 
-## 临时 Native SDK 契约
+## Iris 转换契约
 
-随包 Native SDK 的头文件已经预留了接口结构：
+随包 Native SDK 头文件提供转换后资源的输入字段：
 
 - `ExternalVideoFrame::VIDEO_BUFFER_TEXTURE`，值为 `3`
 - `VIDEO_TEXTURE_ID3D11TEXTURE2D`，值为 `17`
 - `ExternalVideoFrame::d3d11Texture2d`
 - `ExternalVideoFrame::textureSliceIndex`
+- `ExternalVideoFrame::pixelBuffer`
 
-此前随包 Native SDK 在这条链路上返回 RTC 错误 `-2`。这个开发包会明确启用
-`useTexture=true`，并临时复用 `d3d11Texture2d` 传输槽承载 NT Handle 数值。
+Electron 包必须同时绑定包含 `MediaEngine_pushSharedTexture` 的 Iris 构建和匹配的
+CSD-79710 Native 构建。旧 Iris Artifact 虽然能让 Electron Addon 编译通过，但因
+缺少这个手写 Event，运行时会返回 `ERR_NOT_SUPPORTED`。
 
-## Native RTC SDK 需要修改的部分
-
-这个开发包约定 Native 把 `d3d11Texture2d` 解释为 NT Handle 数值，并在
-`pushVideoFrame` 返回前打开它：
+由 Iris 而不是 Native 解析 Electron 平台 Handle：
 
 ```cpp
 ExternalVideoFrame frame;
 frame.type = ExternalVideoFrame::VIDEO_BUFFER_TEXTURE;
 frame.format = VIDEO_TEXTURE_ID3D11TEXTURE2D;
-HANDLE nt_handle = reinterpret_cast<HANDLE>(frame.d3d11Texture2d);
-ComPtr<ID3D11Texture2D> opened_texture;
-HRESULT hr = device1->OpenSharedResource1(
-    nt_handle, IID_PPV_ARGS(&opened_texture));
+ComPtr<ID3D11Texture2D> iris_texture = OpenAndGpuCopy(nt_handle);
+frame.d3d11Texture2d = iris_texture.Get();
 frame.textureSliceIndex = 0;
 frame.stride = width;
 frame.height = height;
@@ -356,16 +380,16 @@ frame.timestamp = rtc_timestamp_ms;
 media_engine->pushVideoFrame(&frame, video_track_id);
 ```
 
-Native RTC SDK 必须实现以下行为：
+集成必须满足以下行为：
 
 1. Windows 支持 `setExternalVideoSource(true, true, VIDEO_FRAME)`。
-2. 在这个临时包中，把 `d3d11Texture2d` 当作原始 NT Handle 数值，不能当作
-   `HANDLE` 变量的地址，也不能当作 `ID3D11Texture2D*`。
-3. 明确支持的 DXGI Format。Electron 链路至少需要 BGRA；RGBA 要么直接支持，
-   要么明确拒绝，让 Electron Addon 在 GPU 上执行格式转换。
+2. `d3d11Texture2d` 按公开语义接收 `ID3D11Texture2D*`；NT Handle 不跨越
+   Iris 到 Native 的边界。
+3. Windows 接受 BGRA，macOS 接受 BGRA/RGBA；RGBAF16 明确不在范围内，必须在
+   提交 Native 前失败。
 4. 色彩转换、缩放和向硬件编码输入 Surface 的传输全部保留在 GPU 上。
-5. 使用纹理所属的 DXGI Adapter，或者定义跨 Adapter 回退方案，并为 Adapter
-   不匹配返回明确错误。
+5. Iris 枚举 DXGI Adapter，直到 `OpenSharedResource1` 成功，并在同一 Device
+   创建输出 Texture。
 6. 正确处理 D3D11 Device Lost 和纹理尺寸变化，不能继续持有失效资源。
 7. 返回真实 RTC 提交结果；返回 `0` 表示 SDK 已按约定接受该纹理。
 8. 把 `getCurrentMonotonicTimeInMs()` 取得的 `rtcTimestampMs` 原样设置为
@@ -373,42 +397,23 @@ Native RTC SDK 必须实现以下行为：
 
 ### 生命周期与同步契约
 
-在 Electron Addon 可以安全调用 `texture.release()` 之前，Native SDK 必须定义
-清楚以下契约：
+在 Electron Addon 可以安全调用 `texture.release()` 之前，必须满足以下契约：
 
-- SDK 必须在 `pushVideoFrame` 返回前调用 `OpenSharedResource1` 或复制借用的
-  Handle，并在读取期间持有自己的 COM 引用。
-- SDK 不能关闭 Electron 的原始 Handle。
+- Iris 在调用 Native 前打开并 GPU Copy 借用的 Handle。
+- Iris 和 Native 都不能关闭 Electron 原始 Handle。
+- Native 在 `pushVideoFrame` 返回前 retain 或消费转换后的 D3D11
+  Texture/CVPixelBuffer。
 - 打开或资源验证失败必须在同步调用内返回负数 RTC 结果，不能把帧误报为接受。
 - 契约必须明确 Chromium 从什么时候开始可以复用源纹理。
-- SDK 必须定义 Electron BGRA/RGBA 共享纹理的 GPU 同步方式；这个接口没有为
-  这两种格式提供 keyed mutex。
+- Iris 和 Native 必须遵守 keyed-mutex/CVPixelBuffer 同步与生命周期契约。
 
-第一阶段可以在 GPU 上 `CopyResource` 到 SDK 自己维护的纹理池。它不属于严格
-意义上的完全零拷贝，但可以消除最昂贵的 GPU→CPU→GPU 往返，同时建立明确的
-资源所有权边界。
+Windows 的 GPU `CopyResource` 是有意设计，用来建立资源所有权，同时避免 staging、
+`Map` 和 GPU-to-CPU readback。macOS 创建 IOSurface-backed CVPixelBuffer，不把像素
+读回 CPU Buffer。Renderer Case 为跨进程传递 IOSurface，仍保留已有的一次 Metal Copy。
 
-### 直接 Handle 的兼容边界
+## 共享纹理能力验收标准
 
-复用 `d3d11Texture2d` 是 Electron 与 Native 团队之间的临时 PoC 约定，不是
-该字段公开语义的永久修改。正式的直接 Handle API 应使用独立字段，并定义宽高、
-DXGI Format、Texture Slice、Adapter 选择、同步和完成语义。
-
-## Native 纹理支持完成后的迁移方式
-
-这个开发包保持 Renderer 和 IPC 流程不变，并采用下面的 Electron 原生发送链路：
-
-1. 使用 `setExternalVideoSource(true, true, ...)`。
-2. 在 Iris 第 5 个 buffer 中原样传递 Electron NT Handle 数值。
-3. Native SDK 在同步调用返回前打开并验证 Handle。
-4. 不包含 `ReadTexturePixels`、staging texture、`Map` 或 CPU 像素 Vector。
-5. 按 Native SDK 新定义的完成契约释放 Electron 纹理。
-
-现有的帧背压、递增 Frame ID、错误透传、频道发布配置和停止清理逻辑可以保留。
-
-## Native 纹理能力验收标准
-
-以下条件全部满足后，才能认为 Native 纹理输入已经完成：
+以下条件全部满足后，才能认为共享纹理输入已经完成：
 
 - 连续提交至少 300 个 D3D11 帧并全部返回成功。
 - 编码帧计数和上行码率持续增长。
@@ -417,7 +422,7 @@ DXGI Format、Texture Slice、Adapter 选择、同步和完成语义。
   像素复制。
 - 持续运行时，源纹理不会被提前复用，也不会泄漏。
 - Resize、加入期间停止、重复加入离开和 Device Lost 场景不崩溃、不残留旧帧。
-- BGRA 行为、时间戳、Adapter 选择和纹理生命周期成为明确的 SDK 接口契约。
+- BGRA/RGBA 行为、时间戳、Adapter 选择和纹理生命周期成为明确的 SDK 接口契约。
 
 ## 相关文件
 
@@ -430,6 +435,8 @@ DXGI Format、Texture Slice、Adapter 选择、同步和完成语义。
 - `source_code/agora_node_ext/d3d11_shared_texture_preview.cpp`
 - `source_code/agora_node_ext/iosurface_shared_texture_importer.cpp`
 - `source_code/agora_node_ext/shared_texture_request.cpp`
+- Iris `src/dcg/src/impl/SharedTextureConverter.cc`
+- Iris `src/dcg/src/impl/IMediaEngine_Wrapper.cc`
 - `native/Agora_Native_SDK_for_Windows_FULL/sdk/high_level_api/include/AgoraMediaBase.h`
 - `native/Agora_Native_SDK_for_Windows_FULL/sdk/high_level_api/include/IAgoraMediaEngine.h`
 

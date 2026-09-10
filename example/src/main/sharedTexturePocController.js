@@ -203,7 +203,10 @@ class SharedTexturePocController {
     this.window = new this.BrowserWindow({
       show: captureWindowState !== 'hidden',
       webPreferences: {
-        offscreen: { useSharedTexture: true },
+        offscreen: {
+          useSharedTexture: true,
+          sharedTexturePixelFormat: 'argb',
+        },
         backgroundThrottling: false,
       },
     });
@@ -416,7 +419,9 @@ class SharedTexturePocController {
   normalizePixelFormat(format) {
     const value = typeof format === 'string' ? format.toLowerCase() : '';
     if (value === 'bgra' || value === 'argb') return 'bgra';
-    if (value === 'rgba' || value === 'abgr') return 'rgba';
+    if (this.platform === 'darwin' && (value === 'rgba' || value === 'abgr')) {
+      return 'rgba';
+    }
     return null;
   }
 

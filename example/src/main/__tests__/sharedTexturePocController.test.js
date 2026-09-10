@@ -152,13 +152,36 @@ test('starts the default external texture source before accepting frames', async
     })
   );
   expect(harness.controller.window.options.webPreferences).toEqual({
-    offscreen: { useSharedTexture: true },
+    offscreen: {
+      useSharedTexture: true,
+      sharedTexturePixelFormat: 'argb',
+    },
     backgroundThrottling: false,
   });
   expect(
     harness.controller.window.webContents.setFrameRate
   ).toHaveBeenCalledWith(30);
 });
+
+test.each([
+  ['win32', 'rgba'],
+  ['win32', 'rgbaf16'],
+  ['darwin', 'rgbaf16'],
+])(
+  'rejects unsupported %s %s compositor frames',
+  async (platform, pixelFormat) => {
+    const harness = createHarness({ platform });
+    await start(harness);
+    const texture = createTexture(1);
+    texture.textureInfo.pixelFormat = pixelFormat;
+
+    harness.controller.handlePaint(texture);
+
+    expect(harness.nativeBridge.PushSharedTexture).not.toHaveBeenCalled();
+    expect(texture.release).toHaveBeenCalledTimes(1);
+    expect(harness.controller.getTelemetrySnapshot().invalidFrameCount).toBe(1);
+  }
+);
 
 test.each([
   ['hidden', false, false],
@@ -547,6 +570,7 @@ test('submits the Electron IOSurface on macOS', async () => {
   const harness = createHarness({ platform: 'darwin' });
   await start(harness);
   const texture = createTexture(1);
+  texture.textureInfo.pixelFormat = 'rgba';
 
   harness.controller.handlePaint(texture);
 
@@ -554,6 +578,7 @@ test('submits the Electron IOSurface on macOS', async () => {
   expect(harness.submissions[0].frame.nativeHandle).toEqual(
     texture.textureInfo.handle.ioSurface
   );
+  expect(harness.submissions[0].frame.pixelFormat).toBe('rgba');
   expect(harness.submissions[0].frame.directHandlePreview).toBe(false);
   harness.submissions[0].resolve({ frameId: 1, result: 0 });
   await new Promise(setImmediate);

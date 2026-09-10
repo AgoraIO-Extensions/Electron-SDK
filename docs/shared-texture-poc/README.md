@@ -4,12 +4,18 @@
 
 ## Status
 
-This proof of concept publishes an Electron offscreen-rendered scene through
-the platform-native shared-texture path. Windows passes Electron's original NT
-handle through the `d3d11Texture2d` Iris slot. macOS converts Electron's local
-`IOSurfaceRef` to an `IOSurfaceID`, which Native looks up and retains. Windows
-remote publishing has been validated; macOS remote rendering remains the
-handoff acceptance test and is not claimed by a successful repository build.
+This proof of concept publishes an Electron offscreen-rendered scene through a
+platform-neutral Electron API. Electron sends the platform shared-texture
+identity only to Iris. Iris opens and GPU-copies the Windows NT handle into an
+Iris-owned `ID3D11Texture2D`, or wraps the macOS IOSurface in a
+`CVPixelBufferRef`, before calling Native `pushVideoFrame`. Native no longer
+receives the Electron NT handle or IOSurfaceID.
+
+The capture window explicitly requests Electron's `argb` shared-texture output
+and validates the actual `textureInfo.pixelFormat`. Windows accepts `bgra`;
+macOS accepts `bgra` or `rgba`. `rgbaf16` remains intentionally unsupported and
+is released and counted as an invalid frame instead of being converted or
+mislabeled.
 
 The validated environment is:
 
@@ -17,7 +23,7 @@ The validated environment is:
 - Electron `43.2.0`
 - Electron Node `24.18.0`, native modules ABI `148`
 - Agora Electron SDK `4.5.3-build.123-rc.2`
-- Agora Native RTC SDK core `4.5.3.123`
+- CSD-79710 Native RTC development build `1289436`, based on `4.5.2.175`
 
 ## What Works Today
 
@@ -31,18 +37,20 @@ The PoC implements the complete publishing workflow:
 3. An offscreen `BrowserWindow` hosts a real DOM canvas with
    `offscreen.useSharedTexture: true`. The page calls
    `transferControlToOffscreen()` and a dedicated Worker owns WebGL2, rendering,
-   and its timer-driven 30/48/60 fps loop.
+   and its timer-driven 30/48/60 fps loop. The window explicitly sets
+   `sharedTexturePixelFormat: 'argb'` and validates the actual paint output as
+   BGRA on Windows or BGRA/RGBA on macOS.
 4. Electron 43 supplies each frame as `details.texture`. Windows uses
    `texture.textureInfo.handle.ntHandle`; macOS uses
    `texture.textureInfo.handle.ioSurface`.
-5. The native addon validates the frame metadata and decodes the eight native
-   handle bytes. On macOS it obtains the ID, dimensions, and stride with the
-   IOSurface API.
-6. Windows places the original NT handle value in Iris buffer slot 4. macOS
-   submits `iosurfaceId` in the `ExternalVideoFrame` JSON with no CPU pixel
-   buffer.
-7. Native opens the D3D11 resource or looks up and retains the IOSurface before
-   the Iris call returns, so Electron can then release its borrowed texture.
+5. The native addon validates the frame metadata and sends the shared-texture
+   identity to the handwritten Iris `MediaEngine_pushSharedTexture` API.
+6. On Windows, Iris opens the NT handle, synchronizes with its keyed mutex, and
+   GPU-copies it into an Iris-owned `ID3D11Texture2D`. On macOS, Iris looks up
+   the IOSurface and creates a `CVPixelBufferRef` backed by that surface.
+7. Iris calls Native `pushVideoFrame` with the converted D3D11 texture pointer
+   or `ExternalVideoFrame.pixelBuffer`. The Iris call completes before Electron
+   releases its borrowed texture.
 8. Submission errors from both the Iris transport and RTC API result are
    propagated to JavaScript.
 9. Stop and failure paths drain the active submission, release every Electron
@@ -60,14 +68,24 @@ The Advanced menu now contains two mutually exclusive examples:
   capture window, receives `paint`, forwards one frame at a time, and releases
   Electron's texture after the renderer acknowledges the RTC submission.
 
+These are process-placement examples, not different pixel-format paths. Both
+accept the same supported shared-texture formats, and Iris sets
+`ExternalVideoFrame.format` to `VIDEO_PIXEL_DEFAULT` whenever it supplies
+`pixelBuffer` to Native. That Native contract does not make a CVPixelBuffer or
+platform texture transferable between Electron processes. The main-process
+example has no main-to-renderer texture boundary; the renderer-owned Engine
+example still crosses that boundary before Iris creates the CVPixelBuffer.
+
 RTC engine objects are not shared between processes. The renderer example
 therefore performs the complete engine lifecycle in the renderer. On Windows,
 the main process sends its PID with the process-local NT handle; the renderer
-addon calls `DuplicateHandle` before passing the duplicated handle to Native.
+addon calls `DuplicateHandle` before passing the duplicated handle to Iris.
 On macOS, the main-process addon uses Metal to GPU-copy the borrowed
 `IOSurfaceRef` into a short-lived global IOSurface; the renderer receives its
 `IOSurfaceID` and calls `IOSurfaceLookup`. No process-local pointer is sent
 through Electron IPC, and the copied surface is released after submission.
+Both examples are retained so an integrator can choose Engine ownership
+explicitly rather than treating the renderer path as a requirement.
 
 The controller keeps at most one submission in flight and one latest pending
 texture. Older pending frames are released instead of building an unbounded
@@ -104,14 +122,17 @@ Worker WebGL2
   -> texture.textureInfo.handle.ioSurface
   -> AgoraElectronBridge.PushSharedTexture
   -> addon IOSurfaceGetID
-  -> Iris ExternalVideoFrame.iosurfaceId
-  -> Native IOSurfaceLookup + retain
+  -> Iris MediaEngine_pushSharedTexture
+  -> Iris IOSurfaceLookup + CVPixelBufferCreateWithIOSurface
+  -> Native ExternalVideoFrame.pixelBuffer
   -> RTC encoder
 ```
 
 `PushSharedTexture`, `CreateSharedIOSurface`, and `ReleaseSharedIOSurface` are hand-written Electron native-addon
 APIs declared on `IAgoraElectronBridge`. They are intentionally not added to generated
-`IMediaEngine` files, so Native SDK code generation cannot remove them. The
+`IMediaEngine` files, so Electron code generation cannot remove them. Iris also
+registers `MediaEngine_pushSharedTexture` in its handwritten
+`IMediaEngineWrapper`, outside generated wrapper files. The
 main-process example calls `PushSharedTexture` directly. The renderer example
 uses `CreateSharedIOSurface` in main on macOS, then calls `PushSharedTexture` in the
 renderer on both platforms.
@@ -119,8 +140,9 @@ renderer on both platforms.
 The `IOSurfaceRef` pointer is borrowed and valid only in the process where
 Electron delivered it. The PoC never sends that pointer through Electron IPC.
 The addon, which is loaded in the same main process, immediately converts it to
-the numeric `IOSurfaceID` required by Native RTC for the main-process example.
-For the renderer example, it creates the global Metal copy described above.
+a numeric `IOSurfaceID` for Iris. For the renderer example, it creates the
+global Metal copy described above. The ID is an Electron-to-Iris transport
+detail and is never assigned to a Native video-frame field.
 
 ### Frame Metadata And Submission
 
@@ -131,11 +153,17 @@ The addon validates every macOS frame before calling Iris:
   separately resolved `ioSurfaceId`.
 - `IOSurfaceGetWidth()` and `IOSurfaceGetHeight()` must match Electron's
   `textureInfo.codedSize`.
-- `IOSurfaceGetBytesPerRow()` is converted to `stride` in pixels. BGRA/RGBA use
-  four bytes per pixel; the code does not assume `stride == width`.
-- Electron `bgra` maps to `VIDEO_CVPIXEL_BGRA` (`14`), and `rgba` maps to
-  `VIDEO_PIXEL_RGBA` (`4`). NV12, P010, and multi-plane input are not enabled in
-  this PoC.
+- Iris verifies the IOSurface dimensions, creates a surface-backed
+  `CVPixelBufferRef`, and checks that Electron's BGRA/RGBA metadata matches
+  `kCVPixelFormatType_32BGRA`/`kCVPixelFormatType_32RGBA`.
+- Because macOS does not register a CVPixelBuffer description for 32-bit RGBA
+  by default, Iris registers that public CoreVideo format description once
+  before wrapping the first RGBA IOSurface.
+- Iris submits `VIDEO_BUFFER_TEXTURE + VIDEO_PIXEL_DEFAULT`; Native reads the
+  actual pixel format from the `CVPixelBufferRef`.
+- RGBAF16, NV12, P010, and multi-plane input are not enabled. Iris performs no
+  implicit format conversion, and mismatched or unsupported frames fail before
+  Native submission.
 - `timestamp` uses `getCurrentMonotonicTimeInMs()`. Electron's compositor
   timestamp remains diagnostic metadata and is never used as the RTC clock.
 - The IOSurface path supplies no CPU pixel buffer and performs no Electron-side
@@ -163,11 +191,13 @@ but it must dynamically register new surfaces, retire old ones, and preserve
 producer-consumer synchronization. Sending an ID through ordinary Electron IPC
 remains insufficient.
 
-The matching CSD-79710 Native SDK contract states that it performs
-`IOSurfaceLookup` and retains the imported resource. Iris returns the actual RTC
-result synchronously. Only after that call succeeds or fails does the controller
-call `texture.release()`. The controller allows one active submission and keeps
-only the latest pending frame, preventing early release and unbounded queueing.
+The matching Native SDK contract accepts `ExternalVideoFrame.pixelBuffer` with
+`VIDEO_BUFFER_TEXTURE` and `VIDEO_PIXEL_DEFAULT`, then reads BGRA/RGBA from the
+CVPixelBuffer itself. Iris retains the CVPixelBuffer through the synchronous
+`pushVideoFrame` call and releases it after Native returns. Only after the Iris
+call succeeds or fails does the controller call `texture.release()`. The
+controller allows one active submission and keeps only the latest pending
+frame.
 
 ### Frame Rate, Background Operation, And Recovery
 
@@ -184,8 +214,8 @@ be measured on supported macOS hardware.
 
 Renderer termination, WebGL context loss, GPU-process exit, and paint gaps are
 reported by the existing health state. No IOSurface ID is cached across frames,
-so resumed `paint` events naturally provide current surfaces. Native lookup or
-import errors are returned as submission failures. Full recovery from an actual
+so resumed `paint` events naturally provide current surfaces. Iris lookup or
+conversion errors are returned as submission failures. Full recovery from an actual
 macOS GPU reset remains an acceptance test.
 
 ### Verified Scope
@@ -194,19 +224,17 @@ The macOS implementation has been verified with:
 
 - A universal `arm64`/`x86_64` Electron addon linked with
   `IOSurface.framework`.
-- A matching Iris build whose `ExternalVideoFrame` serializer includes
-  `iosurfaceId`, and a CSD-79710-capable Native RTC SDK.
-- A native test that creates a real IOSurface, passes its pointer through the
-  same eight-byte handle representation, and verifies the generated ID, stride,
-  metadata, and empty Iris pointer buffers.
-- Electron 43.2.0 startup and live-channel submission logs containing changing
-  IOSurface IDs, BGRA format `14`, `800 x 600` metadata, and RTC result `0`.
-- A local 30 fps smoke run with paint P50 near `33.3 ms`, no submission
-  failures, and RTC `sentFrameRate` reaching `30` after encoder pacing was
-  aligned.
+- A matching universal Iris build whose `ExternalVideoFrame` serializer
+  includes `pixelBuffer` and whose handwritten wrapper exposes
+  `MediaEngine_pushSharedTexture`.
+- Iris tests that create real BGRA and RGBA IOSurface-backed CVPixelBuffers and
+  verify that the Native mock receives `ExternalVideoFrame.pixelBuffer`,
+  `VIDEO_PIXEL_DEFAULT`, dimensions, timestamp, and track ID.
+- An Electron native request test that verifies the new Iris event, platform
+  handle slot, metadata, and synchronous RTC result propagation.
 
-This evidence proves the Electron-to-Native IOSurface transport and encoder
-submission path. It does not by itself claim remote visual correctness,
+This evidence proves compilation and the Electron-to-Iris-to-Native API
+boundary. It does not by itself claim remote visual correctness,
 end-to-end zero-copy encoding, zero-copy operation across different Metal
 devices, long-running A/V drift compliance, or GPU-reset recovery. Those remain
 customer acceptance measurements.
@@ -265,10 +293,10 @@ pacing and remote publishing still require platform validation.
   preview, A/V clock mapping, and renderer/WebGL/stream recovery.
 - The platform-neutral Agora Electron API accepts the compositor texture and
   exposes the Agora monotonic clock needed by Favorited's A/V mapping.
-- Agora owns Windows NT-handle/D3D11 and macOS IOSurface/Metal interop. Before
-  Electron releases the source texture, Agora must synchronously
-  consume it or retain/GPU-copy it into an Agora-owned resource.
-- Agora owns native texture-import, stale-handle, D3D11 device-loss, and SDK
+- Iris owns Windows NT-handle/D3D11 and macOS IOSurface/CVPixelBuffer interop.
+  Native receives only `ID3D11Texture2D*` or `CVPixelBufferRef`, never the
+  Electron shared handle.
+- Agora owns texture-import, stale-handle, D3D11 device-loss, and SDK
   resource recovery, and reports actionable failures to Favorited. Favorited
   writes no platform-specific native interop code.
 
@@ -314,7 +342,7 @@ The development package is required to pass:
 - Windows x64 packaging with the Example resolved to this checkout's addon,
   rebuilt for Electron `43.2.0` ABI `148`
 - macOS universal addon compilation against an Iris build that serializes
-  `ExternalVideoFrame.iosurfaceId`
+  `ExternalVideoFrame.pixelBuffer`
 
 The earlier CPU-readback implementation passed a real-channel smoke test. That
 result does not prove that the direct-texture Native SDK path works. The native
@@ -327,9 +355,10 @@ Every submitted frame follows this path:
 
 ```text
 Electron NT handle
-  -> unchanged handle value in Iris buffer slot 4
-  -> Native SDK OpenSharedResource1
-  -> Native-owned ID3D11Texture2D
+  -> Iris MediaEngine_pushSharedTexture
+  -> Iris OpenSharedResource1 + keyed-mutex GPU CopyResource
+  -> Iris-owned ID3D11Texture2D
+  -> Native ExternalVideoFrame.d3d11Texture2d
   -> RTC SDK
   -> encoder
 ```
@@ -338,9 +367,10 @@ On macOS the corresponding path is:
 
 ```text
 Electron IOSurfaceRef
-  -> addon IOSurfaceGetID / dimensions / stride
-  -> Iris ExternalVideoFrame.iosurfaceId
-  -> Native SDK IOSurfaceLookup + retain
+  -> addon IOSurfaceGetID
+  -> Iris MediaEngine_pushSharedTexture
+  -> Iris IOSurfaceLookup + CVPixelBufferCreateWithIOSurface
+  -> Native ExternalVideoFrame.pixelBuffer
   -> RTC SDK -> encoder
 ```
 
@@ -359,49 +389,47 @@ network entirely:
   content still needs investigation.
 
 The preview adds one GPU copy and a synchronization wait. It is a content
-diagnostic, not a zero-copy performance measurement, and it does not replace
-the unchanged original handle sent to RTC.
+diagnostic, not a zero-copy performance measurement. Iris independently opens
+and converts the submitted handle for RTC.
 
 The following items are intentionally not claimed by this PoC:
 
 - End-to-end zero-copy encoding
 - GPU-only BGRA/RGBA-to-NV12 conversion
-- D3D11 device, adapter, or texture-pool reuse across frames
+- Full D3D11 device-loss recovery
 - NV12, P010, or multi-plane shared-texture support
 - An automated remote-client video-content assertion
 
-The Electron `HANDLE` is borrowed. Neither the addon nor the Native SDK may
-close it. Before synchronous `CallIrisApi` returns, the Native SDK must open or
-duplicate the handle and retain its own COM reference if processing continues
-asynchronously. The JavaScript controller then releases Electron's texture
-exactly once; the SDK eventually releases only its own resource.
+The Electron `HANDLE` is borrowed. Iris opens it without closing it, copies the
+content into an Iris-owned keyed-mutex texture, and passes that texture's COM
+pointer to Native. The JavaScript controller releases Electron's texture only
+after the synchronous Iris call returns. On macOS, Iris retains the looked-up
+IOSurface through CVPixelBuffer creation and keeps the CVPixelBuffer alive until
+Native `pushVideoFrame` returns.
 
-## Temporary Native SDK Contract
+## Iris Conversion Contract
 
-The bundled Native SDK headers contain the intended API shape:
+The bundled Native SDK headers expose the converted-resource inputs:
 
 - `ExternalVideoFrame::VIDEO_BUFFER_TEXTURE` (`3`)
 - `VIDEO_TEXTURE_ID3D11TEXTURE2D` (`17`)
 - `ExternalVideoFrame::d3d11Texture2d`
 - `ExternalVideoFrame::textureSliceIndex`
+- `ExternalVideoFrame::pixelBuffer`
 
-The previously bundled Native SDK returned RTC error `-2` for this path. This
-development package intentionally enables `useTexture=true` and temporarily
-uses the existing `d3d11Texture2d` transport slot for the NT handle value.
+The Electron package must bundle an Iris build that contains
+`MediaEngine_pushSharedTexture` together with the matching CSD-79710 Native
+build. An older Iris artifact will compile the Electron addon but return
+`ERR_NOT_SUPPORTED` at runtime because the handwritten event is absent.
 
-## Required Native RTC SDK Changes
-
-For this package, Native interprets `d3d11Texture2d` as an NT handle value and
-opens it before returning from `pushVideoFrame`:
+Iris, not Native, resolves Electron's platform handles:
 
 ```cpp
 ExternalVideoFrame frame;
 frame.type = ExternalVideoFrame::VIDEO_BUFFER_TEXTURE;
 frame.format = VIDEO_TEXTURE_ID3D11TEXTURE2D;
-HANDLE nt_handle = reinterpret_cast<HANDLE>(frame.d3d11Texture2d);
-ComPtr<ID3D11Texture2D> opened_texture;
-HRESULT hr = device1->OpenSharedResource1(
-    nt_handle, IID_PPV_ARGS(&opened_texture));
+ComPtr<ID3D11Texture2D> iris_texture = OpenAndGpuCopy(nt_handle);
+frame.d3d11Texture2d = iris_texture.Get();
 frame.textureSliceIndex = 0;
 frame.stride = width;
 frame.height = height;
@@ -410,18 +438,17 @@ frame.timestamp = rtc_timestamp_ms;
 media_engine->pushVideoFrame(&frame, video_track_id);
 ```
 
-The Native RTC SDK must provide all of the following behavior:
+The integration must provide all of the following behavior:
 
 1. Support `setExternalVideoSource(true, true, VIDEO_FRAME)` on Windows.
-2. Treat `d3d11Texture2d` as the original NT handle value for this temporary
-   package, not as a pointer to a `HANDLE` variable or an `ID3D11Texture2D*`.
-3. Define the accepted DXGI formats. BGRA must work for the Electron path;
-   RGBA must either be supported or rejected explicitly so the addon can use a
-   GPU conversion step.
+2. Treat `d3d11Texture2d` as `ID3D11Texture2D*`; the NT handle never crosses the
+   Iris-to-Native boundary.
+3. Accept BGRA on Windows and BGRA/RGBA on macOS. RGBAF16 is explicitly out of
+   scope and must fail before Native submission.
 4. Keep pixel processing on the GPU, including color conversion, scaling, and
    transfer into a hardware encoder input surface.
-5. Match the texture's DXGI adapter or define a cross-adapter fallback and
-   report adapter mismatch as a specific error.
+5. Iris probes DXGI adapters until `OpenSharedResource1` succeeds and creates
+   its output texture on that device.
 6. Handle D3D11 device loss and texture-size changes without retaining stale
    resources.
 7. Return the actual RTC submission result, with `0` meaning the texture was
@@ -434,47 +461,24 @@ The Native RTC SDK must provide all of the following behavior:
 This contract is required before the addon can safely call
 `texture.release()`:
 
-- The SDK must call `OpenSharedResource1` or duplicate the borrowed handle
-  before `pushVideoFrame` returns and retain its own COM reference for as long
-  as it reads the resource.
-- The SDK must never close Electron's original handle.
+- Iris opens and GPU-copies the borrowed handle before calling Native.
+- Neither Iris nor Native closes Electron's original handle.
+- Native retains or consumes the converted D3D11 texture/CVPixelBuffer before
+  `pushVideoFrame` returns.
 - Open or validation failures must be returned synchronously as a negative RTC
   result so Electron does not treat the frame as accepted.
 - The contract must state when Chromium may reuse the source texture.
-- The SDK must define GPU synchronization for Electron BGRA/RGBA shared
-  textures, which do not expose a keyed mutex through this API.
+- Iris acquires the source and destination keyed mutexes around the Windows GPU
+  copy; Native must honor the converted texture's synchronization contract.
 
-A GPU-to-GPU `CopyResource` into an SDK-owned texture pool is an acceptable
-first implementation. It is not strictly zero-copy, but it removes the costly
-GPU-to-CPU-to-GPU round trip and gives the SDK a clear ownership boundary.
+A Windows GPU-to-GPU `CopyResource` is intentional: it establishes ownership
+without staging, `Map`, or GPU-to-CPU readback. macOS creates a CVPixelBuffer
+view over the IOSurface without reading pixels into a CPU buffer. The renderer
+case still has its existing Metal copy for cross-process IOSurface transport.
 
-### Direct-Handle Compatibility Boundary
+## Acceptance Criteria for Shared Texture Support
 
-This reuse of `d3d11Texture2d` is a temporary PoC agreement with the Native SDK
-team, not the published meaning of that field. A production direct-handle API
-should use a dedicated field and define width, height, DXGI format, texture
-slice, adapter selection, synchronization, and completion semantics.
-
-## Migration After Native Texture Support
-
-This development package applies the following integration while keeping the
-renderer and IPC workflow unchanged:
-
-1. Use `setExternalVideoSource(true, true, ...)`.
-2. Pass the Electron NT handle value unchanged in Iris buffer slot 4.
-3. Open and validate that handle inside the Native SDK before the synchronous
-   call returns.
-4. Do not create `ReadTexturePixels`, a staging texture, `Map`, or a raw pixel
-   vector.
-5. Release the Electron texture according to the new Native SDK completion
-   contract.
-
-The frame backpressure, monotonically increasing frame IDs, error propagation,
-channel configuration, and shutdown behavior can remain unchanged.
-
-## Acceptance Criteria for Native Texture Support
-
-Native texture support should not be considered complete until all of these
+Shared-texture support should not be considered complete until all of these
 conditions pass:
 
 - At least 300 consecutive D3D11 frames return success.
@@ -485,8 +489,8 @@ conditions pass:
 - Source textures are neither reused early nor leaked during sustained load.
 - Resize, stop during join, repeated join/leave, and device-loss paths complete
   without crashes or stale frames.
-- BGRA behavior, timestamp semantics, adapter selection, and texture lifetime
-  are documented as supported API contracts.
+- BGRA/RGBA behavior, timestamp semantics, adapter selection, and texture
+  lifetime are documented as supported API contracts.
 
 ## Relevant Files
 
@@ -499,6 +503,8 @@ conditions pass:
 - `source_code/agora_node_ext/d3d11_shared_texture_preview.cpp`
 - `source_code/agora_node_ext/iosurface_shared_texture_importer.cpp`
 - `source_code/agora_node_ext/shared_texture_request.cpp`
+- Iris `src/dcg/src/impl/SharedTextureConverter.cc`
+- Iris `src/dcg/src/impl/IMediaEngine_Wrapper.cc`
 - `native/Agora_Native_SDK_for_Windows_FULL/sdk/high_level_api/include/AgoraMediaBase.h`
 - `native/Agora_Native_SDK_for_Windows_FULL/sdk/high_level_api/include/IAgoraMediaEngine.h`
 

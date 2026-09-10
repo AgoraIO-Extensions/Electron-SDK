@@ -9,14 +9,13 @@ constexpr uint32_t kMaxTextureDimension = 16384;
 }
 
 bool ValidateSharedTextureRequest(const SharedTextureRequest &request,
-                                  uint64_t last_frame_id,
-                                  std::string &error) {
+                                  uint64_t last_frame_id, std::string &error) {
   if (request.handle_size != sizeof(request.native_handle)) {
     error = "nativeHandle must contain exactly 8 bytes";
     return false;
   }
-  if (request.width == 0 || request.width > kMaxTextureDimension ||
-      request.height == 0 || request.height > kMaxTextureDimension) {
+  if (request.width == 0 || request.width > kMaxTextureDimension
+      || request.height == 0 || request.height > kMaxTextureDimension) {
     error = "texture dimensions must be between 1 and 16384";
     return false;
   }
@@ -32,8 +31,8 @@ bool ValidateSharedTextureRequest(const SharedTextureRequest &request,
     error = "frameId must increase monotonically";
     return false;
   }
-  if (request.pixel_format != SharedTexturePixelFormat::kBgra &&
-      request.pixel_format != SharedTexturePixelFormat::kRgba) {
+  if (request.pixel_format != SharedTexturePixelFormat::kBgra
+      && request.pixel_format != SharedTexturePixelFormat::kRgba) {
     error = "pixelFormat must be bgra or rgba";
     return false;
   }

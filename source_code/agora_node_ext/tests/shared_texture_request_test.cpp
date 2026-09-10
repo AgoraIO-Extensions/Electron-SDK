@@ -1,7 +1,7 @@
-#include "../shared_texture_request.h"
 #include "../d3d11_shared_texture_importer.h"
 #include "../iosurface_shared_texture_copy.h"
 #include "../iosurface_shared_texture_importer.h"
+#include "../shared_texture_request.h"
 
 #ifdef NDEBUG
 #undef NDEBUG
@@ -17,15 +17,14 @@
 #include <IOSurface/IOSurface.h>
 #endif
 
+using agora::rtc::electron::BuildSharedTextureCallBuffers;
+using agora::rtc::electron::BuildSharedTexturePushJson;
 using agora::rtc::electron::SharedTexturePixelFormat;
 using agora::rtc::electron::SharedTextureRequest;
 using agora::rtc::electron::SharedTextureSubmissionResult;
-using agora::rtc::electron::ValidateSharedTextureRequest;
-using agora::rtc::electron::BuildSharedTexturePushJson;
-using agora::rtc::electron::BuildSharedTextureCallBuffers;
 using agora::rtc::electron::SubmitSharedTextureCall;
+using agora::rtc::electron::ValidateSharedTextureRequest;
 #if defined(__APPLE__)
-using agora::rtc::electron::BuildIOSurfaceTexturePushJson;
 using agora::rtc::electron::CreateGlobalIOSurfaceGpuCopy;
 using agora::rtc::electron::ReleaseGlobalIOSurface;
 #endif
@@ -58,7 +57,7 @@ class FakeIrisEngine : public IApiEngineBase {
     json.assign(api_param->data, api_param->data_size);
     assert(api_param->buffer_count == 5);
     for (unsigned int index = 0; index < api_param->buffer_count; ++index) {
-      assert(api_param->buffer[index] == nullptr);
+      buffers[index] = api_param->buffer[index];
       assert(api_param->length[index] == 0);
     }
     api_param->result = const_cast<char *>(response.c_str());
@@ -67,6 +66,7 @@ class FakeIrisEngine : public IApiEngineBase {
 
   std::string event;
   std::string json;
+  std::array<void *, 5> buffers{};
   std::string response = "{\"result\":0}";
 };
 
@@ -129,28 +129,17 @@ int main() {
   request = ValidRequest();
   request.pixel_format = SharedTexturePixelFormat::kRgba;
   assert(ValidateSharedTextureRequest(request, 0, error));
-  assert(BuildSharedTexturePushJson(request) ==
-         "{\"frame\":{\"type\":3,\"format\":17,\"stride\":1920,"
-         "\"height\":1080,\"timestamp\":4242,\"textureSliceIndex\":0},"
-         "\"videoTrackId\":0}");
+  assert(BuildSharedTexturePushJson(request).find("\"format\":4")
+         != std::string::npos);
 
   request.pixel_format = SharedTexturePixelFormat::kBgra;
   request.timestamp_us = 999;
-  assert(BuildSharedTexturePushJson(request).find("\"format\":17") !=
-         std::string::npos);
-  assert(BuildSharedTexturePushJson(request).find("\"timestamp\":4242") !=
-         std::string::npos);
+  assert(BuildSharedTexturePushJson(request).find("\"format\":2")
+         != std::string::npos);
+  assert(BuildSharedTexturePushJson(request).find("\"timestamp\":4242")
+         != std::string::npos);
 
 #if defined(__APPLE__)
-  assert(BuildIOSurfaceTexturePushJson(request, 77, 672) ==
-         "{\"frame\":{\"type\":3,\"format\":14,\"stride\":672,"
-         "\"height\":1080,\"rotation\":0,\"timestamp\":4242,"
-         "\"iosurfaceId\":77},\"videoTrackId\":0}");
-  request.pixel_format = SharedTexturePixelFormat::kRgba;
-  assert(BuildIOSurfaceTexturePushJson(request, 88, 1920).find(
-             "\"format\":4") != std::string::npos);
-  request.pixel_format = SharedTexturePixelFormat::kBgra;
-
   IOSurfaceRef surface = CreateTestIOSurface(request.width, request.height);
   assert(surface != nullptr);
   const uintptr_t surface_pointer = reinterpret_cast<uintptr_t>(surface);
@@ -159,13 +148,10 @@ int main() {
   SharedTextureSubmissionResult iosurface_submission{};
   assert(agora::rtc::electron::SubmitSharedIOSurfaceTexture(
       request, &iris_engine, iosurface_submission, error));
-  assert(iris_engine.event == "MediaEngine_pushVideoFrame_4e544e2");
-  assert(iris_engine.json.find("\"iosurfaceId\":" +
-                               std::to_string(IOSurfaceGetID(surface))) !=
-         std::string::npos);
-  assert(iris_engine.json.find("\"stride\":" + std::to_string(
-                               IOSurfaceGetBytesPerRow(surface) / 4)) !=
-         std::string::npos);
+  assert(iris_engine.event == "MediaEngine_pushSharedTexture");
+  assert(iris_engine.json == BuildSharedTexturePushJson(request));
+  assert(reinterpret_cast<uintptr_t>(iris_engine.buffers[0])
+         == IOSurfaceGetID(surface));
   assert(iosurface_submission.rtc_response == "{\"result\":0}");
 
   request.iosurface_id = IOSurfaceGetID(surface);
@@ -174,9 +160,8 @@ int main() {
   SharedTextureSubmissionResult lookup_submission{};
   assert(agora::rtc::electron::SubmitSharedIOSurfaceTexture(
       request, &lookup_iris_engine, lookup_submission, error));
-  assert(lookup_iris_engine.json.find(
-             "\"iosurfaceId\":" + std::to_string(request.iosurface_id)) !=
-         std::string::npos);
+  assert(reinterpret_cast<uintptr_t>(lookup_iris_engine.buffers[0])
+         == request.iosurface_id);
 
   uint32_t global_surface_id = 0;
   void *retained_global_surface = nullptr;
@@ -201,15 +186,12 @@ int main() {
   const auto call_buffers = BuildSharedTextureCallBuffers(request);
   assert(call_buffers.buffers.size() == 5);
   assert(call_buffers.lengths.size() == 5);
-  for (std::size_t index = 0; index < 4; ++index) {
+  for (std::size_t index = 1; index < call_buffers.buffers.size(); ++index) {
     assert(call_buffers.buffers[index] == nullptr);
   }
-  assert(reinterpret_cast<uintptr_t>(call_buffers.buffers[4]) == handle_bits);
-  assert(call_buffers.buffers[4] !=
-         static_cast<void *>(request.native_handle));
-  for (const auto length : call_buffers.lengths) {
-    assert(length == 0);
-  }
+  assert(reinterpret_cast<uintptr_t>(call_buffers.buffers[0]) == handle_bits);
+  assert(call_buffers.buffers[0] != static_cast<void *>(request.native_handle));
+  for (const auto length : call_buffers.lengths) { assert(length == 0); }
 
   SharedTextureSubmissionResult submission{};
   bool called = false;
@@ -219,7 +201,7 @@ int main() {
           std::string &rtc_response) {
         called = true;
         assert(json == BuildSharedTexturePushJson(request));
-        assert(reinterpret_cast<uintptr_t>(buffers.buffers[4]) == handle_bits);
+        assert(reinterpret_cast<uintptr_t>(buffers.buffers[0]) == handle_bits);
         for (const auto length : buffers.lengths) { assert(length == 0); }
         rtc_response = "{\"result\":-7}";
         return 123;
@@ -229,7 +211,7 @@ int main() {
   assert(!submitted);
   assert(submission.transport_result == 123);
   assert(submission.rtc_response == "{\"result\":-7}");
-  assert(error == "Iris pushVideoFrame transport failed with result 123");
+  assert(error == "Iris pushSharedTexture transport failed with result 123");
 
   std::cout << "shared texture request validation passed\n";
   return 0;
