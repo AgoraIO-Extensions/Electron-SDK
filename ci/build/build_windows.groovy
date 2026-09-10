@@ -54,6 +54,7 @@ def doPublish(buildVariables) {
     def codesignResult = build(job: 'CodeSign', parameters: [
         text(name: 'PACKAGE_URLS', value: codesignUrls.join('\n')),
         string(name: 'SIGN_FILE_WHITELIST', value: '*.node'),
+        string(name: 'SIGN_PACKAGE_WHITELIST', value: '*.zip'),
     ], propagate: false)
     if (!codesignResult || codesignResult.result != 'SUCCESS') {
         error("CodeSign failed: ${codesignResult?.result ?: 'UNKNOWN'}")
