@@ -1,5 +1,12 @@
 
 
+## [4.2.7-build.1-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.7-build.143-dev.1...v4.2.7-build.1-rc.1) (2026-09-10)
+
+
+### Bug Fixes
+
+* **ci:** allow Electron Windows packages in CodeSign ([#1464](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1464)) ([3b05479](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/3b054797a9f6c03e4440ca291ebae67be7b8a058))
+
 ## [4.2.7-build.143-dev.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.7-build.140-rc.1...v4.2.7-build.143-dev.1) (2026-09-02)
 
 
