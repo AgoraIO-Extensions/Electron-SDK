@@ -51,14 +51,10 @@ import {
   LocalAudioStreamReason,
   LocalAudioStreamState,
   LocalTranscoderConfiguration,
-  LocalVideoEventType,
   LocalVideoStreamReason,
   LocalVideoStreamState,
   LowlightEnhanceOptions,
   MediaTraceEvent,
-  MultipathMode,
-  MultipathStats,
-  MultipathType,
   NetworkType,
   PermissionType,
   QualityAdaptIndication,
@@ -1090,10 +1086,6 @@ export class ScreenCaptureSourceInfo {
    * (Windows only) ID of the screen where the window is located. If the window spans multiple screens, it refers to the screen with the largest intersecting area. If the window is outside the visible screen, the value is -2.
    */
   sourceDisplayId?: number;
-  /**
-   * @ignore
-   */
-  process_id?: number;
 }
 
 /**
@@ -1291,25 +1283,9 @@ export class ChannelMediaOptions {
    */
   parameters?: string;
   /**
-   * Permissions and system requirements:
-   *  Android: Android 7.0 or later (API level 24 or above), requires ACCESS_NETWORK_STATE and CHANGE_NETWORK_STATE permissions.
-   *  iOS: iOS 12.0 or later.
-   *  macOS: 10.14 or later.
-   *  Windows: Windows Vista or later. Whether to enable multipath transmission: true : Enable multipath transmission. false : Disable multipath transmission.
-   */
-  enableMultipath?: boolean;
-  /**
    * @ignore
    */
-  uplinkMultipathMode?: MultipathMode;
-  /**
-   * @ignore
-   */
-  downlinkMultipathMode?: MultipathMode;
-  /**
-   * Preferred transmission path type. See MultipathType. When using this parameter, make sure enableMultipath is set to true.
-   */
-  preferMultipathType?: MultipathType;
+  customUserInfo?: string;
 }
 
 /**
@@ -1688,11 +1664,6 @@ export interface IRtcEngineEventHandler {
     height: number,
     rotation: number
   ): void;
-
-  /**
-   * @ignore
-   */
-  onLocalVideoEvent?(source: VideoSourceType, event: LocalVideoEventType): void;
 
   /**
    * Occurs when the local video state changes.
@@ -2640,15 +2611,6 @@ export interface IRtcEngineEventHandler {
    * @ignore
    */
   onSetRtmFlagResult?(connection: RtcConnection, code: number): void;
-
-  /**
-   * Callback for multipath transmission statistics.
-   *
-   * Since Available since v4.6.2.
-   *
-   * @param stats Multipath transmission statistics. See MultipathStats.
-   */
-  onMultipathStats?(connection: RtcConnection, stats: MultipathStats): void;
 }
 
 /**
@@ -2825,15 +2787,6 @@ export abstract class IVideoEffectObject {
   ): number;
 
   /**
-   * @ignore
-   */
-  abstract setVideoEffectStringParam(
-    option: string,
-    key: string,
-    param: string
-  ): number;
-
-  /**
    * Sets the float parameter of a video effect.
    *
    * Since Available since v4.6.2.
@@ -2978,10 +2931,6 @@ export class RtcEngineContext {
    * Whether to automatically register Agora extensions when initializing IRtcEngine : true : (Default) Automatically register Agora extensions when initializing IRtcEngine. false : Do not register Agora extensions when initializing IRtcEngine. You need to call enableExtension to register them.
    */
   autoRegisterAgoraExtensions?: boolean;
-  /**
-   * @ignore
-   */
-  parameters?: string;
 }
 
 /**
@@ -7429,10 +7378,6 @@ export enum MediaDeviceStateType {
    * 8: Device is unplugged.
    */
   MediaDeviceStateUnplugged = 8,
-  /**
-   * @ignore
-   */
-  MediaDeviceStateDefaultDeviceChangedReady = 9,
 }
 
 /**
