@@ -28,7 +28,6 @@ export const IRtcEngineEventHandler = t.iface([], {
   "onFirstLocalVideoFramePublished": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("elapsed", "number"))),
   "onFirstRemoteVideoDecoded": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("remoteUid", "number"), t.param("width", "number"), t.param("height", "number"), t.param("elapsed", "number"))),
   "onVideoSizeChanged": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("sourceType", "VideoSourceType"), t.param("uid", "number"), t.param("width", "number"), t.param("height", "number"), t.param("rotation", "number"))),
-  "onLocalVideoEvent": t.opt(t.func("void", t.param("source", "VideoSourceType"), t.param("event", "LocalVideoEventType"))),
   "onLocalVideoStateChanged": t.opt(t.func("void", t.param("source", "VideoSourceType"), t.param("state", "LocalVideoStreamState"), t.param("reason", "LocalVideoStreamReason"))),
   "onRemoteVideoStateChanged": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("remoteUid", "number"), t.param("state", "RemoteVideoState"), t.param("reason", "RemoteVideoStateReason"), t.param("elapsed", "number"))),
   "onFirstRemoteVideoFrame": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("remoteUid", "number"), t.param("width", "number"), t.param("height", "number"), t.param("elapsed", "number"))),
@@ -101,7 +100,6 @@ export const IRtcEngineEventHandler = t.iface([], {
   "onExtensionStoppedWithContext": t.opt(t.func("void", t.param("context", "ExtensionContext"))),
   "onExtensionErrorWithContext": t.opt(t.func("void", t.param("context", "ExtensionContext"), t.param("error", "number"), t.param("message", "string"))),
   "onSetRtmFlagResult": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("code", "number"))),
-  "onMultipathStats": t.opt(t.func("void", t.param("connection", "RtcConnection"), t.param("stats", "MultipathStats"))),
 });
 
 export const IMetadataObserver = t.iface([], {

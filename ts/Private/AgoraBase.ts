@@ -1242,6 +1242,16 @@ export enum MaxUserAccountLengthType {
 }
 
 /**
+ * @ignore
+ */
+export enum MaxCustomUserInfoLengthType {
+  /**
+   * @ignore
+   */
+  MaxCustomUserInfoLength = 1024,
+}
+
+/**
  * Information about externally encoded video frames.
  */
 export class EncodedVideoFrameInfo {
@@ -1741,106 +1751,6 @@ export class WatermarkOptions {
    * Watermark fit mode. See WatermarkFitMode.
    */
   mode?: WatermarkFitMode;
-}
-
-/**
- * Modes for multipath data transmission.
- *
- * Since Added since v4.6.2.
- */
-export enum MultipathMode {
-  /**
-   * (0): Redundant transmission mode. The same data is redundantly transmitted over all available paths.
-   */
-  Duplicate = 0,
-  /**
-   * @ignore
-   */
-  Dynamic = 1,
-}
-
-/**
- * Network path types used for multipath transmission.
- *
- * Since Added since v4.6.2.
- */
-export enum MultipathType {
-  /**
-   * (0): Local Area Network (LAN) path.
-   */
-  Lan = 0,
-  /**
-   * (1): Wi-Fi path.
-   */
-  Wifi = 1,
-  /**
-   * (2): Mobile network path.
-   */
-  Mobile = 2,
-  /**
-   * (99): Unknown or unspecified network path.
-   */
-  Unknown = 99,
-}
-
-/**
- * Used to obtain statistics for a specific network path.
- *
- * Since Available since v4.6.2.
- */
-export class PathStats {
-  /**
-   * The type of the network path. See MultipathType.
-   */
-  type?: MultipathType;
-  /**
-   * The transmission bitrate of the path, in Kbps.
-   */
-  txKBitRate?: number;
-  /**
-   * The receiving bitrate of the path, in Kbps.
-   */
-  rxKBitRate?: number;
-}
-
-/**
- * Used to aggregate statistics for each network path in multipath transmission.
- *
- * Since Available since v4.6.2.
- */
-export class MultipathStats {
-  /**
-   * Total number of bytes sent over the LAN path.
-   */
-  lanTxBytes?: number;
-  /**
-   * Total number of bytes received over the LAN path.
-   */
-  lanRxBytes?: number;
-  /**
-   * Total number of bytes sent over the Wi-Fi path.
-   */
-  wifiTxBytes?: number;
-  /**
-   * Total number of bytes received over the Wi-Fi path.
-   */
-  wifiRxBytes?: number;
-  /**
-   * Total number of bytes sent over the mobile network path.
-   */
-  mobileTxBytes?: number;
-  /**
-   * Total number of bytes received over the mobile network path.
-   */
-  mobileRxBytes?: number;
-  /**
-   * The number of currently active transmission paths.
-   */
-  activePathNum?: number;
-  /**
-   * Array of statistics for each active transmission path. See PathStats.
-   */
-  pathStats?: PathStats[];
 }
 
 /**
@@ -2426,30 +2336,6 @@ export enum LocalVideoStreamState {
    * 3: Failed to start local video.
    */
   LocalVideoStreamStateFailed = 3,
-}
-
-/**
- * Local video event types.
- *
- * Since Available since v4.6.1.
- */
-export enum LocalVideoEventType {
-  /**
-   * (1): The screen capture window is hidden (Android only).
-   */
-  LocalVideoEventTypeScreenCaptureWindowHidden = 1,
-  /**
-   * (2): The screen capture window recovers from hidden state (Android only).
-   */
-  LocalVideoEventTypeScreenCaptureWindowRecoverFromHidden = 2,
-  /**
-   * (3): The screen capture is stopped by the user (Android only).
-   */
-  LocalVideoEventTypeScreenCaptureStoppedByUser = 3,
-  /**
-   * (4): A system internal error occurs during screen capture (Android only).
-   */
-  LocalVideoEventTypeScreenCaptureSystemInternalError = 4,
 }
 
 /**
@@ -5406,6 +5292,10 @@ export class UserInfo {
    * User account. Length limit: MaxUserAccountLengthType.
    */
   userAccount?: string;
+  /**
+   * @ignore
+   */
+  customUserInfo?: string;
 }
 
 /**
