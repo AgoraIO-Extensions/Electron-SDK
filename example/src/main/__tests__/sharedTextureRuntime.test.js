@@ -22,3 +22,19 @@ test('resolves agora-electron-sdk from this worktree', () => {
 
   expect(resolvedSdkPackage).toBe(worktreeSdkPackage);
 });
+
+test('loads the main-process bridge from the external SDK singleton', () => {
+  const extendMainWebpack = require(path.join(
+    exampleRoot,
+    'webpack.main.additions.js'
+  ));
+  const config = extendMainWebpack({ externals: ['agora-electron-sdk'] });
+
+  expect(config.externals).toEqual(
+    expect.arrayContaining([
+      'agora-electron-sdk',
+      'agora-electron-sdk/js/Private/internal/IrisApiEngine.js',
+      'agora-electron-sdk/js/Private/ipc/main.js',
+    ])
+  );
+});

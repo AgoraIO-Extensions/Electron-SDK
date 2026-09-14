@@ -6,10 +6,11 @@
 
 This proof of concept publishes an Electron offscreen-rendered scene through a
 platform-neutral Electron API. Electron sends the platform shared-texture
-identity only to Iris. Iris opens and GPU-copies the Windows NT handle into an
-Iris-owned `ID3D11Texture2D`, or wraps the macOS IOSurface in a
-`CVPixelBufferRef`, before calling Native `pushVideoFrame`. Native no longer
-receives the Electron NT handle or IOSurfaceID.
+identity only to Iris. Iris opens the Windows NT handle as an
+`ID3D11Texture2D` and passes it directly during the synchronous call, or wraps
+the macOS IOSurface in a `CVPixelBufferRef`, before calling Native
+`pushVideoFrame`. Native no longer receives the Electron NT handle or
+IOSurfaceID.
 
 The capture window explicitly requests Electron's `argb` shared-texture output
 and validates the actual `textureInfo.pixelFormat`. Windows accepts `bgra`;
@@ -45,10 +46,10 @@ The PoC implements the complete publishing workflow:
    `texture.textureInfo.handle.ioSurface`.
 5. The native addon validates the frame metadata and sends the shared-texture
    identity to the handwritten Iris `MediaEngine_pushSharedTexture` API.
-6. On Windows, Iris opens the NT handle, synchronizes with its keyed mutex, and
-   GPU-copies it into an Iris-owned `ID3D11Texture2D`. On macOS, Iris looks up
-   the IOSurface and creates a `CVPixelBufferRef` backed by that surface.
-7. Iris calls Native `pushVideoFrame` with the converted D3D11 texture pointer
+6. On Windows, Iris opens the NT handle and directly passes the resulting
+   `ID3D11Texture2D*`. On macOS, Iris looks up the IOSurface and creates a
+   `CVPixelBufferRef` backed by that surface.
+7. Iris calls Native `pushVideoFrame` with the opened D3D11 texture pointer
    or `ExternalVideoFrame.pixelBuffer`. The Iris call completes before Electron
    releases its borrowed texture.
 8. Submission errors from both the Iris transport and RTC API result are
@@ -356,8 +357,8 @@ Every submitted frame follows this path:
 ```text
 Electron NT handle
   -> Iris MediaEngine_pushSharedTexture
-  -> Iris OpenSharedResource1 + keyed-mutex GPU CopyResource
-  -> Iris-owned ID3D11Texture2D
+  -> Iris OpenSharedResource1
+  -> Electron ID3D11Texture2D held through the synchronous call
   -> Native ExternalVideoFrame.d3d11Texture2d
   -> RTC SDK
   -> encoder
@@ -376,21 +377,24 @@ Electron IOSurfaceRef
 
 ### Raw-handle preview diagnostic
 
-While `SharedTexturePoc` is running, the addon also opens a native Windows
-window titled `Raw Electron NT Handle Preview`. Before calling Iris, the addon
-opens the same frame's NT handle with `OpenSharedResource1`, copies it into the
-preview swap chain with GPU `CopySubresourceRegion`, waits for that copy, and
-displays it. This preview bypasses Iris, the RTC SDK, the encoder, and the
-network entirely:
+The production submission path disables the raw-handle preview by default, so
+it adds no extra GPU copy or synchronization wait. For texture-content
+diagnostics, explicitly pass `directHandlePreview: true` when constructing
+`SharedTexturePocController`. The addon then opens a native Windows window
+titled `Raw Electron NT Handle Preview`. Before calling Iris, it opens the same
+frame's NT handle with `OpenSharedResource1`, copies it into the preview swap
+chain with GPU `CopySubresourceRegion`, waits for that copy, and displays it.
+This preview bypasses Iris, the RTC SDK, the encoder, and the network entirely:
 
 - A moving preview with frozen remote video isolates the problem to the Native
   RTC SDK or a later stage.
 - A frozen preview means the Worker, Electron compositor, or exported handle
   content still needs investigation.
 
-The preview adds one GPU copy and a synchronization wait. It is a content
-diagnostic, not a zero-copy performance measurement. Iris independently opens
-and converts the submitted handle for RTC.
+The preview adds one GPU copy and a synchronization wait. Enable it only
+temporarily for content diagnostics; keep it disabled for performance tests and
+customer delivery. Iris independently opens and directly submits the texture
+corresponding to the handle for RTC.
 
 The following items are intentionally not claimed by this PoC:
 
@@ -400,16 +404,16 @@ The following items are intentionally not claimed by this PoC:
 - NV12, P010, or multi-plane shared-texture support
 - An automated remote-client video-content assertion
 
-The Electron `HANDLE` is borrowed. Iris opens it without closing it, copies the
-content into an Iris-owned keyed-mutex texture, and passes that texture's COM
-pointer to Native. The JavaScript controller releases Electron's texture only
+The Electron `HANDLE` is borrowed. Iris opens it without closing it, holds the
+opened texture COM reference for the synchronous call, and passes that pointer
+directly to Native. The JavaScript controller releases Electron's texture only
 after the synchronous Iris call returns. On macOS, Iris retains the looked-up
 IOSurface through CVPixelBuffer creation and keeps the CVPixelBuffer alive until
 Native `pushVideoFrame` returns.
 
-## Iris Conversion Contract
+## Iris Import Contract
 
-The bundled Native SDK headers expose the converted-resource inputs:
+The bundled Native SDK headers expose the platform-texture inputs:
 
 - `ExternalVideoFrame::VIDEO_BUFFER_TEXTURE` (`3`)
 - `VIDEO_TEXTURE_ID3D11TEXTURE2D` (`17`)
@@ -428,7 +432,7 @@ Iris, not Native, resolves Electron's platform handles:
 ExternalVideoFrame frame;
 frame.type = ExternalVideoFrame::VIDEO_BUFFER_TEXTURE;
 frame.format = VIDEO_TEXTURE_ID3D11TEXTURE2D;
-ComPtr<ID3D11Texture2D> iris_texture = OpenAndGpuCopy(nt_handle);
+ComPtr<ID3D11Texture2D> iris_texture = OpenSharedTexture(nt_handle);
 frame.d3d11Texture2d = iris_texture.Get();
 frame.textureSliceIndex = 0;
 frame.stride = width;
@@ -447,8 +451,8 @@ The integration must provide all of the following behavior:
    scope and must fail before Native submission.
 4. Keep pixel processing on the GPU, including color conversion, scaling, and
    transfer into a hardware encoder input surface.
-5. Iris probes DXGI adapters until `OpenSharedResource1` succeeds and creates
-   its output texture on that device.
+5. Iris probes DXGI adapters until `OpenSharedResource1` succeeds, then validates
+   the opened texture dimensions and BGRA format.
 6. Handle D3D11 device loss and texture-size changes without retaining stale
    resources.
 7. Return the actual RTC submission result, with `0` meaning the texture was
@@ -461,20 +465,22 @@ The integration must provide all of the following behavior:
 This contract is required before the addon can safely call
 `texture.release()`:
 
-- Iris opens and GPU-copies the borrowed handle before calling Native.
+- Iris opens the borrowed handle before calling Native and keeps the opened COM
+  reference alive until the synchronous `pushVideoFrame` call returns.
 - Neither Iris nor Native closes Electron's original handle.
-- Native retains or consumes the converted D3D11 texture/CVPixelBuffer before
+- Native retains or consumes the opened D3D11 texture/CVPixelBuffer before
   `pushVideoFrame` returns.
 - Open or validation failures must be returned synchronously as a negative RTC
   result so Electron does not treat the frame as accepted.
 - The contract must state when Chromium may reuse the source texture.
-- Iris acquires the source and destination keyed mutexes around the Windows GPU
-  copy; Native must honor the converted texture's synchronization contract.
+- The directly passed Windows texture has no Iris-created keyed mutex; Native
+  must not wait on an undefined key.
 
-A Windows GPU-to-GPU `CopyResource` is intentional: it establishes ownership
-without staging, `Map`, or GPU-to-CPU readback. macOS creates a CVPixelBuffer
-view over the IOSurface without reading pixels into a CPU buffer. The renderer
-case still has its existing Metal copy for cross-process IOSurface transport.
+Windows no longer creates an intermediate texture or calls `CopyResource`; it
+passes the opened Electron texture pointer synchronously. Native must establish
+its own ownership before returning if it consumes the frame asynchronously.
+macOS creates a CVPixelBuffer view over the IOSurface without CPU readback. The
+renderer case still has its Metal copy for cross-process IOSurface transport.
 
 ## Acceptance Criteria for Shared Texture Support
 

@@ -549,6 +549,28 @@ test('late settlement from a timed-out generation cannot disturb a restarted run
   expect(pendingTexture.release).toHaveBeenCalledTimes(1);
 });
 
+test('keeps frame IDs monotonic across restarted runs', async () => {
+  const harness = createHarness();
+  await start(harness);
+  const firstTexture = createTexture(1);
+  harness.controller.handlePaint(firstTexture);
+  expect(harness.submissions[0].frame.frameId).toBe(1);
+  harness.submissions[0].resolve({ frameId: 1, result: 0 });
+  await new Promise(setImmediate);
+  await harness.controller.stop();
+  expect(harness.engine.release).toHaveBeenLastCalledWith(true);
+
+  await start(harness);
+  const secondTexture = createTexture(2);
+  harness.controller.handlePaint(secondTexture);
+  expect(harness.submissions[1].frame.frameId).toBe(2);
+  harness.submissions[1].resolve({ frameId: 2, result: 0 });
+  await new Promise(setImmediate);
+
+  expect(firstTexture.release).toHaveBeenCalledTimes(1);
+  expect(secondTexture.release).toHaveBeenCalledTimes(1);
+});
+
 test('submits a shared texture from the Electron paint event', async () => {
   const harness = createHarness();
   await start(harness);
@@ -560,6 +582,19 @@ test('submits a shared texture from the Electron paint event', async () => {
   expect(harness.submissions[0].frame.nativeHandle).toEqual(
     texture.textureInfo.handle.ntHandle
   );
+  expect(harness.submissions[0].frame.directHandlePreview).toBe(false);
+  harness.submissions[0].resolve({ frameId: 1, result: 0 });
+  await new Promise(setImmediate);
+  expect(texture.release).toHaveBeenCalledTimes(1);
+});
+
+test('enables the raw-handle preview only when explicitly requested on Windows', async () => {
+  const harness = createHarness({ directHandlePreview: true });
+  await start(harness);
+  const texture = createTexture(1);
+
+  harness.controller.handlePaint(texture);
+
   expect(harness.submissions[0].frame.directHandlePreview).toBe(true);
   harness.submissions[0].resolve({ frameId: 1, result: 0 });
   await new Promise(setImmediate);

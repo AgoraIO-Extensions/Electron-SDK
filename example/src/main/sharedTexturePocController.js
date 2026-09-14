@@ -15,6 +15,7 @@ class SharedTexturePocController {
     scenePath,
     platform = process.platform,
     sourceProcessId = process.pid,
+    directHandlePreview = false,
     logger = console,
     onStatus = () => {},
     subscribeGpuProcessGone = () => () => {},
@@ -32,6 +33,8 @@ class SharedTexturePocController {
     this.scenePath = scenePath;
     this.platform = platform;
     this.sourceProcessId = sourceProcessId;
+    this.directHandlePreview =
+      this.platform === 'win32' && directHandlePreview === true;
     this.logger = logger;
     this.onStatus = onStatus;
     this.subscribeGpuProcessGone = subscribeGpuProcessGone;
@@ -184,7 +187,6 @@ class SharedTexturePocController {
     const generation = ++this.generation;
     this.state = 'starting';
     this.cleanupPromise = null;
-    this.nextFrameId = 1;
     this.pendingTexture = null;
     this.pendingFrame = null;
     this.inFlight = null;
@@ -411,7 +413,7 @@ class SharedTexturePocController {
       timestampUs: info.timestamp,
       rtcTimestampMs,
       pixelFormat: format,
-      directHandlePreview: this.platform === 'win32',
+      directHandlePreview: this.directHandlePreview,
       sourceProcessId: this.sourceProcessId,
     };
   }
@@ -627,7 +629,7 @@ class SharedTexturePocController {
               mediaEngine.setExternalVideoSource(false, true, 0);
             }
           } finally {
-            engine.release();
+            engine.release(true);
           }
         }
       } finally {

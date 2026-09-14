@@ -6,8 +6,8 @@
 
 这个 PoC 通过平台中立的 Electron API 发布离屏画面。Electron 只把平台共享纹理
 标识交给 Iris。Iris 在调用 Native `pushVideoFrame` 前，将 Windows NT Handle
-打开并 GPU Copy 到 Iris 自有的 `ID3D11Texture2D`，或者把 macOS IOSurface
-包装成 `CVPixelBufferRef`。Native 不再接收 Electron NT Handle 或 IOSurfaceID。
+打开为 `ID3D11Texture2D` 并同步直传，或者把 macOS IOSurface 包装成
+`CVPixelBufferRef`。Native 不再接收 Electron NT Handle 或 IOSurfaceID。
 
 采集窗口显式请求 Electron 的 `argb` Shared Texture 输出，并验证实际
 `textureInfo.pixelFormat`。Windows 接受 `bgra`，macOS 接受 `bgra` 或 `rgba`。
@@ -40,10 +40,9 @@ PoC 已经实现完整的视频发布流程：
    `texture.textureInfo.handle.ioSurface`。
 5. Node 原生扩展验证帧参数，并把共享纹理标识交给手写的 Iris
    `MediaEngine_pushSharedTexture` API。
-6. Windows 由 Iris 打开 NT Handle、使用 keyed mutex 同步，并 GPU Copy 到 Iris
-   自有的 `ID3D11Texture2D`；macOS 由 Iris lookup IOSurface 并创建
-   IOSurface-backed `CVPixelBufferRef`。
-7. Iris 使用转换后的 D3D11 Texture 指针或 `ExternalVideoFrame.pixelBuffer`
+6. Windows 由 Iris 打开 NT Handle，并把得到的 `ID3D11Texture2D*` 同步直传；
+   macOS 由 Iris lookup IOSurface 并创建 IOSurface-backed `CVPixelBufferRef`。
+7. Iris 使用打开后的 D3D11 Texture 指针或 `ExternalVideoFrame.pixelBuffer`
    调用 Native `pushVideoFrame`。Iris 同步返回后 Electron 才释放借用纹理。
 8. Iris 传输层错误和 RTC API 返回值都会传回 JavaScript，不再把 RTC
    失败误判为成功。
@@ -304,8 +303,8 @@ Native SDK 链路可用。Native 同事需要用这个包验证编码帧、码�
 ```text
 Electron NT Handle
   -> Iris MediaEngine_pushSharedTexture
-  -> Iris OpenSharedResource1 + keyed-mutex GPU CopyResource
-  -> Iris 持有的 ID3D11Texture2D
+  -> Iris OpenSharedResource1
+  -> Iris 同步持有的 Electron ID3D11Texture2D
   -> Native ExternalVideoFrame.d3d11Texture2d
   -> RTC SDK
   -> 编码器
@@ -324,18 +323,20 @@ Electron IOSurfaceRef
 
 ### 原始 Handle 预览诊断
 
-`SharedTexturePoc` 运行时还会打开标题为 `Raw Electron NT Handle Preview`
-的 Windows 原生窗口。Addon 在调用 Iris 前直接对同一帧 NT Handle 执行
-`OpenSharedResource1`，通过 GPU `CopySubresourceRegion` 复制到预览 swap chain，
-等待复制完成后显示。这个预览完全绕过 Iris、RTC SDK、编码器和网络：
+正式发送链路默认关闭原始 Handle 预览，因此不会产生额外 GPU Copy 或同步等待。
+需要排查纹理内容时，可以在创建 `SharedTexturePocController` 时显式传入
+`directHandlePreview: true`。此时 Addon 会打开标题为
+`Raw Electron NT Handle Preview` 的 Windows 原生窗口，在调用 Iris 前直接对同一帧
+NT Handle 执行 `OpenSharedResource1`，通过 GPU `CopySubresourceRegion` 复制到预览
+swap chain，等待复制完成后显示。这个预览完全绕过 Iris、RTC SDK、编码器和网络：
 
 - 预览连续而远端冻结，说明 Electron 产生的 Handle 内容正常，问题位于 Native
   RTC SDK 或后续链路。
 - 预览本身也冻结，说明需要继续检查 Worker、Electron compositor 或 Handle
   导出内容。
 
-预览路径会增加一次 GPU Copy 和同步等待，只用于内容诊断，不能用于衡量零拷贝
-链路的性能。Iris 会独立打开并转换提交给 RTC 的 Handle。
+预览路径会增加一次 GPU Copy 和同步等待，只能临时用于内容诊断，性能测试和客户
+交付必须保持关闭。Iris 会独立打开并直接提交给 RTC 的 Handle 对应纹理。
 
 这个 PoC 当前不包含以下能力：
 
@@ -345,14 +346,14 @@ Electron IOSurfaceRef
 - NV12、P010 或多平面共享纹理支持
 - 自动化远端画面内容校验
 
-Electron `HANDLE` 只被借用。Iris 打开但不关闭它，把内容复制到 Iris 自有的
-keyed-mutex Texture，再把该 Texture 的 COM 指针交给 Native。同步 Iris 调用返回后，
-JavaScript Controller 才释放 Electron Texture。macOS 上，Iris 通过 CVPixelBuffer
+Electron `HANDLE` 只被借用。Iris 打开但不关闭它，并在同步调用期间持有打开后的
+Texture COM 引用，直接把该指针交给 Native。Native 返回后，JavaScript Controller
+才释放 Electron Texture。macOS 上，Iris 通过 CVPixelBuffer
 持有 lookup 后的 IOSurface，直到 Native `pushVideoFrame` 返回。
 
-## Iris 转换契约
+## Iris 导入契约
 
-随包 Native SDK 头文件提供转换后资源的输入字段：
+随包 Native SDK 头文件提供平台纹理输入字段：
 
 - `ExternalVideoFrame::VIDEO_BUFFER_TEXTURE`，值为 `3`
 - `VIDEO_TEXTURE_ID3D11TEXTURE2D`，值为 `17`
@@ -370,7 +371,7 @@ CSD-79710 Native 构建。旧 Iris Artifact 虽然能让 Electron Addon 编译�
 ExternalVideoFrame frame;
 frame.type = ExternalVideoFrame::VIDEO_BUFFER_TEXTURE;
 frame.format = VIDEO_TEXTURE_ID3D11TEXTURE2D;
-ComPtr<ID3D11Texture2D> iris_texture = OpenAndGpuCopy(nt_handle);
+ComPtr<ID3D11Texture2D> iris_texture = OpenSharedTexture(nt_handle);
 frame.d3d11Texture2d = iris_texture.Get();
 frame.textureSliceIndex = 0;
 frame.stride = width;
@@ -388,8 +389,8 @@ media_engine->pushVideoFrame(&frame, video_track_id);
 3. Windows 接受 BGRA，macOS 接受 BGRA/RGBA；RGBAF16 明确不在范围内，必须在
    提交 Native 前失败。
 4. 色彩转换、缩放和向硬件编码输入 Surface 的传输全部保留在 GPU 上。
-5. Iris 枚举 DXGI Adapter，直到 `OpenSharedResource1` 成功，并在同一 Device
-   创建输出 Texture。
+5. Iris 枚举 DXGI Adapter，直到 `OpenSharedResource1` 成功，并验证打开后纹理的
+   宽高和 BGRA 格式。
 6. 正确处理 D3D11 Device Lost 和纹理尺寸变化，不能继续持有失效资源。
 7. 返回真实 RTC 提交结果；返回 `0` 表示 SDK 已按约定接受该纹理。
 8. 把 `getCurrentMonotonicTimeInMs()` 取得的 `rtcTimestampMs` 原样设置为
@@ -399,17 +400,19 @@ media_engine->pushVideoFrame(&frame, video_track_id);
 
 在 Electron Addon 可以安全调用 `texture.release()` 之前，必须满足以下契约：
 
-- Iris 在调用 Native 前打开并 GPU Copy 借用的 Handle。
+- Iris 在调用 Native 前打开借用的 Handle，并保持打开后的 COM 引用存活到同步
+  `pushVideoFrame` 返回。
 - Iris 和 Native 都不能关闭 Electron 原始 Handle。
-- Native 在 `pushVideoFrame` 返回前 retain 或消费转换后的 D3D11
+- Native 在 `pushVideoFrame` 返回前 retain 或消费打开后的 D3D11
   Texture/CVPixelBuffer。
 - 打开或资源验证失败必须在同步调用内返回负数 RTC 结果，不能把帧误报为接受。
 - 契约必须明确 Chromium 从什么时候开始可以复用源纹理。
-- Iris 和 Native 必须遵守 keyed-mutex/CVPixelBuffer 同步与生命周期契约。
+- Windows 直传纹理不带 Iris 自建 keyed mutex；Native 不应等待未定义的 key。
 
-Windows 的 GPU `CopyResource` 是有意设计，用来建立资源所有权，同时避免 staging、
-`Map` 和 GPU-to-CPU readback。macOS 创建 IOSurface-backed CVPixelBuffer，不把像素
-读回 CPU Buffer。Renderer Case 为跨进程传递 IOSurface，仍保留已有的一次 Metal Copy。
+Windows 不再创建中间纹理或执行 `CopyResource`，而是同步传递打开后的 Electron
+纹理指针。Native 若要异步消费，必须在返回前建立自己的资源所有权。macOS 创建
+IOSurface-backed CVPixelBuffer，不把像素读回 CPU Buffer。Renderer Case 为跨进程
+传递 IOSurface，仍保留已有的一次 Metal Copy。
 
 ## 共享纹理能力验收标准
 
