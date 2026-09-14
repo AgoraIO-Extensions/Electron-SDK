@@ -38,6 +38,7 @@
         type,
         sequence: 0,
         requestedFrameRate,
+        renderFrameRate: Math.min(120, requestedFrameRate * 2),
         timeOriginMs: performance.timeOrigin,
         monotonicTimeMs: performance.now(),
         drawIntervalsMs: [],

@@ -223,12 +223,13 @@ Worker 持有 WebGL2，但需要从 Electron renderer 页面创建并 transfer c
 存活，并与应用的可见窗口解耦。主界面被最小化、遮挡或切到后台时，不能连带最小化
 或销毁这个采集窗口。
 
-生产配置同时使用以下三层控制：
+生产配置同时使用以下控制：
 
 - `show: false`：采集窗口从创建起保持隐藏，不依赖把可见窗口最小化。
 - `backgroundThrottling: false`：关闭 renderer 常规的后台节流。
-- `webContents.setFrameRate(30 | 48 | 60)`：设置 compositor 目标帧率；Worker 同时使用
-  独立 timer，以相同目标帧率运行 WebGL2 绘制循环。
+- `webContents.setFrameRate(30 | 48 | 60)`：设置 compositor 和发送目标帧率；Worker
+  使用独立 timer，以目标帧率的两倍绘制（最高 120 fps），降低两个独立时钟错拍时
+  compositor 没有新画面的概率。Worker 超采样帧率不是实际发送帧率。
 - `setVideoEncoderConfiguration({ frameRate })`：把相同目标设置给 RTC encoder；
   如果不设置，SDK 默认按 15 fps 编码，并在编码前丢弃多余输入帧。
 
@@ -256,14 +257,16 @@ PoC 中的 `visible` 和 `minimized` 采集窗口模式只用于对照测试。�
 
 Advanced 页面可以临时选择 30/48/60 fps 和上述三种测量模式。主进程调用
 `webContents.setFrameRate()` 并通过 `getFrameRate()` 回读；Worker 独立使用 timer
-控制目标绘制节奏。
+以两倍目标帧率绘制，最高限制为 120 fps。
 
 每五秒以及每次健康状态变化都会输出以下数据：
 
-- Worker 帧序号、绘制间隔、`performance.timeOrigin` 和 `performance.now()`
+- Worker 帧序号、配置/实际绘制帧率、绘制间隔、`performance.timeOrigin` 和
+  `performance.now()`
 - Electron compositor 微秒时间戳，以及主进程 epoch/monotonic 时间
 - Paint、提交、替换等待帧、无效帧、提交失败和 drain timeout 计数，以及滚动
-  P50/P95/P99/最大间隔
+  平均值、P50/P95/P99/最大间隔；页面直接显示 Worker draw FPS、Electron paint
+  FPS、paint P95 gap 和 submission P95
 - RTC `encodedFrameCount`、`sentFrameRate` 和 `txVideoKBitRate`
 
 遥测会同时记录 Electron compositor 的微秒时间戳，以及实际提交的 Agora 单调

@@ -55,10 +55,12 @@ function createMainWindow() {
     },
   });
 
-  window.webContents.openDevTools({
-    mode: 'detach',
-    activate: true,
-  });
+  if (isDevelopment && process.env.ELECTRON_OPEN_DEVTOOLS === '1') {
+    window.webContents.openDevTools({
+      mode: 'detach',
+      activate: true,
+    });
+  }
 
   if (isDevelopment) {
     window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`);

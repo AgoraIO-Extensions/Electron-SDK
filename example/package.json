@@ -9,6 +9,7 @@
     "start": "electron-webpack dev",
     "compile": "electron-webpack",
     "rebuild": "electron-rebuild -f -o ref-napi",
+    "benchmark:shared-texture": "electron scripts/sharedTexturePacingBenchmark.js",
     "dist": "npm run compile && electron-builder",
     "dist:mac": "npm run dist -- --mac",
     "dist:win": "npm run dist -- --win",

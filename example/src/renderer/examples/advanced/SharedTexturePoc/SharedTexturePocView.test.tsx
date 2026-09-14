@@ -55,6 +55,31 @@ test('renders pacing controls and the latest stream status', () => {
         paintCount: 120,
         submittedCount: 118,
         submissionFailureCount: 1,
+        workerDrawIntervalsMs: {
+          count: 120,
+          average: 16.7,
+          p50: 16.6,
+          p95: 17.2,
+          p99: 18,
+          max: 20,
+        },
+        paintIntervalsMs: {
+          count: 120,
+          average: 33.3,
+          p50: 32,
+          p95: 40,
+          p99: 50,
+          max: 60,
+        },
+        submissionLatencyMs: {
+          count: 118,
+          average: 2,
+          p50: 2,
+          p95: 3.5,
+          p99: 4,
+          max: 5,
+        },
+        worker: { requestedFrameRate: 30, renderFrameRate: 60 },
         rtc: {
           encodedFrameCount: 110,
           sentFrameRate: 30,
@@ -70,6 +95,10 @@ test('renders pacing controls and the latest stream status', () => {
   expect(markup).toContain('healthy');
   expect(markup).toContain('Paint: 120');
   expect(markup).toContain('Submitted: 118');
+  expect(markup).toContain('Worker draw: 59.9 fps');
+  expect(markup).toContain('Electron paint: 30.0 fps');
+  expect(markup).toContain('Paint P95 gap: 40.0 ms');
+  expect(markup).toContain('Submission P95: 3.5 ms');
   expect(markup).toContain('Encoded: 110');
   expect(markup).toContain('Video bitrate: 512 Kbps');
 });

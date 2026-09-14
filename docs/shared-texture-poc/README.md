@@ -263,13 +263,16 @@ created with `show: false`, remains alive for the capture session, and is kept
 independent from the application's visible windows. Minimizing, covering, or
 backgrounding the main UI must not minimize or destroy this capture window.
 
-The production configuration uses all three controls below:
+The production configuration uses the controls below:
 
 - `show: false` keeps the capture window hidden from creation without using a
   minimized visible window.
 - `backgroundThrottling: false` disables normal renderer background throttling.
-- `webContents.setFrameRate(30 | 48 | 60)` sets the target compositor cadence, while
-  the Worker runs its own timer-driven WebGL2 draw loop at the same target rate.
+- `webContents.setFrameRate(30 | 48 | 60)` sets the compositor and send target.
+  The Worker uses an independent timer and draws at twice that rate, capped at
+  120 fps, reducing the chance that independently phased clocks leave a
+  compositor tick without new content. The Worker oversampling rate is not the
+  actual send rate.
 - `setVideoEncoderConfiguration({ frameRate })` applies the same target to the
   RTC encoder; without it, the SDK defaults to 15 fps and drops excess input
   frames before encoding.
@@ -303,17 +306,18 @@ pacing and remote publishing still require platform validation.
 
 The Advanced page allows temporary selection of 30, 48, or 60 fps and the three
 measurement modes described above. The controller calls
-`webContents.setFrameRate()` and verifies `getFrameRate()`; the Worker
-independently uses a timer-driven target cadence.
+`webContents.setFrameRate()` and verifies `getFrameRate()`; the Worker uses an
+independent timer at twice the target cadence, capped at 120 fps.
 
 Every five seconds and on health transitions, status includes:
 
-- Worker frame sequence, draw intervals, `performance.timeOrigin`, and
-  `performance.now()`
+- Worker frame sequence, configured/observed draw rate, draw intervals,
+  `performance.timeOrigin`, and `performance.now()`
 - Electron compositor timestamp in microseconds and main-process epoch and
   monotonic timestamps
 - Paint, submission, replacement, invalid-frame, failure, and drain-timeout
-  counts, plus rolling P50/P95/P99/max intervals
+  counts, plus rolling average/P50/P95/P99/max intervals. The page displays
+  Worker draw FPS, Electron paint FPS, paint P95 gap, and submission P95.
 - RTC `encodedFrameCount`, `sentFrameRate`, and `txVideoKBitRate`
 
 Telemetry records both the Electron compositor timestamp in microseconds and

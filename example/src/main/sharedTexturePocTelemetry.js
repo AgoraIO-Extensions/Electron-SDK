@@ -13,6 +13,9 @@ function isWorkerDiagnostic(value) {
     Number.isInteger(value.sequence) &&
     value.sequence >= 0 &&
     [30, 48, 60].includes(value.requestedFrameRate) &&
+    Number.isInteger(value.renderFrameRate) &&
+    value.renderFrameRate >= value.requestedFrameRate &&
+    value.renderFrameRate <= 120 &&
     isFiniteNumber(value.timeOriginMs) &&
     isFiniteNumber(value.monotonicTimeMs) &&
     Array.isArray(value.drawIntervalsMs) &&
@@ -63,11 +66,12 @@ function percentile(sorted, ratio) {
 
 function summarize(samples) {
   if (samples.length === 0) {
-    return { count: 0, p50: 0, p95: 0, p99: 0, max: 0 };
+    return { count: 0, average: 0, p50: 0, p95: 0, p99: 0, max: 0 };
   }
   const sorted = [...samples].sort((left, right) => left - right);
   return {
     count: sorted.length,
+    average: samples.reduce((total, value) => total + value, 0) / samples.length,
     p50: percentile(sorted, 0.5),
     p95: percentile(sorted, 0.95),
     p99: percentile(sorted, 0.99),
@@ -191,6 +195,9 @@ function createTelemetry({
         snapshotEpochMs: nowMs(),
         snapshotMonotonicNs: String(hrtimeNs()),
         rtcTimestamp,
+        workerDrawIntervalsMs: summarize(
+          worker ? worker.drawIntervalsMs : []
+        ),
         paintIntervalsMs: summarize(paintIntervals),
         submissionLatencyMs: summarize(submissionLatencies),
         worker: worker

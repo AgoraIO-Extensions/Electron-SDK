@@ -14,6 +14,15 @@ export type SharedTextureCaptureWindowState =
   | 'visible'
   | 'minimized';
 
+export interface SharedTextureIntervalSummary {
+  count: number;
+  average: number;
+  p50: number;
+  p95: number;
+  p99: number;
+  max: number;
+}
+
 export interface SharedTexturePocStatus {
   state: string;
   health: 'healthy' | 'degraded' | 'failed';
@@ -23,6 +32,13 @@ export interface SharedTexturePocStatus {
   submittedCount: number;
   submissionFailureCount: number;
   lastSubmissionError?: string | null;
+  workerDrawIntervalsMs: SharedTextureIntervalSummary;
+  paintIntervalsMs: SharedTextureIntervalSummary;
+  submissionLatencyMs: SharedTextureIntervalSummary;
+  worker?: {
+    requestedFrameRate: number;
+    renderFrameRate: number;
+  } | null;
   rtc: {
     encodedFrameCount: number;
     sentFrameRate: number;

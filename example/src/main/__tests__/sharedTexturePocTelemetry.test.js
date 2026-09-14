@@ -10,6 +10,7 @@ function workerLine(overrides = {}) {
     type: 'stats',
     sequence: 12,
     requestedFrameRate: 30,
+    renderFrameRate: 60,
     timeOriginMs: 1000,
     monotonicTimeMs: 250,
     drawIntervalsMs: [33, 34],
@@ -24,6 +25,7 @@ test('parses only the versioned worker diagnostic protocol', () => {
     type: 'stats',
     sequence: 12,
     requestedFrameRate: 30,
+    renderFrameRate: 60,
     timeOriginMs: 1000,
     monotonicTimeMs: 250,
     drawIntervalsMs: [33, 34],
@@ -45,6 +47,9 @@ test('rejects invalid worker clock and interval fields', () => {
   expect(() => parseWorkerDiagnostic(workerLine({ sequence: -1 }))).toThrow(
     'Invalid shared texture Worker diagnostic'
   );
+  expect(() =>
+    parseWorkerDiagnostic(workerLine({ renderFrameRate: 20 }))
+  ).toThrow('Invalid shared texture Worker diagnostic');
   expect(() =>
     parseWorkerDiagnostic(workerLine({ drawIntervalsMs: [33, NaN] }))
   ).toThrow('Invalid shared texture Worker diagnostic');
@@ -71,6 +76,7 @@ test('keeps only the latest 600 samples and reports quantiles', () => {
   expect(snapshot.paintCount).toBe(606);
   expect(snapshot.paintIntervalsMs).toEqual({
     count: 600,
+    average: 305.5,
     p50: 305.5,
     p95: 575.05,
     p99: 599.01,
@@ -110,9 +116,18 @@ test('tracks submission, RTC, Worker clock, and health fields', () => {
       submissionLatencyMs: expect.objectContaining({ count: 1, max: 7 }),
       worker: expect.objectContaining({
         sequence: 12,
+        renderFrameRate: 60,
         timeOriginMs: 1000,
         monotonicTimeMs: 250,
       }),
+      workerDrawIntervalsMs: {
+        count: 2,
+        average: 33.5,
+        p50: 33.5,
+        p95: 33.95,
+        p99: 33.99,
+        max: 34,
+      },
       rtc: {
         encodedFrameCount: 8,
         sentFrameRate: 30,

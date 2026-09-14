@@ -27,6 +27,11 @@ import {
 
 const invoke = ipcRenderer.invoke.bind(ipcRenderer);
 
+const intervalSummaryFps = (averageMs: number) =>
+  averageMs > 0 ? (1000 / averageMs).toFixed(1) : '0.0';
+
+const formatMilliseconds = (value: number) => value.toFixed(1);
+
 interface SharedTexturePocViewProps {
   title?: string;
   captureWindowState: SharedTextureCaptureWindowState;
@@ -68,6 +73,18 @@ export function SharedTexturePocView({
             <AgoraText>{`Stream health: ${status.health}`}</AgoraText>
             <AgoraText>{`Paint: ${status.paintCount}`}</AgoraText>
             <AgoraText>{`Submitted: ${status.submittedCount}`}</AgoraText>
+            <AgoraText>{`Worker draw: ${intervalSummaryFps(
+              status.workerDrawIntervalsMs.average
+            )} fps`}</AgoraText>
+            <AgoraText>{`Electron paint: ${intervalSummaryFps(
+              status.paintIntervalsMs.average
+            )} fps`}</AgoraText>
+            <AgoraText>{`Paint P95 gap: ${formatMilliseconds(
+              status.paintIntervalsMs.p95
+            )} ms`}</AgoraText>
+            <AgoraText>{`Submission P95: ${formatMilliseconds(
+              status.submissionLatencyMs.p95
+            )} ms`}</AgoraText>
             <AgoraText>{`Submission failures: ${status.submissionFailureCount}`}</AgoraText>
             {status.lastSubmissionError ? (
               <AgoraText

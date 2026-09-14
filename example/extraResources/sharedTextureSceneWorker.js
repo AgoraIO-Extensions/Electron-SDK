@@ -7,6 +7,7 @@ let positionBuffer;
 let timeLocation;
 let resolutionLocation;
 let requestedFrameRate = 30;
+let renderFrameRate = 60;
 let sequence = 0;
 let lastDrawTime = null;
 let nextDrawTime = 0;
@@ -20,6 +21,7 @@ function diagnostic(type, reportedContextState = contextState, message) {
     type,
     sequence,
     requestedFrameRate,
+    renderFrameRate,
     timeOriginMs: performance.timeOrigin,
     monotonicTimeMs: performance.now(),
     drawIntervalsMs: [...drawIntervals],
@@ -103,7 +105,7 @@ function draw() {
   gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 
-  const targetInterval = 1000 / requestedFrameRate;
+  const targetInterval = 1000 / renderFrameRate;
   nextDrawTime = Math.max(nextDrawTime + targetInterval, now + 1);
   const delayMs = Math.max(0, nextDrawTime - performance.now());
   setTimeout(draw, delayMs);
@@ -114,6 +116,7 @@ function initialize(message) {
   canvas.width = message.width;
   canvas.height = message.height;
   requestedFrameRate = message.requestedFrameRate;
+  renderFrameRate = Math.min(120, requestedFrameRate * 2);
   canvas.addEventListener('webglcontextlost', (event) => {
     event.preventDefault();
     running = false;
