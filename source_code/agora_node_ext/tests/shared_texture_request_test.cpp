@@ -154,14 +154,14 @@ int main() {
          == IOSurfaceGetID(surface));
   assert(iosurface_submission.rtc_response == "{\"result\":0}");
 
-  request.iosurface_id = IOSurfaceGetID(surface);
+  request.cross_process_iosurface_id = IOSurfaceGetID(surface);
   std::memset(request.native_handle, 0, sizeof(request.native_handle));
   FakeIrisEngine lookup_iris_engine;
   SharedTextureSubmissionResult lookup_submission{};
   assert(agora::rtc::electron::SubmitSharedIOSurfaceTexture(
       request, &lookup_iris_engine, lookup_submission, error));
   assert(reinterpret_cast<uintptr_t>(lookup_iris_engine.buffers[0])
-         == request.iosurface_id);
+         == request.cross_process_iosurface_id);
 
   uint32_t global_surface_id = 0;
   void *retained_global_surface = nullptr;

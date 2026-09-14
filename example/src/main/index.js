@@ -148,15 +148,18 @@ app.on('ready', () => {
       process.platform === 'darwin'
         ? {
             ...frame,
-            ioSurfaceId: AgoraElectronBridge.CreateSharedIOSurface(
-              frame.nativeHandle,
-              frame.pixelFormat
-            ),
+            crossProcessIOSurfaceId:
+              AgoraElectronBridge.CreateCrossProcessIOSurfaceCopy(
+                frame.nativeHandle,
+                frame.pixelFormat
+              ),
           }
         : frame,
     releaseFrame: (frame) => {
-      if (process.platform === 'darwin' && frame.ioSurfaceId) {
-        AgoraElectronBridge.ReleaseSharedIOSurface(frame.ioSurfaceId);
+      if (process.platform === 'darwin' && frame.crossProcessIOSurfaceId) {
+        AgoraElectronBridge.ReleaseCrossProcessIOSurfaceCopy(
+          frame.crossProcessIOSurfaceId
+        );
       }
     },
   });

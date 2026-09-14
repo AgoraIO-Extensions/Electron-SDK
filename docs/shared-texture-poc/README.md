@@ -1,6 +1,6 @@
 # Electron Shared Texture Video Publishing PoC
 
-[中文说明](./README.zh-CN.md)
+[中文说明](./README.zh-CN.md) | [High-level design](./HLD.zh-CN.md)
 
 ## Status
 
@@ -129,14 +129,17 @@ Worker WebGL2
   -> RTC encoder
 ```
 
-`PushSharedTexture`, `CreateSharedIOSurface`, and `ReleaseSharedIOSurface` are hand-written Electron native-addon
+`PushSharedTexture`, `CreateCrossProcessIOSurfaceCopy`, and
+`ReleaseCrossProcessIOSurfaceCopy` are hand-written Electron native-addon
 APIs declared on `IAgoraElectronBridge`. They are intentionally not added to generated
 `IMediaEngine` files, so Electron code generation cannot remove them. Iris also
 registers `MediaEngine_pushSharedTexture` in its handwritten
 `IMediaEngineWrapper`, outside generated wrapper files. The
 main-process example calls `PushSharedTexture` directly. The renderer example
-uses `CreateSharedIOSurface` in main on macOS, then calls `PushSharedTexture` in the
-renderer on both platforms.
+uses `CreateCrossProcessIOSurfaceCopy` in main on macOS, then calls
+`PushSharedTexture` in the renderer on both platforms. The create/release APIs
+only manage the macOS Main-to-Renderer GPU copy; Native never receives their
+IOSurfaceID.
 
 The `IOSurfaceRef` pointer is borrowed and valid only in the process where
 Electron delivered it. The PoC never sends that pointer through Electron IPC.
@@ -151,7 +154,7 @@ The addon validates every macOS frame before calling Iris:
 
 - The native-handle Buffer must contain one 64-bit `IOSurfaceRef` value for
   same-process submission. Cross-process renderer submission supplies the
-  separately resolved `ioSurfaceId`.
+  separately prepared `crossProcessIOSurfaceId`.
 - `IOSurfaceGetWidth()` and `IOSurfaceGetHeight()` must match Electron's
   `textureInfo.codedSize`.
 - Iris verifies the IOSurface dimensions, creates a surface-backed

@@ -137,8 +137,8 @@ export interface SharedTextureFrame {
   directHandlePreview?: boolean;
   /** Process that owns nativeHandle. Windows duplicates it into the caller. */
   sourceProcessId?: number;
-  /** Cross-process IOSurface identifier resolved by the Electron main process. */
-  ioSurfaceId?: number;
+  /** ID of the macOS IOSurface GPU copy created for renderer-process submission. */
+  crossProcessIOSurfaceId?: number;
 }
 
 /**
@@ -181,12 +181,12 @@ export interface IAgoraElectronBridge {
 
   PushSharedTexture(frame: SharedTextureFrame): Promise<SharedTextureResult>;
 
-  CreateSharedIOSurface(
+  CreateCrossProcessIOSurfaceCopy(
     nativeHandle: Buffer,
     pixelFormat: 'bgra' | 'rgba'
   ): number;
 
-  ReleaseSharedIOSurface(ioSurfaceId: number): void;
+  ReleaseCrossProcessIOSurfaceCopy(crossProcessIOSurfaceId: number): void;
 
   InitializeEnv(): void;
 

@@ -1,6 +1,6 @@
 # Electron Shared Texture 视频发布 PoC
 
-[English](./README.md)
+[English](./README.md) | [高层设计](./HLD.zh-CN.md)
 
 ## 当前状态
 
@@ -111,12 +111,14 @@ Worker WebGL2
   -> RTC encoder
 ```
 
-`PushSharedTexture`、`CreateSharedIOSurface` 和 `ReleaseSharedIOSurface` 都是手写在 `IAgoraElectronBridge` 上的
+`PushSharedTexture`、`CreateCrossProcessIOSurfaceCopy` 和
+`ReleaseCrossProcessIOSurfaceCopy` 都是手写在 `IAgoraElectronBridge` 上的
 Electron Native Addon API，不会加入生成的 `IMediaEngine` 文件，因此 Electron
 codegen 不会删除它们。Iris 的 `MediaEngine_pushSharedTexture` 也注册在手写的
 `IMediaEngineWrapper`，不进入生成文件。主进程示例直接调用 `PushSharedTexture`；Renderer 示例在
-macOS 主进程调用 `CreateSharedIOSurface`，随后在两个平台的 Renderer 中调用
-`PushSharedTexture`。
+macOS 主进程调用 `CreateCrossProcessIOSurfaceCopy`，随后在两个平台的 Renderer 中
+调用 `PushSharedTexture`。Create/Release API 只管理 macOS Main 到 Renderer 的 GPU
+Copy，Native 不会收到它们产生的 IOSurfaceID。
 
 `IOSurfaceRef` 指针只在 Electron 交付它的当前进程中有效，并且只被借用。PoC
 不会通过 Electron IPC 传递这个指针。Addon 与 `paint` 回调位于同一个主进程，
@@ -129,7 +131,7 @@ Video Frame 字段。
 Addon 会在调用 Iris 前验证每一帧 macOS 输入：
 
 - 同进程提交时，Native Handle Buffer 必须包含一个 64 位 `IOSurfaceRef` 数值；
-  跨进程 Renderer 提交则额外提供已经解析的 `ioSurfaceId`。
+  跨进程 Renderer 提交则额外提供已经准备好的 `crossProcessIOSurfaceId`。
 - `IOSurfaceGetWidth()` 和 `IOSurfaceGetHeight()` 必须与 Electron
   `textureInfo.codedSize` 一致。
 - Iris 验证 IOSurface 宽高、创建 IOSurface-backed `CVPixelBufferRef`，并确认

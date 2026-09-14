@@ -110,7 +110,10 @@ test('does not stop an unrelated main-process run without a renderer owner', asy
 });
 
 test('prepares a main-process IOSurface before sending it to renderer', async () => {
-  const prepareFrame = jest.fn((frame) => ({ ...frame, ioSurfaceId: 77 }));
+  const prepareFrame = jest.fn((frame) => ({
+    ...frame,
+    crossProcessIOSurfaceId: 77,
+  }));
   const releaseFrame = jest.fn();
   const harness = createHarness({ prepareFrame, releaseFrame });
   await harness.handlers.get(START_CHANNEL)(
@@ -123,7 +126,7 @@ test('prepares a main-process IOSurface before sending it to renderer', async ()
   expect(prepareFrame).toHaveBeenCalledWith(frame);
   expect(harness.sender.send).toHaveBeenCalledWith(
     FRAME_CHANNEL,
-    expect.objectContaining({ ioSurfaceId: 77 })
+    expect.objectContaining({ crossProcessIOSurfaceId: 77 })
   );
   harness.listeners.get(FRAME_RESULT_CHANNEL)(
     { sender: harness.sender },
@@ -131,7 +134,7 @@ test('prepares a main-process IOSurface before sending it to renderer', async ()
   );
   await submitted;
   expect(releaseFrame).toHaveBeenCalledWith(
-    expect.objectContaining({ ioSurfaceId: 77 })
+    expect.objectContaining({ crossProcessIOSurfaceId: 77 })
   );
 });
 

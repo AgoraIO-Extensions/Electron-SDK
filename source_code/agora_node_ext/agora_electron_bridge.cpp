@@ -63,8 +63,10 @@ napi_value AgoraElectronBridge::Init(napi_env env, napi_value exports) {
       DECLARE_NAPI_METHOD("InitializeEnv", InitializeEnv),
       DECLARE_NAPI_METHOD("ReleaseEnv", ReleaseEnv),
       DECLARE_NAPI_METHOD("PushSharedTexture", PushSharedTexture),
-      DECLARE_NAPI_METHOD("CreateSharedIOSurface", CreateSharedIOSurface),
-      DECLARE_NAPI_METHOD("ReleaseSharedIOSurface", ReleaseSharedIOSurface),
+      DECLARE_NAPI_METHOD("CreateCrossProcessIOSurfaceCopy",
+                          CreateCrossProcessIOSurfaceCopy),
+      DECLARE_NAPI_METHOD("ReleaseCrossProcessIOSurfaceCopy",
+                          ReleaseCrossProcessIOSurfaceCopy),
       DECLARE_NAPI_METHOD("ReleaseRenderer", ReleaseRenderer)};
 
   napi_value cons;
@@ -453,22 +455,23 @@ bool ParseSharedTextureRequest(napi_env env, napi_value value,
     request.source_process_id = static_cast<uint32_t>(source_process_id);
   }
 
-  bool has_iosurface_id = false;
-  if (napi_has_named_property(env, value, "ioSurfaceId", &has_iosurface_id) !=
-      napi_ok) {
-    error = "could not read ioSurfaceId";
+  bool has_cross_process_iosurface_id = false;
+  if (napi_has_named_property(env, value, "crossProcessIOSurfaceId",
+                              &has_cross_process_iosurface_id) != napi_ok) {
+    error = "could not read crossProcessIOSurfaceId";
     return false;
   }
-  if (has_iosurface_id) {
+  if (has_cross_process_iosurface_id) {
     double iosurface_id;
-    if (!ReadNamedDouble(env, value, "ioSurfaceId", iosurface_id) ||
+    if (!ReadNamedDouble(env, value, "crossProcessIOSurfaceId",
+                         iosurface_id) ||
         !std::isfinite(iosurface_id) ||
         std::floor(iosurface_id) != iosurface_id || iosurface_id < 0 ||
         iosurface_id > std::numeric_limits<uint32_t>::max()) {
-      error = "ioSurfaceId must be a uint32 integer";
+      error = "crossProcessIOSurfaceId must be a uint32 integer";
       return false;
     }
-    request.iosurface_id = static_cast<uint32_t>(iosurface_id);
+    request.cross_process_iosurface_id = static_cast<uint32_t>(iosurface_id);
   }
   return true;
 }
@@ -557,7 +560,7 @@ napi_value AgoraElectronBridge::PushSharedTexture(
   return promise;
 }
 
-napi_value AgoraElectronBridge::CreateSharedIOSurface(
+napi_value AgoraElectronBridge::CreateCrossProcessIOSurfaceCopy(
     napi_env env, napi_callback_info info) {
 #if defined(__APPLE__)
   size_t argc = 2;
@@ -615,20 +618,23 @@ napi_value AgoraElectronBridge::CreateSharedIOSurface(
     return nullptr;
   }
   {
-    std::lock_guard<std::mutex> lock(bridge->_shared_iosurfaces_mutex);
-    bridge->_shared_iosurfaces.emplace(iosurface_id, retained_surface);
+    std::lock_guard<std::mutex> lock(
+        bridge->_cross_process_iosurface_copies_mutex);
+    bridge->_cross_process_iosurface_copies.emplace(iosurface_id,
+                                                    retained_surface);
   }
   napi_value result;
   napi_create_uint32(env, iosurface_id, &result);
   return result;
 #else
-  napi_throw_error(env, "ERR_PLATFORM_UNSUPPORTED",
-                   "CreateSharedIOSurface is supported only on macOS");
+  napi_throw_error(
+      env, "ERR_PLATFORM_UNSUPPORTED",
+      "CreateCrossProcessIOSurfaceCopy is supported only on macOS");
   return nullptr;
 #endif
 }
 
-napi_value AgoraElectronBridge::ReleaseSharedIOSurface(
+napi_value AgoraElectronBridge::ReleaseCrossProcessIOSurfaceCopy(
     napi_env env, napi_callback_info info) {
 #if defined(__APPLE__)
   size_t argc = 1;
@@ -636,8 +642,9 @@ napi_value AgoraElectronBridge::ReleaseSharedIOSurface(
   napi_value jsthis;
   if (napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr) != napi_ok ||
       argc != 1) {
-    napi_throw_type_error(env, "ERR_INVALID_ARGUMENT",
-                          "exactly one ioSurfaceId argument is required");
+    napi_throw_type_error(
+        env, "ERR_INVALID_ARGUMENT",
+        "exactly one crossProcessIOSurfaceId argument is required");
     return nullptr;
   }
   AgoraElectronBridge *bridge = nullptr;
@@ -646,16 +653,18 @@ napi_value AgoraElectronBridge::ReleaseSharedIOSurface(
       bridge == nullptr ||
       napi_get_value_uint32(env, args[0], &iosurface_id) != napi_ok) {
     napi_throw_type_error(env, "ERR_INVALID_ARGUMENT",
-                          "ioSurfaceId must be a uint32 integer");
+                          "crossProcessIOSurfaceId must be a uint32 integer");
     return nullptr;
   }
   void *retained_surface = nullptr;
   {
-    std::lock_guard<std::mutex> lock(bridge->_shared_iosurfaces_mutex);
-    const auto found = bridge->_shared_iosurfaces.find(iosurface_id);
-    if (found != bridge->_shared_iosurfaces.end()) {
+    std::lock_guard<std::mutex> lock(
+        bridge->_cross_process_iosurface_copies_mutex);
+    const auto found =
+        bridge->_cross_process_iosurface_copies.find(iosurface_id);
+    if (found != bridge->_cross_process_iosurface_copies.end()) {
       retained_surface = found->second;
-      bridge->_shared_iosurfaces.erase(found);
+      bridge->_cross_process_iosurface_copies.erase(found);
     }
   }
   ReleaseGlobalIOSurface(retained_surface);
@@ -663,8 +672,9 @@ napi_value AgoraElectronBridge::ReleaseSharedIOSurface(
   napi_get_undefined(env, &result);
   return result;
 #else
-  napi_throw_error(env, "ERR_PLATFORM_UNSUPPORTED",
-                   "ReleaseSharedIOSurface is supported only on macOS");
+  napi_throw_error(
+      env, "ERR_PLATFORM_UNSUPPORTED",
+      "ReleaseCrossProcessIOSurfaceCopy is supported only on macOS");
   return nullptr;
 #endif
 }
@@ -1065,11 +1075,11 @@ void AgoraElectronBridge::Init() {
 void AgoraElectronBridge::Release() {
   CloseSharedD3D11TexturePreview();
   {
-    std::lock_guard<std::mutex> lock(_shared_iosurfaces_mutex);
-    for (const auto &entry : _shared_iosurfaces) {
+    std::lock_guard<std::mutex> lock(_cross_process_iosurface_copies_mutex);
+    for (const auto &entry : _cross_process_iosurface_copies) {
       ReleaseGlobalIOSurface(entry.second);
     }
-    _shared_iosurfaces.clear();
+    _cross_process_iosurface_copies.clear();
   }
   if (_iris_api_engine) {
     // reset

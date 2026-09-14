@@ -21,7 +21,7 @@ struct SharedTextureRequest {
   SharedTexturePixelFormat pixel_format;
   bool direct_handle_preview;
   uint32_t source_process_id;
-  uint32_t iosurface_id;
+  uint32_t cross_process_iosurface_id;
 };
 
 bool ValidateSharedTextureRequest(const SharedTextureRequest &request,

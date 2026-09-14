@@ -21,8 +21,8 @@ bool ReadIOSurfaceInfo(const SharedTextureRequest &request,
   static_assert(sizeof(value) == sizeof(request.native_handle),
                 "The PoC supports only 64-bit native handles");
   std::memcpy(&value, request.native_handle, sizeof(value));
-  const bool looked_up = request.iosurface_id != 0;
-  auto surface = looked_up ? IOSurfaceLookup(request.iosurface_id)
+  const bool looked_up = request.cross_process_iosurface_id != 0;
+  auto surface = looked_up ? IOSurfaceLookup(request.cross_process_iosurface_id)
                            : reinterpret_cast<IOSurfaceRef>(value);
   if (surface == nullptr) {
     error = looked_up ? "IOSurfaceLookup failed"
