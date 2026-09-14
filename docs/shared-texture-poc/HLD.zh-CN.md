@@ -159,6 +159,23 @@ Renderer Engine case：
 - macOS：原 `IOSurfaceRef` 不能作为进程内指针直接传递。Main 使用 Metal blit 到
   短生命周期 global IOSurface，把 ID 发给 Renderer；收到提交结果后释放。
 
+#### 为什么不直接传原始 IOSurfaceID
+
+`IOSurfaceGetID()` 返回非零 ID，只能证明 Surface 有身份，不能证明其他进程已经获得
+访问权。只有 global IOSurface 才明确支持任意进程按 ID 执行 `IOSurfaceLookup`；更
+安全、稳定的跨进程契约是通过 Mach/XPC 转移 IOSurface 对应的 send right。
+
+Electron Shared Texture OSR 是 experimental API。不同 Electron/Chromium、macOS 和
+GPU backend 组合可能改变 compositor IOSurface 的创建属性、格式、纹理池和生命周期；
+Electron 没有承诺原始 Surface 一定是 global。因此直接发送原始 ID 只能作为指定
+版本组合下的实测优化，不能作为跨版本契约。
+
+若目标版本实测 Renderer 能 lookup 原始 ID，并且 Main 在提交完成前持续持有
+Electron Texture，则可省去 Metal Copy。正式无 Copy 方案应选择以下之一：
+
+- Engine 与 `paint` 保持在 Main 进程；
+- Electron SDK 使用原生 Mach/XPC 通道传递 IOSurface 权限。
+
 RTC Engine 对象不跨进程共享。时间戳必须由实际提交帧的 Engine 生成。
 
 ## 6. 性能与拷贝
