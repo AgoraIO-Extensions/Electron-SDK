@@ -222,22 +222,31 @@ RTC encoder 或 macOS Renderer 跨进程 Copy 的目标帧率。
 - `backgroundThrottling: false` 和 `show: false` 是目标配置，不构成后台帧率保证；
   hidden/minimized/background 仍需目标机器实测。
 
-## 9. 验证与剩余风险
+## 9. 测试验收
 
-已覆盖：Electron 参数/队列/生命周期测试、Iris Windows D3D11 直传测试、macOS
-BGRA/RGBA IOSurface-CVPixelBuffer 测试、双架构 macOS 构建和 demo 编译运行。
+### 9.1 测试场景和验收标准
 
-独立 pacing benchmark 可测量 Worker draw 和 Electron `paint` 间隔，但它不创建 RTC
-Engine、不提交 Native，也不能证明编码帧率、发送帧率或远端画面正确。
+| 测试项     | 适用性   | 测试内容                                                                                                  | 通过标准                                                                                                                          |
+| ---------- | -------- | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| 功能测试   | 适用     | Windows/macOS 分别运行 Main Engine 和 Renderer Engine case，覆盖 30/48/60 fps                             | `PushSharedTexture` 返回 0；远端画面持续运动；编码帧、发送帧率和码率持续更新                                                      |
+| 格式与参数 | 适用     | Windows BGRA，macOS BGRA/RGBA；覆盖非法 Handle、尺寸、格式、时间戳、旧帧及 Iris/RTC 失败                  | 合法帧正常提交；非法输入明确失败且不进入 Native；RGBAF16 被拒绝；无崩溃或资源泄漏                                                 |
+| 生命周期   | 适用     | 覆盖 pending 替换、stop/restart、join/load 失败和迟到结果                                                 | 同时最多持有 1 个 in-flight 和 1 个 pending；每个 Texture 只释放一次；停止后不提交旧帧                                            |
+| 性能测试   | 摸底测试 | hidden/visible/minimized 分别以 30/48/60 fps 运行至少 10 分钟，记录 CPU/GPU/内存/显存及各阶段帧率         | 无 CPU 像素回读；Copy 次数符合第 6 节；令 `T=1000/fps`，要求 `abs(P50-T)/T<=10%`、`P99<3T`，且无无法解释的 500 ms 以上 paint 间隔 |
+| 压力与恢复 | 适用     | 循环 start/stop、join/leave、resize，并注入 WebGL context loss、Renderer/GPU Process crash 和 Device Lost | 无崩溃、死锁、重复释放或持续资源增长；可恢复故障回到 `healthy`，不可恢复故障进入 `failed` 并完成有界清理                          |
+| 兼容性测试 | 适用     | Electron 43.2；Windows x64 D3D11 覆盖 NVIDIA 独显、AMD 独显和 Intel 集显；macOS 覆盖 arm64/x86_64         | 各 GPU/架构组合均可加载 Addon 并持续发布远端动态画面；未测试的 Electron/OS/GPU 组合不声明兼容                                     |
+| 回归测试   | 适用     | Addon 加载和打包，以及摄像头、内置屏幕共享、其它外部视频源和远端订阅                                      | 既有 API、回调和发布/订阅行为不变；现有 case 可正常加入、离开频道                                                                 |
 
-上线前仍需验收：
+### 9.2 自动化与实验室测试
 
-- 远端持续运动画面、码率和编码帧计数；
-- 30/48/60 fps 在 hidden/minimized/background 下的长时间稳定性；
-- 音频与视频使用同一 Agora 单调时钟后的长期漂移；
-- D3D11 Device Removed、GPU Process crash、WebGL context loss 和 resize 恢复；
-- Native 返回后的资源所有权，以及编码器内部实际拷贝次数；
-- macOS Native framework 的 Objective-C 重复类警告需要在正式打包前消除。
+现有自动化覆盖：
+
+- SharedTexture 相关 Jest：配置、IPC、队列、生命周期、遥测和故障状态。
+- 原生 `shared_texture_request` CTest：请求校验、Iris 事件参数和 macOS IOSurface
+  路径。
+
+实验室测试使用真实 Windows/macOS 设备，测量 30/48/60 fps 下的 CPU、GPU、内存、
+显存、后台帧率及 Native 编码和发送表现。Mock 与独立 pacing benchmark 不能替代
+真实设备的性能验收。
 
 ## 10. 关键代码
 
