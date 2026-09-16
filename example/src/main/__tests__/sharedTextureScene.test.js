@@ -46,7 +46,11 @@ test('Worker exclusively owns WebGL2 and bounded pacing diagnostics', () => {
   expect(worker).toContain('drawIntervals.shift()');
   expect(worker).toContain("addEventListener('webglcontextlost'");
   expect(worker).toContain("addEventListener('webglcontextrestored'");
-  expect(worker).toContain("getExtension('WEBGL_lose_context')");
+  expect(worker).toContain(
+    "contextLossExtension = gl.getExtension('WEBGL_lose_context')"
+  );
+  expect(worker).toContain('contextLossExtension.loseContext()');
+  expect(worker).toContain('contextLossExtension.restoreContext()');
   expect(worker).toContain("diagnostic('context-lost', 'lost')");
   expect(worker).toContain("diagnostic('context-restored', 'active')");
   expect(worker).toMatch(/setTimeout\([^,]+,\s*delayMs\)/s);

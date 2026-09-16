@@ -456,31 +456,31 @@ export enum ErrorCodeType {
   /**
    * @ignore
    */
-  ErrAdmApplicationLoopback = 2007,
+  ErrVideoeffectAssetInvalid = 1700,
   /**
    * @ignore
    */
-  ErrAdmApplicationLoopbackStopped = 2008,
+  ErrVideoeffectSaveFailed = 1701,
   /**
    * @ignore
    */
-  ErrAdmSystemLoopback = 2009,
+  ErrVideoeffectEngineInvalid = 1702,
   /**
    * @ignore
    */
-  ErrAdmSystemLoopbackStopped = 2010,
+  ErrVideoeffectNodeNotActive = 1704,
   /**
    * @ignore
    */
-  ErrAdmLoopbackNoPermission = 2011,
+  ErrVideoeffectInvalidParam = 1705,
   /**
    * @ignore
    */
-  ErrAdmLoopbackSilentDetected = 2012,
+  ErrVideoeffectNotSupported = 1706,
   /**
    * @ignore
    */
-  ErrAdmLoopbackSilentRecovered = 2013,
+  ErrVideoeffectInvalidBundlePath = 1707,
 }
 
 /**
@@ -3965,6 +3965,10 @@ export enum FaceShapeArea {
    */
   FaceShapeAreaChin = 108,
   /**
+   * @ignore
+   */
+  FaceShapeAreaFacesmall = 109,
+  /**
    * (200): Eye area, used to achieve a bigger eye effect. Value range: [0, 100], default is 50. The higher the value, the more noticeable the adjustment.
    */
   FaceShapeAreaEyescale = 200,
@@ -3992,6 +3996,10 @@ export enum FaceShapeArea {
    * (206): Outer eye corner area, used to adjust the shape of the outer eye corner. Value range: [-100, 100], default is 0. The greater the absolute value, the more noticeable the adjustment. Negative values indicate the opposite direction.
    */
   FaceShapeAreaEyeoutercorner = 206,
+  /**
+   * @ignore
+   */
+  FaceShapeAreaEyeangle = 207,
   /**
    * (300): Nose length area, used to elongate the nose. Value range: [-100, 100], default is 0. The greater the absolute value, the more noticeable the adjustment. Negative values indicate the opposite direction.
    */
@@ -4340,54 +4348,6 @@ export class AudioTrackConfig {
    * This setting only takes effect for custom audio capture tracks of type AudioTrackDirect. Whether to enable the audio processing module: true : Enable audio processing module with echo cancellation (AEC), noise suppression (ANS), and automatic gain control (AGC). false : (default) Disable the audio processing module.
    */
   enableAudioProcessing?: boolean;
-}
-
-/**
- * @ignore
- */
-export enum LoopbackAudioTrackType {
-  /**
-   * @ignore
-   */
-  LoopbackSystem = 0,
-  /**
-   * @ignore
-   */
-  LoopbackSystemExcludeSelf = 1,
-  /**
-   * @ignore
-   */
-  LoopbackApplication = 2,
-  /**
-   * @ignore
-   */
-  LoopbackProcess = 3,
-}
-
-/**
- * @ignore
- */
-export class LoopbackAudioTrackConfig {
-  /**
-   * @ignore
-   */
-  loopbackType?: LoopbackAudioTrackType;
-  /**
-   * @ignore
-   */
-  volume?: number;
-  /**
-   * @ignore
-   */
-  deviceName?: string;
-  /**
-   * @ignore
-   */
-  appName?: string;
-  /**
-   * @ignore
-   */
-  processId?: number;
 }
 
 /**

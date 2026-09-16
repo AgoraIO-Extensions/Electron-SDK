@@ -123,7 +123,7 @@ class SharedTexturePocController {
           publishCameraTrack: false,
           publishMicrophoneTrack: false,
           publishCustomVideoTrack: true,
-          customVideoTrackId: 1,
+          customVideoTrackId: 0,
           clientRoleType: 1,
         }),
         'joinChannel'
@@ -233,9 +233,12 @@ class SharedTexturePocController {
       );
     };
     listen(this.window.webContents, 'paint', (details) => {
-      if (this.generation === generation && details.texture) {
-        this.handlePaint(details.texture);
+      if (!details.texture) return;
+      if (this.generation !== generation) {
+        this.releaseOnce(details.texture);
+        return;
       }
+      this.handlePaint(details.texture);
     });
     listen(
       this.window.webContents,

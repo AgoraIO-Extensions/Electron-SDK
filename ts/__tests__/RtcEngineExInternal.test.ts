@@ -1,8 +1,9 @@
 import createAgoraRtcEngine from '../AgoraSdk';
+import { EVENT_PROCESSORS, emitEvent } from '../Private/internal/IrisApiEngine';
 import { AgoraEnv } from '../Utils';
 
 test('initialize without a window in the main process', () => {
-  const globalWithWindow = global as unknown as { window?: Window };
+  const globalWithWindow = global as unknown as { window?: unknown };
   const originalWindow = globalWithWindow.window;
   const originalWebEnvReady = AgoraEnv.webEnvReady;
   delete globalWithWindow.window;
@@ -137,5 +138,3 @@ test('removeAllListeners', () => {
   expect(callback1).not.toBeCalled();
   expect(callback2).not.toBeCalled();
 });
-
-import { EVENT_PROCESSORS, emitEvent } from '../Private/internal/IrisApiEngine';

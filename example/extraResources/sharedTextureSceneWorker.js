@@ -1,7 +1,10 @@
+/* global addEventListener, postMessage */
+
 const MAX_DRAW_INTERVALS = 120;
 
 let canvas;
 let gl;
+let contextLossExtension;
 let program;
 let positionBuffer;
 let timeLocation;
@@ -126,6 +129,7 @@ function initialize(message) {
   canvas.addEventListener('webglcontextrestored', () => {
     try {
       createResources();
+      contextLossExtension = gl.getExtension('WEBGL_lose_context');
       lastDrawTime = null;
       nextDrawTime = performance.now();
       running = true;
@@ -143,6 +147,7 @@ function initialize(message) {
     preserveDrawingBuffer: false,
   });
   if (!gl) throw new Error('WebGL2 is unavailable');
+  contextLossExtension = gl.getExtension('WEBGL_lose_context');
   createResources();
   nextDrawTime = performance.now();
   running = true;
@@ -160,10 +165,10 @@ addEventListener('message', (event) => {
     } else if (message.type === 'resize' && canvas) {
       canvas.width = message.width;
       canvas.height = message.height;
-    } else if (message.type === 'lose-context' && gl) {
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-    } else if (message.type === 'restore-context' && gl) {
-      gl.getExtension('WEBGL_lose_context')?.restoreContext();
+    } else if (message.type === 'lose-context' && contextLossExtension) {
+      contextLossExtension.loseContext();
+    } else if (message.type === 'restore-context' && contextLossExtension) {
+      contextLossExtension.restoreContext();
     }
   } catch (error) {
     running = false;

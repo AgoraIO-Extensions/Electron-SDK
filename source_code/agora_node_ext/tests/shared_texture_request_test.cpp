@@ -126,12 +126,6 @@ int main() {
   request.pixel_format = SharedTexturePixelFormat::kUnknown;
   ExpectInvalid(request);
 
-  request = ValidRequest();
-  request.pixel_format = SharedTexturePixelFormat::kRgba;
-  assert(ValidateSharedTextureRequest(request, 0, error));
-  assert(BuildSharedTexturePushJson(request).find("\"format\":4")
-         != std::string::npos);
-
   request.pixel_format = SharedTexturePixelFormat::kBgra;
   request.timestamp_us = 999;
   assert(BuildSharedTexturePushJson(request).find("\"format\":2")

@@ -71,7 +71,8 @@ function summarize(samples) {
   const sorted = [...samples].sort((left, right) => left - right);
   return {
     count: sorted.length,
-    average: samples.reduce((total, value) => total + value, 0) / samples.length,
+    average:
+      samples.reduce((total, value) => total + value, 0) / samples.length,
     p50: percentile(sorted, 0.5),
     p95: percentile(sorted, 0.95),
     p99: percentile(sorted, 0.99),
@@ -195,9 +196,7 @@ function createTelemetry({
         snapshotEpochMs: nowMs(),
         snapshotMonotonicNs: String(hrtimeNs()),
         rtcTimestamp,
-        workerDrawIntervalsMs: summarize(
-          worker ? worker.drawIntervalsMs : []
-        ),
+        workerDrawIntervalsMs: summarize(worker ? worker.drawIntervalsMs : []),
         paintIntervalsMs: summarize(paintIntervals),
         submissionLatencyMs: summarize(submissionLatencies),
         worker: worker

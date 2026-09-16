@@ -15,7 +15,7 @@ IOSurfaceID。平台资源解析集中在 Iris：
 - macOS：IOSurfaceID -> `CVPixelBufferRef`
 
 不包含：音频采集、完整 A/V 同步验收、端到端零拷贝承诺、完整 Device Lost 自动
-恢复、NV12/P010/RGBAF16 输入。
+恢复、非 BGRA 输入。
 
 ## 2. 总体架构
 
@@ -52,7 +52,7 @@ PushSharedTexture(frame: SharedTextureFrame): Promise<SharedTextureResult>;
 // 仅用于 macOS Renderer Engine 跨进程 case
 CreateCrossProcessIOSurfaceCopy(
   nativeHandle: Buffer,
-  pixelFormat: 'bgra' | 'rgba'
+  pixelFormat: 'bgra'
 ): number;
 ReleaseCrossProcessIOSurfaceCopy(crossProcessIOSurfaceId: number): void;
 ```
@@ -66,7 +66,7 @@ ReleaseCrossProcessIOSurfaceCopy(crossProcessIOSurfaceId: number): void;
 | `width`, `height`         | `textureInfo.codedSize`                       |
 | `timestampUs`             | Electron compositor 时间戳，仅用于诊断        |
 | `rtcTimestampMs`          | `getCurrentMonotonicTimeInMs()`，提交给 RTC   |
-| `pixelFormat`             | Electron 实际输出的 `bgra`/`rgba`             |
+| `pixelFormat`             | Electron 实际输出的 `bgra`                    |
 | `sourceProcessId`         | Windows 跨进程复制 Handle 时使用              |
 | `crossProcessIOSurfaceId` | macOS Renderer Engine GPU Copy 的 ID          |
 
@@ -140,8 +140,7 @@ textureInfo.handle.ioSurface
 ```
 
 主进程 case 中，CVPixelBuffer 是原 IOSurface 的视图，不复制像素。Iris 校验
-IOSurface 宽高以及 BGRA/RGBA FourCC；RGBA 首次使用前注册一次 CoreVideo 格式描述，
-该注册不复制像素。
+IOSurface 宽高以及 BGRA FourCC。
 
 ## 5. Engine 进程模型
 
@@ -213,7 +212,7 @@ RTC encoder 或 macOS Renderer 跨进程 Copy 的目标帧率。
 
 - BrowserWindow 请求 `sharedTexturePixelFormat: 'argb'`，以 `paint` 返回的实际
   `textureInfo.pixelFormat` 为准。
-- Windows：BGRA；macOS：BGRA/RGBA；RGBAF16 明确拒绝，不做隐式转换。
+- Windows 和 macOS 均只支持 BGRA；其它格式明确拒绝，不做隐式转换。
 - 视频时间戳使用 Agora Engine 的 `getCurrentMonotonicTimeInMs()`；Electron
   compositor 时间戳只用于诊断。
 - 30/48/60 fps 配置 Electron compositor 和 RTC encoder；Worker 使用独立 timer，
@@ -229,7 +228,7 @@ RTC encoder 或 macOS Renderer 跨进程 Copy 的目标帧率。
 | 测试项     | 适用性   | 测试内容                                                                                                  | 通过标准                                                                                                                          |
 | ---------- | -------- | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | 功能测试   | 适用     | Windows/macOS 分别运行 Main Engine 和 Renderer Engine case，覆盖 30/48/60 fps                             | `PushSharedTexture` 返回 0；远端画面持续运动；编码帧、发送帧率和码率持续更新                                                      |
-| 格式与参数 | 适用     | Windows BGRA，macOS BGRA/RGBA；覆盖非法 Handle、尺寸、格式、时间戳、旧帧及 Iris/RTC 失败                  | 合法帧正常提交；非法输入明确失败且不进入 Native；RGBAF16 被拒绝；无崩溃或资源泄漏                                                 |
+| 格式与参数 | 适用     | Windows/macOS BGRA；覆盖非法 Handle、尺寸、格式、时间戳、旧帧及 Iris/RTC 失败                             | 合法帧正常提交；非法输入明确失败且不进入 Native；非 BGRA 输入被拒绝；无崩溃或资源泄漏                                             |
 | 生命周期   | 适用     | 覆盖 pending 替换、stop/restart、join/load 失败和迟到结果                                                 | 同时最多持有 1 个 in-flight 和 1 个 pending；每个 Texture 只释放一次；停止后不提交旧帧                                            |
 | 性能测试   | 摸底测试 | hidden/visible/minimized 分别以 30/48/60 fps 运行至少 10 分钟，记录 CPU/GPU/内存/显存及各阶段帧率         | 无 CPU 像素回读；Copy 次数符合第 6 节；令 `T=1000/fps`，要求 `abs(P50-T)/T<=10%`、`P99<3T`，且无无法解释的 500 ms 以上 paint 间隔 |
 | 压力与恢复 | 适用     | 循环 start/stop、join/leave、resize，并注入 WebGL context loss、Renderer/GPU Process crash 和 Device Lost | 无崩溃、死锁、重复释放或持续资源增长；可恢复故障回到 `healthy`，不可恢复故障进入 `failed` 并完成有界清理                          |

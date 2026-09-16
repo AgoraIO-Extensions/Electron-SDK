@@ -10,9 +10,8 @@
 `CVPixelBufferRef`。Native 不再接收 Electron NT Handle 或 IOSurfaceID。
 
 采集窗口显式请求 Electron 的 `argb` Shared Texture 输出，并验证实际
-`textureInfo.pixelFormat`。Windows 接受 `bgra`，macOS 接受 `bgra` 或 `rgba`。
-`rgbaf16` 仍明确不支持；这些帧会被释放并计入 invalid frame，不会自动转换或
-错误标记。
+`textureInfo.pixelFormat`。Windows 和 macOS 均只接受 `bgra`；其它格式会被释放并
+计入 invalid frame，不会自动转换或错误标记。
 
 已验证的环境如下：
 
@@ -33,8 +32,8 @@ PoC 已经实现完整的视频发布流程：
 3. 离屏 `BrowserWindow` 使用 `offscreen.useSharedTexture: true` 承载真实 DOM
    canvas。页面调用 `transferControlToOffscreen()`，由独立 Worker 持有
    WebGL2、渲染资源以及基于 timer 的 30/48/60 fps 绘制循环。窗口显式设置
-   `sharedTexturePixelFormat: 'argb'`，并验证 `paint` 实际输出在 Windows 必须是
-   BGRA，在 macOS 可以是 BGRA 或 RGBA。
+   `sharedTexturePixelFormat: 'argb'`，并验证 `paint` 实际输出在 Windows 和 macOS
+   都必须是 BGRA。
 4. Electron 43 通过 `details.texture` 提供每一帧。Windows 使用
    `texture.textureInfo.handle.ntHandle`，macOS 使用
    `texture.textureInfo.handle.ioSurface`。
@@ -135,14 +134,11 @@ Addon 会在调用 Iris 前验证每一帧 macOS 输入：
 - `IOSurfaceGetWidth()` 和 `IOSurfaceGetHeight()` 必须与 Electron
   `textureInfo.codedSize` 一致。
 - Iris 验证 IOSurface 宽高、创建 IOSurface-backed `CVPixelBufferRef`，并确认
-  Electron 的 BGRA/RGBA 元数据与实际 `kCVPixelFormatType_32BGRA`/
-  `kCVPixelFormatType_32RGBA` 一致。
-- macOS 默认没有注册 32-bit RGBA 的 CVPixelBuffer 描述，因此 Iris 会在第一次包装
-  RGBA IOSurface 前，通过公开 CoreVideo API 注册一次该格式描述。
+  Electron 的 BGRA 元数据与实际 `kCVPixelFormatType_32BGRA` 一致。
 - Iris 使用 `VIDEO_BUFFER_TEXTURE + VIDEO_PIXEL_DEFAULT` 提交，由 Native 从
   `CVPixelBufferRef` 读取实际像素格式。
-- RGBAF16、NV12、P010 和多平面输入暂不启用。Iris 不做隐式格式转换；格式不匹配
-  或不支持的帧会在提交 Native 前失败。
+- 非 BGRA 输入暂不启用。Iris 不做隐式格式转换；格式不匹配或不支持的帧会在提交
+  Native 前失败。
 - `timestamp` 使用 `getCurrentMonotonicTimeInMs()`；Electron compositor 时间戳
   只用于诊断，不能作为 RTC 时钟。
 - IOSurface 链路不传 CPU 像素 Buffer，也不在 Electron 侧执行 `readPixels`、
@@ -167,7 +163,7 @@ Electron IPC 发送 ID 仍然不足。
 
 匹配的 Native SDK 契约支持
 `ExternalVideoFrame.pixelBuffer + VIDEO_BUFFER_TEXTURE + VIDEO_PIXEL_DEFAULT`，
-并从 CVPixelBuffer 自身读取 BGRA/RGBA 格式。Iris 在同步 `pushVideoFrame` 调用期间
+并从 CVPixelBuffer 自身读取 BGRA 格式。Iris 在同步 `pushVideoFrame` 调用期间
 持有 CVPixelBuffer，并在 Native 返回后释放。调用成功或失败后，Controller 才调用
 `texture.release()`。Controller 同时只允许一个提交中的帧，并且只保留一个最新等待帧。
 
@@ -195,7 +191,7 @@ macOS 实现已经完成以下验证：
 - Electron Addon 同时包含 `arm64`/`x86_64`，并链接 `IOSurface.framework`。
 - 匹配的 Iris 双架构构建中，`ExternalVideoFrame` serializer 包含
   `pixelBuffer`，手写 Wrapper 暴露 `MediaEngine_pushSharedTexture`。
-- Iris 测试分别创建真实 BGRA/RGBA IOSurface-backed CVPixelBuffer，并验证 Native
+- Iris 测试创建真实 BGRA IOSurface-backed CVPixelBuffer，并验证 Native
   Mock 收到 `ExternalVideoFrame.pixelBuffer`、`VIDEO_PIXEL_DEFAULT`、宽高、时间戳和
   Track ID。
 - Electron 原生请求测试验证新的 Iris Event、平台 Handle 槽位、帧元数据和 RTC
@@ -346,7 +342,7 @@ swap chain，等待复制完成后显示。这个预览完全绕过 Iris、RTC S
 这个 PoC 当前不包含以下能力：
 
 - 端到端零拷贝编码
-- 在 GPU 上完成 BGRA/RGBA 到 NV12 的转换
+- 在 GPU 上完成 BGRA 到 NV12 的转换
 - 完整的 D3D11 Device Lost 恢复
 - NV12、P010 或多平面共享纹理支持
 - 自动化远端画面内容校验
@@ -391,8 +387,8 @@ media_engine->pushVideoFrame(&frame, video_track_id);
 1. Windows 支持 `setExternalVideoSource(true, true, VIDEO_FRAME)`。
 2. `d3d11Texture2d` 按公开语义接收 `ID3D11Texture2D*`；NT Handle 不跨越
    Iris 到 Native 的边界。
-3. Windows 接受 BGRA，macOS 接受 BGRA/RGBA；RGBAF16 明确不在范围内，必须在
-   提交 Native 前失败。
+3. Windows 和 macOS 均只接受 BGRA；其它格式不在范围内，必须在提交 Native 前
+   失败。
 4. 色彩转换、缩放和向硬件编码输入 Surface 的传输全部保留在 GPU 上。
 5. Iris 枚举 DXGI Adapter，直到 `OpenSharedResource1` 成功，并验证打开后纹理的
    宽高和 BGRA 格式。
@@ -430,7 +426,7 @@ IOSurface-backed CVPixelBuffer，不把像素读回 CPU Buffer。Renderer Case �
   像素复制。
 - 持续运行时，源纹理不会被提前复用，也不会泄漏。
 - Resize、加入期间停止、重复加入离开和 Device Lost 场景不崩溃、不残留旧帧。
-- BGRA/RGBA 行为、时间戳、Adapter 选择和纹理生命周期成为明确的 SDK 接口契约。
+- BGRA 行为、时间戳、Adapter 选择和纹理生命周期成为明确的 SDK 接口契约。
 
 ## 相关文件
 

@@ -171,7 +171,7 @@ export default function SharedTextureRendererPoc() {
           publishCameraTrack: false,
           publishMicrophoneTrack: false,
           publishCustomVideoTrack: true,
-          customVideoTrackId: 1,
+          customVideoTrackId: 0,
           clientRoleType: 1,
         }),
         'joinChannel'

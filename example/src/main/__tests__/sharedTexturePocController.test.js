@@ -147,7 +147,7 @@ test('starts the default external texture source before accepting frames', async
       publishCameraTrack: false,
       publishMicrophoneTrack: false,
       publishCustomVideoTrack: true,
-      customVideoTrackId: 1,
+      customVideoTrackId: 0,
       clientRoleType: 1,
     })
   );
@@ -164,9 +164,8 @@ test('starts the default external texture source before accepting frames', async
 });
 
 test.each([
-  ['win32', 'rgba'],
-  ['win32', 'rgbaf16'],
-  ['darwin', 'rgbaf16'],
+  ['win32', 'nv12'],
+  ['darwin', 'nv12'],
 ])(
   'rejects unsupported %s %s compositor frames',
   async (platform, pixelFormat) => {
@@ -591,6 +590,19 @@ test('submits a shared texture from the Electron paint event', async () => {
   expect(texture.release).toHaveBeenCalledTimes(1);
 });
 
+test('releases a late paint from a previous run', async () => {
+  const harness = createHarness();
+  await start(harness);
+  const paint = harness.controller.window.paint;
+  await harness.controller.stop();
+  const texture = createTexture(1);
+
+  paint({ texture });
+
+  expect(texture.release).toHaveBeenCalledTimes(1);
+  expect(harness.nativeBridge.PushSharedTexture).not.toHaveBeenCalled();
+});
+
 test('enables the raw-handle preview only when explicitly requested on Windows', async () => {
   const harness = createHarness({ directHandlePreview: true });
   await start(harness);
@@ -599,25 +611,6 @@ test('enables the raw-handle preview only when explicitly requested on Windows',
   harness.controller.handlePaint(texture);
 
   expect(harness.submissions[0].frame.directHandlePreview).toBe(true);
-  harness.submissions[0].resolve({ frameId: 1, result: 0 });
-  await new Promise(setImmediate);
-  expect(texture.release).toHaveBeenCalledTimes(1);
-});
-
-test('submits the Electron IOSurface on macOS', async () => {
-  const harness = createHarness({ platform: 'darwin' });
-  await start(harness);
-  const texture = createTexture(1);
-  texture.textureInfo.pixelFormat = 'rgba';
-
-  harness.controller.handlePaint(texture);
-
-  expect(harness.submissions).toHaveLength(1);
-  expect(harness.submissions[0].frame.nativeHandle).toEqual(
-    texture.textureInfo.handle.ioSurface
-  );
-  expect(harness.submissions[0].frame.pixelFormat).toBe('rgba');
-  expect(harness.submissions[0].frame.directHandlePreview).toBe(false);
   harness.submissions[0].resolve({ frameId: 1, result: 0 });
   await new Promise(setImmediate);
   expect(texture.release).toHaveBeenCalledTimes(1);

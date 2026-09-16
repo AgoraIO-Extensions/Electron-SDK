@@ -27,8 +27,7 @@ function summarize(intervals) {
     return { samples: 0, fps: 0, averageMs: 0, p50Ms: 0, p95Ms: 0, maxMs: 0 };
   }
   const sorted = [...intervals].sort((left, right) => left - right);
-  const percentile = (ratio) =>
-    sorted[Math.floor((sorted.length - 1) * ratio)];
+  const percentile = (ratio) => sorted[Math.floor((sorted.length - 1) * ratio)];
   const averageMs =
     intervals.reduce((total, value) => total + value, 0) / intervals.length;
   return {
@@ -96,7 +95,10 @@ async function run() {
         levelOrDetails && typeof levelOrDetails === 'object'
           ? levelOrDetails.message
           : legacyMessage;
-      if (typeof message !== 'string' || !message.startsWith(DIAGNOSTIC_PREFIX)) {
+      if (
+        typeof message !== 'string' ||
+        !message.startsWith(DIAGNOSTIC_PREFIX)
+      ) {
         return;
       }
       try {
