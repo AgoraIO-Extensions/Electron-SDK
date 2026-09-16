@@ -20,24 +20,14 @@
     "appId": "agora.io.ElectronApiExample",
     "asar": true,
     "asarUnpack": [
-      "node_modules/agora-electron-sdk/build/**/*"
+      "node_modules/agora-electron-sdk"
     ],
     "buildDependenciesFromSource": true,
     "compression": "normal",
     "productName": "Agora-Electron-API-Example",
     "publish": [],
     "files": [
-      "!*.log",
-      "!node_modules/agora-electron-sdk{,/**/*}",
-      {
-        "from": "node_modules/agora-electron-sdk",
-        "to": "node_modules/agora-electron-sdk",
-        "filter": [
-          "package.json",
-          "js/**/*",
-          "build/**/*"
-        ]
-      }
+      "!*.log"
     ],
     "mac": {
       "entitlements": "assets/entitlements.mac.plist",
