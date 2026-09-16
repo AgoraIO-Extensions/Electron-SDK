@@ -24,7 +24,7 @@ SharedTextureCallBuffers
 BuildSharedTextureCallBuffers(const SharedTextureRequest &request) {
   uintptr_t handle_value = 0;
   static_assert(sizeof(handle_value) == sizeof(request.native_handle),
-                "The PoC supports only 64-bit native handles");
+                "Native handle storage must match the process pointer width");
   std::memcpy(&handle_value, request.native_handle, sizeof(handle_value));
   return {{{reinterpret_cast<void *>(handle_value), nullptr, nullptr, nullptr,
             nullptr}},

@@ -62,7 +62,7 @@ ReleaseCrossProcessIOSurfaceCopy(crossProcessIOSurfaceId: number): void;
 | 字段                      | 含义                                          |
 | ------------------------- | --------------------------------------------- |
 | `frameId`                 | 单调递增帧号，用于结果匹配和拒绝旧帧          |
-| `nativeHandle`            | Electron 提供的 8 字节 NT Handle/IOSurfaceRef |
+| `nativeHandle`            | Electron 提供的指针宽度 Handle：Windows ia32 为 4 字节，x64/macOS 为 8 字节 |
 | `width`, `height`         | `textureInfo.codedSize`                       |
 | `timestampUs`             | Electron compositor 时间戳，仅用于诊断        |
 | `rtcTimestampMs`          | `getCurrentMonotonicTimeInMs()`，提交给 RTC   |
@@ -232,7 +232,7 @@ RTC encoder 或 macOS Renderer 跨进程 Copy 的目标帧率。
 | 生命周期   | 适用     | 覆盖 pending 替换、stop/restart、join/load 失败和迟到结果                                                 | 同时最多持有 1 个 in-flight 和 1 个 pending；每个 Texture 只释放一次；停止后不提交旧帧                                            |
 | 性能测试   | 摸底测试 | hidden/visible/minimized 分别以 30/48/60 fps 运行至少 10 分钟，记录 CPU/GPU/内存/显存及各阶段帧率         | 无 CPU 像素回读；Copy 次数符合第 6 节；令 `T=1000/fps`，要求 `abs(P50-T)/T<=10%`、`P99<3T`，且无无法解释的 500 ms 以上 paint 间隔 |
 | 压力与恢复 | 适用     | 循环 start/stop、join/leave、resize，并注入 WebGL context loss、Renderer/GPU Process crash 和 Device Lost | 无崩溃、死锁、重复释放或持续资源增长；可恢复故障回到 `healthy`，不可恢复故障进入 `failed` 并完成有界清理                          |
-| 兼容性测试 | 适用     | Electron 43.2；Windows x64 D3D11 覆盖 NVIDIA 独显、AMD 独显和 Intel 集显；macOS 覆盖 arm64/x86_64         | 各 GPU/架构组合均可加载 Addon 并持续发布远端动态画面；未测试的 Electron/OS/GPU 组合不声明兼容                                     |
+| 兼容性测试 | 适用     | Electron 43.2；Windows ia32/x64 D3D11 覆盖 NVIDIA 独显、AMD 独显和 Intel 集显；macOS 覆盖 arm64/x86_64    | 各 GPU/架构组合均可加载 Addon 并持续发布远端动态画面；未测试的 Electron/OS/GPU 组合不声明兼容                                     |
 | 回归测试   | 适用     | Addon 加载和打包，以及摄像头、内置屏幕共享、其它外部视频源和远端订阅                                      | 既有 API、回调和发布/订阅行为不变；现有 case 可正常加入、离开频道                                                                 |
 
 ### 9.2 自动化与实验室测试

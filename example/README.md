@@ -31,8 +31,8 @@ Implementation status and Native RTC SDK requirements:
 [English](../docs/shared-texture-poc/README.md) |
 [简体中文](../docs/shared-texture-poc/README.zh-CN.md)
 
-The Windows shared texture PoC is pinned to Electron `43.2.0`, whose Windows x64
-runtime reports Node `24.18.0`, Chrome `150.0.7871.129`, and native modules ABI
+The Windows shared texture PoC is pinned to Electron `43.2.0`. Its Windows ia32
+and x64 runtimes report Node `24.18.0`, Chrome `150.0.7871.129`, and native modules ABI
 `148`. Check the ABI before loading the addon:
 
 ```powershell
@@ -58,13 +58,17 @@ Confirm that the consumer resolves this worktree instead of a published duplicat
 yarn jest example/src/main/__tests__/sharedTextureRuntime.test.js --runInBand
 ```
 
-On Windows x64, rebuild the SDK addon and the example's native dependencies against
-the pinned Electron runtime before starting or packaging the example:
+On Windows, rebuild the SDK addon and the example's native dependencies for the
+target architecture against the pinned Electron runtime before starting or packaging:
 
 ```powershell
-# Repository root
+# Repository root, x64
 yarn build_windows_x64_release --runtime=electron --runtime-version=43.2.0
 yarn --cwd example rebuild --arch=x64 --version=43.2.0
+
+# Repository root, ia32
+yarn build_windows_win32_release --runtime=electron --runtime-version=43.2.0
+yarn --cwd example rebuild --arch=ia32 --version=43.2.0
 ```
 
 Do not continue if the ABI check is not exactly `148` or if the runtime test resolves

@@ -124,7 +124,7 @@ export interface Result {
  */
 export interface SharedTextureFrame {
   frameId: number;
-  /** Platform-native handle from Electron's SharedTextureHandle. */
+  /** Platform-native pointer-sized handle: 4 bytes on ia32, 8 bytes otherwise. */
   nativeHandle: Buffer;
   width: number;
   height: number;

@@ -17,7 +17,8 @@ type TransferredSharedTextureFrame = Omit<
 
 export function prepareRendererSharedTextureFrame(
   frame: TransferredSharedTextureFrame,
-  rtcTimestampMs: number
+  rtcTimestampMs: number,
+  architecture: string = process.arch
 ): SharedTextureFrame {
   if (!Number.isSafeInteger(rtcTimestampMs) || rtcTimestampMs < 0) {
     throw new Error(`Invalid Agora monotonic timestamp: ${rtcTimestampMs}`);
@@ -25,8 +26,11 @@ export function prepareRendererSharedTextureFrame(
   const nativeHandle = Buffer.isBuffer(frame.nativeHandle)
     ? frame.nativeHandle
     : Buffer.from(frame.nativeHandle);
-  if (nativeHandle.length !== 8) {
-    throw new Error('Shared texture nativeHandle must contain exactly 8 bytes');
+  const expectedHandleBytes = architecture === 'ia32' ? 4 : 8;
+  if (nativeHandle.length !== expectedHandleBytes) {
+    throw new Error(
+      `Shared texture nativeHandle must contain exactly ${expectedHandleBytes} bytes`
+    );
   }
   return {
     ...frame,

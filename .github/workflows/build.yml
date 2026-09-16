@@ -12,7 +12,7 @@ jobs:
   build-windows:
     strategy:
       matrix:
-        arch: [x64]
+        arch: [ia32, x64]
     runs-on: windows-2022
     env:
       npm_config_arch: ${{ matrix.arch }}
@@ -33,7 +33,11 @@ jobs:
 
       - name: Rebuild Local SDK for Electron
         run: |
-          yarn build_windows_x64_release --runtime=electron --runtime-version=43.2.0
+          if ("${{ matrix.arch }}" -eq "ia32") {
+            yarn build_windows_win32_release --runtime=electron --runtime-version=43.2.0
+          } else {
+            yarn build_windows_x64_release --runtime=electron --runtime-version=43.2.0
+          }
 
       - name: Verify Direct NT Handle Contract
         run: |

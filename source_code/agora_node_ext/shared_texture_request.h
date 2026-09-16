@@ -12,7 +12,7 @@ enum class SharedTexturePixelFormat { kUnknown, kBgra, kRgba };
 
 struct SharedTextureRequest {
   uint64_t frame_id;
-  uint8_t native_handle[8];
+  uint8_t native_handle[sizeof(uintptr_t)];
   std::size_t handle_size;
   uint32_t width;
   uint32_t height;

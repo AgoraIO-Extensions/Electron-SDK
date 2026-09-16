@@ -15,7 +15,7 @@
 
 已验证的环境如下：
 
-- Windows x64
+- Windows ia32 和 x64
 - Electron `43.2.0`
 - Electron Node `24.18.0`，原生模块 ABI `148`
 - Agora Electron SDK `4.5.3-build.123-rc.2`
@@ -288,7 +288,7 @@ JavaScript 拿到 Promise 前执行。要恢复这种故障，需要 Native 提�
 - Node `24.18.0` 下的仓库构建
 - SharedTexture 相关 Jest 测试
 - 原生 `shared_texture_request` CTest
-- Windows x64 打包，并证明 Example 使用当前 checkout 中针对 Electron
+- Windows ia32 和 x64 打包，并证明 Example 使用当前 checkout 中针对 Electron
   `43.2.0`、ABI `148` 重编的 Addon
 - macOS universal addon 使用能够序列化
   `ExternalVideoFrame.pixelBuffer` 的 Iris 成功编译

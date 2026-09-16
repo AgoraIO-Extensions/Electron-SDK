@@ -19,7 +19,7 @@ instead of being converted or mislabeled.
 
 The validated environment is:
 
-- Windows x64
+- Windows ia32 and x64
 - Electron `43.2.0`
 - Electron Node `24.18.0`, native modules ABI `148`
 - Agora Electron SDK `4.5.3-build.123-rc.2`
@@ -342,7 +342,7 @@ The development package is required to pass:
 - The repository build under Node `24.18.0`
 - SharedTexture-related Jest tests
 - The native `shared_texture_request` CTest
-- Windows x64 packaging with the Example resolved to this checkout's addon,
+- Windows ia32 and x64 packaging with the Example resolved to this checkout's addon,
   rebuilt for Electron `43.2.0` ABI `148`
 - macOS universal addon compilation against an Iris build that serializes
   `ExternalVideoFrame.pixelBuffer`

@@ -34,7 +34,7 @@ namespace {
 SharedTextureRequest ValidRequest() {
   SharedTextureRequest request{};
   request.frame_id = 1;
-  request.handle_size = 8;
+  request.handle_size = sizeof(request.native_handle);
   request.width = 1920;
   request.height = 1080;
   request.timestamp_us = 123456;
@@ -99,7 +99,7 @@ int main() {
   assert(ValidateSharedTextureRequest(request, 0, error));
 
   request = ValidRequest();
-  request.handle_size = 4;
+  request.handle_size = sizeof(request.native_handle) + 1;
   ExpectInvalid(request);
 
   request = ValidRequest();
@@ -173,9 +173,7 @@ int main() {
   CFRelease(surface);
 #endif
 
-  static_assert(sizeof(uintptr_t) == 8,
-                "The PoC supports only 64-bit native handles");
-  const uintptr_t handle_bits = UINT64_C(0xfedcba9876543210);
+  const uintptr_t handle_bits = static_cast<uintptr_t>(UINT32_C(0xfedcba98));
   std::memcpy(request.native_handle, &handle_bits, sizeof(handle_bits));
   const auto call_buffers = BuildSharedTextureCallBuffers(request);
   assert(call_buffers.buffers.size() == 5);
