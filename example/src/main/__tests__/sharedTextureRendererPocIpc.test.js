@@ -1,6 +1,7 @@
 const {
   FRAME_RESULT_CHANNEL,
   FRAME_CHANNEL,
+  SET_PUSHING_CHANNEL,
   START_CHANNEL,
   STATS_CHANNEL,
   STATUS_CHANNEL,
@@ -19,6 +20,7 @@ function createHarness(overrides = {}) {
   };
   const controller = {
     state: 'idle',
+    pushing: false,
     setStatusListener: jest.fn((listener) => {
       controller.statusListener = listener;
       return jest.fn();
@@ -29,6 +31,9 @@ function createHarness(overrides = {}) {
     }),
     stop: jest.fn(async () => {
       controller.state = 'idle';
+    }),
+    setPushing: jest.fn((pushing) => {
+      controller.pushing = pushing;
     }),
     recordRendererRtcTimestamp: jest.fn(),
     recordRendererRtcStats: jest.fn(),
@@ -109,6 +114,24 @@ test('does not stop an unrelated main-process run without a renderer owner', asy
   expect(harness.controller.stop).not.toHaveBeenCalled();
 });
 
+test('toggles renderer-owned pushing without stopping capture or Engine', async () => {
+  const harness = createHarness();
+  await harness.handlers.get(START_CHANNEL)(
+    { sender: harness.sender },
+    { appId: 'app', channelId: 'channel', token: '', uid: 42 }
+  );
+
+  await expect(
+    harness.handlers.get(SET_PUSHING_CHANNEL)({ sender: harness.sender }, true)
+  ).resolves.toEqual({ pushing: true });
+  expect(harness.controller.setPushing).toHaveBeenCalledWith(true);
+  expect(harness.controller.stop).not.toHaveBeenCalled();
+
+  await expect(
+    harness.handlers.get(SET_PUSHING_CHANNEL)({ sender: {} }, false)
+  ).rejects.toThrow('owner');
+});
+
 test('prepares a main-process IOSurface before sending it to renderer', async () => {
   const prepareFrame = jest.fn((frame) => ({
     ...frame,
@@ -159,6 +182,9 @@ test('removes renderer IPC handlers and listeners', () => {
 
   expect(harness.ipcMain.removeHandler).toHaveBeenCalledWith(START_CHANNEL);
   expect(harness.ipcMain.removeHandler).toHaveBeenCalledWith(STOP_CHANNEL);
+  expect(harness.ipcMain.removeHandler).toHaveBeenCalledWith(
+    SET_PUSHING_CHANNEL
+  );
   expect(harness.ipcMain.removeListener).toHaveBeenCalledWith(
     FRAME_RESULT_CHANNEL,
     expect.any(Function)

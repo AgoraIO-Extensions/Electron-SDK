@@ -25,6 +25,7 @@ export interface SharedTextureIntervalSummary {
 
 export interface SharedTexturePocStatus {
   state: string;
+  pushing: boolean;
   health: 'healthy' | 'degraded' | 'failed';
   failureReason?: string | null;
   degradationReasons: string[];
@@ -104,3 +105,8 @@ export const startSharedTexturePoc = (
 export const stopSharedTexturePoc = (
   invoke: (channel: string) => Promise<unknown>
 ) => invoke('SHARED_TEXTURE_POC_STOP');
+
+export const setSharedTexturePocPushing = (
+  invoke: (channel: string, pushing: boolean) => Promise<unknown>,
+  pushing: boolean
+) => invoke('SHARED_TEXTURE_POC_SET_PUSHING', pushing);

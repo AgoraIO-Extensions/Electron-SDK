@@ -46,6 +46,7 @@ class SharedTexturePocController {
     this.setTimeoutFn = setTimeoutFn;
     this.clearTimeoutFn = clearTimeoutFn;
     this.state = 'idle';
+    this.pushing = false;
     this.generation = 0;
     this.nextFrameId = 1;
     this.releasedTextures = new WeakSet();
@@ -186,6 +187,7 @@ class SharedTexturePocController {
 
     const generation = ++this.generation;
     this.state = 'starting';
+    this.pushing = false;
     this.cleanupPromise = null;
     this.pendingTexture = null;
     this.pendingFrame = null;
@@ -490,9 +492,27 @@ class SharedTexturePocController {
 
   canSubmitFrames() {
     return (
+      this.pushing &&
       (this.state === 'starting' || this.state === 'running') &&
       (this.mediaEngine !== null || this.externalSubmit !== null)
     );
+  }
+
+  setPushing(pushing) {
+    if (typeof pushing !== 'boolean') {
+      throw new TypeError('pushing must be a boolean');
+    }
+    if (this.state !== 'running') {
+      throw new Error('Shared Texture PoC is not running');
+    }
+    if (this.pushing === pushing) return;
+    this.pushing = pushing;
+    if (!pushing && this.pendingTexture) {
+      this.releaseOnce(this.pendingTexture);
+      this.pendingTexture = null;
+      this.pendingFrame = null;
+    }
+    this.emitStatus();
   }
 
   releaseOnce(texture) {
@@ -502,7 +522,11 @@ class SharedTexturePocController {
   }
 
   emitStatus() {
-    const snapshot = { state: this.state, ...this.telemetry.snapshot() };
+    const snapshot = {
+      state: this.state,
+      pushing: this.pushing,
+      ...this.telemetry.snapshot(),
+    };
     this.onStatus(snapshot);
     if (typeof this.logger.info === 'function') {
       this.logger.info('Shared texture telemetry', snapshot);
@@ -518,7 +542,11 @@ class SharedTexturePocController {
   }
 
   getTelemetrySnapshot() {
-    return { state: this.state, ...this.telemetry.snapshot() };
+    return {
+      state: this.state,
+      pushing: this.pushing,
+      ...this.telemetry.snapshot(),
+    };
   }
 
   recordRendererRtcStats(stats) {
@@ -558,6 +586,7 @@ class SharedTexturePocController {
     if (this.state === 'stopping') return this.stopping;
     const generation = this.generation;
     const cancelPendingJoin = this.cancelPendingJoin;
+    this.pushing = false;
     this.state = 'stopping';
     this.emitStatus();
     if (cancelPendingJoin) cancelPendingJoin();
@@ -613,6 +642,7 @@ class SharedTexturePocController {
   async cleanup(generation) {
     if (this.cleanupPromise) return this.cleanupPromise;
     this.stopRunObservers();
+    this.pushing = false;
     const engine = this.engine;
     const mediaEngine = this.mediaEngine;
     this.externalSubmit = null;

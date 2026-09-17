@@ -28,7 +28,8 @@ PoC 已经实现完整的视频发布流程：
 1. `Advanced -> SharedTexturePoc` 页面通过 IPC 把频道参数发送到 Electron
    主进程。
 2. 主进程创建 RTC Engine、启用外部视频源，并以主播身份发布自定义视频轨。
-   这个 case 不发布摄像头和麦克风轨。
+   这个 case 不发布摄像头和麦克风轨。加入频道不会自动提交共享纹理，画面提交由
+   独立的“开始/停止”按钮控制。
 3. 离屏 `BrowserWindow` 使用 `offscreen.useSharedTexture: true` 承载真实 DOM
    canvas。页面调用 `transferControlToOffscreen()`，由独立 Worker 持有
    WebGL2、渲染资源以及基于 timer 的 30/48/60 fps 绘制循环。窗口显式设置
@@ -75,8 +76,8 @@ Renderer 收到它的 `IOSurfaceID` 后调用 `IOSurfaceLookup`。Electron IPC �
 必选架构。
 
 控制器同时只保留一个正在提交的帧和一个最新等待帧，不会形成无限队列。
-如果等待期间又产生新帧，更旧的等待帧会立即释放。加入频道期间和加入成功后
-都允许提交画面。
+如果等待期间又产生新帧，更旧的等待帧会立即释放。加入频道后点击“开始”才会
+提交画面；点击“停止”会阻止新帧提交，但不会离开频道或释放 RTC Engine。
 
 每个有效 compositor 帧都使用实际提交该帧的 Engine 调用
 `getCurrentMonotonicTimeInMs()`。主进程示例在 `paint` 时打时间戳；Renderer 示例

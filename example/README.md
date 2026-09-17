@@ -75,14 +75,14 @@ Do not continue if the ABI check is not exactly `148` or if the runtime test res
 `agora-electron-sdk` outside this worktree.
 
 Start the example, open `Advanced -> SharedTexturePoc`, and enter the same App ID,
-channel, token, and numeric UID used by the other examples. `Start` creates one
-main-process RTC engine and a hidden offscreen window for the packaged moving-color
-scene; `Stop` drains the active submission, releases the Electron texture, leaves the
-channel, and destroys both native objects. Use a second client in the same channel to
-observe the published video.
+channel, token, and numeric UID used by the other examples. Join the channel first;
+joining creates the RTC engine and offscreen capture window but does not submit frames.
+Use the `开始`/`停止` button to start or stop shared-texture submission without leaving
+the channel. The existing channel button still owns the full join/leave lifecycle.
 
-The renderer page does not create an RTC engine. It sends validated configuration over
-IPC to the main-process controller, which owns the offscreen texture lifetime.
+The Main Engine and Renderer Engine pages expose the same controls. They differ only in
+which Electron process owns the RTC engine; the main process always owns the offscreen
+texture lifetime.
 
 #### (Optional) Build From Local SDK
 

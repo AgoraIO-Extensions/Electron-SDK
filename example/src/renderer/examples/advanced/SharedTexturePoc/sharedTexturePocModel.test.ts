@@ -10,6 +10,7 @@ const {
   createSharedTexturePocConfig,
   getSharedTexturePocAction,
   getInitialSharedTextureChannel,
+  setSharedTexturePocPushing,
   shouldStopOnUnmount,
   subscribeSharedTexturePocStatus,
   startSharedTexturePoc,
@@ -78,14 +79,18 @@ test('subscribes to status and removes the exact listener', () => {
   );
 });
 
-test('maps join and leave to the existing main-process IPC channels', async () => {
+test('maps join, push control, and leave to the main-process IPC channels', async () => {
   const invoke = jest.fn().mockResolvedValue({ state: 'running' });
   const config = createSharedTexturePocConfig('temporary-channel');
 
   await startSharedTexturePoc(invoke, config);
+  await setSharedTexturePocPushing(invoke, true);
+  await setSharedTexturePocPushing(invoke, false);
   await stopSharedTexturePoc(invoke);
 
   expect(invoke).toHaveBeenCalledWith('SHARED_TEXTURE_POC_START', config);
+  expect(invoke).toHaveBeenCalledWith('SHARED_TEXTURE_POC_SET_PUSHING', true);
+  expect(invoke).toHaveBeenCalledWith('SHARED_TEXTURE_POC_SET_PUSHING', false);
   expect(invoke).toHaveBeenCalledWith('SHARED_TEXTURE_POC_STOP');
 });
 

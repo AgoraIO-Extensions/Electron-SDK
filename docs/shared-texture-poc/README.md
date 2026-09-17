@@ -34,6 +34,8 @@ The PoC implements the complete publishing workflow:
 2. The main process creates the RTC engine, enables an external video source,
    and joins as a broadcaster with a custom video track. Camera and microphone
    publishing are disabled for this case.
+   Joining does not submit shared textures. The `Start`/`Stop` push control is
+   independent from the channel lifecycle.
 3. An offscreen `BrowserWindow` hosts a real DOM canvas with
    `offscreen.useSharedTexture: true`. The page calls
    `transferControlToOffscreen()` and a dedicated Worker owns WebGL2, rendering,
@@ -89,8 +91,8 @@ explicitly rather than treating the renderer path as a requirement.
 
 The controller keeps at most one submission in flight and one latest pending
 texture. Older pending frames are released instead of building an unbounded
-queue. Frames can be submitted while the channel is joining as well as after
-join succeeds.
+queue. After the channel joins, `Start` enables submission and `Stop` disables
+new submissions without leaving the channel or releasing the RTC engine.
 
 Each valid compositor frame uses `getCurrentMonotonicTimeInMs()` from the
 engine that submits it. The main-process example stamps at `paint`; the renderer

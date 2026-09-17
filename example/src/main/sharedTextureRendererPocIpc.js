@@ -2,6 +2,7 @@ const { validateConfig } = require('./sharedTexturePocIpc');
 
 const START_CHANNEL = 'SHARED_TEXTURE_RENDERER_POC_START';
 const STOP_CHANNEL = 'SHARED_TEXTURE_RENDERER_POC_STOP';
+const SET_PUSHING_CHANNEL = 'SHARED_TEXTURE_RENDERER_POC_SET_PUSHING';
 const STATUS_CHANNEL = 'SHARED_TEXTURE_RENDERER_POC_STATUS';
 const FRAME_CHANNEL = 'SHARED_TEXTURE_RENDERER_POC_FRAME';
 const FRAME_RESULT_CHANNEL = 'SHARED_TEXTURE_RENDERER_POC_FRAME_RESULT';
@@ -128,12 +129,20 @@ function registerSharedTextureRendererPocIpc({
     clearOwner();
     return { state: controller.state };
   });
+  ipcMain.handle(SET_PUSHING_CHANNEL, async (event, pushing) => {
+    if (event.sender !== owner) {
+      throw new Error('Renderer Engine owner is unavailable');
+    }
+    controller.setPushing(pushing);
+    return { pushing: controller.pushing };
+  });
 
   return () => {
     rejectPendingFrames('Renderer Engine IPC disposed');
     clearOwner();
     ipcMain.removeHandler(START_CHANNEL);
     ipcMain.removeHandler(STOP_CHANNEL);
+    ipcMain.removeHandler(SET_PUSHING_CHANNEL);
     ipcMain.removeListener(FRAME_RESULT_CHANNEL, handleFrameResult);
     ipcMain.removeListener(STATS_CHANNEL, handleStats);
   };
@@ -142,6 +151,7 @@ function registerSharedTextureRendererPocIpc({
 module.exports = {
   FRAME_CHANNEL,
   FRAME_RESULT_CHANNEL,
+  SET_PUSHING_CHANNEL,
   START_CHANNEL,
   STATS_CHANNEL,
   STATUS_CHANNEL,

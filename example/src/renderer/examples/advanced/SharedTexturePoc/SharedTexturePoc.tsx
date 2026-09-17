@@ -19,6 +19,7 @@ import {
   createSharedTexturePocConfig,
   getInitialSharedTextureChannel,
   getSharedTexturePocAction,
+  setSharedTexturePocPushing,
   shouldStopOnUnmount,
   startSharedTexturePoc,
   stopSharedTexturePoc,
@@ -40,11 +41,13 @@ interface SharedTexturePocViewProps {
   frameRate: 30 | 48 | 60;
   hideRightBar: boolean;
   lifecycle: SharedTexturePocLifecycle;
+  pushPending: boolean;
   status: SharedTexturePocStatus | null;
   onCaptureWindowStateChange: (value: SharedTextureCaptureWindowState) => void;
   onChannelChange: (value: string) => void;
   onFrameRateChange: (value: 30 | 48 | 60) => void;
   onToggleChannel: () => void;
+  onTogglePush: () => void;
   onToggleRightBar: () => void;
 }
 
@@ -56,14 +59,17 @@ export function SharedTexturePocView({
   frameRate,
   hideRightBar,
   lifecycle,
+  pushPending,
   status,
   onCaptureWindowStateChange,
   onChannelChange,
   onFrameRateChange,
   onToggleChannel,
+  onTogglePush,
   onToggleRightBar,
 }: SharedTexturePocViewProps) {
   const action = getSharedTexturePocAction(lifecycle);
+  const pushing = status?.pushing === true;
   return (
     <AgoraView className={AgoraStyle.screen}>
       <AgoraView className={AgoraStyle.content}>
@@ -148,9 +154,14 @@ export function SharedTexturePocView({
           value={captureWindowState}
         />
         <AgoraButton
-          disabled={action.disabled}
+          disabled={action.disabled || pushPending}
           title={action.title}
           onPress={onToggleChannel}
+        />
+        <AgoraButton
+          disabled={lifecycle !== 'joined' || pushPending}
+          title={pushing ? '停止' : '开始'}
+          onPress={onTogglePush}
         />
         <AgoraDivider />
       </AgoraView>
@@ -167,6 +178,7 @@ export default function SharedTexturePoc() {
   const [captureWindowState, setCaptureWindowState] =
     useState<SharedTextureCaptureWindowState>('hidden');
   const [status, setStatus] = useState<SharedTexturePocStatus | null>(null);
+  const [pushPending, setPushPending] = useState(false);
   const lifecycleRef = useRef(lifecycle);
   const mountedRef = useRef(true);
 
@@ -222,6 +234,21 @@ export default function SharedTexturePoc() {
     }
   };
 
+  const togglePush = async () => {
+    if (lifecycle !== 'joined') return;
+    setError('');
+    setPushPending(true);
+    try {
+      await setSharedTexturePocPushing(invoke, status?.pushing !== true);
+    } catch (cause) {
+      if (mountedRef.current) {
+        setError(cause instanceof Error ? cause.message : String(cause));
+      }
+    } finally {
+      if (mountedRef.current) setPushPending(false);
+    }
+  };
+
   return (
     <SharedTexturePocView
       captureWindowState={captureWindowState}
@@ -230,10 +257,12 @@ export default function SharedTexturePoc() {
       frameRate={frameRate}
       hideRightBar={hideRightBar}
       lifecycle={lifecycle}
+      pushPending={pushPending}
       onCaptureWindowStateChange={setCaptureWindowState}
       onChannelChange={setChannelId}
       onFrameRateChange={setFrameRate}
       onToggleChannel={toggleChannel}
+      onTogglePush={togglePush}
       onToggleRightBar={() => setHideRightBar((hidden) => !hidden)}
       status={status}
     />

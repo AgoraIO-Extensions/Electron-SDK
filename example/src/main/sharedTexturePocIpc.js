@@ -1,6 +1,7 @@
 const START_CHANNEL = 'SHARED_TEXTURE_POC_START';
 const STOP_CHANNEL = 'SHARED_TEXTURE_POC_STOP';
 const STATUS_CHANNEL = 'SHARED_TEXTURE_POC_STATUS';
+const SET_PUSHING_CHANNEL = 'SHARED_TEXTURE_POC_SET_PUSHING';
 
 function validateConfig(config) {
   if (!config || typeof config !== 'object') {
@@ -82,15 +83,24 @@ function registerSharedTexturePocIpc({ ipcMain, controller }) {
     clearStatusListener();
     return { state: controller.state };
   });
+  ipcMain.handle(SET_PUSHING_CHANNEL, async (event, pushing) => {
+    if (event.sender !== statusSender) {
+      throw new Error('Shared Texture PoC owner is unavailable');
+    }
+    controller.setPushing(pushing);
+    return { pushing: controller.pushing };
+  });
 
   return () => {
     clearStatusListener();
     ipcMain.removeHandler(START_CHANNEL);
     ipcMain.removeHandler(STOP_CHANNEL);
+    ipcMain.removeHandler(SET_PUSHING_CHANNEL);
   };
 }
 
 module.exports = {
+  SET_PUSHING_CHANNEL,
   START_CHANNEL,
   STATUS_CHANNEL,
   STOP_CHANNEL,

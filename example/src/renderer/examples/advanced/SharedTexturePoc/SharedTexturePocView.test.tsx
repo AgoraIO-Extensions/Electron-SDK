@@ -42,13 +42,16 @@ test('renders pacing controls and the latest stream status', () => {
       frameRate={30}
       hideRightBar={false}
       lifecycle="joined"
+      pushPending={false}
       onCaptureWindowStateChange={jest.fn()}
       onChannelChange={jest.fn()}
       onFrameRateChange={jest.fn()}
       onToggleChannel={jest.fn()}
+      onTogglePush={jest.fn()}
       onToggleRightBar={jest.fn()}
       status={{
         state: 'running',
+        pushing: true,
         health: 'healthy',
         failureReason: null,
         degradationReasons: [],
@@ -101,4 +104,28 @@ test('renders pacing controls and the latest stream status', () => {
   expect(markup).toContain('Submission P95: 3.5 ms');
   expect(markup).toContain('Encoded: 110');
   expect(markup).toContain('Video bitrate: 512 Kbps');
+  expect(markup).toContain('>停止<');
+});
+
+test('shows the start action before pushing begins', () => {
+  const markup = renderToStaticMarkup(
+    <SharedTexturePocView
+      captureWindowState="hidden"
+      channelId="customer-channel"
+      error=""
+      frameRate={30}
+      hideRightBar={false}
+      lifecycle="joined"
+      pushPending={false}
+      onCaptureWindowStateChange={jest.fn()}
+      onChannelChange={jest.fn()}
+      onFrameRateChange={jest.fn()}
+      onToggleChannel={jest.fn()}
+      onTogglePush={jest.fn()}
+      onToggleRightBar={jest.fn()}
+      status={null}
+    />
+  );
+
+  expect(markup).toContain('>开始<');
 });

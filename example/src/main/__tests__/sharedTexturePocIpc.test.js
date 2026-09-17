@@ -8,6 +8,7 @@ function createHarness() {
   };
   const controller = {
     state: 'idle',
+    pushing: false,
     setStatusListener: jest.fn((listener) => {
       controller.statusListener = listener;
       return jest.fn(() => {
@@ -22,6 +23,9 @@ function createHarness() {
     }),
     stop: jest.fn(async () => {
       controller.state = 'idle';
+    }),
+    setPushing: jest.fn((pushing) => {
+      controller.pushing = pushing;
     }),
   };
   const dispose = registerSharedTexturePocIpc({ ipcMain, controller });
@@ -113,6 +117,30 @@ test('routes status only to the start sender and clears ownership on stop', asyn
   );
 });
 
+test('toggles pushing only for the active renderer without leaving', async () => {
+  const harness = createHarness();
+  const sender = {
+    send: jest.fn(),
+    removeListener: jest.fn(),
+    once: jest.fn(),
+  };
+  const config = { appId: 'app', channelId: 'c', token: '', uid: 1 };
+
+  await harness.handlers.get('SHARED_TEXTURE_POC_START')({ sender }, config);
+  await expect(
+    harness.handlers.get('SHARED_TEXTURE_POC_SET_PUSHING')({ sender }, true)
+  ).resolves.toEqual({ pushing: true });
+  expect(harness.controller.setPushing).toHaveBeenCalledWith(true);
+  expect(harness.controller.stop).not.toHaveBeenCalled();
+
+  await expect(
+    harness.handlers.get('SHARED_TEXTURE_POC_SET_PUSHING')(
+      { sender: {} },
+      false
+    )
+  ).rejects.toThrow('owner');
+});
+
 test('clears status ownership when the start sender is destroyed or IPC disposes', async () => {
   const harness = createHarness();
   let destroyed;
@@ -198,5 +226,8 @@ test('stops and removes both handlers during teardown', async () => {
   );
   expect(harness.ipcMain.removeHandler).toHaveBeenCalledWith(
     'SHARED_TEXTURE_POC_STOP'
+  );
+  expect(harness.ipcMain.removeHandler).toHaveBeenCalledWith(
+    'SHARED_TEXTURE_POC_SET_PUSHING'
   );
 });

@@ -20,6 +20,7 @@ import {
 import {
   FRAME_CHANNEL,
   FRAME_RESULT_CHANNEL,
+  SET_PUSHING_CHANNEL,
   START_CHANNEL,
   STATS_CHANNEL,
   STATUS_CHANNEL,
@@ -61,6 +62,7 @@ export default function SharedTextureRendererPoc() {
   const [captureWindowState, setCaptureWindowState] =
     useState<SharedTextureCaptureWindowState>('hidden');
   const [status, setStatus] = useState<SharedTexturePocStatus | null>(null);
+  const [pushPending, setPushPending] = useState(false);
   const lifecycleRef = useRef(lifecycle);
   const mountedRef = useRef(true);
   const engineRef = useRef<IRtcEngine | null>(null);
@@ -220,6 +222,21 @@ export default function SharedTextureRendererPoc() {
     }
   };
 
+  const togglePush = async () => {
+    if (lifecycle !== 'joined') return;
+    setError('');
+    setPushPending(true);
+    try {
+      await ipcRenderer.invoke(SET_PUSHING_CHANNEL, status?.pushing !== true);
+    } catch (cause) {
+      if (mountedRef.current) {
+        setError(cause instanceof Error ? cause.message : String(cause));
+      }
+    } finally {
+      if (mountedRef.current) setPushPending(false);
+    }
+  };
+
   return (
     <SharedTexturePocView
       captureWindowState={captureWindowState}
@@ -228,10 +245,12 @@ export default function SharedTextureRendererPoc() {
       frameRate={frameRate}
       hideRightBar={hideRightBar}
       lifecycle={lifecycle}
+      pushPending={pushPending}
       onCaptureWindowStateChange={setCaptureWindowState}
       onChannelChange={setChannelId}
       onFrameRateChange={setFrameRate}
       onToggleChannel={toggleChannel}
+      onTogglePush={togglePush}
       onToggleRightBar={() => setHideRightBar((hidden) => !hidden)}
       status={status}
       title="Shared Texture PoC (Renderer Engine)"
