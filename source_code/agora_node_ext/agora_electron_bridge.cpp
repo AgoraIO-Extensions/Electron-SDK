@@ -23,10 +23,9 @@ const char *AgoraElectronBridge::_ret_result_str = "callApiResult";
 napi_ref *AgoraElectronBridge::_ref_construcotr_ptr = nullptr;
 
 AgoraElectronBridge::AgoraElectronBridge()
-    : _env(nullptr), _ref(nullptr), _result("\0"),
+    : _env(nullptr), _ref(nullptr),
       _iris_rtc_event_handler(new NodeIrisEventHandler) {
   LOG_F(INFO, __FUNCTION__);
-  memset(_result, '\0', kBasicResultLength);
 }
 
 AgoraElectronBridge::~AgoraElectronBridge() {
@@ -127,14 +126,14 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
   std::string funcName = "";
   std::string parameter = "";
   uint32_t bufferCount = 0;
+  napi_value retObj;
+  status = napi_create_object(env, &retObj);
 
   status = napi_get_value_utf8string(env, args[0], funcName);
   status = napi_get_value_utf8string(env, args[1], parameter);
   status = napi_get_value_uint32(env, args[3], &bufferCount);
 
   if (strcmp(parameter.c_str(), "") == 0) { parameter = "{}"; }
-
-  memset(agoraElectronBridge->_result, '\0', kBasicResultLength);
 
   if (!agoraElectronBridge->_iris_api_engine) { agoraElectronBridge->Init(); }
 
@@ -179,12 +178,15 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
           funcName.c_str(),
           parameter.c_str(),
           (unsigned int) parameter.length(),
-          agoraElectronBridge->_result,
+          nullptr,
           buffer.data(),
-          length.data(),
+          nullptr,
           bufferCount,
       };
       ret = irisApiEngine->CallIrisApi(&apiParam);
+      if (apiParam.result) {
+        napi_obj_set_property(env, retObj, _ret_result_str, apiParam.result);
+      }
     } catch (std::exception &e) {
       agoraElectronBridge->OnApiError(e.what());
       LOG_F(INFO, "%s(func name:%s) parameter: catch excepton msg: %s",
@@ -195,7 +197,8 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
           funcName.c_str());
     ret = ERR_NOT_INITIALIZED;
   }
-  RETURE_NAPI_OBJ();
+  napi_obj_set_property(env, retObj, _ret_code_str, ret);
+  return retObj;
 }
 
 napi_value AgoraElectronBridge::GetBuffer(napi_env env,
