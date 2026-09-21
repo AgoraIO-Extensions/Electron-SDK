@@ -16,12 +16,14 @@ namespace rtc {
 namespace electron {
 
 #define DECLARE_NAPI_METHOD(name, func)                                        \
-  {name, 0, func, 0, 0, 0, napi_default, 0}
+  { name, 0, func, 0, 0, 0, napi_default, 0 }
 
 #define RETURE_NAPI_OBJ()                                                      \
   napi_value retObj;                                                           \
   status = napi_create_object(env, &retObj);                                   \
   napi_obj_set_property(env, retObj, _ret_code_str, ret);                      \
+  napi_obj_set_property(env, retObj, _ret_result_str,                          \
+                        agoraElectronBridge->_result);                         \
   return retObj
 
 napi_status napi_get_value_utf8string(napi_env &env, napi_value &value,
