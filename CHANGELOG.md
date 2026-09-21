@@ -1,5 +1,12 @@
 
 
+## [4.2.2-build.164-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.2-build.164-rc.1...v4.2.2-build.164-rc.2) (2026-09-21)
+
+
+### Reverts
+
+* remove CSD-79953 changes ([d67cacd](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/d67cacd1fcd74fcba64104a37304780c3afb6191))
+
 ## [4.2.2-build.164-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.2-build.161-rc.3...v4.2.2-build.164-rc.1) (2026-09-15)
 
 ## [4.2.2-build.161-rc.3](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.2-build.161-rc.2...v4.2.2-build.161-rc.3) (2026-08-11)
