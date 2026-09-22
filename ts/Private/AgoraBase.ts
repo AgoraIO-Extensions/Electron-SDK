@@ -2742,10 +2742,6 @@ export class LocalAudioStats {
    * @ignore
    */
   aedMusicRes?: number;
-  /**
-   * @ignore
-   */
-  edThpState?: number;
 }
 
 /**

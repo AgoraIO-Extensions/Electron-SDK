@@ -2717,6 +2717,10 @@ export class RtcEngineContext {
    * Whether to automatically register Agora extensions when initializing IRtcEngine : true : (Default) Automatically register Agora extensions when initializing IRtcEngine. false : Do not register Agora extensions when initializing IRtcEngine. You need to call enableExtension to register them.
    */
   autoRegisterAgoraExtensions?: boolean;
+  /**
+   * @ignore
+   */
+  parameters?: string;
 }
 
 /**
@@ -7288,6 +7292,24 @@ export class VideoDeviceInfo {
    * Device ID.
    */
   deviceId?: string;
+  /**
+   * Device name.
+   */
+  deviceName?: string;
+}
+
+/**
+ * The AudioDeviceInfo class contains the audio device ID and device name.
+ */
+export class AudioDeviceInfo {
+  /**
+   * Device ID.
+   */
+  deviceId?: string;
+  /**
+   * Audio device type, such as: built-in, USB, HDMI, etc.
+   */
+  deviceTypeName?: string;
   /**
    * Device name.
    */

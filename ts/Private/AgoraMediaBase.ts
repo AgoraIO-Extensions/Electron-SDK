@@ -166,40 +166,6 @@ export class AudioParameters {
 }
 
 /**
- * The AudioDeviceInfo class contains the audio device ID and device name.
- */
-export class AudioDeviceInfo {
-  /**
-   * Device name.
-   */
-  deviceName?: string;
-  /**
-   * Audio device type, such as: built-in, USB, HDMI, etc.
-   */
-  deviceTypeName?: string;
-  /**
-   * Device ID.
-   */
-  deviceId?: string;
-  /**
-   * @ignore
-   */
-  vendorId?: string;
-  /**
-   * @ignore
-   */
-  productId?: string;
-  /**
-   * @ignore
-   */
-  isCurrentSelected?: boolean;
-  /**
-   * @ignore
-   */
-  isPlayoutDevice?: boolean;
-}
-
-/**
  * Usage mode of audio data.
  */
 export enum RawAudioFrameOpModeType {

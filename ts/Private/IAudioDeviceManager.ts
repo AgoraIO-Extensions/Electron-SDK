@@ -1,5 +1,5 @@
 import './extension/IAudioDeviceManagerExtension';
-import { AudioDeviceInfo } from './AgoraMediaBase';
+import { AudioDeviceInfo } from './IAgoraRtcEngine';
 
 /**
  * Maximum length of the device ID.
