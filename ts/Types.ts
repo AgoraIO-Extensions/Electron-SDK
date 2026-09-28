@@ -118,37 +118,66 @@ export interface Result {
 }
 
 /**
- * Experimental Electron offscreen shared-texture request.
- *
  * @ignore
  */
 export interface SharedTextureFrame {
+  /**
+   * @ignore
+   */
   frameId: number;
-  /** Platform-native pointer-sized handle: 4 bytes on ia32, 8 bytes otherwise. */
+  /**
+   * @ignore
+   */
   nativeHandle: Buffer;
+  /**
+   * @ignore
+   */
   width: number;
+  /**
+   * @ignore
+   */
   height: number;
-  /** Electron texture timestamp in microseconds. */
+  /**
+   * @ignore
+   */
   timestampUs: number;
-  /** Agora SDK monotonic timestamp in milliseconds. */
+  /**
+   * @ignore
+   */
   rtcTimestampMs: number;
+  /**
+   * @ignore
+   */
   pixelFormat: 'bgra' | 'rgba';
-  /** Opens a native preview window on Windows before RTC submission. */
+  /**
+   * @ignore
+   */
   directHandlePreview?: boolean;
-  /** Process that owns nativeHandle. Windows duplicates it into the caller. */
+  /**
+   * @ignore
+   */
   sourceProcessId?: number;
-  /** ID of the macOS IOSurface GPU copy created for renderer-process submission. */
+  /**
+   * @ignore
+   */
   crossProcessIOSurfaceId?: number;
 }
 
 /**
- * Result of an experimental shared-texture submission.
- *
  * @ignore
  */
 export interface SharedTextureResult {
+  /**
+   * @ignore
+   */
   frameId: number;
+  /**
+   * @ignore
+   */
   result: number;
+  /**
+   * @ignore
+   */
   adapterLuid?: string;
 }
 
