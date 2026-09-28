@@ -1,4 +1,21 @@
-import { IAudioEncodedFrameObserver } from '../AgoraBase';
+import { IAudioEncodedFrameObserver, IAudioTrackObserver } from '../AgoraBase';
+
+export function processIAudioTrackObserver(
+  handler: IAudioTrackObserver,
+  event: string,
+  jsonParams: any
+) {
+  switch (event) {
+    case 'onAudioTrackVolumeIndication':
+      if (handler.onAudioTrackVolumeIndication !== undefined) {
+        handler.onAudioTrackVolumeIndication(
+          jsonParams.trackId,
+          jsonParams.volumeInfo
+        );
+      }
+      break;
+  }
+}
 
 export function processIAudioEncodedFrameObserver(
   handler: IAudioEncodedFrameObserver,

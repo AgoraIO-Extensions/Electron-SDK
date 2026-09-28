@@ -5771,6 +5771,26 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_startScreenCapture_270da41';
   }
 
+  startScreenCaptureInApp(captureParams: ScreenCaptureParameters2): number {
+    const apiType = this.getApiTypeFromStartScreenCaptureInApp(captureParams);
+    const jsonParams = {
+      captureParams: captureParams,
+      toJSON: () => {
+        return {
+          captureParams: captureParams,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromStartScreenCaptureInApp(
+    captureParams: ScreenCaptureParameters2
+  ): string {
+    return 'RtcEngine_startScreenCaptureInApp_270da41';
+  }
+
   updateScreenCapture(captureParams: ScreenCaptureParameters2): number {
     const apiType = this.getApiTypeFromUpdateScreenCapture(captureParams);
     const jsonParams = {

@@ -70,9 +70,13 @@ endif ()
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
   set(AGORA_IRIS_PROJECT_ARCH "MAC")
-  set(AGORA_RTC_SDK_PATH
-          ${CMAKE_CURRENT_SOURCE_DIR}/native/*_Native_SDK_for_Mac_FULL/libs
+  file(GLOB AGORA_RTC_SDK_PATH LIST_DIRECTORIES true
+          "${CMAKE_CURRENT_SOURCE_DIR}/native/*_Native_SDK_for_Mac_*/libs"
           )
+  list(LENGTH AGORA_RTC_SDK_PATH AGORA_RTC_SDK_PATH_COUNT)
+  if (NOT AGORA_RTC_SDK_PATH_COUNT EQUAL 1)
+    message(FATAL_ERROR "Expected exactly one macOS Native SDK libs directory, found ${AGORA_RTC_SDK_PATH_COUNT}")
+  endif ()
   # native rtc sdk library
   set(AGORA_RTC_SDK_LIBRARY
           ${AGORA_RTC_SDK_PATH}/*.xcframework/macos-arm64_x86_64/*.framework

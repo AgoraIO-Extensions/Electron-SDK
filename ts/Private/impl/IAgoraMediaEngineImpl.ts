@@ -2,6 +2,8 @@ import {
   AudioTrackConfig,
   AudioTrackType,
   EncodedVideoFrameInfo,
+  IAudioTrackObserver,
+  LoopbackAudioTrackConfig,
   SenderOptions,
 } from '../AgoraBase';
 import {
@@ -400,6 +402,149 @@ export class IMediaEngineImpl implements IMediaEngine {
     videoTrackId: number = 0
   ): string {
     return 'MediaEngine_pushEncodedVideoImage_e71452b';
+  }
+
+  enableAudioTrackVolumeIndication(id: number, interval: number): number {
+    const apiType = this.getApiTypeFromEnableAudioTrackVolumeIndication(
+      id,
+      interval
+    );
+    const jsonParams = {
+      id: id,
+      interval: interval,
+      toJSON: () => {
+        return {
+          id: id,
+          interval: interval,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromEnableAudioTrackVolumeIndication(
+    id: number,
+    interval: number
+  ): string {
+    return 'MediaEngine_enableAudioTrackVolumeIndication_a2698bb';
+  }
+
+  createLoopbackAudioTrack(config: LoopbackAudioTrackConfig): number {
+    const apiType = this.getApiTypeFromCreateLoopbackAudioTrack(config);
+    const jsonParams = {
+      config: config,
+      toJSON: () => {
+        return {
+          config: config,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromCreateLoopbackAudioTrack(
+    config: LoopbackAudioTrackConfig
+  ): string {
+    return 'MediaEngine_createLoopbackAudioTrack_599af35';
+  }
+
+  adjustLoopbackAudioPublishVolume(trackId: number, volume: number): number {
+    const apiType = this.getApiTypeFromAdjustLoopbackAudioPublishVolume(
+      trackId,
+      volume
+    );
+    const jsonParams = {
+      trackId: trackId,
+      volume: volume,
+      toJSON: () => {
+        return {
+          trackId: trackId,
+          volume: volume,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromAdjustLoopbackAudioPublishVolume(
+    trackId: number,
+    volume: number
+  ): string {
+    return 'MediaEngine_adjustLoopbackAudioPublishVolume_a2698bb';
+  }
+
+  destroyLoopbackAudioTrack(trackId: number): number {
+    const apiType = this.getApiTypeFromDestroyLoopbackAudioTrack(trackId);
+    const jsonParams = {
+      trackId: trackId,
+      toJSON: () => {
+        return {
+          trackId: trackId,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromDestroyLoopbackAudioTrack(trackId: number): string {
+    return 'MediaEngine_destroyLoopbackAudioTrack_6178b5d';
+  }
+
+  registerAudioTrackObserver(
+    id: number,
+    observer: IAudioTrackObserver
+  ): number {
+    const apiType = this.getApiTypeFromRegisterAudioTrackObserver(id, observer);
+    const jsonParams = {
+      id: id,
+      observer: observer,
+      toJSON: () => {
+        return {
+          id: id,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromRegisterAudioTrackObserver(
+    id: number,
+    observer: IAudioTrackObserver
+  ): string {
+    return 'MediaEngine_registerAudioTrackObserver_39ac049';
+  }
+
+  unregisterAudioTrackObserver(
+    id: number,
+    observer: IAudioTrackObserver
+  ): number {
+    const apiType = this.getApiTypeFromUnregisterAudioTrackObserver(
+      id,
+      observer
+    );
+    const jsonParams = {
+      id: id,
+      observer: observer,
+      toJSON: () => {
+        return {
+          id: id,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromUnregisterAudioTrackObserver(
+    id: number,
+    observer: IAudioTrackObserver
+  ): string {
+    return 'MediaEngine_unregisterAudioTrackObserver_39ac049';
   }
 
   release(): void {
