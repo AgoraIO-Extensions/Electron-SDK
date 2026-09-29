@@ -11,6 +11,7 @@ import Extension from './Extension/Extension';
 import JoinMultipleChannel from './JoinMultipleChannel/JoinMultipleChannel';
 import LocalSpatialAudioEngine from './LocalSpatialAudioEngine/LocalSpatialAudioEngine';
 import LocalVideoTranscoder from './LocalVideoTranscoder/LocalVideoTranscoder';
+import LoopbackAudioTrack from './LoopbackAudioTrack/LoopbackAudioTrack';
 import MediaPlayer from './MediaPlayer/MediaPlayer';
 import MediaRecorder from './MediaRecorder/MediaRecorder';
 import MediaRecorderObserverValidation from './MediaRecorderObserverValidation/MediaRecorderObserverValidation';
@@ -89,6 +90,10 @@ const Advanced = {
     {
       name: 'LocalVideoTranscoder',
       component: LocalVideoTranscoder,
+    },
+    {
+      name: 'LoopbackAudioTrack',
+      component: LoopbackAudioTrack,
     },
     {
       name: 'MediaPlayer',

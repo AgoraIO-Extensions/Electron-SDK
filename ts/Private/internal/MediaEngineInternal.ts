@@ -1,5 +1,6 @@
 import { createCheckers } from 'ts-interface-checker';
 
+import { IAudioTrackObserver } from '../AgoraBase';
 import {
   ExternalVideoFrame,
   IAudioFrameObserver,
@@ -22,6 +23,10 @@ import {
 } from './IrisApiEngine';
 
 export class MediaEngineInternal extends IMediaEngineImpl {
+  static _audio_track_observers: {
+    trackId: number;
+    observer: IAudioTrackObserver;
+  }[] = [];
   static _audio_frame_observers: IAudioFrameObserver[] = [];
   static _video_frame_observers: IVideoFrameObserver[] = [];
   static _video_encoded_frame_observers: IVideoEncodedFrameObserver[] = [];
@@ -49,6 +54,34 @@ export class MediaEngineInternal extends IMediaEngineImpl {
     };
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
+  }
+
+  override registerAudioTrackObserver(
+    id: number,
+    observer: IAudioTrackObserver
+  ): number {
+    const result = super.registerAudioTrackObserver(id, observer);
+    if (result === 0) {
+      MediaEngineInternal._audio_track_observers.push({
+        trackId: id,
+        observer,
+      });
+    }
+    return result;
+  }
+
+  override unregisterAudioTrackObserver(
+    id: number,
+    observer: IAudioTrackObserver
+  ): number {
+    const result = super.unregisterAudioTrackObserver(id, observer);
+    if (result === 0) {
+      MediaEngineInternal._audio_track_observers =
+        MediaEngineInternal._audio_track_observers.filter(
+          (entry) => entry.trackId !== id || entry.observer !== observer
+        );
+    }
+    return result;
   }
 
   override registerAudioFrameObserver(observer: IAudioFrameObserver): number {
@@ -132,6 +165,7 @@ export class MediaEngineInternal extends IMediaEngineImpl {
   }
 
   override release() {
+    MediaEngineInternal._audio_track_observers = [];
     MediaEngineInternal._audio_frame_observers = [];
     MediaEngineInternal._video_frame_observers = [];
     MediaEngineInternal._video_encoded_frame_observers = [];

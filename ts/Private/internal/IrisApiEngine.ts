@@ -5,7 +5,7 @@ const JSON = JSONBigInt({ storeAsString: true });
 import createAgoraRtcEngine from '../../AgoraSdk';
 import { IAgoraElectronBridge } from '../../Types';
 import { AgoraEnv, logDebug, logError, logInfo, logWarn } from '../../Utils';
-import { IAudioEncodedFrameObserver } from '../AgoraBase';
+import { IAudioEncodedFrameObserver, IAudioTrackObserver } from '../AgoraBase';
 import {
   AudioFrame,
   AudioPcmFrame,
@@ -35,7 +35,10 @@ import {
   IRtcEngineEventHandler,
   Metadata,
 } from '../IAgoraRtcEngine';
-import { processIAudioEncodedFrameObserver } from '../impl/AgoraBaseImpl';
+import {
+  processIAudioEncodedFrameObserver,
+  processIAudioTrackObserver,
+} from '../impl/AgoraBaseImpl';
 import {
   processIAudioFrameObserver,
   processIAudioFrameObserverBase,
@@ -227,6 +230,7 @@ export enum EVENT_TYPE {
 }
 
 type ProcessorType =
+  | IAudioTrackObserver
   | IAudioFrameObserver
   | IVideoFrameObserver
   | IAudioSpectrumObserver
@@ -244,6 +248,7 @@ type ProcessorType =
   | IFaceInfoObserver;
 
 type EventProcessors = {
+  IAudioTrackObserver: EventProcessor<IAudioTrackObserver>;
   IAudioFrameObserver: EventProcessor<IAudioFrameObserver>;
   IVideoFrameObserver: EventProcessor<IVideoFrameObserver>;
   IAudioSpectrumObserver: EventProcessor<IAudioSpectrumObserver>;
@@ -265,6 +270,15 @@ type EventProcessors = {
  * @internal
  */
 export const EVENT_PROCESSORS: EventProcessors = {
+  IAudioTrackObserver: {
+    suffix: 'AudioTrackObserver_',
+    type: () => EVENT_TYPE.IMediaEngine,
+    func: [processIAudioTrackObserver],
+    handlers: (_event: string, data: { trackId: number }) =>
+      MediaEngineInternal._audio_track_observers
+        .filter((entry) => entry.trackId === data.trackId)
+        .map((entry) => entry.observer),
+  },
   IAudioFrameObserver: {
     suffix: 'AudioFrameObserver_',
     type: () => EVENT_TYPE.IMediaEngine,
@@ -501,7 +515,7 @@ export const EVENT_PROCESSORS: EventProcessors = {
   },
 };
 
-function handleEvent(...[event, data, buffers]: any) {
+export function handleEvent(...[event, data, buffers]: any) {
   if (isDebuggable()) {
     logInfo('onEvent', event, data, buffers);
   }

@@ -137,8 +137,66 @@ test('pushVideoFrame sends binary fields only through native buffers', () => {
   }
 });
 
+test('audio track volume indication reaches only the registered track', () => {
+  const mediaEngine = createAgoraRtcEngine().getMediaEngine();
+  const observer = { onAudioTrackVolumeIndication: jest.fn() };
+  const callApiSpy = jest
+    .spyOn(AgoraElectronBridge, 'CallApi')
+    .mockReturnValue({
+      callApiReturnCode: 0,
+      callApiResult: JSON.stringify({ result: 0 }),
+    });
+
+  try {
+    expect(mediaEngine.registerAudioTrackObserver(17, observer)).toBe(0);
+    const volumeInfo = { channelCount: 1, levels: [86, -1] };
+    const event = 'AudioTrackObserver_onAudioTrackVolumeIndication_9bd73f7';
+    handleEvent(event, JSON.stringify({ trackId: 18, volumeInfo }), []);
+    expect(observer.onAudioTrackVolumeIndication).not.toHaveBeenCalled();
+
+    handleEvent(event, JSON.stringify({ trackId: 17, volumeInfo }), []);
+    expect(observer.onAudioTrackVolumeIndication).toHaveBeenCalledWith(
+      17,
+      volumeInfo
+    );
+
+    expect(mediaEngine.unregisterAudioTrackObserver(17, observer)).toBe(0);
+    handleEvent(event, JSON.stringify({ trackId: 17, volumeInfo }), []);
+    expect(observer.onAudioTrackVolumeIndication).toHaveBeenCalledTimes(1);
+  } finally {
+    callApiSpy.mockRestore();
+  }
+});
+
+test('failed audio track observer registration does not retain a callback', () => {
+  const mediaEngine = createAgoraRtcEngine().getMediaEngine();
+  const observer = { onAudioTrackVolumeIndication: jest.fn() };
+  const callApiSpy = jest
+    .spyOn(AgoraElectronBridge, 'CallApi')
+    .mockReturnValue({
+      callApiReturnCode: 0,
+      callApiResult: JSON.stringify({ result: -5 }),
+    });
+
+  try {
+    expect(mediaEngine.registerAudioTrackObserver(23, observer)).toBe(-5);
+    handleEvent(
+      'AudioTrackObserver_onAudioTrackVolumeIndication_9bd73f7',
+      JSON.stringify({
+        trackId: 23,
+        volumeInfo: { channelCount: 1, levels: [75] },
+      }),
+      []
+    );
+    expect(observer.onAudioTrackVolumeIndication).not.toHaveBeenCalled();
+  } finally {
+    callApiSpy.mockRestore();
+  }
+});
+
 import {
   AgoraElectronBridge,
   EVENT_PROCESSORS,
   emitEvent,
+  handleEvent,
 } from '../Private/internal/IrisApiEngine';
