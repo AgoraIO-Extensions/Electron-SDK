@@ -116,9 +116,12 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
           ${CMAKE_CURRENT_SOURCE_DIR}/native)
 
   file(GLOB AGORA_RTC_SDK_LIBRARY
-          ${AGORA_RTC_SDK_PATH}/*_Native_SDK_for_Windows_FULL/sdk/${AGORA_RTC_PROJECT_ARCH}/*.dll
-          ${AGORA_RTC_SDK_PATH}/*_Native_SDK_for_Windows_FULL/sdk/${AGORA_RTC_PROJECT_ARCH}/*.exe
+          ${AGORA_RTC_SDK_PATH}/*_Native_SDK_for_Windows_*/sdk/${AGORA_RTC_PROJECT_ARCH}/*.dll
+          ${AGORA_RTC_SDK_PATH}/*_Native_SDK_for_Windows_*/sdk/${AGORA_RTC_PROJECT_ARCH}/*.exe
           )
+  if (NOT AGORA_RTC_SDK_LIBRARY)
+    message(FATAL_ERROR "No Windows Native SDK binaries found for ${AGORA_RTC_PROJECT_ARCH} in ${AGORA_RTC_SDK_PATH}")
+  endif ()
 
   # iris sdk path
   set(AGORA_IRIS_SDK_PATH
