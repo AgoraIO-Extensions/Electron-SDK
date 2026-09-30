@@ -49,6 +49,13 @@
 
 * restore example packaging configuration ([e8f212f](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/e8f212f36da29f2707653ac04139c43be365efde))
 
+## [4.5.3-build.4-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.123-rc.1...v4.5.3-build.4-rc.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* normalize preview version for Terra ([#1458](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1458)) ([1a1badd](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/1a1badd92ed41a7562594978b26ad225a2f5b109))
+
 ## [4.5.3-build.123-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.123-rc.1...v4.5.3-build.123-rc.2) (2026-07-28)
 
 ## [4.5.3-build.123-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.2-rc.1...v4.5.3-build.123-rc.1) (2026-07-10)

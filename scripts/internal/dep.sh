@@ -17,6 +17,7 @@ IRIS_MAC_DEPENDENCIES=$(echo "$INPUT" | jq -r '.[] | select(.platform == "macOS"
 WINDOWS_DEPENDENCIES=$(echo "$INPUT" | jq -r '.[] | select(.platform == "Windows") | .cdn[]')
 IRIS_WINDOWS_DEPENDENCIES=$(echo "$INPUT" | jq -r '.[] | select(.platform == "Windows") | .iris_cdn[]')
 DEP_VERSION=$(echo "$INPUT" | jq -r '.[] | select(.platform == "Windows") | .version')
+TERRA_SDK_VERSION="${DEP_VERSION%-build.*}"
 
 if [ -z "$MAC_DEPENDENCIES" ]; then
   echo "No mac native dependencies need to change."
@@ -63,8 +64,8 @@ if [ -z "$DEP_VERSION" ]; then
   echo "can not find dependencies version."
 else
   echo "update dependencies version to $TERRA_CONFIG_PATH1"
-  sed 's|sdkVersion: \(.*\)|sdkVersion: '$DEP_VERSION'|g' $TERRA_CONFIG_PATH1 > tmp
+  sed 's|sdkVersion: \(.*\)|sdkVersion: '$TERRA_SDK_VERSION'|g' $TERRA_CONFIG_PATH1 > tmp
   mv tmp $TERRA_CONFIG_PATH1
-  sed 's|sdkVersion: \(.*\)|sdkVersion: '$DEP_VERSION'|g' $TERRA_CONFIG_PATH2 > tmp
+  sed 's|sdkVersion: \(.*\)|sdkVersion: '$TERRA_SDK_VERSION'|g' $TERRA_CONFIG_PATH2 > tmp
   mv tmp $TERRA_CONFIG_PATH2
 fi
