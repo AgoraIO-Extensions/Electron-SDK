@@ -1,6 +1,8 @@
 import { createCheckers } from 'ts-interface-checker';
 
+import { IAudioTrackObserver } from '../AgoraBase';
 import {
+  ExternalVideoFrame,
   IAudioFrameObserver,
   IFaceInfoObserver,
   IVideoEncodedFrameObserver,
@@ -15,15 +17,72 @@ import {
   EVENT_TYPE,
   EventProcessor,
   addScopedEventListener,
+  callIrisApi,
   removeAllScopedEventListeners,
   removeScopedEventListener,
 } from './IrisApiEngine';
 
 export class MediaEngineInternal extends IMediaEngineImpl {
+  static _audio_track_observers: {
+    trackId: number;
+    observer: IAudioTrackObserver;
+  }[] = [];
   static _audio_frame_observers: IAudioFrameObserver[] = [];
   static _video_frame_observers: IVideoFrameObserver[] = [];
   static _video_encoded_frame_observers: IVideoEncodedFrameObserver[] = [];
   static _face_info_observers: IFaceInfoObserver[] = [];
+
+  override pushVideoFrame(
+    frame: ExternalVideoFrame,
+    videoTrackId: number = 0
+  ): number {
+    const apiType = this.getApiTypeFromPushVideoFrame(frame, videoTrackId);
+    const jsonParams = {
+      frame,
+      videoTrackId,
+      toJSON: () => {
+        const serializableFrame = { ...frame };
+        delete serializableFrame.buffer;
+        delete serializableFrame.metadataBuffer;
+        delete serializableFrame.alphaBuffer;
+        delete serializableFrame.d3d11Texture2d;
+        return {
+          frame: serializableFrame,
+          videoTrackId,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  override registerAudioTrackObserver(
+    id: number,
+    observer: IAudioTrackObserver
+  ): number {
+    const result = super.registerAudioTrackObserver(id, observer);
+    if (result === 0) {
+      MediaEngineInternal._audio_track_observers.push({
+        trackId: id,
+        observer,
+      });
+    }
+    return result;
+  }
+
+  override unregisterAudioTrackObserver(
+    id: number,
+    observer: IAudioTrackObserver
+  ): number {
+    const result = super.unregisterAudioTrackObserver(id, observer);
+    if (result === 0) {
+      MediaEngineInternal._audio_track_observers =
+        MediaEngineInternal._audio_track_observers.filter(
+          (entry) => entry.trackId !== id || entry.observer !== observer
+        );
+    }
+    return result;
+  }
 
   override registerAudioFrameObserver(observer: IAudioFrameObserver): number {
     if (
@@ -106,6 +165,7 @@ export class MediaEngineInternal extends IMediaEngineImpl {
   }
 
   override release() {
+    MediaEngineInternal._audio_track_observers = [];
     MediaEngineInternal._audio_frame_observers = [];
     MediaEngineInternal._video_frame_observers = [];
     MediaEngineInternal._video_encoded_frame_observers = [];

@@ -3,6 +3,8 @@ import {
   AudioTrackConfig,
   AudioTrackType,
   EncodedVideoFrameInfo,
+  IAudioTrackObserver,
+  LoopbackAudioTrackConfig,
   SenderOptions,
 } from './AgoraBase';
 import {
@@ -266,6 +268,48 @@ export abstract class IMediaEngine {
     length: number,
     videoEncodedFrameInfo: EncodedVideoFrameInfo,
     videoTrackId?: number
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract enableAudioTrackVolumeIndication(
+    id: number,
+    interval: number
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract createLoopbackAudioTrack(config: LoopbackAudioTrackConfig): number;
+
+  /**
+   * @ignore
+   */
+  abstract adjustLoopbackAudioPublishVolume(
+    trackId: number,
+    volume: number
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract destroyLoopbackAudioTrack(trackId: number): number;
+
+  /**
+   * @ignore
+   */
+  abstract registerAudioTrackObserver(
+    id: number,
+    observer: IAudioTrackObserver
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract unregisterAudioTrackObserver(
+    id: number,
+    observer: IAudioTrackObserver
   ): number;
 
   /**

@@ -1,12 +1,19 @@
 cmake_minimum_required(VERSION 3.9)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 
 project(agora-electron-sdk)
+
+if (APPLE)
+  enable_language(OBJCXX)
+endif ()
+
+include(CTest)
 
 if (WIN32)
   set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /DEBUG")
   set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG")
   if (MSVC)
+    add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:/Zc:__cplusplus>")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd /Zi /arch:SSE2")
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT /Zi /arch:SSE2")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MT /Zi /arch:SSE2")
@@ -17,8 +24,8 @@ else ()
 endif ()
 
 if (APPLE AND NOT IOS)
-  set(CMAKE_XCODE_ATTRIBUTE_MACOSX_DEPLOYMENT_TARGET "10.10")
-  set(CMAKE_OSX_DEPLOYMENT_TARGET 10.10)
+  set(CMAKE_XCODE_ATTRIBUTE_MACOSX_DEPLOYMENT_TARGET "10.13")
+  set(CMAKE_OSX_DEPLOYMENT_TARGET 10.13)
   set(CMAKE_XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym")
 elseif (UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC")
@@ -54,15 +61,22 @@ set(TARGET_AGORA_NODE_EXT_FILE_DIR
         ${SOURCE_CODE_PATH}/agora_node_ext
         )
 
-file(GLOB TARGET_AGORA_NODE_EXT_FILE
+file(GLOB TARGET_AGORA_NODE_EXT_FILE LIST_DIRECTORIES false
         ${TARGET_AGORA_NODE_EXT_FILE_DIR}/*
         )
+if (NOT APPLE)
+  list(FILTER TARGET_AGORA_NODE_EXT_FILE EXCLUDE REGEX "\\.mm$")
+endif ()
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
   set(AGORA_IRIS_PROJECT_ARCH "MAC")
-  set(AGORA_RTC_SDK_PATH
-          ${CMAKE_CURRENT_SOURCE_DIR}/native/*_Native_SDK_for_Mac_FULL/libs
+  file(GLOB AGORA_RTC_SDK_PATH LIST_DIRECTORIES true
+          "${CMAKE_CURRENT_SOURCE_DIR}/native/*_Native_SDK_for_Mac_*/libs"
           )
+  list(LENGTH AGORA_RTC_SDK_PATH AGORA_RTC_SDK_PATH_COUNT)
+  if (NOT AGORA_RTC_SDK_PATH_COUNT EQUAL 1)
+    message(FATAL_ERROR "Expected exactly one macOS Native SDK libs directory, found ${AGORA_RTC_SDK_PATH_COUNT}")
+  endif ()
   # native rtc sdk library
   set(AGORA_RTC_SDK_LIBRARY
           ${AGORA_RTC_SDK_PATH}/*.xcframework/macos-arm64_x86_64/*.framework
@@ -84,6 +98,7 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 
   set(AGORA_IRIS_FRAMEWORKS
           "-framework AgoraRtcWrapper"
+          "-framework IOSurface"
           )
 elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
   if (${CMAKE_OSX_ARCHITECTURES} STREQUAL "i386")
@@ -101,8 +116,12 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
           ${CMAKE_CURRENT_SOURCE_DIR}/native)
 
   file(GLOB AGORA_RTC_SDK_LIBRARY
-          ${AGORA_RTC_SDK_PATH}/*_Native_SDK_for_Windows_FULL/sdk/${AGORA_RTC_PROJECT_ARCH}/*.dll
+          ${AGORA_RTC_SDK_PATH}/*_Native_SDK_for_Windows_*/sdk/${AGORA_RTC_PROJECT_ARCH}/*.dll
+          ${AGORA_RTC_SDK_PATH}/*_Native_SDK_for_Windows_*/sdk/${AGORA_RTC_PROJECT_ARCH}/*.exe
           )
+  if (NOT AGORA_RTC_SDK_LIBRARY)
+    message(FATAL_ERROR "No Windows Native SDK binaries found for ${AGORA_RTC_PROJECT_ARCH} in ${AGORA_RTC_SDK_PATH}")
+  endif ()
 
   # iris sdk path
   set(AGORA_IRIS_SDK_PATH
@@ -113,6 +132,7 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
           )
   file(GLOB AGORA_IRIS_SDK_LIBRARY
           ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/*.dll
+          ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/*.exe
           )
 
   # iris sdk include file
@@ -156,6 +176,34 @@ endif ()
 message(=====iris include ===== ${AGORA_IRIS_SDK_HEADER_FILE_DIR})
 message(=======iris windows lib= IRIs == ${AGORA_IRIS_SDK_LIB})
 
+if (BUILD_TESTING)
+  add_executable(shared_texture_request_test
+          ${TARGET_AGORA_NODE_EXT_FILE_DIR}/d3d11_shared_texture_importer.cpp
+          ${TARGET_AGORA_NODE_EXT_FILE_DIR}/iosurface_shared_texture_importer.cpp
+          ${TARGET_AGORA_NODE_EXT_FILE_DIR}/shared_texture_request.cpp
+          ${TARGET_AGORA_NODE_EXT_FILE_DIR}/tests/shared_texture_request_test.cpp
+          )
+  target_include_directories(shared_texture_request_test PRIVATE
+          ${TARGET_AGORA_NODE_EXT_FILE_DIR}
+          ${AGORA_IRIS_SDK_HEADER_FILE_DIR}
+          )
+  if (WIN32)
+    target_link_libraries(shared_texture_request_test
+            ${AGORA_IRIS_SDK_LIB}
+            )
+  elseif (APPLE)
+    target_sources(shared_texture_request_test PRIVATE
+            ${TARGET_AGORA_NODE_EXT_FILE_DIR}/iosurface_shared_texture_copy.mm
+            )
+    target_link_libraries(shared_texture_request_test
+            "-framework IOSurface"
+            "-framework CoreFoundation"
+            "-framework Metal"
+            )
+  endif ()
+  add_test(NAME shared_texture_request COMMAND shared_texture_request_test)
+endif ()
+
 file(GLOB COMMON_FILE2
         ${AGORA_IRIS_SDK_HEADER_FILE_DIR}/*.h
         )
@@ -175,6 +223,7 @@ function(build_target_agora_node_ext)
             )
     target_link_libraries(${AGORA_NODE_EXT_NAME}
             ${AGORA_IRIS_FRAMEWORKS}
+            "-framework Metal"
             ${CMAKE_JS_LIB}
             )
   elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
@@ -187,6 +236,8 @@ function(build_target_agora_node_ext)
     target_link_libraries(${AGORA_NODE_EXT_NAME}
             ${AGORA_IRIS_SDK_LIB}
             ${CMAKE_JS_LIB}
+            d3d11
+            dxgi
             )
   elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set(CMAKE_BUILD_WITH_INSTALL_RPATH true)

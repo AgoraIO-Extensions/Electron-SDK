@@ -481,6 +481,34 @@ export enum ErrorCodeType {
    * @ignore
    */
   ErrVideoeffectInvalidBundlePath = 1707,
+  /**
+   * @ignore
+   */
+  ErrAdmApplicationLoopback = 2007,
+  /**
+   * @ignore
+   */
+  ErrAdmApplicationLoopbackStopped = 2008,
+  /**
+   * @ignore
+   */
+  ErrAdmSystemLoopback = 2009,
+  /**
+   * @ignore
+   */
+  ErrAdmSystemLoopbackStopped = 2010,
+  /**
+   * @ignore
+   */
+  ErrAdmLoopbackNoPermission = 2011,
+  /**
+   * @ignore
+   */
+  ErrAdmLoopbackSilentDetected = 2012,
+  /**
+   * @ignore
+   */
+  ErrAdmLoopbackSilentRecovered = 2013,
 }
 
 /**
@@ -1239,6 +1267,16 @@ export enum MaxUserAccountLengthType {
    * The maximum length of the user account is 255 characters.
    */
   MaxUserAccountLength = 256,
+}
+
+/**
+ * @ignore
+ */
+export enum MaxCustomUserInfoLengthType {
+  /**
+   * @ignore
+   */
+  MaxCustomUserInfoLength = 1024,
 }
 
 /**
@@ -4351,6 +4389,81 @@ export class AudioTrackConfig {
 }
 
 /**
+ * @ignore
+ */
+export enum LoopbackAudioTrackType {
+  /**
+   * @ignore
+   */
+  LoopbackSystem = 0,
+  /**
+   * @ignore
+   */
+  LoopbackSystemExcludeSelf = 1,
+  /**
+   * @ignore
+   */
+  LoopbackApplication = 2,
+  /**
+   * @ignore
+   */
+  LoopbackProcess = 3,
+}
+
+/**
+ * @ignore
+ */
+export class AudioTrackVolumeInfo {
+  /**
+   * @ignore
+   */
+  channelCount?: number;
+  /**
+   * @ignore
+   */
+  levels?: number[];
+}
+
+/**
+ * @ignore
+ */
+export interface IAudioTrackObserver {
+  /**
+   * @ignore
+   */
+  onAudioTrackVolumeIndication?(
+    trackId: number,
+    volumeInfo: AudioTrackVolumeInfo
+  ): void;
+}
+
+/**
+ * @ignore
+ */
+export class LoopbackAudioTrackConfig {
+  /**
+   * @ignore
+   */
+  loopbackType?: LoopbackAudioTrackType;
+  /**
+   * @ignore
+   */
+  volume?: number;
+  /**
+   * @ignore
+   */
+  deviceName?: string;
+  /**
+   * @ignore
+   */
+  appName?: string;
+  /**
+   * @ignore
+   */
+  processId?: number;
+}
+
+/**
  * Preset voice beautifier options.
  */
 export enum VoiceBeautifierPreset {
@@ -5366,6 +5479,10 @@ export class UserInfo {
    * User account. Length limit: MaxUserAccountLengthType.
    */
   userAccount?: string;
+  /**
+   * @ignore
+   */
+  customUserInfo?: string;
 }
 
 /**

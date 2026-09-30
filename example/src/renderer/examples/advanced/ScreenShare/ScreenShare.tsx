@@ -10,6 +10,7 @@ import {
   RtcStats,
   ScreenCaptureSourceInfo,
   ScreenCaptureSourceType,
+  ScreenScenarioType,
   UserOfflineReasonType,
   VideoSourceType,
   createAgoraRtcEngine,
@@ -108,6 +109,24 @@ export default class ScreenShare
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
+    this.engine.setScreenCaptureScenario(
+      ScreenScenarioType.ScreenScenarioGaming
+    );
+    this.engine.setParameters(
+      JSON.stringify({ 'engine.video.enable_hw_encoder': true })
+    );
+    this.engine.setParameters(
+      JSON.stringify({ 'che.video.show_wgc_border': 1 })
+    );
+    this.engine.setParameters(
+      JSON.stringify({ 'rtc.win_allow_directx': false })
+    );
+    this.engine.setParameters(
+      JSON.stringify({ 'che.video.enable_promote_gpu_priority': true })
+    );
+    this.engine.setParameters(
+      JSON.stringify({ 'che.video.using_ipc_capturer': true })
+    );
 
     // Need granted the microphone and camera permission
     await askMediaAccess(['microphone', 'camera', 'screen']);
@@ -158,6 +177,7 @@ export default class ScreenShare
       { width: 64, height: 64 },
       true
     );
+    console.log('sources:', sources);
     this.setState({
       sources,
       targetSource: sources?.at(0),

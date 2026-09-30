@@ -11,6 +11,7 @@ import Extension from './Extension/Extension';
 import JoinMultipleChannel from './JoinMultipleChannel/JoinMultipleChannel';
 import LocalSpatialAudioEngine from './LocalSpatialAudioEngine/LocalSpatialAudioEngine';
 import LocalVideoTranscoder from './LocalVideoTranscoder/LocalVideoTranscoder';
+import LoopbackAudioTrack from './LoopbackAudioTrack/LoopbackAudioTrack';
 import MediaPlayer from './MediaPlayer/MediaPlayer';
 import MediaRecorder from './MediaRecorder/MediaRecorder';
 import MediaRecorderObserverValidation from './MediaRecorderObserverValidation/MediaRecorderObserverValidation';
@@ -24,6 +25,8 @@ import RhythmPlayer from './RhythmPlayer/RhythmPlayer';
 import ScreenShare from './ScreenShare/ScreenShare';
 import SendMetadata from './SendMetadata/SendMetadata';
 import SendMultiVideoStream from './SendMultiVideoStream/SendMultiVideoStream';
+import SharedTexturePoc from './SharedTexturePoc/SharedTexturePoc';
+import SharedTextureRendererPoc from './SharedTextureRendererPoc/SharedTextureRendererPoc';
 import Simulcast from './Simulcast/Simulcast';
 import SpatialAudio from './SpatialAudio/SpatialAudio';
 import StreamMessage from './StreamMessage/StreamMessage';
@@ -89,6 +92,10 @@ const Advanced = {
       component: LocalVideoTranscoder,
     },
     {
+      name: 'LoopbackAudioTrack',
+      component: LoopbackAudioTrack,
+    },
+    {
       name: 'MediaPlayer',
       component: MediaPlayer,
     },
@@ -131,6 +138,14 @@ const Advanced = {
     {
       name: 'SendMetadata',
       component: SendMetadata,
+    },
+    {
+      name: 'SharedTexturePoc',
+      component: SharedTexturePoc,
+    },
+    {
+      name: 'SharedTextureRendererPoc',
+      component: SharedTextureRendererPoc,
     },
     {
       name: 'SendMultiVideoStream',

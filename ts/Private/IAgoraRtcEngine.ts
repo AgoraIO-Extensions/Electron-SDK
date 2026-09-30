@@ -1121,6 +1121,20 @@ export class ImageTrackOptions {
 }
 
 /**
+ * @ignore
+ */
+export class AudioTrackIdList {
+  /**
+   * @ignore
+   */
+  trackIds?: number[];
+  /**
+   * @ignore
+   */
+  trackCount?: number;
+}
+
+/**
  * Channel media configuration options.
  *
  * RtcConnection publishMicrophoneTrack publishCustomAudioTrack publishMediaPlayerAudioTrack true publishCameraTrack publishScreenTrack 、 publishCustomVideoTrack publishEncodedVideoTrack true It is recommended that you configure the member parameters based on your business scenario. Otherwise, the SDK will automatically assign values to the member parameters.
@@ -1178,6 +1192,14 @@ export class ChannelMediaOptions {
    * The ID of the custom audio track to be published. The default value is 0. You can get the custom audio track ID by calling the createCustomAudioTrack method.
    */
   publishCustomAudioTrackId?: number;
+  /**
+   * @ignore
+   */
+  publishLoopbackAudioTrack?: boolean;
+  /**
+   * @ignore
+   */
+  publishLoopbackAudioTrackIds?: AudioTrackIdList;
   /**
    * Sets whether to publish custom captured video: true : Publish the custom captured video. false : Do not publish the custom captured video.
    */
@@ -1298,6 +1320,10 @@ export class ChannelMediaOptions {
    * Preferred transmission path type. See MultipathType. When using this parameter, make sure enableMultipath is set to true.
    */
   preferMultipathType?: MultipathType;
+  /**
+   * @ignore
+   */
+  customUserInfo?: string;
 }
 
 /**
@@ -6124,6 +6150,13 @@ export abstract class IRtcEngine {
    * @ignore
    */
   abstract startScreenCapture(captureParams: ScreenCaptureParameters2): number;
+
+  /**
+   * @ignore
+   */
+  abstract startScreenCaptureInApp(
+    captureParams: ScreenCaptureParameters2
+  ): number;
 
   /**
    * @ignore

@@ -1,0 +1,210 @@
+#include "../d3d11_shared_texture_importer.h"
+#include "../iosurface_shared_texture_copy.h"
+#include "../iosurface_shared_texture_importer.h"
+#include "../shared_texture_request.h"
+
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
+#include <cassert>
+#include <cstdint>
+#include <cstring>
+#include <iostream>
+
+#if defined(__APPLE__)
+#include "iris_engine_base.h"
+#include <CoreFoundation/CoreFoundation.h>
+#include <IOSurface/IOSurface.h>
+#endif
+
+using agora::rtc::electron::BuildSharedTextureCallBuffers;
+using agora::rtc::electron::BuildSharedTexturePushJson;
+using agora::rtc::electron::SharedTexturePixelFormat;
+using agora::rtc::electron::SharedTextureRequest;
+using agora::rtc::electron::SharedTextureSubmissionResult;
+using agora::rtc::electron::SubmitSharedTextureCall;
+using agora::rtc::electron::ValidateSharedTextureRequest;
+#if defined(__APPLE__)
+using agora::rtc::electron::CreateGlobalIOSurfaceGpuCopy;
+using agora::rtc::electron::ReleaseGlobalIOSurface;
+#endif
+
+namespace {
+
+SharedTextureRequest ValidRequest() {
+  SharedTextureRequest request{};
+  request.frame_id = 1;
+  request.handle_size = sizeof(request.native_handle);
+  request.width = 1920;
+  request.height = 1080;
+  request.timestamp_us = 123456;
+  request.rtc_timestamp_ms = 4242;
+  request.pixel_format = SharedTexturePixelFormat::kBgra;
+  return request;
+}
+
+void ExpectInvalid(const SharedTextureRequest &request) {
+  std::string error;
+  assert(!ValidateSharedTextureRequest(request, 0, error));
+  assert(!error.empty());
+}
+
+#if defined(__APPLE__)
+class FakeIrisEngine : public IApiEngineBase {
+ public:
+  int CallIrisApi(ApiParam *api_param) override {
+    event = api_param->event;
+    json.assign(api_param->data, api_param->data_size);
+    assert(api_param->buffer_count == 5);
+    for (unsigned int index = 0; index < api_param->buffer_count; ++index) {
+      buffers[index] = api_param->buffer[index];
+      assert(api_param->length[index] == 0);
+    }
+    api_param->result = const_cast<char *>(response.c_str());
+    return 0;
+  }
+
+  std::string event;
+  std::string json;
+  std::array<void *, 5> buffers{};
+  std::string response = "{\"result\":0}";
+};
+
+IOSurfaceRef CreateTestIOSurface(uint32_t width, uint32_t height) {
+  const int32_t width_value = static_cast<int32_t>(width);
+  const int32_t height_value = static_cast<int32_t>(height);
+  const int32_t bytes_per_element = 4;
+  CFNumberRef values[] = {
+      CFNumberCreate(nullptr, kCFNumberSInt32Type, &width_value),
+      CFNumberCreate(nullptr, kCFNumberSInt32Type, &height_value),
+      CFNumberCreate(nullptr, kCFNumberSInt32Type, &bytes_per_element)};
+  const void *keys[] = {kIOSurfaceWidth, kIOSurfaceHeight,
+                        kIOSurfaceBytesPerElement};
+  const void *dictionary_values[] = {values[0], values[1], values[2]};
+  CFDictionaryRef properties = CFDictionaryCreate(
+      nullptr, keys, dictionary_values, 3, &kCFTypeDictionaryKeyCallBacks,
+      &kCFTypeDictionaryValueCallBacks);
+  IOSurfaceRef surface = IOSurfaceCreate(properties);
+  CFRelease(properties);
+  for (CFNumberRef value : values) { CFRelease(value); }
+  return surface;
+}
+#endif
+
+}// namespace
+
+int main() {
+  std::string error;
+  auto request = ValidRequest();
+  assert(ValidateSharedTextureRequest(request, 0, error));
+
+  request = ValidRequest();
+  request.handle_size = sizeof(request.native_handle) + 1;
+  ExpectInvalid(request);
+
+  request = ValidRequest();
+  request.width = 0;
+  ExpectInvalid(request);
+
+  request = ValidRequest();
+  request.height = 16385;
+  ExpectInvalid(request);
+
+  request = ValidRequest();
+  request.timestamp_us = -1;
+  ExpectInvalid(request);
+
+  request = ValidRequest();
+  request.rtc_timestamp_ms = -1;
+  ExpectInvalid(request);
+
+  request = ValidRequest();
+  request.frame_id = 7;
+  assert(!ValidateSharedTextureRequest(request, 7, error));
+
+  request = ValidRequest();
+  request.pixel_format = SharedTexturePixelFormat::kUnknown;
+  ExpectInvalid(request);
+
+  request.pixel_format = SharedTexturePixelFormat::kBgra;
+  request.timestamp_us = 999;
+  assert(BuildSharedTexturePushJson(request).find("\"format\":2")
+         != std::string::npos);
+  assert(BuildSharedTexturePushJson(request).find("\"timestamp\":4242")
+         != std::string::npos);
+
+#if defined(__APPLE__)
+  IOSurfaceRef surface = CreateTestIOSurface(request.width, request.height);
+  assert(surface != nullptr);
+  const uintptr_t surface_pointer = reinterpret_cast<uintptr_t>(surface);
+  std::memcpy(request.native_handle, &surface_pointer, sizeof(surface_pointer));
+  FakeIrisEngine iris_engine;
+  SharedTextureSubmissionResult iosurface_submission{};
+  assert(agora::rtc::electron::SubmitSharedIOSurfaceTexture(
+      request, &iris_engine, iosurface_submission, error));
+  assert(iris_engine.event == "MediaEngine_pushSharedTexture");
+  assert(iris_engine.json == BuildSharedTexturePushJson(request));
+  assert(reinterpret_cast<uintptr_t>(iris_engine.buffers[0])
+         == IOSurfaceGetID(surface));
+  assert(iosurface_submission.rtc_response == "{\"result\":0}");
+
+  request.cross_process_iosurface_id = IOSurfaceGetID(surface);
+  std::memset(request.native_handle, 0, sizeof(request.native_handle));
+  FakeIrisEngine lookup_iris_engine;
+  SharedTextureSubmissionResult lookup_submission{};
+  assert(agora::rtc::electron::SubmitSharedIOSurfaceTexture(
+      request, &lookup_iris_engine, lookup_submission, error));
+  assert(reinterpret_cast<uintptr_t>(lookup_iris_engine.buffers[0])
+         == request.cross_process_iosurface_id);
+
+  uint32_t global_surface_id = 0;
+  void *retained_global_surface = nullptr;
+  std::memcpy(request.native_handle, &surface_pointer, sizeof(surface_pointer));
+  assert(CreateGlobalIOSurfaceGpuCopy(
+      request.native_handle, sizeof(request.native_handle),
+      SharedTexturePixelFormat::kBgra, global_surface_id,
+      retained_global_surface, error));
+  IOSurfaceRef global_surface = IOSurfaceLookup(global_surface_id);
+  assert(global_surface != nullptr);
+  assert(IOSurfaceGetWidth(global_surface) == request.width);
+  assert(IOSurfaceGetHeight(global_surface) == request.height);
+  CFRelease(global_surface);
+  ReleaseGlobalIOSurface(retained_global_surface);
+  CFRelease(surface);
+#endif
+
+  const uintptr_t handle_bits = static_cast<uintptr_t>(UINT32_C(0xfedcba98));
+  std::memcpy(request.native_handle, &handle_bits, sizeof(handle_bits));
+  const auto call_buffers = BuildSharedTextureCallBuffers(request);
+  assert(call_buffers.buffers.size() == 5);
+  assert(call_buffers.lengths.size() == 5);
+  for (std::size_t index = 1; index < call_buffers.buffers.size(); ++index) {
+    assert(call_buffers.buffers[index] == nullptr);
+  }
+  assert(reinterpret_cast<uintptr_t>(call_buffers.buffers[0]) == handle_bits);
+  assert(call_buffers.buffers[0] != static_cast<void *>(request.native_handle));
+  for (const auto length : call_buffers.lengths) { assert(length == 0); }
+
+  SharedTextureSubmissionResult submission{};
+  bool called = false;
+  const bool submitted = SubmitSharedTextureCall(
+      request,
+      [&](const std::string &json, const decltype(call_buffers) &buffers,
+          std::string &rtc_response) {
+        called = true;
+        assert(json == BuildSharedTexturePushJson(request));
+        assert(reinterpret_cast<uintptr_t>(buffers.buffers[0]) == handle_bits);
+        for (const auto length : buffers.lengths) { assert(length == 0); }
+        rtc_response = "{\"result\":-7}";
+        return 123;
+      },
+      submission, error);
+  assert(called);
+  assert(!submitted);
+  assert(submission.transport_result == 123);
+  assert(submission.rtc_response == "{\"result\":-7}");
+  assert(error == "Iris pushSharedTexture transport failed with result 123");
+
+  std::cout << "shared texture request validation passed\n";
+  return 0;
+}

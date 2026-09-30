@@ -9,6 +9,7 @@
     "start": "electron-webpack dev",
     "compile": "electron-webpack",
     "rebuild": "electron-rebuild -f -o ref-napi",
+    "benchmark:shared-texture": "electron scripts/sharedTexturePacingBenchmark.js",
     "dist": "npm run compile && electron-builder",
     "dist:mac": "npm run dist -- --mac",
     "dist:win": "npm run dist -- --win",
@@ -78,7 +79,7 @@
     ]
   },
   "dependencies": {
-    "agora-electron-sdk": "4.5.3-build.4-rc.1",
+    "agora-electron-sdk": "4.5.3-build.6-rc.4",
     "antd": "^4.20.3",
     "download": "^8.0.0",
     "koffi": "2.8.11",
@@ -92,7 +93,7 @@
   },
   "devDependencies": {
     "@babel/preset-react": "^7.16.7",
-    "@electron/rebuild": "^3.6.0",
+    "@electron/rebuild": "4.2.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.6",
     "@teamsupercell/typings-for-css-modules-loader": "^2.5.1",
     "@types/download": "^8.0.2",
@@ -101,7 +102,7 @@
     "@types/react-dom": "^18.0.3",
     "@types/react-router-dom": "^5.1.6",
     "@types/ref-napi": "^3.0.7",
-    "electron": "22.0.0",
+    "electron": "43.2.0",
     "electron-builder": "^23.1.0",
     "electron-webpack": "^2.8.2",
     "fork-ts-checker-webpack-plugin": "^4.1.2",

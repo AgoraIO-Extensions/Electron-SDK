@@ -1,11 +1,62 @@
 
 
+## [4.5.3-build.6-rc.4](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.6-rc.2...v4.5.3-build.6-rc.4) (2026-09-30)
+
+
+### Bug Fixes
+
+* **ci:** support Windows Native SDK FAV package ([3316c64](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/3316c640f587c3e53de839e5b29f3bba230bea76))
+
+
+### Features
+
+* **example:** add loopback audio track demo ([9bf204c](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/9bf204c40ae4b26c300d910b640ae432298c2fb1))
+
+## [4.5.3-build.6-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.123-rc.2...v4.5.3-build.6-rc.2) (2026-09-28)
+
+
+### Bug Fixes
+
+* delete buffer when call pushVideoFrame ([b38aaf1](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/b38aaf12d338dfa95719baa914c478db645c28de))
+* **example:** cancel pending shared texture joins ([2c05242](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/2c052427ce50dd22763587019381dfcd83d4db52))
+* pass original NT handle to native SDK ([c11f7d5](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/c11f7d5dc136837e6cd932c49da6a64010655c31))
+* publish shared texture frames reliably ([41195ae](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/41195ae7a3f02e9e8651497c6d9ebb8ef3657df2))
+* stabilize direct shared texture submission ([3016376](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/3016376a15229878a4966970acccd004893a9e42))
+* stabilize shared texture frame pacing ([20da442](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/20da442b1dfde6c32f31bfc34f2815778fc1c74b))
+
+
+### Features
+
+* add macOS IOSurface shared texture support ([dac8c65](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/dac8c652c5817f19f6e978af6705add213835f9d))
+* add raw shared texture handle preview ([8d7de00](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/8d7de0077a4f054e52869c9726d111e7dd64cf20))
+* add renderer shared texture publishing ([2dae96d](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/2dae96d393b60ffb5ad574705b809a8bb54312de))
+* add worker shared texture diagnostics ([7da4051](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/7da4051a55de77dd591f4b26854d280aa301a2cc))
+* decouple shared texture push from channel ([469c574](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/469c57447722665c2b617f92954c5856c8962a40))
+* **example:** add shared texture PoC page ([37d7670](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/37d76705c563d56a7e0ece87350bd7d5dca5740a))
+* **example:** align shared texture PoC with Advanced pages ([7e2eb71](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/7e2eb714b67e74c5aa5d2711154e30cf7ba64158))
+* **example:** control shared texture publication ([628bed3](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/628bed3509f9f479eca82ca01706f79f8e4a97ab))
+* expose shared D3D11 texture submission ([4744e87](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/4744e8720782735b425cfaed74b6386816b5b20b))
+* restore direct D3D11 texture submission ([6fd31a8](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/6fd31a832701d09fba5d5f0b83e33c063e8e915c))
+* restore Windows ia32 shared texture support ([63ac1d0](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/63ac1d0eba9360a6be226c43728d79d6a05a9fea))
+* route shared textures through iris conversion ([4766977](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/4766977149d797b1d8da81bc417d25e417dabdae))
+* submit Electron shared textures directly ([b47370c](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/b47370c499d5e9b156d2fe77c1dfbcd641cb1d03))
+* timestamp shared textures with RTC monotonic clock ([a299831](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/a2998310a16238f685645234243383a9ea061037))
+* update shared texture PoC integration ([fa9a709](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/fa9a709d0b509ae7ffc19a3eee08125173df364a))
+* validate shared texture requests ([e63cdce](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/e63cdcef9cfd87f094248b4b44c0e73c4aff7ced))
+
+
+### Reverts
+
+* restore example packaging configuration ([e8f212f](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/e8f212f36da29f2707653ac04139c43be365efde))
+
 ## [4.5.3-build.4-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.123-rc.1...v4.5.3-build.4-rc.1) (2026-09-01)
 
 
 ### Bug Fixes
 
 * normalize preview version for Terra ([#1458](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1458)) ([1a1badd](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/1a1badd92ed41a7562594978b26ad225a2f5b109))
+
+## [4.5.3-build.123-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.123-rc.1...v4.5.3-build.123-rc.2) (2026-07-28)
 
 ## [4.5.3-build.123-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.2-rc.1...v4.5.3-build.123-rc.1) (2026-07-10)
 

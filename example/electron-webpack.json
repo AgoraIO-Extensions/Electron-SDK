@@ -4,7 +4,8 @@
   "title": true,
 
   "main": {
-    "sourceDirectory": "src/main"
+    "sourceDirectory": "src/main",
+    "webpackConfig": "webpack.main.additions.js"
   },
 
   "renderer": {

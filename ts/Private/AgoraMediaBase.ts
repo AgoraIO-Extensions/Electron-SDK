@@ -964,6 +964,10 @@ export class ExternalVideoFrame {
    * Color space properties of the video frame. By default, Full Range and BT.709 standard configurations are applied. You can customize the settings based on your requirements for custom capture and rendering. See [VideoColorSpace](https://developer.mozilla.org/en-US/docs/Web/API/VideoColorSpace).
    */
   colorSpace?: ColorSpace;
+  /**
+   * @ignore
+   */
+  pixelBuffer?: Uint8Array;
 }
 
 /**

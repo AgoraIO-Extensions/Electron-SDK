@@ -120,6 +120,70 @@ export interface Result {
 /**
  * @ignore
  */
+export interface SharedTextureFrame {
+  /**
+   * @ignore
+   */
+  frameId: number;
+  /**
+   * @ignore
+   */
+  nativeHandle: Buffer;
+  /**
+   * @ignore
+   */
+  width: number;
+  /**
+   * @ignore
+   */
+  height: number;
+  /**
+   * @ignore
+   */
+  timestampUs: number;
+  /**
+   * @ignore
+   */
+  rtcTimestampMs: number;
+  /**
+   * @ignore
+   */
+  pixelFormat: 'bgra' | 'rgba';
+  /**
+   * @ignore
+   */
+  directHandlePreview?: boolean;
+  /**
+   * @ignore
+   */
+  sourceProcessId?: number;
+  /**
+   * @ignore
+   */
+  crossProcessIOSurfaceId?: number;
+}
+
+/**
+ * @ignore
+ */
+export interface SharedTextureResult {
+  /**
+   * @ignore
+   */
+  frameId: number;
+  /**
+   * @ignore
+   */
+  result: number;
+  /**
+   * @ignore
+   */
+  adapterLuid?: string;
+}
+
+/**
+ * @ignore
+ */
 export interface IAgoraElectronBridge {
   /**
    * @ignore
@@ -143,6 +207,15 @@ export interface IAgoraElectronBridge {
     buffer?: (Uint8Array | undefined)[],
     bufferCount?: number
   ): Result;
+
+  PushSharedTexture(frame: SharedTextureFrame): Promise<SharedTextureResult>;
+
+  CreateCrossProcessIOSurfaceCopy(
+    nativeHandle: Buffer,
+    pixelFormat: 'bgra' | 'rgba'
+  ): number;
+
+  ReleaseCrossProcessIOSurfaceCopy(crossProcessIOSurfaceId: number): void;
 
   InitializeEnv(): void;
 

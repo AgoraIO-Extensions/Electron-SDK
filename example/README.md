@@ -9,7 +9,7 @@ Any scene of this project can run successfully alone.
 ### 📋 Requirements
 
 - Agora.io [Developer Account](https://dashboard.agora.io/signin/)
-- [Node.js 14](https://nodejs.org/en/download/) with C++11 support
+- [Node.js 22.12 or newer](https://nodejs.org/en/download/) with C++11 support
 - [Yarn](https://yarnpkg.com/) package manager
 
 ### 🎉 Steps to run
@@ -24,6 +24,65 @@ cd example
 yarn
 yarn start
 ```
+
+#### Shared Texture PoC Runtime
+
+Implementation status and Native RTC SDK requirements:
+[English](../docs/shared-texture-poc/README.md) |
+[简体中文](../docs/shared-texture-poc/README.zh-CN.md)
+
+The Windows shared texture PoC is pinned to Electron `43.2.0`. Its Windows ia32
+and x64 runtimes report Node `24.18.0`, Chrome `150.0.7871.129`, and native modules ABI
+`148`. Check the ABI before loading the addon:
+
+```powershell
+.\node_modules\.bin\electron.cmd -e "console.log(process.versions.modules)"
+# Expected: 148
+```
+
+Install dependencies before creating the local SDK link. A later install can replace
+the consumer-side link, so rerun the last command whenever dependencies are reinstalled:
+
+```bash
+# Repository root: register this worktree's SDK package.
+yarn link
+
+# Repository root: install the example, then link it to this worktree.
+yarn --cwd example install
+yarn --cwd example link agora-electron-sdk
+```
+
+Confirm that the consumer resolves this worktree instead of a published duplicate:
+
+```bash
+yarn jest example/src/main/__tests__/sharedTextureRuntime.test.js --runInBand
+```
+
+On Windows, rebuild the SDK addon and the example's native dependencies for the
+target architecture against the pinned Electron runtime before starting or packaging:
+
+```powershell
+# Repository root, x64
+yarn build_windows_x64_release --runtime=electron --runtime-version=43.2.0
+yarn --cwd example rebuild --arch=x64 --version=43.2.0
+
+# Repository root, ia32
+yarn build_windows_win32_release --runtime=electron --runtime-version=43.2.0
+yarn --cwd example rebuild --arch=ia32 --version=43.2.0
+```
+
+Do not continue if the ABI check is not exactly `148` or if the runtime test resolves
+`agora-electron-sdk` outside this worktree.
+
+Start the example, open `Advanced -> SharedTexturePoc`, and enter the same App ID,
+channel, token, and numeric UID used by the other examples. Join the channel first;
+joining creates the RTC engine and offscreen capture window but does not submit frames.
+Use the `开始`/`停止` button to start or stop shared-texture submission without leaving
+the channel. The existing channel button still owns the full join/leave lifecycle.
+
+The Main Engine and Renderer Engine pages expose the same controls. They differ only in
+which Electron process owns the RTC engine; the main process always owns the offscreen
+texture lifetime.
 
 #### (Optional) Build From Local SDK
 

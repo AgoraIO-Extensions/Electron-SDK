@@ -2,6 +2,8 @@ import path from 'path';
 import { format as formatUrl } from 'url';
 
 import 'agora-electron-sdk/js/Private/ipc/main.js';
+import { createAgoraRtcEngine } from 'agora-electron-sdk';
+import { AgoraElectronBridge } from 'agora-electron-sdk/js/Private/internal/IrisApiEngine.js';
 import {
   BrowserWindow,
   app,
@@ -10,11 +12,37 @@ import {
   systemPreferences,
 } from 'electron';
 
+import { SharedTexturePocController } from './sharedTexturePocController';
+import { registerSharedTexturePocIpc } from './sharedTexturePocIpc';
+import { registerSharedTextureRendererPocIpc } from './sharedTextureRendererPocIpc';
+
 const isDevelopment = process.env.NODE_ENV !== 'production';
 app.allowRendererProcessReuse = false;
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow;
+let sharedTexturePocController;
+let disposeSharedTexturePocIpc;
+let disposeSharedTextureRendererPocIpc;
+let sharedTextureShutdownComplete = false;
+
+function getSharedTextureScenePath() {
+  return isDevelopment
+    ? path.resolve(__dirname, '../../extraResources/sharedTextureScene.html')
+    : path.join(
+        process.resourcesPath,
+        'extraResources',
+        'sharedTextureScene.html'
+      );
+}
+
+function subscribeGpuProcessGone(listener) {
+  const handler = (_event, details) => {
+    if (details.type === 'GPU') listener(details);
+  };
+  app.on('child-process-gone', handler);
+  return () => app.removeListener('child-process-gone', handler);
+}
 
 function createMainWindow() {
   const window = new BrowserWindow({
@@ -27,10 +55,12 @@ function createMainWindow() {
     },
   });
 
-  window.webContents.openDevTools({
-    mode: 'detach',
-    activate: true,
-  });
+  if (isDevelopment && process.env.ELECTRON_OPEN_DEVTOOLS === '1') {
+    window.webContents.openDevTools({
+      mode: 'detach',
+      activate: true,
+    });
+  }
 
   if (isDevelopment) {
     window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`);
@@ -84,6 +114,7 @@ function createMainWindow() {
 
 // quit application when all windows are closed
 app.on('window-all-closed', () => {
+  void sharedTexturePocController?.stop();
   // on macOS it is common for applications to stay open until the user explicitly quits
   if (process.platform !== 'darwin') {
     app.quit();
@@ -99,5 +130,53 @@ app.on('activate', () => {
 
 // create main BrowserWindow when electron is ready
 app.on('ready', () => {
+  sharedTexturePocController = new SharedTexturePocController({
+    BrowserWindow,
+    createRtcEngine: createAgoraRtcEngine,
+    nativeBridge: AgoraElectronBridge,
+    scenePath: getSharedTextureScenePath(),
+    subscribeGpuProcessGone,
+  });
+  disposeSharedTexturePocIpc = registerSharedTexturePocIpc({
+    ipcMain,
+    controller: sharedTexturePocController,
+  });
+  disposeSharedTextureRendererPocIpc = registerSharedTextureRendererPocIpc({
+    ipcMain,
+    controller: sharedTexturePocController,
+    prepareFrame: (frame) =>
+      process.platform === 'darwin'
+        ? {
+            ...frame,
+            crossProcessIOSurfaceId:
+              AgoraElectronBridge.CreateCrossProcessIOSurfaceCopy(
+                frame.nativeHandle,
+                frame.pixelFormat
+              ),
+          }
+        : frame,
+    releaseFrame: (frame) => {
+      if (process.platform === 'darwin' && frame.crossProcessIOSurfaceId) {
+        AgoraElectronBridge.ReleaseCrossProcessIOSurfaceCopy(
+          frame.crossProcessIOSurfaceId
+        );
+      }
+    },
+  });
   mainWindow = createMainWindow();
+});
+
+app.on('before-quit', (event) => {
+  if (sharedTextureShutdownComplete) return;
+  event.preventDefault();
+  disposeSharedTexturePocIpc?.();
+  disposeSharedTexturePocIpc = null;
+  disposeSharedTextureRendererPocIpc?.();
+  disposeSharedTextureRendererPocIpc = null;
+  void Promise.resolve(sharedTexturePocController?.stop())
+    .catch((error) => console.error('Shared Texture PoC cleanup failed', error))
+    .finally(() => {
+      sharedTextureShutdownComplete = true;
+      app.quit();
+    });
 });
