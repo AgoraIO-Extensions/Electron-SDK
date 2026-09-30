@@ -1,5 +1,17 @@
 
 
+## [4.5.3-build.6-rc.4](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.6-rc.2...v4.5.3-build.6-rc.4) (2026-09-30)
+
+
+### Bug Fixes
+
+* **ci:** support Windows Native SDK FAV package ([3316c64](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/3316c640f587c3e53de839e5b29f3bba230bea76))
+
+
+### Features
+
+* **example:** add loopback audio track demo ([9bf204c](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/9bf204c40ae4b26c300d910b640ae432298c2fb1))
+
 ## [4.5.3-build.6-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.123-rc.2...v4.5.3-build.6-rc.2) (2026-09-28)
 
 
