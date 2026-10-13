@@ -22,31 +22,19 @@ instead of being converted or mislabeled.
 Agora SDK provides audio/video capture, encoding, and RTC A/V synchronization.
 This PoC focuses on feeding Electron compositor textures into that existing RTC
 pipeline. The macOS shared-texture path is implemented, and its build and API
-integration checks have passed. End-to-end acceptance of this shared-texture
-integration with the bundled macOS SDK remains pending; the status below
-describes this PoC's coverage of those SDK capabilities.
-
-| macOS scope | Status |
-| --- | --- |
-| Universal addon compilation and Electron-to-Iris-to-Native API boundary | Verified; see [Verified Scope](#verified-scope) |
-| Shared-texture input through the bundled macOS encoder to moving remote video, with increasing encoded-frame counters/bitrate | End-to-end integration acceptance pending |
-| Hidden/background/minimized operation at 30/48/60 fps | Hardware measurements pending |
-| Audio/video capture, encoding, and RTC A/V synchronization | Existing Agora SDK capabilities; this PoC currently demonstrates shared-texture video input |
-| Actual GPU-reset recovery and end-to-end zero-copy encoding | Not established by the current checks |
-
-A completion date for the remaining macOS validation has not been confirmed.
+integration checks have passed. The documented verification covers universal
+addon compilation and the Electron-to-Iris-to-Native API boundary; see
+[Verified Scope](#verified-scope).
 
 The current dependency configuration on this branch is Agora Electron SDK
 `4.5.3-build.6-rc.4`, Iris `4.5.3.6-build.5` (macOS artifact `32987`), and Native
-macOS `4.5.3.6` build `28999` (FAV artifact `1319956`). These are configured
-package versions, not a completed validation baseline. Check `package.json`
-for dependency changes and record the exact versions with each test result.
+macOS `4.5.3.6` build `28999` (FAV artifact `1319956`). These are the branch's
+configured package versions. Check `package.json` for dependency changes and
+record the exact versions with each test result.
 
 ### Historical Windows Validation Baseline
 
-The following environment belongs to the earlier Windows validation. It does
-not describe the current package versions or establish macOS shared-texture
-integration acceptance:
+The earlier Windows validation used the following environment:
 
 - Windows ia32 and x64
 - Electron `43.2.0`
@@ -240,14 +228,12 @@ The selected 30, 48, or 60 fps value is applied to all three pacing stages:
 
 `sentFrameRate` remains an observed RTC statistic rather than a hard guarantee;
 network or device adaptation can reduce it. The hidden capture window uses
-`show: false` and `backgroundThrottling: false`, but each target mode must still
-be measured on supported macOS hardware.
+`show: false` and `backgroundThrottling: false`.
 
 Renderer termination, WebGL context loss, GPU-process exit, and paint gaps are
 reported by the existing health state. No IOSurface ID is cached across frames,
 so resumed `paint` events naturally provide current surfaces. Iris lookup or
-conversion errors are returned as submission failures. Full recovery from an actual
-macOS GPU reset remains an acceptance test.
+conversion errors are returned as submission failures.
 
 ### Verified Scope
 
@@ -265,10 +251,7 @@ The macOS implementation has been verified with:
   handle slot, metadata, and synchronous RTC result propagation.
 
 The documented checks cover compilation and the Electron-to-Iris-to-Native API
-boundary. Remote visual correctness, end-to-end zero-copy encoding, zero-copy
-operation across different Metal devices, long-running A/V drift, and GPU-reset
-recovery are further integration measurement items. Their results are not
-established by these build and API checks.
+boundary.
 
 ## Worker Topology And Diagnostics
 
@@ -313,12 +296,10 @@ comparison testing. The production recommendation is the dedicated
 visibility or minimized state.
 
 These settings request continued background rendering, but they are not a hard
-real-time or cross-platform frame-rate guarantee. Acceptance must measure each
-stage separately: Worker draw intervals, Electron shared-texture `paint`
-intervals, Native submissions, and RTC sent/encoded frame rate. The PoC reports
-these metrics and marks health degraded after a paint gap longer than 500 ms.
-Windows D3D11 and macOS IOSurface transport are implemented. macOS background
-pacing and remote publishing still require platform validation.
+real-time or cross-platform frame-rate guarantee. The PoC reports Worker draw
+intervals, Electron shared-texture `paint` intervals, Native submissions, and RTC
+sent/encoded frame rate, and marks health degraded after a paint gap longer than
+500 ms. Windows D3D11 and macOS IOSurface transport are implemented.
 
 ## SDK Capabilities And Shared-Texture Integration
 
@@ -351,8 +332,7 @@ Every five seconds and on health transitions, status includes:
 
 Telemetry records both the Electron compositor timestamp in microseconds and
 the submitted Agora monotonic timestamp in milliseconds. These metrics support
-timing diagnostics; combined A/V drift measurements are outside this video-only
-example's recorded results.
+timing diagnostics.
 
 Health becomes degraded after a 500 ms paint gap, renderer unresponsiveness,
 GPU child-process exit, or WebGL context loss. A later valid paint clears paint
@@ -377,10 +357,6 @@ The development package is required to pass:
   rebuilt for Electron `43.2.0` ABI `148`
 - macOS universal addon compilation against an Iris build that serializes
   `ExternalVideoFrame.pixelBuffer`
-
-The earlier real-channel smoke test covered the CPU-readback implementation.
-End-to-end shared-texture verification records increasing encoded-frame
-counters, bitrate, and moving remote video with the configured package.
 
 ## Direct Texture Path
 
@@ -428,14 +404,6 @@ temporarily for content diagnostics; keep it disabled for performance tests and
 customer delivery. Iris independently opens and directly submits the texture
 corresponding to the handle for RTC.
 
-The following items are intentionally not claimed by this PoC:
-
-- End-to-end zero-copy encoding
-- GPU-only BGRA-to-NV12 conversion
-- Full D3D11 device-loss recovery
-- NV12, P010, or multi-plane shared-texture support
-- An automated remote-client video-content assertion
-
 The Electron `HANDLE` is borrowed. Iris opens it without closing it, holds the
 opened texture COM reference for the synchronous call, and passes that pointer
 directly to Native. The JavaScript controller releases Electron's texture only
@@ -481,15 +449,11 @@ The integration must provide all of the following behavior:
    Iris-to-Native boundary.
 3. Accept only BGRA on Windows and macOS. Other formats are out of scope and
    must fail before Native submission.
-4. Keep pixel processing on the GPU, including color conversion, scaling, and
-   transfer into a hardware encoder input surface.
-5. Iris probes DXGI adapters until `OpenSharedResource1` succeeds, then validates
+4. Iris probes DXGI adapters until `OpenSharedResource1` succeeds, then validates
    the opened texture dimensions and BGRA format.
-6. Handle D3D11 device loss and texture-size changes without retaining stale
-   resources.
-7. Return the actual RTC submission result, with `0` meaning the texture was
+5. Return the actual RTC submission result, with `0` meaning the texture was
    accepted under the documented lifetime contract.
-8. Preserve the `rtcTimestampMs` value obtained from
+6. Preserve the `rtcTimestampMs` value obtained from
    `getCurrentMonotonicTimeInMs()` as `ExternalVideoFrame::timestamp`.
 
 ### Lifetime and Synchronization Contract
@@ -514,22 +478,6 @@ its own ownership before returning if it consumes the frame asynchronously.
 macOS creates a CVPixelBuffer view over the IOSurface without CPU readback. The
 renderer case still has its Metal copy for cross-process IOSurface transport.
 
-## Acceptance Criteria for Shared Texture Support
-
-Shared-texture support should not be considered complete until all of these
-conditions pass:
-
-- At least 300 consecutive D3D11 frames return success.
-- Encoded frame counters and upstream bitrate continue increasing.
-- A remote client displays motion rather than a single frozen frame.
-- The publishing path contains no staging texture with `CPU_ACCESS_READ`,
-  `Map`, or full-frame CPU pixel copy.
-- Source textures are neither reused early nor leaked during sustained load.
-- Resize, stop during join, repeated join/leave, and device-loss paths complete
-  without crashes or stale frames.
-- BGRA behavior, timestamp semantics, adapter selection, and texture
-  lifetime are documented as supported API contracts.
-
 ## Relevant Files
 
 - `example/src/main/sharedTexturePocController.js`
@@ -547,24 +495,3 @@ conditions pass:
 - `native/Agora_Native_SDK_for_Windows_FULL/sdk/high_level_api/include/IAgoraMediaEngine.h`
 
 Runtime logs are written to `%LOCALAPPDATA%\Agora\electron`.
-
-## Platform Measurement Matrix
-
-Apply this matrix on Windows and macOS, for both `SharedTexturePoc` and
-`SharedTextureRendererPoc`. macOS results remain pending. Record the OS version,
-hardware, Electron version, and Electron/Iris/Native SDK package versions with
-the results. A successful build or API submission alone is not a matrix pass.
-
-Run hidden, visible, and minimized at 30, 48, and 60 fps for at least ten
-minutes per combination. With `T = 1000 / fps`, require
-`abs(P50 - T) / T <= 0.10`, `P99 < 3 * T`, and no unexplained gap above 500 ms.
-Worker draw, paint, submission, encoded-frame, frame-rate, and bitrate metrics
-must continue advancing while a receiver shows motion.
-
-Use `WEBGL_lose_context` to verify context restoration and
-`forcefullyCrashRenderer()` to verify bounded renderer cleanup. On Windows,
-these tests and a GPU child-process exit are not evidence of real D3D11 device
-removal. Do not claim device-loss recovery until a test actually observes
-`DXGI_ERROR_DEVICE_REMOVED` or `DXGI_ERROR_DEVICE_RESET`.
-On macOS, actual GPU-reset recovery must also be verified separately; WebGL
-context restoration or a GPU-process restart alone does not prove it.

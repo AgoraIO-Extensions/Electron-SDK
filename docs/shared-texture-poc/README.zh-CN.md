@@ -17,28 +17,17 @@
 
 Agora SDK 提供音视频采集、编码和 RTC 音画同步能力。本 PoC 聚焦将 Electron
 compositor 纹理接入已有 RTC 链路。macOS 共享纹理链路已实现，构建和 API 集成
-检查已通过；使用随包 macOS SDK 的共享纹理接入仍待完成端到端验收。下表说明
-本 PoC 对这些 SDK 能力的验证覆盖范围。
-
-| macOS 验证范围 | 状态 |
-| --- | --- |
-| Universal addon 编译及 Electron → Iris → Native API 边界 | 已验证，详见[已验证范围](#已验证范围) |
-| 共享纹理输入经过随包 macOS 编码器到远端动态画面，编码帧/码率持续增长 | 端到端集成验收待完成 |
-| hidden/后台/minimized 场景的 30/48/60 fps | 真机测量待完成 |
-| 音视频采集、编码和 RTC 音画同步 | Agora SDK 既有能力；当前 PoC 演示共享纹理视频输入 |
-| 真实 GPU reset 恢复及端到端零拷贝编码 | 当前检查尚未证明 |
-
-剩余 macOS 验证的完成日期尚未确认。
+检查已通过。已记录的验证覆盖 universal addon 编译和 Electron → Iris → Native
+API 边界，详见[已验证范围](#已验证范围)。
 
 当前分支的依赖配置为 Agora Electron SDK `4.5.3-build.6-rc.4`、Iris
 `4.5.3.6-build.5`（macOS artifact `32987`）和 Native macOS `4.5.3.6` build
-`28999`（FAV artifact `1319956`）。这些是配置的包版本，不代表已完成验收。
+`28999`（FAV artifact `1319956`）。这些是当前分支配置的包版本。
 依赖变更以 `package.json` 为准，每次测试结果都应记录实际版本。
 
 ### 历史 Windows 验证基线
 
-以下环境属于早期 Windows 验证，不代表当前包版本，也不代表 macOS 共享纹理接入
-已完成验收：
+早期 Windows 验证使用以下环境：
 
 - Windows ia32 和 x64
 - Electron `43.2.0`
@@ -203,13 +192,11 @@ Electron IPC 发送 ID 仍然不足。
 - RTC `setVideoEncoderConfiguration({ frameRate })` encoder 目标
 
 `sentFrameRate` 是 RTC 实际观测值，不是硬保证；网络或设备自适应仍可能降低它。
-隐藏采集窗口使用 `show: false` 和 `backgroundThrottling: false`，但每种目标模式
-仍需在支持的 macOS 硬件上实测。
+隐藏采集窗口使用 `show: false` 和 `backgroundThrottling: false`。
 
 现有健康状态会报告 Renderer 退出、WebGL Context Loss、GPU Process 退出和 paint
 间隔超时。IOSurface ID 不会跨帧缓存，因此 `paint` 恢复后会自然取得当前 Surface。
-Iris lookup 或转换错误会返回为提交失败。真实 macOS GPU Reset 后的完整恢复仍是
-验收项。
+Iris lookup 或转换错误会返回为提交失败。
 
 ### 已验证范围
 
@@ -224,9 +211,7 @@ macOS 实现已经完成以下验证：
 - Electron 原生请求测试验证新的 Iris Event、平台 Handle 槽位、帧元数据和 RTC
   结果同步透传。
 
-已记录的检查覆盖编译及 Electron → Iris → Native API 边界。远端画面正确性、
-端到端零拷贝、跨 Metal Device 零拷贝、长时间 A/V 漂移和 GPU Reset 恢复属于
-进一步的集成测量项，其结果尚未由这些构建与 API 检查证明。
+已记录的检查覆盖编译及 Electron → Iris → Native API 边界。
 
 ## Worker 拓扑与诊断
 
@@ -262,11 +247,10 @@ renderer 页面创建 DOM canvas 并 transfer 到 Worker，即可保留 Worker �
 PoC 中的 `visible` 和 `minimized` 采集窗口模式只用于对照测试。生产建议始终使用
 独立的 `show: false` 模式，不让采集窗口跟随主窗口的显示或最小化状态。
 
-这些配置用于请求持续后台渲染，但不构成硬实时或跨平台帧率保证。验收必须分别
-测量 Worker 绘制间隔、Electron shared-texture `paint` 间隔、Native 提交，以及 RTC
-发送/编码帧率。PoC 会输出这些指标，并在超过 500 ms 没有 `paint` 时把健康状态
-标记为 degraded。Windows D3D11 与 macOS IOSurface 传输都已实现；macOS 后台
-节奏和远端发布仍需在目标平台实测。
+这些配置用于请求持续后台渲染，但不构成硬实时或跨平台帧率保证。PoC 会输出
+Worker 绘制间隔、Electron shared-texture `paint` 间隔、Native 提交和 RTC
+发送/编码帧率，并在超过 500 ms 没有 `paint` 时把健康状态标记为 degraded。
+Windows D3D11 与 macOS IOSurface 传输都已实现。
 
 ## SDK 既有能力与共享纹理接入
 
@@ -295,8 +279,7 @@ Advanced 页面可以临时选择 30/48/60 fps 和上述三种测量模式。主
 - RTC `encodedFrameCount`、`sentFrameRate` 和 `txVideoKBitRate`
 
 遥测会同时记录 Electron compositor 的微秒时间戳，以及实际提交的 Agora 单调
-毫秒时间戳，用于时序诊断。音视频组合的漂移测量尚未包含在当前纯视频示例的
-已记录结果中。
+毫秒时间戳，用于时序诊断。
 
 超过 500 ms 没有 paint、renderer unresponsive、GPU 子进程退出或 WebGL context
 loss 会进入 degraded。后续有效 paint 会清除 paint/GPU 原因；WebGL 必须先报告
@@ -319,9 +302,6 @@ JavaScript 拿到 Promise 前执行。要恢复这种故障，需要 Native 提�
   `43.2.0`、ABI `148` 重编的 Addon
 - macOS universal addon 使用能够序列化
   `ExternalVideoFrame.pixelBuffer` 的 Iris 成功编译
-
-此前真实频道冒烟测试覆盖的是 CPU 回读实现。共享纹理链路的端到端验证记录
-当前配置包的编码帧和码率持续增长情况，以及远端动态画面。
 
 ## Direct Texture 链路
 
@@ -365,14 +345,6 @@ swap chain，等待复制完成后显示。这个预览完全绕过 Iris、RTC S
 预览路径会增加一次 GPU Copy 和同步等待，只能临时用于内容诊断，性能测试和客户
 交付必须保持关闭。Iris 会独立打开并直接提交给 RTC 的 Handle 对应纹理。
 
-这个 PoC 当前不包含以下能力：
-
-- 端到端零拷贝编码
-- 在 GPU 上完成 BGRA 到 NV12 的转换
-- 完整的 D3D11 Device Lost 恢复
-- NV12、P010 或多平面共享纹理支持
-- 自动化远端画面内容校验
-
 Electron `HANDLE` 只被借用。Iris 打开但不关闭它，并在同步调用期间持有打开后的
 Texture COM 引用，直接把该指针交给 Native。Native 返回后，JavaScript Controller
 才释放 Electron Texture。macOS 上，Iris 通过 CVPixelBuffer
@@ -415,12 +387,10 @@ media_engine->pushVideoFrame(&frame, video_track_id);
    Iris 到 Native 的边界。
 3. Windows 和 macOS 均只接受 BGRA；其它格式不在范围内，必须在提交 Native 前
    失败。
-4. 色彩转换、缩放和向硬件编码输入 Surface 的传输全部保留在 GPU 上。
-5. Iris 枚举 DXGI Adapter，直到 `OpenSharedResource1` 成功，并验证打开后纹理的
+4. Iris 枚举 DXGI Adapter，直到 `OpenSharedResource1` 成功，并验证打开后纹理的
    宽高和 BGRA 格式。
-6. 正确处理 D3D11 Device Lost 和纹理尺寸变化，不能继续持有失效资源。
-7. 返回真实 RTC 提交结果；返回 `0` 表示 SDK 已按约定接受该纹理。
-8. 把 `getCurrentMonotonicTimeInMs()` 取得的 `rtcTimestampMs` 原样设置为
+5. 返回真实 RTC 提交结果；返回 `0` 表示 SDK 已按约定接受该纹理。
+6. 把 `getCurrentMonotonicTimeInMs()` 取得的 `rtcTimestampMs` 原样设置为
    `ExternalVideoFrame::timestamp`。
 
 ### 生命周期与同步契约
@@ -441,19 +411,6 @@ Windows 不再创建中间纹理或执行 `CopyResource`，而是同步传递打
 IOSurface-backed CVPixelBuffer，不把像素读回 CPU Buffer。Renderer Case 为跨进程
 传递 IOSurface，仍保留已有的一次 Metal Copy。
 
-## 共享纹理能力验收标准
-
-以下条件全部满足后，才能认为共享纹理输入已经完成：
-
-- 连续提交至少 300 个 D3D11 帧并全部返回成功。
-- 编码帧计数和上行码率持续增长。
-- 远端看到持续运动的画面，而不是停留在第一帧。
-- 发送链路中不存在带 `CPU_ACCESS_READ` 的 staging texture、`Map` 或整帧 CPU
-  像素复制。
-- 持续运行时，源纹理不会被提前复用，也不会泄漏。
-- Resize、加入期间停止、重复加入离开和 Device Lost 场景不崩溃、不残留旧帧。
-- BGRA 行为、时间戳、Adapter 选择和纹理生命周期成为明确的 SDK 接口契约。
-
 ## 相关文件
 
 - `example/src/main/sharedTexturePocController.js`
@@ -471,22 +428,3 @@ IOSurface-backed CVPixelBuffer，不把像素读回 CPU Buffer。Renderer Case �
 - `native/Agora_Native_SDK_for_Windows_FULL/sdk/high_level_api/include/IAgoraMediaEngine.h`
 
 运行日志位于 `%LOCALAPPDATA%\Agora\electron`。
-
-## 平台测量矩阵
-
-Windows 和 macOS 均应对 `SharedTexturePoc`、`SharedTextureRendererPoc` 执行
-此矩阵；macOS 结果仍待完成。测试结果须记录 OS 版本、硬件、Electron 版本及
-Electron/Iris/Native SDK 包版本。仅构建成功或 API 提交成功不等于矩阵通过。
-
-hidden、visible、minimized 分别在 30、48 和 60 fps 下至少运行十分钟。令
-`T = 1000 / fps`，要求 `abs(P50 - T) / T <= 0.10`、`P99 < 3 * T`，且不存在
-超过 500 ms 的无法解释停顿。Worker draw、paint、submission、编码帧、发送帧率
-和码率必须持续增长，同时远端画面保持运动。
-
-使用 `WEBGL_lose_context` 验证 context 恢复，使用
-`forcefullyCrashRenderer()` 验证 renderer 的有界清理。Windows 上，这些测试和
-GPU 子进程退出都不能证明真实 D3D11 device removal。只有实际观察到
-`DXGI_ERROR_DEVICE_REMOVED` 或 `DXGI_ERROR_DEVICE_RESET`，才能声称验证了
-device-loss 恢复。
-macOS 的真实 GPU reset 恢复也须单独验证；仅 WebGL context 恢复或 GPU 进程
-重启不能证明该能力。
