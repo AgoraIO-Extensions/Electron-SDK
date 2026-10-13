@@ -311,12 +311,25 @@ export class RendererManager {
   public setRendererContext(context: RendererContext): boolean {
     const checkedContext = this.presetRendererContext(context);
 
-    for (const rendererCache of this._rendererCaches) {
-      const result = rendererCache.setRendererContext(checkedContext);
-      if (result) {
-        return true;
+    // A context carrying a view identifies its target by that view. AgoraView
+    // takes this path when one of its render attributes changes, and it passes
+    // neither uid nor sourceType, so the cache cannot be resolved by key here.
+    if (checkedContext.view) {
+      for (const rendererCache of this._rendererCaches) {
+        if (rendererCache.setRendererContext(checkedContext)) {
+          return true;
+        }
       }
+      return false;
     }
-    return false;
+
+    // Without a view the only identity available is the cache key. Resolve the
+    // target cache the same way addRendererToCache and removeRendererFromCache
+    // do. Scanning the list instead would apply the context to whichever cache
+    // happens to come first, because IRendererCache.setRendererContext accepts
+    // any view-less context unconditionally.
+    const rendererCache = this.getRendererCache(checkedContext);
+    if (!rendererCache) return false;
+    return rendererCache.setRendererContext(checkedContext);
   }
 }
