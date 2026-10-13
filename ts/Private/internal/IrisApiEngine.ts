@@ -679,14 +679,6 @@ export function callIrisApi(funcName: string, params: any): any {
           break;
       }
     }
-    // CSD-80258: 旁听 setParameters，把 fill 渲染模式的私参在 JS 侧也记一份。
-    // 必须在这里听：Electron 的渲染缩放在 JS 做（IRenderer.updateRenderMode），
-    // 下发到原生的私参 JS 侧看不到。参数照常继续下发，未知 key 由原生自己忽略，
-    // 所以这是纯旁听、不拦截。用 startsWith 而不是精确 funcName，是因为后缀 hash
-    // （RtcEngine_setParameters_3a2037f）会随 terra 重新生成而变。
-    //
-    // 配置**在这里一次性推给所有 renderer**，渲染路径上不做任何解析；没变化就不推，
-    // 避免同一条私参重复下发时无谓地重排所有 view。
     if (
       funcName.startsWith('RtcEngine_setParameters') &&
       parseFillRenderModeFromParameters(params?.parameters)
