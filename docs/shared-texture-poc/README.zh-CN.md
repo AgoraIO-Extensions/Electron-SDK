@@ -15,16 +15,17 @@
 
 ### 验证状态（2026-10-13）
 
-macOS 共享纹理链路已实现，构建和 API 集成检查已通过。最新 macOS A/V Encoder
-更新的完整验证仍待完成；下面的集成检查不能证明当前 SDK 包的音视频编码正确性
-或远端画面的持续发布。
+Agora SDK 提供音视频采集、编码和 RTC 音画同步能力。本 PoC 聚焦将 Electron
+compositor 纹理接入已有 RTC 链路。macOS 共享纹理链路已实现，构建和 API 集成
+检查已通过；使用随包 macOS SDK 的共享纹理接入仍待完成端到端验收。下表说明
+本 PoC 对这些 SDK 能力的验证覆盖范围。
 
 | macOS 验证范围 | 状态 |
 | --- | --- |
 | Universal addon 编译及 Electron → Iris → Native API 边界 | 已验证，详见[已验证范围](#已验证范围) |
-| 最新 A/V Encoder 更新、远端动态画面及持续增长的编码帧/码率 | 完整验证待完成 |
+| 共享纹理输入经过随包 macOS 编码器到远端动态画面，编码帧/码率持续增长 | 端到端集成验收待完成 |
 | hidden/后台/minimized 场景的 30/48/60 fps | 真机测量待完成 |
-| 客户自定义音频的长时间 A/V 同步 | 待完成；此 PoC 不采集自定义音频 |
+| 共享纹理视频与 SDK 采集或应用提供的音频组合 | 音视频组合测试待完成；当前 PoC 只验证视频输入 |
 | 真实 GPU reset 恢复及端到端零拷贝编码 | 当前检查尚未证明 |
 
 剩余 macOS 验证的完成日期尚未确认。
@@ -36,7 +37,8 @@ macOS 共享纹理链路已实现，构建和 API 集成检查已通过。最新
 
 ### 历史 Windows 验证基线
 
-以下环境属于早期 Windows 验证，不代表当前包版本，也不证明 macOS 编码行为：
+以下环境属于早期 Windows 验证，不代表当前包版本，也不代表 macOS 共享纹理接入
+已完成验收：
 
 - Windows ia32 和 x64
 - Electron `43.2.0`
@@ -107,8 +109,10 @@ Renderer 收到它的 `IOSurfaceID` 后调用 `IOSurfaceLookup`。Electron IPC �
 在收到转发帧后、调用 `PushSharedTexture` 前打时间戳。这个毫秒值会作为 RTC 视频
 时间戳提交并回传到遥测；Electron compositor 时间戳仍单独保留，只用于诊断。
 
-本 PoC 不采集自定义音频，因此它本身不能证明 A/V 同步已经完成。Favorited 还需
-使用同一个 Agora SDK 单调时钟设置 `AudioFrame.renderTimeMs`，并验证长时间漂移。
+Agora SDK 提供音频采集和 RTC 音画同步。本 PoC 为隔离共享纹理视频链路而关闭
+摄像头和麦克风发布，当前验证范围尚未覆盖音视频组合测试。使用应用提供的音频时，
+Agora 与 Favorited 在集成中按 SDK 时钟约定对齐外部音频时间戳，包括
+`AudioFrame.renderTimeMs`。Agora 验证 SDK 链路，应用级音画测量由双方共同完成。
 此前的 `timestamp = 0` 只是兼容措施，用于避免误传不相关的 Electron 时钟值而被
 当作旧帧丢弃。
 
@@ -223,7 +227,8 @@ macOS 实现已经完成以下验证：
 
 以上证据证明 Electron 到 Iris 再到 Native 的接口边界和编译链路已经贯通；
 但不能单独证明远端画面内容正确、端到端严格零拷贝、跨 Metal Device 零拷贝、
-长时间 A/V 漂移达标或 GPU Reset 恢复。这些仍属于客户验收测试。
+长时间 A/V 漂移达标或 GPU Reset 恢复。这些仍待集成验证：Agora 验证 SDK 行为，
+Favorited 使用 Studio 业务场景和目标硬件共同参与验收。
 
 ## Worker 拓扑与诊断
 
@@ -264,12 +269,15 @@ PoC 中的 `visible` 和 `minimized` 采集窗口模式只用于对照测试。�
 标记为 degraded。Windows D3D11 与 macOS IOSurface 传输都已实现；macOS 后台
 节奏和远端发布仍需在目标平台实测。
 
-## 目标责任边界
+## 集成职责
 
-- Favorited 把 Studio 最终画面渲染到全窗口 canvas，并负责源采集、场景合成、
-  窗口/进程编排、预览、A/V 时钟映射，以及 renderer/WebGL/推流恢复。
-- 跨平台 Agora Electron API 接收 compositor 纹理，并向 Favorited 暴露完成
-  A/V 映射所需的 Agora 单调时钟。
+- Favorited 把 Studio 最终画面渲染到全窗口 canvas，并负责场景合成、应用提供的
+  媒体源、窗口/进程编排、预览和应用 renderer/WebGL 恢复。
+- Agora 提供 SDK 音视频采集、编码和 RTC 音画同步，并验证共享纹理输入接入 SDK
+  后的链路。Favorited 提供外部音频时，双方按 SDK 时间戳契约确认源时钟映射，
+  并共同完成应用级音画验收。
+- 跨平台 Agora Electron API 接收 compositor 纹理，并暴露用于外部媒体源时间戳
+  映射的 Agora 单调时钟。
 - Iris 负责 Windows NT Handle/D3D11 和 macOS IOSurface/CVPixelBuffer 互操作。
   Native 只接收 `ID3D11Texture2D*` 或 `CVPixelBufferRef`，不接收 Electron
   shared handle。
@@ -292,8 +300,8 @@ Advanced 页面可以临时选择 30/48/60 fps 和上述三种测量模式。主
 - RTC `encodedFrameCount`、`sentFrameRate` 和 `txVideoKBitRate`
 
 遥测会同时记录 Electron compositor 的微秒时间戳，以及实际提交的 Agora 单调
-毫秒时间戳。只有自定义音频也使用同一时钟，并通过长时间测试测量漂移后，才能
-声称完成 A/V 同步验证。
+毫秒时间戳。这条接入链路的音画验证需要音视频组合运行并测量长时间漂移；外部
+音频的时钟映射属于双方共同完成的集成工作。
 
 超过 500 ms 没有 paint、renderer unresponsive、GPU 子进程退出或 WebGL context
 loss 会进入 degraded。后续有效 paint 会清除 paint/GPU 原因；WebGL 必须先报告

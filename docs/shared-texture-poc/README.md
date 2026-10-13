@@ -19,17 +19,19 @@ instead of being converted or mislabeled.
 
 ### Validation Status (2026-10-13)
 
-The macOS shared-texture path is implemented, and its build and API integration
-checks have passed. Full validation of the latest macOS A/V encoder updates is
-still pending. The integration checks below do not establish audio/video
-encoding correctness or sustained remote delivery with the current SDK packages.
+Agora SDK provides audio/video capture, encoding, and RTC A/V synchronization.
+This PoC focuses on feeding Electron compositor textures into that existing RTC
+pipeline. The macOS shared-texture path is implemented, and its build and API
+integration checks have passed. End-to-end acceptance of this shared-texture
+integration with the bundled macOS SDK remains pending; the status below
+describes this PoC's coverage of those SDK capabilities.
 
 | macOS scope | Status |
 | --- | --- |
 | Universal addon compilation and Electron-to-Iris-to-Native API boundary | Verified; see [Verified Scope](#verified-scope) |
-| Latest A/V encoder updates and moving remote video with increasing encoded-frame counters/bitrate | Full validation pending |
+| Shared-texture input through the bundled macOS encoder to moving remote video, with increasing encoded-frame counters/bitrate | End-to-end integration acceptance pending |
 | Hidden/background/minimized operation at 30/48/60 fps | Hardware measurements pending |
-| Long-running A/V synchronization with the customer's custom audio | Pending; this PoC does not capture custom audio |
+| Shared-texture video combined with SDK-captured or application-provided audio | Combined A/V integration test pending; this PoC currently exercises video only |
 | Actual GPU-reset recovery and end-to-end zero-copy encoding | Not established by the current checks |
 
 A completion date for the remaining macOS validation has not been confirmed.
@@ -43,7 +45,8 @@ for dependency changes and record the exact versions with each test result.
 ### Historical Windows Validation Baseline
 
 The following environment belongs to the earlier Windows validation. It does
-not describe the current package versions or certify macOS encoder behavior:
+not describe the current package versions or establish macOS shared-texture
+integration acceptance:
 
 - Windows ia32 and x64
 - Electron `43.2.0`
@@ -127,11 +130,15 @@ example stamps immediately after receiving the forwarded frame and before
 submitted as the RTC video timestamp and returned in telemetry. Electron's
 compositor timestamp remains separate and is used only for diagnostics.
 
-This PoC does not capture custom audio, so it does not by itself prove A/V
-synchronization. Favorited must timestamp `AudioFrame.renderTimeMs` with the
-same Agora SDK monotonic clock and validate long-running drift. The previous
-`timestamp = 0` behavior was only a compatibility measure to avoid passing an
-unrelated Electron clock value that could be rejected as old.
+Agora SDK supplies audio capture and RTC A/V synchronization. This PoC disables
+camera and microphone publishing to isolate the shared-texture video path; a
+combined audio/video test is outside its current test coverage. For
+application-provided audio, Agora and Favorited align external audio timestamps
+with the SDK clock, including `AudioFrame.renderTimeMs`, as part of integration.
+Agora validates the SDK pipeline, with application-level A/V measurements
+performed jointly. The previous `timestamp = 0` behavior was only a
+compatibility measure to avoid passing an unrelated Electron clock value that
+could be rejected as old.
 
 ## macOS IOSurface Adaptation
 
@@ -263,8 +270,9 @@ The macOS implementation has been verified with:
 This evidence proves compilation and the Electron-to-Iris-to-Native API
 boundary. It does not by itself claim remote visual correctness,
 end-to-end zero-copy encoding, zero-copy operation across different Metal
-devices, long-running A/V drift compliance, or GPU-reset recovery. Those remain
-customer acceptance measurements.
+devices, long-running A/V drift compliance, or GPU-reset recovery. These remain
+integration measurements: Agora validates SDK behavior, and Favorited
+participates in acceptance with its Studio workload and target hardware.
 
 ## Worker Topology And Diagnostics
 
@@ -316,13 +324,18 @@ these metrics and marks health degraded after a paint gap longer than 500 ms.
 Windows D3D11 and macOS IOSurface transport are implemented. macOS background
 pacing and remote publishing still require platform validation.
 
-## Target Ownership Boundary
+## Integration Responsibilities
 
 - Favorited renders the final Studio frame into the full-window canvas, and
-  owns source capture, scene composition, window/process orchestration,
-  preview, A/V clock mapping, and renderer/WebGL/stream recovery.
+  owns scene composition, application-provided sources, window/process
+  orchestration, preview, and application renderer/WebGL recovery.
+- Agora provides SDK audio/video capture, encoding, and RTC A/V synchronization,
+  and validates the SDK pipeline with the shared-texture input. When Favorited
+  supplies external audio, its source-clock mapping is agreed with Agora using
+  the SDK timestamp contract; application-level A/V acceptance is performed
+  jointly.
 - The platform-neutral Agora Electron API accepts the compositor texture and
-  exposes the Agora monotonic clock needed by Favorited's A/V mapping.
+  exposes the Agora monotonic clock for external-source timestamp mapping.
 - Iris owns Windows NT-handle/D3D11 and macOS IOSurface/CVPixelBuffer interop.
   Native receives only `ID3D11Texture2D*` or `CVPixelBufferRef`, never the
   Electron shared handle.
@@ -347,9 +360,10 @@ Every five seconds and on health transitions, status includes:
 - RTC `encodedFrameCount`, `sentFrameRate`, and `txVideoKBitRate`
 
 Telemetry records both the Electron compositor timestamp in microseconds and
-the submitted Agora monotonic timestamp in milliseconds. A/V synchronization
-is not proved until custom audio uses the same clock and a long-running test
-measures drift.
+the submitted Agora monotonic timestamp in milliseconds. Validation of this
+integration's A/V behavior requires a combined audio/video run and long-running
+drift measurements. For external audio, timestamp mapping is part of that
+joint integration work.
 
 Health becomes degraded after a 500 ms paint gap, renderer unresponsiveness,
 GPU child-process exit, or WebGL context loss. A later valid paint clears paint
