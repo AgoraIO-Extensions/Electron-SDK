@@ -13,9 +13,10 @@ the macOS IOSurface in a `CVPixelBufferRef`, before calling Native
 IOSurfaceID.
 
 The capture window explicitly requests Electron's `argb` shared-texture output
-and validates the actual `textureInfo.pixelFormat`. Windows and macOS accept
-only `bgra`; all other formats are released and counted as invalid frames
-instead of being converted or mislabeled.
+(BGRA) and validates the actual `textureInfo.pixelFormat`. The Windows path
+accepts BGRA; the macOS bridge accepts packed BGRA or RGBA. Unsupported formats
+are released and counted as invalid frames instead of being converted or
+mislabeled.
 
 ### Validation Status (2026-10-13)
 
@@ -42,6 +43,17 @@ The earlier Windows validation used the following environment:
 - Agora Electron SDK `4.5.3-build.123-rc.2`
 - CSD-79710 Native RTC development build `1289436`, based on `4.5.2.175`
 
+## Usage Limits
+
+- Shared-texture input does not support NV12, P010, multi-plane textures, or
+  `rgbaf16`. The example requests BGRA, and the bridge performs no implicit
+  conversion of unsupported formats. These limits apply to this shared-texture
+  input path, rather than to the SDK's other video-input APIs.
+- The PoC reports GPU/renderer faults and submission errors, and cleans up
+  terminal failures. A later valid `paint` can clear degradation, but the demo
+  does not implement complete automatic restoration of WebGL capture, shared
+  resources, and RTC publishing after OS/GPU device loss.
+
 ## What Works Today
 
 The PoC implements the complete publishing workflow:
@@ -57,8 +69,8 @@ The PoC implements the complete publishing workflow:
    `offscreen.useSharedTexture: true`. The page calls
    `transferControlToOffscreen()` and a dedicated Worker owns WebGL2, rendering,
    and its timer-driven 30/48/60 fps loop. The window explicitly sets
-   `sharedTexturePixelFormat: 'argb'` and validates the actual paint output as
-   BGRA on both Windows and macOS.
+   `sharedTexturePixelFormat: 'argb'` to request BGRA and validates the actual
+   paint output against the platform bridge's supported formats.
 4. Electron 43 supplies each frame as `details.texture`. Windows uses
    `texture.textureInfo.handle.ntHandle`; macOS uses
    `texture.textureInfo.handle.ioSurface`.
@@ -177,12 +189,12 @@ The addon validates every macOS frame before calling Iris:
 - `IOSurfaceGetWidth()` and `IOSurfaceGetHeight()` must match Electron's
   `textureInfo.codedSize`.
 - Iris verifies the IOSurface dimensions, creates a surface-backed
-  `CVPixelBufferRef`, and checks that Electron's BGRA metadata matches
-  `kCVPixelFormatType_32BGRA`.
+  `CVPixelBufferRef`, and checks that Electron's BGRA or RGBA metadata matches
+  `kCVPixelFormatType_32BGRA` or `kCVPixelFormatType_32RGBA`, respectively.
 - Iris submits `VIDEO_BUFFER_TEXTURE + VIDEO_PIXEL_DEFAULT`; Native reads the
   actual pixel format from the `CVPixelBufferRef`.
-- Non-BGRA input is not enabled. Iris performs no implicit format conversion,
-  and mismatched or unsupported frames fail before Native submission.
+- Iris accepts packed BGRA or RGBA on macOS and performs no implicit format
+  conversion. Mismatched or unsupported frames fail before Native submission.
 - `timestamp` uses `getCurrentMonotonicTimeInMs()`. Electron's compositor
   timestamp remains diagnostic metadata and is never used as the RTC clock.
 - The IOSurface path supplies no CPU pixel buffer and performs no Electron-side
@@ -211,9 +223,9 @@ producer-consumer synchronization. Sending an ID through ordinary Electron IPC
 remains insufficient.
 
 The matching Native SDK contract accepts `ExternalVideoFrame.pixelBuffer` with
-`VIDEO_BUFFER_TEXTURE` and `VIDEO_PIXEL_DEFAULT`, then reads BGRA from the
-CVPixelBuffer itself. Iris retains the CVPixelBuffer through the synchronous
-`pushVideoFrame` call and releases it after Native returns. Only after the Iris
+`VIDEO_BUFFER_TEXTURE` and `VIDEO_PIXEL_DEFAULT`, then reads the pixel format
+from the CVPixelBuffer itself. Iris retains the CVPixelBuffer through the
+synchronous `pushVideoFrame` call and releases it after Native returns. Only after the Iris
 call succeeds or fails does the controller call `texture.release()`. The
 controller allows one active submission and keeps only the latest pending
 frame.
@@ -447,8 +459,8 @@ The integration must provide all of the following behavior:
 1. Support `setExternalVideoSource(true, true, VIDEO_FRAME)` on Windows.
 2. Treat `d3d11Texture2d` as `ID3D11Texture2D*`; the NT handle never crosses the
    Iris-to-Native boundary.
-3. Accept only BGRA on Windows and macOS. Other formats are out of scope and
-   must fail before Native submission.
+3. Accept BGRA on Windows and packed BGRA or RGBA on macOS. Unsupported formats
+   fail before Native submission.
 4. Iris probes DXGI adapters until `OpenSharedResource1` succeeds, then validates
    the opened texture dimensions and BGRA format.
 5. Return the actual RTC submission result, with `0` meaning the texture was
