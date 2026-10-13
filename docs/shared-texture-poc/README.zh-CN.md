@@ -13,7 +13,30 @@
 `textureInfo.pixelFormat`。Windows 和 macOS 均只接受 `bgra`；其它格式会被释放并
 计入 invalid frame，不会自动转换或错误标记。
 
-已验证的环境如下：
+### 验证状态（2026-10-13）
+
+macOS 共享纹理链路已实现，构建和 API 集成检查已通过。最新 macOS A/V Encoder
+更新的完整验证仍待完成；下面的集成检查不能证明当前 SDK 包的音视频编码正确性
+或远端画面的持续发布。
+
+| macOS 验证范围 | 状态 |
+| --- | --- |
+| Universal addon 编译及 Electron → Iris → Native API 边界 | 已验证，详见[已验证范围](#已验证范围) |
+| 最新 A/V Encoder 更新、远端动态画面及持续增长的编码帧/码率 | 完整验证待完成 |
+| hidden/后台/minimized 场景的 30/48/60 fps | 真机测量待完成 |
+| 客户自定义音频的长时间 A/V 同步 | 待完成；此 PoC 不采集自定义音频 |
+| 真实 GPU reset 恢复及端到端零拷贝编码 | 当前检查尚未证明 |
+
+剩余 macOS 验证的完成日期尚未确认。
+
+当前分支的依赖配置为 Agora Electron SDK `4.5.3-build.6-rc.4`、Iris
+`4.5.3.6-build.5`（macOS artifact `32987`）和 Native macOS `4.5.3.6` build
+`28999`（FAV artifact `1319956`）。这些是配置的包版本，不代表已完成验收。
+依赖变更以 `package.json` 为准，每次测试结果都应记录实际版本。
+
+### 历史 Windows 验证基线
+
+以下环境属于早期 Windows 验证，不代表当前包版本，也不证明 macOS 编码行为：
 
 - Windows ia32 和 x64
 - Electron `43.2.0`
@@ -282,7 +305,7 @@ context restored，再收到有效 paint 才会恢复。Renderer 退出或 Worke
 JavaScript 拿到 Promise 前执行。要恢复这种故障，需要 Native 提供可取消接口，
 或把阻塞调用移出 Electron 主线程。
 
-## 已完成的验证
+## 构建与集成验证要求
 
 这个开发包必须通过：
 
@@ -447,7 +470,11 @@ IOSurface-backed CVPixelBuffer，不把像素读回 CPU Buffer。Renderer Case �
 
 运行日志位于 `%LOCALAPPDATA%\Agora\electron`。
 
-## Windows 测量矩阵
+## 平台测量矩阵
+
+Windows 和 macOS 均应对 `SharedTexturePoc`、`SharedTextureRendererPoc` 执行
+此矩阵；macOS 结果仍待完成。测试结果须记录 OS 版本、硬件、Electron 版本及
+Electron/Iris/Native SDK 包版本。仅构建成功或 API 提交成功不等于矩阵通过。
 
 hidden、visible、minimized 分别在 30、48 和 60 fps 下至少运行十分钟。令
 `T = 1000 / fps`，要求 `abs(P50 - T) / T <= 0.10`、`P99 < 3 * T`，且不存在
@@ -455,7 +482,9 @@ hidden、visible、minimized 分别在 30、48 和 60 fps 下至少运行十分�
 和码率必须持续增长，同时远端画面保持运动。
 
 使用 `WEBGL_lose_context` 验证 context 恢复，使用
-`forcefullyCrashRenderer()` 验证 renderer 的有界清理。这些测试和 GPU 子进程
-退出都不能证明真实 D3D11 device removal。只有实际观察到
+`forcefullyCrashRenderer()` 验证 renderer 的有界清理。Windows 上，这些测试和
+GPU 子进程退出都不能证明真实 D3D11 device removal。只有实际观察到
 `DXGI_ERROR_DEVICE_REMOVED` 或 `DXGI_ERROR_DEVICE_RESET`，才能声称验证了
 device-loss 恢复。
+macOS 的真实 GPU reset 恢复也须单独验证；仅 WebGL context 恢复或 GPU 进程
+重启不能证明该能力。

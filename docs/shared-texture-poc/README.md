@@ -17,7 +17,33 @@ and validates the actual `textureInfo.pixelFormat`. Windows and macOS accept
 only `bgra`; all other formats are released and counted as invalid frames
 instead of being converted or mislabeled.
 
-The validated environment is:
+### Validation Status (2026-10-13)
+
+The macOS shared-texture path is implemented, and its build and API integration
+checks have passed. Full validation of the latest macOS A/V encoder updates is
+still pending. The integration checks below do not establish audio/video
+encoding correctness or sustained remote delivery with the current SDK packages.
+
+| macOS scope | Status |
+| --- | --- |
+| Universal addon compilation and Electron-to-Iris-to-Native API boundary | Verified; see [Verified Scope](#verified-scope) |
+| Latest A/V encoder updates and moving remote video with increasing encoded-frame counters/bitrate | Full validation pending |
+| Hidden/background/minimized operation at 30/48/60 fps | Hardware measurements pending |
+| Long-running A/V synchronization with the customer's custom audio | Pending; this PoC does not capture custom audio |
+| Actual GPU-reset recovery and end-to-end zero-copy encoding | Not established by the current checks |
+
+A completion date for the remaining macOS validation has not been confirmed.
+
+The current dependency configuration on this branch is Agora Electron SDK
+`4.5.3-build.6-rc.4`, Iris `4.5.3.6-build.5` (macOS artifact `32987`), and Native
+macOS `4.5.3.6` build `28999` (FAV artifact `1319956`). These are configured
+package versions, not a completed validation baseline. Check `package.json`
+for dependency changes and record the exact versions with each test result.
+
+### Historical Windows Validation Baseline
+
+The following environment belongs to the earlier Windows validation. It does
+not describe the current package versions or certify macOS encoder behavior:
 
 - Windows ia32 and x64
 - Electron `43.2.0`
@@ -337,7 +363,7 @@ The two-second bound cannot interrupt Native code blocked synchronously inside
 Recovering that case requires a cancellable Native API or moving the blocking
 call off the Electron main thread.
 
-## Verification Performed
+## Build And Integration Verification Requirements
 
 The development package is required to pass:
 
@@ -520,7 +546,12 @@ conditions pass:
 
 Runtime logs are written to `%LOCALAPPDATA%\Agora\electron`.
 
-## Windows Measurement Matrix
+## Platform Measurement Matrix
+
+Apply this matrix on Windows and macOS, for both `SharedTexturePoc` and
+`SharedTextureRendererPoc`. macOS results remain pending. Record the OS version,
+hardware, Electron version, and Electron/Iris/Native SDK package versions with
+the results. A successful build or API submission alone is not a matrix pass.
 
 Run hidden, visible, and minimized at 30, 48, and 60 fps for at least ten
 minutes per combination. With `T = 1000 / fps`, require
@@ -529,7 +560,9 @@ Worker draw, paint, submission, encoded-frame, frame-rate, and bitrate metrics
 must continue advancing while a receiver shows motion.
 
 Use `WEBGL_lose_context` to verify context restoration and
-`forcefullyCrashRenderer()` to verify bounded renderer cleanup. These tests and
-a GPU child-process exit are not evidence of real D3D11 device removal. Do not
-claim device-loss recovery until a test actually observes
+`forcefullyCrashRenderer()` to verify bounded renderer cleanup. On Windows,
+these tests and a GPU child-process exit are not evidence of real D3D11 device
+removal. Do not claim device-loss recovery until a test actually observes
 `DXGI_ERROR_DEVICE_REMOVED` or `DXGI_ERROR_DEVICE_RESET`.
+On macOS, actual GPU-reset recovery must also be verified separately; WebGL
+context restoration or a GPU-process restart alone does not prove it.
