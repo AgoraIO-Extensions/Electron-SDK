@@ -21,6 +21,7 @@ import PlayEffect from './PlayEffect/PlayEffect';
 import ProcessVideoRawData from './ProcessVideoRawData/ProcessVideoRawData';
 import PushVideoFrame from './PushVideoFrame/PushVideoFrame';
 import RTMPStreaming from './RTMPStreaming/RTMPStreaming';
+import RemoteViewFillMode from './RemoteViewFillMode/RemoteViewFillMode';
 import RhythmPlayer from './RhythmPlayer/RhythmPlayer';
 import ScreenShare from './ScreenShare/ScreenShare';
 import SendMetadata from './SendMetadata/SendMetadata';
@@ -122,6 +123,10 @@ const Advanced = {
     {
       name: 'PushVideoFrame',
       component: PushVideoFrame,
+    },
+    {
+      name: 'RemoteViewFillMode',
+      component: RemoteViewFillMode,
     },
     {
       name: 'RhythmPlayer',
