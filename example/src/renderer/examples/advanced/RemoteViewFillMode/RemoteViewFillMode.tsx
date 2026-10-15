@@ -83,6 +83,10 @@ export default class RemoteViewFillMode
       startPreview: false,
       fillUids: MATCH_ALL,
       appliedFillUids: '',
+      // Fit rather than the SDK default of Hidden, and it really is applied
+      // because the canvas carries it. Hidden already fills the view by
+      // cropping, so starting there would make fill look like it changed
+      // nothing; Fit letterboxes, which makes the effect obvious.
       remoteRenderMode: RenderModeType.RenderModeFit,
       remoteMirrorMode: VideoMirrorModeType.VideoMirrorModeDisabled,
       remoteShape: '21:9',
@@ -150,10 +154,20 @@ export default class RemoteViewFillMode
   };
 
   /**
-   * Step 3-2: push renderMode / mirrorMode to every remote user
+   * Step 3-2: push the selected renderMode / mirrorMode through the public API
    *
-   * Used to verify that the private parameter wins over the requested mode and
-   * that mirror keeps working on top of fill.
+   * This is how both dropdowns take effect. `setRemoteRenderMode` resolves the
+   * renderer cache by key and calls setContext on the renderers it already
+   * holds, so updateRenderMode / updateMirrorMode only rewrite the canvas
+   * transform. Nothing is unbound and no canvas is recreated, so the picture
+   * does not blank. Re-binding the view would, because tearing the last
+   * renderer out of a cache stops and releases it and the rebuilt canvas stays
+   * hidden until the next frame arrives, which at the default 15 fps render
+   * loop is a visible black flash.
+   *
+   * It is also the call an integrator actually uses on a view that is already
+   * rendering, and the path the private parameter has to win over, so keeping
+   * it behind an explicit button lets the API be exercised on its own.
    */
   pushRemoteRenderMode = () => {
     const { remoteUsers, remoteRenderMode, remoteMirrorMode } = this.state;
@@ -234,6 +248,8 @@ export default class RemoteViewFillMode
     return (
       <>
         <AgoraCard title={'local (control group, never stretches)'}>
+          {/* The local tile keeps the SDK defaults: it is the control group and
+              the dropdowns only target remote views, same as the parameter. */}
           {this.renderFillVideo(
             { sourceType: VideoSourceType.VideoSourceCamera },
             '1:1'
@@ -248,14 +264,19 @@ export default class RemoteViewFillMode
   }
 
   protected renderRemoteUser(remoteUid: number): ReactElement {
-    const { remoteShape } = this.state;
+    const { remoteShape, remoteRenderMode, remoteMirrorMode } = this.state;
     return (
       <AgoraCard
         key={`${remoteUid}`}
         title={`remote ${remoteUid} (${remoteShape} container)`}
       >
         {this.renderFillVideo(
-          { uid: remoteUid, sourceType: VideoSourceType.VideoSourceRemote },
+          {
+            uid: remoteUid,
+            sourceType: VideoSourceType.VideoSourceRemote,
+            renderMode: remoteRenderMode,
+            mirrorMode: remoteMirrorMode,
+          },
           remoteShape
         )}
       </AgoraCard>
@@ -263,12 +284,36 @@ export default class RemoteViewFillMode
   }
 
   protected renderFillVideo(user: VideoCanvas, shape: string): ReactElement {
+    // The fixed size lives on a wrapper this component owns, and RtcSurfaceView
+    // is handed classes that just fill their parent, because
+    // RtcSurfaceView.shouldComponentUpdate only diffs canvas/connection/state:
+    // a bare containerClass change is ignored and the tile would never resize.
+    // Resizing the wrapper instead lets the size be inherited down to the
+    // renderer's own container, and updateRenderMode already runs every frame
+    // off container.clientWidth/clientHeight, so the next frame recomputes the
+    // transform with no rebind at all.
+    //
+    // The canvas carries renderMode and mirrorMode so that every bind applies
+    // the values the UI is showing. Without them presetRendererContext fills in
+    // defaultRenderMode, which RendererManager hardcodes to Hidden, so a remote
+    // user who joins after the dropdown was changed would come up on Hidden
+    // while the dropdown claims otherwise. It also keeps renderMode alive
+    // across RtcSurfaceView's own click-to-mirror toggle, whose updateRenderer
+    // re-sends the canvas and would otherwise fall back to Hidden.
+    //
+    // `key` is uid only. Keying on renderMode / mirrorMode as well would turn
+    // every dropdown change into an unmount plus mount, and that rebind is what
+    // makes the picture blank; the dropdowns go through setRemoteRenderMode
+    // instead, which updates the live renderer in place.
     return (
-      <RtcSurfaceView
-        canvas={user}
-        containerClass={REMOTE_SHAPES[shape]}
-        videoClass={AgoraStyle.fillModeVideo}
-      />
+      <div className={REMOTE_SHAPES[shape]}>
+        <RtcSurfaceView
+          key={`${user.uid ?? 'local'}`}
+          canvas={user}
+          containerClass={AgoraStyle.fillModeVideo}
+          videoClass={AgoraStyle.fillModeVideo}
+        />
+      </div>
     );
   }
 
@@ -330,6 +375,11 @@ export default class RemoteViewFillMode
             this.setState({ remoteShape: value });
           }}
         />
+        {/* Both dropdowns push through setRemoteRenderMode in the setState
+            callback. React commits a child's componentDidUpdate before the
+            parent's setState callback, so the push lands after
+            RtcSurfaceView.updateRenderer has re-sent the canvas and therefore
+            wins over the inverted mirrorMode that updateRenderer substitutes. */}
         <AgoraDropdown
           title={'renderMode pushed to remote users'}
           items={enumToItems(RenderModeType)}
@@ -380,6 +430,10 @@ export default class RemoteViewFillMode
             }}
           />
         </AgoraView>
+        <AgoraButton
+          title={'push renderMode/mirror via setRemoteRenderMode'}
+          onPress={this.pushRemoteRenderMode}
+        />
         <AgoraButton
           title={'read actual transform'}
           onPress={this.readTransform}

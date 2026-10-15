@@ -98,23 +98,78 @@ different aspect ratios, so the page lets you switch the remote tile between
 obvious with a normal 16:9 camera. The local tile is fixed at `1:1` as the
 control group: the parameter must never stretch it.
 
+**Remote tiles start at `RenderModeFit`, which is not the SDK default.** The SDK
+default is `RenderModeHidden`, in Electron and in native alike:
+`RendererManager` hardcodes `defaultRenderMode` to Hidden, and
+`presetRendererContext` fills it in whenever a canvas carries no `renderMode`.
+This page puts the dropdown value into the canvas instead, so what the dropdown
+shows is what the renderer received.
+
+Fit is chosen as the starting point because **Hidden already fills the view**, by
+cropping the long edge. Starting from Hidden would make fill look like it
+changed nothing, since both end up filled with no bars and only differ in
+cropped-content versus distorted-content. Fit letterboxes, so turning fill on
+visibly removes the bars.
+
+The local tile deliberately keeps the SDK defaults and is left out of both
+dropdowns: it is the control group, and the parameter only matches remote views.
+
+## How The Render Mode Reaches The Renderer
+
+Nothing here ever rebinds a view to change a render attribute, because rebinding
+blanks the picture: unmounting pulls the last renderer out of its cache, which
+stops and releases it, and the canvas the remount creates stays `display: none`
+until the next frame lands. At the default 15 fps render loop that is a visible
+black flash.
+
+- **The dropdowns push through `setRemoteRenderMode`.** It resolves the renderer
+  cache by key and calls `setContext` on the renderers already in it, so
+  `updateRenderMode` / `updateMirrorMode` only rewrite the canvas transform and
+  the parent's `rotateY`. The live renderer is updated in place. The same button
+  is also exposed on its own, since this is the call an integrator uses on a view
+  that is already rendering and the path the private parameter must win over.
+- **The canvas still carries `renderMode` and `mirrorMode`,** but only so that
+  binds start from what the UI shows. It matters for a remote user who joins
+  after a dropdown was changed, and it keeps `renderMode` alive across
+  `RtcSurfaceView`'s own click-to-mirror toggle, whose `updateRenderer` re-sends
+  the canvas and would otherwise let `presetRendererContext` fall back to
+  `defaultRenderMode`. The tile is keyed on uid alone so a dropdown change never
+  becomes an unmount plus mount.
+- **The push runs in the `setState` callback** rather than inline. React commits
+  a child's `componentDidUpdate` before the parent's `setState` callback, so the
+  push lands after `RtcSurfaceView.updateRenderer` has re-sent the canvas. That
+  ordering matters: `updateRenderer` substitutes its own `isMirror` flag for
+  `mirrorMode`, and the flag is derived once in the constructor as
+  `canvas.mirrorMode === Disabled`, so it is inverted. Pushing last overrides it.
+
+Changing the container shape does not rebind either: the size lives on a wrapper
+element this page owns, and `updateRenderMode` recomputes the transform every
+frame from `container.clientWidth/clientHeight`. Note that _every frame_ is also
+the only time it recomputes — there is no `ResizeObserver` on the container — so
+a shape change renders with the previous transform until the next frame, which
+shows up as a short flash of bars at 15 fps. That is renderer behaviour, not
+something this page controls.
+
 ## Suggested Checks
 
 Join with at least one remote user publishing video.
 
-| Check             | Action                                                       | Expected                                                             |
-| ----------------- | ------------------------------------------------------------ | -------------------------------------------------------------------- |
-| Default off       | Join without touching the parameter                          | Every tile is a single value `scale(x)`                              |
-| Every remote user | `enable all (*)`                                             | Each remote tile becomes a two value scale, local stays single value |
-| Specific uid      | Pick a uid, `append uid`, `apply fill uids`                  | Only that uid stretches, the others fall back                        |
-| Takes effect live | With a remote already rendering, press `enable all (*)`      | It switches on the spot, no rebinding                                |
-| Turns off live    | `disable ("")`                                               | It goes back to the requested render mode on the spot                |
-| Parameter wins    | While fill is on, switch `renderMode` between Hidden and Fit | The picture does not change                                          |
-| Mirror coexists   | While fill is on, switch `mirrorMode` to Enabled             | It mirrors and the two scale values stay the same                    |
-| View ratios       | Switch the remote container shape through all four values    | Every shape fills, and each axis matches `container / canvas`        |
-| Bad input         | Apply `99999`, `&#@`, `,`, `abc`                             | Nothing stretches, nothing else breaks, no crash                     |
-| Equal ratios      | Set the shape to match the remote video ratio                | Still a two value scale, the two numbers are just equal              |
-| Remote rejoins    | Have the remote leave and come back                          | It is still stretched without resending the parameter                |
+| Check                       | Action                                                                   | Expected                                                                                                                                                        |
+| --------------------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Default off                 | Join without touching the parameter                                      | Every tile is a single value `scale(x)`                                                                                                                         |
+| Every remote user           | `enable all (*)`                                                         | Each remote tile becomes a two value scale, local stays single value                                                                                            |
+| Specific uid                | Pick a uid, `append uid`, `apply fill uids`                              | Only that uid stretches, the others fall back                                                                                                                   |
+| Takes effect live           | With a remote already rendering, press `enable all (*)`                  | It switches on the spot, no rebinding                                                                                                                           |
+| Turns off live              | `disable ("")`                                                           | It goes back to the requested render mode on the spot                                                                                                           |
+| Parameter wins              | While fill is on, switch `renderMode` between Hidden and Fit             | The picture does not change                                                                                                                                     |
+| Parameter wins over the API | While fill is on, press `push renderMode/mirror via setRemoteRenderMode` | The picture does not change. This goes through the call an integrator uses on a view that is already rendering, which is the path the parameter has to override |
+| Mirror coexists             | While fill is on, switch `mirrorMode` to Enabled                         | It mirrors and the two scale values stay the same                                                                                                               |
+| View ratios                 | Switch the remote container shape through all four values                | Every shape fills, and each axis matches `container / canvas`                                                                                                   |
+| Bad input                   | Apply `99999`, `&#@`, `,`, `abc`                                         | Nothing stretches, nothing else breaks, no crash                                                                                                                |
+| Equal ratios                | Set the shape to match the remote video ratio                            | Still a two value scale, the two numbers are just equal                                                                                                         |
+| Remote rejoins              | Have the remote leave and come back                                      | It is still stretched without resending the parameter                                                                                                           |
+| No rebind on mode change    | Switch `renderMode` back and forth between Fit and Hidden                | The picture changes mode without blanking. A black flash would mean the view is being rebound instead of updated in place                                       |
+| Late joiner picks up the UI | Change `renderMode`, then have another remote user join                  | The new tile comes up on the mode the dropdown shows, not on Hidden                                                                                             |
 
 ## Run The Example
 
