@@ -2,6 +2,7 @@
 
 import { AgoraElectronBridge } from '../../Private/internal/IrisApiEngine';
 import { AgoraEnv, logDebug, logError, parseIntPtr2Number } from '../../Utils';
+
 let RendererManager: any;
 let CapabilityManager: any;
 //@ts-ignore
@@ -63,6 +64,7 @@ import IAgoraRtcEngineTI from '../ti/IAgoraRtcEngine-ti';
 
 import { H265TranscoderInternal } from './AgoraH265TranscoderInternal';
 import { AudioDeviceManagerInternal } from './AudioDeviceManagerInternal';
+import { resetFillRenderMode } from './FillRenderMode';
 import {
   EVENT_TYPE,
   EventProcessor,
@@ -230,6 +232,13 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     AgoraElectronBridge.ReleaseRenderer();
     AgoraEnv.AgoraRendererManager?.release();
     AgoraEnv.AgoraRendererManager = undefined;
+    // The fill render mode parameter is parsed and held in a module scoped
+    // variable, so unlike every other private parameter it is not carried by
+    // the native engine and would survive release. Clearing it here makes a
+    // released engine leave no trace, which is what Android does: it keeps the
+    // same parameter in the native engine configuration, so it dies with the
+    // engine. See CSD-80258.
+    resetFillRenderMode();
     this._media_engine.release();
     this._local_spatial_audio_engine.release();
     RtcEngineExInternal._event_handlers = [];

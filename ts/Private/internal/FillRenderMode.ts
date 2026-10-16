@@ -30,6 +30,24 @@ export function setFillRenderModeUids(value?: string): boolean {
   return before !== rawValue;
 }
 
+/**
+ * Drop the parameter, so a released engine does not leak it into the next one.
+ *
+ * This state is module scoped rather than engine scoped, so without an explicit
+ * reset it would outlive `release()` and a freshly initialized engine would come
+ * up with fill still on. Android keeps the same parameter in the native engine's
+ * configuration, where it dies with the engine, so releasing there goes back to
+ * the proportional render mode. Called from `RtcEngineExInternal.release()` to
+ * match that.
+ *
+ * Deliberately not called on `leaveChannel`: both platforms keep the parameter
+ * across leave and rejoin, and the renderer rebuilt on rejoin picks it up again
+ * through `refreshFillRenderMode()`.
+ */
+export function resetFillRenderMode(): void {
+  parseInto(undefined);
+}
+
 export function getFillRenderModeUids(): string | undefined {
   return rawValue;
 }
