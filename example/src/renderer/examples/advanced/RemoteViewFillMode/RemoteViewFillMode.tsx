@@ -4,6 +4,8 @@ import {
   ClientRoleType,
   IRtcEngineEventHandler,
   RenderModeType,
+  RtcConnection,
+  RtcStats,
   VideoCanvas,
   VideoMirrorModeType,
   VideoSourceType,
@@ -181,7 +183,7 @@ export default class RemoteViewFillMode
   };
 
   /**
-   * Step 4: read back what every renderer actually wrote to its canvas
+   * Step 3-3: read back what every renderer actually wrote to its canvas
    *
    * This is the objective check. A two value `scale(a, b)` is only written by
    * the fill branch of IRenderer.updateRenderMode, the proportional branch
@@ -228,11 +230,39 @@ export default class RemoteViewFillMode
   };
 
   /**
+   * Step 4: leaveChannel
+   */
+  protected leaveChannel() {
+    this.engine?.leaveChannel();
+  }
+
+  /**
    * Step 5: releaseRtcEngine
    */
   protected releaseRtcEngine() {
     this.engine?.unregisterEventHandler(this);
     this.engine?.release();
+  }
+
+  /**
+   * Reset only what belonged to the call, and deliberately do not call super.
+   *
+   * The base class reacts to leaving by replacing the whole state with
+   * `createState()`, which throws away everything that was typed or picked:
+   * the channel name goes back to the one from the config, and so do the
+   * parameter input, the render mode, the mirror mode and the container shape.
+   * Leaving a channel is the one thing you do between two attempts, so wiping
+   * the setup makes every repeat test start over.
+   *
+   * Two of those resets would also report something untrue. `applied` would
+   * read as empty while the parameter is still set, because it lives on the
+   * engine and the Electron side keeps it in a module level variable that
+   * leaving does not clear. And `startPreview` would read as false while the
+   * preview is still running, because nothing ever stopped it.
+   */
+  onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
+    this.info('onLeaveChannel', 'connection', connection, 'stats', stats);
+    this.setState({ joinChannelSuccess: false, remoteUsers: [] });
   }
 
   /**
