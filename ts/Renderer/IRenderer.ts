@@ -86,6 +86,35 @@ export abstract class IRenderer {
   protected updateRenderMode(): void {
     if (!this.canvas || !this.container) return;
 
+    if (this._fillRenderMode) {
+      // Hand the container box to the canvas and let the browser scale the
+      // bitmap, rather than keeping a bitmap sized layout box and squashing it
+      // with a transform.
+      //
+      // A bitmap sized box is centred by the flex container at
+      // `(clientHeight - height) / 2`, which is half a pixel whenever that
+      // difference is odd. The layer gets rasterised on that half pixel grid,
+      // so once the transform and the clip have been applied the first row is
+      // only half covered and blends with the black behind it. That reads as a
+      // one pixel dark line along the top edge. It only shows at a device pixel
+      // ratio of 1, because at 2 the half pixel is a whole device pixel.
+      //
+      // Owning the container box puts the layout box at an integer offset and
+      // removes the transform, so the edges land on whole pixels. It also means
+      // fill no longer reads the container geometry on every frame.
+      this.canvas.style.transform = '';
+      this.canvas.style.width = '100%';
+      this.canvas.style.height = '100%';
+      this.canvas.style.objectFit = 'fill';
+      return;
+    }
+
+    // The proportional modes still size the layout box from the bitmap, so undo
+    // what the fill branch sets before measuring.
+    this.canvas.style.width = '';
+    this.canvas.style.height = '';
+    this.canvas.style.objectFit = '';
+
     const { clientWidth, clientHeight } = this.container;
     const { width, height } = this.canvas;
 
@@ -93,11 +122,6 @@ export abstract class IRenderer {
     const canvasAspectRatio = width / height;
     const widthScale = clientWidth / width;
     const heightScale = clientHeight / height;
-
-    if (this._fillRenderMode) {
-      this.canvas.style.transform = `scale(${widthScale}, ${heightScale})`;
-      return;
-    }
 
     const isHidden =
       this.context.renderMode === RenderModeType.RenderModeHidden;
