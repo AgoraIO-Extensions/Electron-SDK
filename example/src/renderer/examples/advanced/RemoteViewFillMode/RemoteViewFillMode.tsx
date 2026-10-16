@@ -185,18 +185,11 @@ export default class RemoteViewFillMode
   /**
    * Step 3-3: read back what every renderer actually wrote to its canvas
    *
-   * This is the objective check, and it reads two properties because fill and
-   * the proportional modes express themselves differently.
-   *
-   * Fill gives the container box to the canvas and sets `object-fit: fill`,
-   * leaving the transform empty. The proportional modes keep a bitmap sized
-   * layout box and write a single value `scale(x)`. So `object-fit: fill` is
-   * what says fill is on.
-   *
-   * A two value `scale(a, b)` is also accepted, because that is how fill used
-   * to be expressed and an older build of the SDK will still report it that
-   * way. Whether the two values happen to be equal only tells you if the
-   * distortion is visible, so do not judge by the numbers being different.
+   * This is the objective check. A two value `scale(a, b)` is only written by
+   * the fill branch of IRenderer.updateRenderMode, the proportional branch
+   * writes a single value `scale(x)`. Whether the two values happen to be
+   * equal only tells you if the distortion is visible, it does not tell you
+   * whether fill is on, so do not judge by the numbers being different.
    */
   readTransform = () => {
     const caches = AgoraEnv.AgoraRendererManager?.getRendererCaches() ?? [];
@@ -208,14 +201,7 @@ export default class RemoteViewFillMode
       const { uid, sourceType } = cache.cacheContext;
       const renderers = cache.renderers.map((renderer, index) => {
         const transform = renderer.canvas?.style.transform || '(none)';
-        const objectFit = renderer.canvas?.style.objectFit || '(none)';
-        const cssSize = renderer.canvas
-          ? `${renderer.canvas.style.width || '(auto)'}x${
-              renderer.canvas.style.height || '(auto)'
-            }`
-          : '-';
-        const legacyFill = /scale\([^,]+,[^)]+\)/.test(transform);
-        const isFill = objectFit === 'fill' || legacyFill;
+        const isFill = /scale\([^,]+,[^)]+\)/.test(transform);
         const container = renderer.container
           ? `${renderer.container.clientWidth}x${renderer.container.clientHeight}`
           : '-';
@@ -223,13 +209,11 @@ export default class RemoteViewFillMode
           ? `${renderer.canvas.width}x${renderer.canvas.height}`
           : '-';
         return [
-          `  renderer[${index}] transform=${transform} objectFit=${objectFit}`,
+          `  renderer[${index}] transform=${transform}`,
           `    ${
-            isFill
-              ? `FILL${legacyFill ? ' (legacy two value scale)' : ''}`
-              : 'not fill'
+            isFill ? 'two value scale -> FILL' : 'single value -> not fill'
           }`,
-          `    container=${container} canvas=${canvas} cssSize=${cssSize}`,
+          `    container=${container} canvas=${canvas}`,
           `    renderMode=${renderer.context.renderMode} mirrorMode=${renderer.context.mirrorMode}`,
         ].join('\n');
       });

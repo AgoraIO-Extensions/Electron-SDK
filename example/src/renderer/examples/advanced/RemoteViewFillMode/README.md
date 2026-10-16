@@ -79,29 +79,18 @@ feature, so do not report them against it:
 Looking at the picture is not enough, so the page has a **read actual
 transform** button that prints what every renderer wrote to its canvas.
 
-Fill and the proportional modes express themselves differently, so the readout
-prints both properties:
+- A **two value** `scale(a, b)` is only written by the fill branch, so it means
+  fill is on.
+- A **single value** `scale(x)` means the proportional branch ran, so fill is
+  off.
+- Whether the two values are **equal** only tells you if the distortion is
+  visible. When the view and the video have the same aspect ratio, fill is on
+  and still produces something like `scale(2.15, 2.15)`. **Do not judge by the
+  two numbers being different.**
 
-- **`objectFit=fill`** means fill is on. Fill gives the container box to the
-  canvas, so it also prints `cssSize=100%x100%` and an empty transform. There is
-  no scale factor to read, because the browser does the scaling.
-- **A single value `scale(x)` with `objectFit=(none)`** means a proportional
-  mode ran, so fill is off. That value should equal `container` divided by
-  `canvas` on the axis the mode fits to. Use the printed `container=` and
-  `canvas=` sizes as the baseline, not the nominal ratio of the tile.
-- **A two value `scale(a, b)`** is reported as `FILL (legacy two value scale)`.
-  That is how fill used to be expressed, so an older build of the SDK still
-  reads back that way. Whether the two values are equal only tells you if the
-  distortion is visible, never whether fill is on.
-
-Why fill stopped using a transform: a bitmap sized layout box gets centred by
-the flex container at `(clientHeight - canvasHeight) / 2`, which is half a pixel
-whenever that difference is odd. The layer is rasterised on that half pixel
-grid, so after the transform and the clip the top row ends up only half covered
-and blends with the black behind it, which reads as a one pixel dark line along
-the top edge. It only shows at a device pixel ratio of 1. Owning the container
-box puts the layout box at an integer offset and removes the transform. See
-NMS-31709.
+Each printed value should equal `container` divided by `canvas` on the matching
+axis. Use the printed `container=` and `canvas=` sizes as the baseline, not the
+nominal ratio of the tile.
 
 Fill and the built-in modes only look different when the view and the video have
 different aspect ratios, so the page lets you switch the remote tile between
@@ -167,8 +156,8 @@ Join with at least one remote user publishing video.
 
 | Check                       | Action                                                                   | Expected                                                                                                                                                                                                                                                                                                                         |
 | --------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Default off                 | Join without touching the parameter                                      | Every tile reports `objectFit=(none)` and a single value `scale(x)`                                                                                                                                                                                                                                                              |
-| Every remote user           | `enable all (*)`                                                         | Each remote tile reports `objectFit=fill`, local stays `objectFit=(none)` with a single value scale                                                                                                                                                                                                                              |
+| Default off                 | Join without touching the parameter                                      | Every tile is a single value `scale(x)`                                                                                                                                                                                                                                                                                          |
+| Every remote user           | `enable all (*)`                                                         | Each remote tile becomes a two value scale, local stays single value                                                                                                                                                                                                                                                             |
 | Specific uid                | Pick a uid, `append uid`, `apply fill uids`                              | Only that uid stretches, the others fall back                                                                                                                                                                                                                                                                                    |
 | Takes effect live           | With a remote already rendering, press `enable all (*)`                  | It switches on the spot, no rebinding                                                                                                                                                                                                                                                                                            |
 | Turns off live              | `disable ("")`                                                           | It goes back to the requested render mode on the spot                                                                                                                                                                                                                                                                            |
@@ -177,7 +166,7 @@ Join with at least one remote user publishing video.
 | Mirror coexists             | While fill is on, switch `mirrorMode` to Enabled                         | It mirrors and the two scale values stay the same                                                                                                                                                                                                                                                                                |
 | View ratios                 | Switch the remote container shape through all four values                | Every shape fills, and each axis matches `container / canvas`                                                                                                                                                                                                                                                                    |
 | Bad input                   | Apply `99999`, `&#@`, `,`, `abc`                                         | Nothing stretches, nothing else breaks, no crash                                                                                                                                                                                                                                                                                 |
-| Equal ratios                | Set the shape to match the remote video ratio                            | Still `objectFit=fill`; there is no scale factor to compare, which is the point of not judging by numbers                                                                                                                                                                                                                        |
+| Equal ratios                | Set the shape to match the remote video ratio                            | Still a two value scale, the two numbers are just equal                                                                                                                                                                                                                                                                          |
 | Remote rejoins              | Have the remote leave and come back                                      | It is still stretched without resending the parameter                                                                                                                                                                                                                                                                            |
 | No rebind on mode change    | Switch `renderMode` back and forth between Fit and Hidden                | The picture changes mode without blanking. A black flash would mean the view is being rebound instead of updated in place                                                                                                                                                                                                        |
 | Late joiner picks up the UI | Change `renderMode`, then have another remote user join                  | The new tile comes up on the mode the dropdown shows, not on Hidden                                                                                                                                                                                                                                                              |
