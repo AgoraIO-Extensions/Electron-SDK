@@ -15,6 +15,11 @@ declare namespace PublicScssNamespace {
     meetSurfaceViewContainer: string;
     meetSurfaceViewVideo: string;
     selectedItem: string;
+    fillModeVideo: string;
+    fillModeView16x9: string;
+    fillModeView4x3: string;
+    fillModeView21x9: string;
+    fillModeView1x1: string;
   }
 }
 

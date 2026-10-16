@@ -82,6 +82,28 @@
     }
   }
 
+  .fillModeVideo {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000000;
+  }
+  .fillModeView16x9 {
+    width: 240px;
+    height: 135px;
+  }
+  .fillModeView4x3 {
+    width: 240px;
+    height: 180px;
+  }
+  .fillModeView21x9 {
+    width: 240px;
+    height: 103px;
+  }
+  .fillModeView1x1 {
+    width: 240px;
+    height: 240px;
+  }
   .meetRenderContainer {
     position: relative;
     span {
