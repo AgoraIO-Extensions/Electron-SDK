@@ -82,18 +82,12 @@
     }
   }
 
-  // RemoteViewFillMode: fixed-size tiles so the container aspect ratio is
-  // deterministic. fill only differs from fit/hidden when the container and the
-  // video have different aspect ratios, so a flexible tile would make the case
-  // unverifiable on some window widths.
   .fillModeVideo {
     width: 100%;
     height: 100%;
     overflow: hidden;
     background: #000000;
   }
-  // Base width 240px so that even the 1:1 variant fits inside the 340px tall
-  // `.card` together with the card header.
   .fillModeView16x9 {
     width: 240px;
     height: 135px;

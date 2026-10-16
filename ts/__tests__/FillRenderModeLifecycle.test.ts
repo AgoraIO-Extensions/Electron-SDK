@@ -53,10 +53,6 @@ describe('fill render mode parameter lifecycle', () => {
     expect(isFillRenderModeEnabled(remote(11))).toBe(false);
   });
 
-  // The reset has to leave the state genuinely empty rather than merely
-  // inert, otherwise the next setParameters with the same value as before the
-  // release would be short circuited by `return before !== rawValue` and the
-  // renderers would never be refreshed.
   it('lets the same value be applied again after a reset', () => {
     expect(setFillRenderModeUids('*')).toBe(true);
     expect(setFillRenderModeUids('*')).toBe(false);
@@ -80,14 +76,6 @@ describe('fill render mode parameter lifecycle', () => {
 });
 
 describe('engine release', () => {
-  // Guards the actual alignment with Android: releasing the engine must drop
-  // the parameter, so a freshly initialized engine does not come up with fill
-  // still on.
-  //
-  // The engine is taken from createAgoraRtcEngine rather than by constructing
-  // RtcEngineExInternal directly, because that module cannot be required on its
-  // own: it pulls in IrisApiEngine, which pulls in AgoraSdk, which constructs
-  // the engine at module scope, and the class is not defined yet at that point.
   it('resets the fill render mode parameter', () => {
     setFillRenderModeUids('*');
     expect(isFillRenderModeEnabled(remote(11))).toBe(true);

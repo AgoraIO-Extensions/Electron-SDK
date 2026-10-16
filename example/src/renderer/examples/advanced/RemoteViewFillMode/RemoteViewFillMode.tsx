@@ -47,11 +47,6 @@ const reportStyle: React.CSSProperties = {
   backgroundColor: 'rgb(245, 245, 245)',
 };
 
-/**
- * The remote tile shape. fill only differs from fit/hidden when the container
- * aspect ratio does not match the video aspect ratio, so the shape has to be
- * switchable to make the effect observable.
- */
 const REMOTE_SHAPES: Record<string, string> = {
   '16:9': AgoraStyle.fillModeView16x9,
   '4:3': AgoraStyle.fillModeView4x3,
@@ -85,10 +80,6 @@ export default class RemoteViewFillMode
       startPreview: false,
       fillUids: MATCH_ALL,
       appliedFillUids: '',
-      // Fit rather than the SDK default of Hidden, and it really is applied
-      // because the canvas carries it. Hidden already fills the view by
-      // cropping, so starting there would make fill look like it changed
-      // nothing; Fit letterboxes, which makes the effect obvious.
       remoteRenderMode: RenderModeType.RenderModeFit,
       remoteMirrorMode: VideoMirrorModeType.VideoMirrorModeDisabled,
       remoteShape: '21:9',
@@ -96,9 +87,6 @@ export default class RemoteViewFillMode
     };
   }
 
-  /**
-   * Step 1: initRtcEngine
-   */
   protected async initRtcEngine() {
     const { appId } = this.state;
     if (!appId) {
@@ -109,24 +97,18 @@ export default class RemoteViewFillMode
     this.engine.initialize({
       appId,
       logConfig: { filePath: Config.logFilePath },
-      // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
     this.engine.registerEventHandler(this);
 
-    // Need granted the microphone and camera permission
     await askMediaAccess(['microphone', 'camera']);
 
-    // Need to enable video on this case
     this.engine.enableVideo();
 
     this.engine.startPreview();
     this.setState({ startPreview: true });
   }
 
-  /**
-   * Step 2: joinChannel
-   */
   protected joinChannel() {
     const { channelId, token, uid } = this.state;
     if (!channelId) {
@@ -143,34 +125,11 @@ export default class RemoteViewFillMode
     });
   }
 
-  /**
-   * Step 3-1: set the fill render mode private parameter
-   *
-   * The parameter is engine scoped and takes effect immediately on Electron:
-   * callIrisApi intercepts setParameters and refreshes every renderer, so the
-   * views that are already rendering switch over without being re-bound.
-   */
   applyFillUids = (value: string) => {
     this.engine?.setParameters(JSON.stringify({ [FILL_UIDS_KEY]: value }));
     this.setState({ fillUids: value, appliedFillUids: value });
   };
 
-  /**
-   * Step 3-2: push the selected renderMode / mirrorMode through the public API
-   *
-   * This is how both dropdowns take effect. `setRemoteRenderMode` resolves the
-   * renderer cache by key and calls setContext on the renderers it already
-   * holds, so updateRenderMode / updateMirrorMode only rewrite the canvas
-   * transform. Nothing is unbound and no canvas is recreated, so the picture
-   * does not blank. Re-binding the view would, because tearing the last
-   * renderer out of a cache stops and releases it and the rebuilt canvas stays
-   * hidden until the next frame arrives, which at the default 15 fps render
-   * loop is a visible black flash.
-   *
-   * It is also the call an integrator actually uses on a view that is already
-   * rendering, and the path the private parameter has to win over, so keeping
-   * it behind an explicit button lets the API be exercised on its own.
-   */
   pushRemoteRenderMode = () => {
     const { remoteUsers, remoteRenderMode, remoteMirrorMode } = this.state;
     Array.from(new Set(remoteUsers)).forEach((remoteUid) => {
@@ -182,15 +141,6 @@ export default class RemoteViewFillMode
     });
   };
 
-  /**
-   * Step 3-3: read back what every renderer actually wrote to its canvas
-   *
-   * This is the objective check. A two value `scale(a, b)` is only written by
-   * the fill branch of IRenderer.updateRenderMode, the proportional branch
-   * writes a single value `scale(x)`. Whether the two values happen to be
-   * equal only tells you if the distortion is visible, it does not tell you
-   * whether fill is on, so do not judge by the numbers being different.
-   */
   readTransform = () => {
     const caches = AgoraEnv.AgoraRendererManager?.getRendererCaches() ?? [];
     if (!caches.length) {
@@ -229,47 +179,20 @@ export default class RemoteViewFillMode
     this.setState({ transformReport: lines.join('\n') });
   };
 
-  /**
-   * Step 4: leaveChannel
-   */
   protected leaveChannel() {
     this.engine?.leaveChannel();
   }
 
-  /**
-   * Step 5: releaseRtcEngine
-   */
   protected releaseRtcEngine() {
     this.engine?.unregisterEventHandler(this);
     this.engine?.release();
   }
 
-  /**
-   * Reset only what belonged to the call, and deliberately do not call super.
-   *
-   * The base class reacts to leaving by replacing the whole state with
-   * `createState()`, which throws away everything that was typed or picked:
-   * the channel name goes back to the one from the config, and so do the
-   * parameter input, the render mode, the mirror mode and the container shape.
-   * Leaving a channel is the one thing you do between two attempts, so wiping
-   * the setup makes every repeat test start over.
-   *
-   * Two of those resets would also report something untrue. `applied` would
-   * read as empty while the parameter is still set, because it lives on the
-   * engine and the Electron side keeps it in a module level variable that
-   * leaving does not clear. And `startPreview` would read as false while the
-   * preview is still running, because nothing ever stopped it.
-   */
   onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
     this.info('onLeaveChannel', 'connection', connection, 'stats', stats);
     this.setState({ joinChannelSuccess: false, remoteUsers: [] });
   }
 
-  /**
-   * The local preview is the control group and is deliberately left at a fixed
-   * 1:1 shape: the private parameter only matches remote views, so the local
-   * tile must never stretch no matter what is set.
-   */
   protected renderUsers(): ReactElement | undefined {
     const { startPreview, joinChannelSuccess, remoteUsers } = this.state;
     if (!startPreview && !joinChannelSuccess) {
@@ -278,8 +201,6 @@ export default class RemoteViewFillMode
     return (
       <>
         <AgoraCard title={'local (control group, never stretches)'}>
-          {/* The local tile keeps the SDK defaults: it is the control group and
-              the dropdowns only target remote views, same as the parameter. */}
           {this.renderFillVideo(
             { sourceType: VideoSourceType.VideoSourceCamera },
             '1:1'
@@ -314,27 +235,6 @@ export default class RemoteViewFillMode
   }
 
   protected renderFillVideo(user: VideoCanvas, shape: string): ReactElement {
-    // The fixed size lives on a wrapper this component owns, and RtcSurfaceView
-    // is handed classes that just fill their parent, because
-    // RtcSurfaceView.shouldComponentUpdate only diffs canvas/connection/state:
-    // a bare containerClass change is ignored and the tile would never resize.
-    // Resizing the wrapper instead lets the size be inherited down to the
-    // renderer's own container, and updateRenderMode already runs every frame
-    // off container.clientWidth/clientHeight, so the next frame recomputes the
-    // transform with no rebind at all.
-    //
-    // The canvas carries renderMode and mirrorMode so that every bind applies
-    // the values the UI is showing. Without them presetRendererContext fills in
-    // defaultRenderMode, which RendererManager hardcodes to Hidden, so a remote
-    // user who joins after the dropdown was changed would come up on Hidden
-    // while the dropdown claims otherwise. It also keeps renderMode alive
-    // across RtcSurfaceView's own click-to-mirror toggle, whose updateRenderer
-    // re-sends the canvas and would otherwise fall back to Hidden.
-    //
-    // `key` is uid only. Keying on renderMode / mirrorMode as well would turn
-    // every dropdown change into an unmount plus mount, and that rebind is what
-    // makes the picture blank; the dropdowns go through setRemoteRenderMode
-    // instead, which updates the live renderer in place.
     return (
       <div className={REMOTE_SHAPES[shape]}>
         <RtcSurfaceView
@@ -405,11 +305,6 @@ export default class RemoteViewFillMode
             this.setState({ remoteShape: value });
           }}
         />
-        {/* Both dropdowns push through setRemoteRenderMode in the setState
-            callback. React commits a child's componentDidUpdate before the
-            parent's setState callback, so the push lands after
-            RtcSurfaceView.updateRenderer has re-sent the canvas and therefore
-            wins over the inverted mirrorMode that updateRenderer substitutes. */}
         <AgoraDropdown
           title={'renderMode pushed to remote users'}
           items={enumToItems(RenderModeType)}
