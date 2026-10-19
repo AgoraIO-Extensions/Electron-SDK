@@ -1,5 +1,6 @@
 import { VideoMirrorModeType } from '../Private/AgoraBase';
 import { RenderModeType, VideoFrame } from '../Private/AgoraMediaBase';
+import { isFillRenderModeEnabled } from '../Private/internal/FillRenderMode';
 import { CodecConfigInfo, RendererContext, RendererType } from '../Types';
 
 export abstract class IRenderer {
@@ -10,6 +11,7 @@ export abstract class IRenderer {
   context: RendererContext = {};
   private _frameCount = 0;
   private _startTime: number | null = null;
+  private _fillRenderMode = false;
 
   public bind(context: RendererContext) {
     this.parentElement = context.view;
@@ -70,6 +72,15 @@ export abstract class IRenderer {
       this.context.enableAlphaMask = context.enableAlphaMask;
     }
     this.context = { ...this.context, ...context };
+    this.refreshFillRenderMode();
+  }
+
+  public refreshFillRenderMode(): boolean {
+    const next = isFillRenderModeEnabled(this.context);
+    if (next === this._fillRenderMode) return false;
+    this._fillRenderMode = next;
+    this.updateRenderMode();
+    return true;
   }
 
   protected updateRenderMode(): void {
@@ -82,6 +93,12 @@ export abstract class IRenderer {
     const canvasAspectRatio = width / height;
     const widthScale = clientWidth / width;
     const heightScale = clientHeight / height;
+
+    if (this._fillRenderMode) {
+      this.canvas.style.transform = `scale(${widthScale}, ${heightScale})`;
+      return;
+    }
+
     const isHidden =
       this.context.renderMode === RenderModeType.RenderModeHidden;
 

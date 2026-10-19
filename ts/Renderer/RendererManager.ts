@@ -311,12 +311,17 @@ export class RendererManager {
   public setRendererContext(context: RendererContext): boolean {
     const checkedContext = this.presetRendererContext(context);
 
-    for (const rendererCache of this._rendererCaches) {
-      const result = rendererCache.setRendererContext(checkedContext);
-      if (result) {
-        return true;
+    if (checkedContext.view) {
+      for (const rendererCache of this._rendererCaches) {
+        if (rendererCache.setRendererContext(checkedContext)) {
+          return true;
+        }
       }
+      return false;
     }
-    return false;
+
+    const rendererCache = this.getRendererCache(checkedContext);
+    if (!rendererCache) return false;
+    return rendererCache.setRendererContext(checkedContext);
   }
 }

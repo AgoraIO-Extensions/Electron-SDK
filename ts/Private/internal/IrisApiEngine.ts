@@ -61,6 +61,7 @@ import {
 
 import { H265TranscoderInternal } from './AgoraH265TranscoderInternal';
 import { VideoFrameMetaInfoInternal } from './AgoraMediaBaseInternal';
+import { parseFillRenderModeFromParameters } from './FillRenderMode';
 import { MediaEngineInternal } from './MediaEngineInternal';
 import { MediaPlayerInternal } from './MediaPlayerInternal';
 import { MediaRecorderInternal } from './MediaRecorderInternal';
@@ -677,6 +678,14 @@ export function callIrisApi(funcName: string, params: any): any {
           };
           break;
       }
+    }
+    if (
+      funcName.startsWith('RtcEngine_setParameters') &&
+      parseFillRenderModeFromParameters(params?.parameters)
+    ) {
+      AgoraEnv.AgoraRendererManager?.getRendererCaches().forEach((cache) =>
+        cache.renderers.forEach((renderer) => renderer.refreshFillRenderMode())
+      );
     }
     if (funcName.indexOf('joinChannel') != -1) {
       if (AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {

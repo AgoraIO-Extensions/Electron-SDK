@@ -111,6 +111,7 @@ cd example && yarn link "agora-electron-sdk"
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------- |
 | [ScreenShare](./src/renderer/examples/advanced/ScreenShare/ScreenShare.tsx) | sharing application screen view | getScreenCaptureSources, startPrimaryScreenCapture, startSecondaryScreenCapture, joinChannelEx |
 | [VideoEffect](./src/renderer/examples/advanced/VideoEffect/VideoEffect.tsx) | beauty 2.0 with videoeffectobject | enableExtension, createVideoEffectObject, addOrUpdateVideoEffect, setVideoEffectBoolParam, setVideoEffectIntParam, setVideoEffectFloatParam |
+| [RemoteViewFillMode](./src/renderer/examples/advanced/RemoteViewFillMode/RemoteViewFillMode.tsx) | stretch remote views to fill, via private parameter ([details](./src/renderer/examples/advanced/RemoteViewFillMode/README.md)) | setParameters, setRemoteRenderMode |
 | ...                                                                                                                                                                    | ...                             | ...                                                                                            |
 
 - **hooks demos:**

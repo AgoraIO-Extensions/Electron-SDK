@@ -2,6 +2,7 @@
 
 import { AgoraElectronBridge } from '../../Private/internal/IrisApiEngine';
 import { AgoraEnv, logDebug, logError, parseIntPtr2Number } from '../../Utils';
+
 let RendererManager: any;
 let CapabilityManager: any;
 //@ts-ignore
@@ -63,6 +64,7 @@ import IAgoraRtcEngineTI from '../ti/IAgoraRtcEngine-ti';
 
 import { H265TranscoderInternal } from './AgoraH265TranscoderInternal';
 import { AudioDeviceManagerInternal } from './AudioDeviceManagerInternal';
+import { resetFillRenderMode } from './FillRenderMode';
 import {
   EVENT_TYPE,
   EventProcessor,
@@ -230,6 +232,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     AgoraElectronBridge.ReleaseRenderer();
     AgoraEnv.AgoraRendererManager?.release();
     AgoraEnv.AgoraRendererManager = undefined;
+    resetFillRenderMode();
     this._media_engine.release();
     this._local_spatial_audio_engine.release();
     RtcEngineExInternal._event_handlers = [];
