@@ -1,5 +1,12 @@
 
 
+## [4.5.3-build.6-rc.6](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.6-rc.5...v4.5.3-build.6-rc.6) (2026-10-19)
+
+
+### Features
+
+* **render:** add fill render mode for remote views via private parameter ([#1474](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1474)) ([f3864a9](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/f3864a9d15155d1fa2ae3a5893291427961d5331))
+
 ## [4.5.3-build.6-rc.5](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.4-rc.1...v4.5.3-build.6-rc.5) (2026-09-30)
 
 
