@@ -1,6 +1,6 @@
 import {
   ColorSpace,
-  PrimaryID,
+  MatrixID,
   RangeID,
   VideoFrame,
 } from '../../Private/AgoraMediaBase';
@@ -79,6 +79,11 @@ interface ColorSpaceParams {
   gUCoeff: number;
   gVCoeff: number;
   bUCoeff: number;
+}
+
+interface EffectiveColorSpace {
+  matrix: MatrixID;
+  range: RangeID;
 }
 
 export class WebGLRenderer extends IRenderer {
@@ -568,15 +573,24 @@ export class WebGLRenderer extends IRenderer {
 
   /**
    * Get color space conversion parameters based on color space and range
+   *
+   * The conversion matrix is selected by `matrix` (matrix_coefficients), not by
+   * `primaries`. Those two describe different things: `primaries` is the colour
+   * gamut, `matrix` is the YUV/RGB transform. They commonly agree, so keying on
+   * `primaries` happened to work for most streams, but a frame whose primaries
+   * and matrix disagree, or whose primaries is left unspecified, selected the
+   * wrong transform and the picture came out off-colour. See APAAS-16084.
    */
   private getColorSpaceParams(colorSpace?: ColorSpace): ColorSpaceParams {
-    // Default to BT.601 Limited if not specified
-    const primaries = colorSpace?.primaries ?? PrimaryID.PrimaryidBt709;
-    const range = colorSpace?.range ?? RangeID.RangeidLimited;
+    const { matrix, range } = this.getEffectiveColorSpace(colorSpace);
 
-    // Y offset and scale based on ran
+    // Y offset and scale based on range
     let yOffset: number;
     let yScale: number;
+
+    const isBt2020 =
+      matrix === MatrixID.MatrixidBt2020Ncl ||
+      matrix === MatrixID.MatrixidBt2020Cl;
 
     if (range === RangeID.RangeidFull) {
       yOffset = 0.0;
@@ -584,14 +598,14 @@ export class WebGLRenderer extends IRenderer {
     } else {
       // Limited range: Y [16, 235] -> [0, 1]
       yOffset = 16.0 / 255.0; // 0.0625
-      yScale = 255.0 / (235.0 - 16.0); // 1.1643
+      yScale = isBt2020 ? 1.0 : 255.0 / (235.0 - 16.0); // 1.1643
     }
 
     // Color space conversion coefficients
     let rVCoeff: number, gUCoeff: number, gVCoeff: number, bUCoeff: number;
 
-    switch (primaries) {
-      case PrimaryID.PrimaryidBt709:
+    switch (matrix) {
+      case MatrixID.MatrixidBt709:
         if (range === RangeID.RangeidFull) {
           // BT.709 Full Range
           rVCoeff = 1.5748;
@@ -607,23 +621,18 @@ export class WebGLRenderer extends IRenderer {
         }
         break;
 
-      case PrimaryID.PrimaryidBt2020:
-        if (range === RangeID.RangeidFull) {
-          // BT.2020 Full Range
-          rVCoeff = 1.4746;
-          gUCoeff = -0.164553;
-          gVCoeff = -0.571353;
-          bUCoeff = 1.8814;
-        } else {
-          // BT.2020 Limited Range
-          rVCoeff = 1.678674;
-          gUCoeff = -0.187326;
-          gVCoeff = -0.650424;
-          bUCoeff = 2.141772;
-        }
+      case MatrixID.MatrixidBt2020Ncl:
+      case MatrixID.MatrixidBt2020Cl:
+        // BT.2020 Full Range
+        rVCoeff = 1.4746;
+        gUCoeff = -0.164553;
+        gVCoeff = -0.571353;
+        bUCoeff = 1.8814;
         break;
 
-      case PrimaryID.PrimaryidSmpte170m || PrimaryID.PrimaryidBt470bg:
+      case MatrixID.MatrixidSmpte170m:
+      case MatrixID.MatrixidBt470bg:
+      case MatrixID.MatrixidUnspecified:
         if (range === RangeID.RangeidFull) {
           // BT.601 Full Range
           rVCoeff = 1.402;
@@ -638,19 +647,20 @@ export class WebGLRenderer extends IRenderer {
           bUCoeff = 2.017232;
         }
         break;
+
       default:
         if (range === RangeID.RangeidFull) {
-          // BT.601 Full Range
-          rVCoeff = 1.402;
-          gUCoeff = -0.344136;
-          gVCoeff = -0.714136;
-          bUCoeff = 1.772;
+          // BT.709 Full Range
+          rVCoeff = 1.5748;
+          gUCoeff = -0.187324;
+          gVCoeff = -0.468124;
+          bUCoeff = 1.8556;
         } else {
-          // BT.601 Limited Range (your original values)
-          rVCoeff = 1.596027;
-          gUCoeff = -0.391762;
-          gVCoeff = -0.812968;
-          bUCoeff = 2.017232;
+          // BT.709 Limited Range
+          rVCoeff = 1.792741;
+          gUCoeff = -0.213249;
+          gVCoeff = -0.532909;
+          bUCoeff = 2.112402;
         }
         break;
     }
@@ -662,6 +672,21 @@ export class WebGLRenderer extends IRenderer {
       gUCoeff,
       gVCoeff,
       bUCoeff,
+    };
+  }
+
+  /**
+   * Resolve the fields that actually drive the conversion, with defaults.
+   *
+   * A frame that carries no colour space, or carries Unspecified, is treated as
+   * BT.601 Limited. That is what the shader did unconditionally before the
+   * colour space handling was added in 4.5.2-build.3, so it keeps older streams
+   * rendering the way they always have.
+   */
+  private getEffectiveColorSpace(colorSpace?: ColorSpace): EffectiveColorSpace {
+    return {
+      matrix: colorSpace?.matrix ?? MatrixID.MatrixidBt470bg,
+      range: colorSpace?.range ?? RangeID.RangeidLimited,
     };
   }
 
