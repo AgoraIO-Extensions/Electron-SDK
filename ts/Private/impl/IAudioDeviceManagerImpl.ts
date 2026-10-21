@@ -1,5 +1,8 @@
 import { AudioDeviceInfo } from '../IAgoraRtcEngine';
-import { IAudioDeviceManager } from '../IAudioDeviceManager';
+import {
+  IAudioDeviceManager,
+  RecordingDeviceTestConfiguration,
+} from '../IAudioDeviceManager';
 
 // @ts-ignore
 export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
@@ -289,7 +292,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     return 'AudioDeviceManager_stopPlaybackDeviceTest';
   }
 
-  startRecordingDeviceTest(config: number): number {
+  startRecordingDeviceTest(config: RecordingDeviceTestConfiguration): number {
     const apiType = this.getApiTypeFromStartRecordingDeviceTest(config);
     const jsonParams = {
       config: config,
@@ -303,7 +306,9 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     return jsonResults.result;
   }
 
-  protected getApiTypeFromStartRecordingDeviceTest(config: number): string {
+  protected getApiTypeFromStartRecordingDeviceTest(
+    config: RecordingDeviceTestConfiguration
+  ): string {
     return 'AudioDeviceManager_startRecordingDeviceTest_db21a14';
   }
 
