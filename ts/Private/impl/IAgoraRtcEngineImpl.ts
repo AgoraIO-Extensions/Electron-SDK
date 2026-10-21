@@ -77,15 +77,12 @@ import {
   DirectCdnStreamingMediaOptions,
   FeatureType,
   IDirectCdnStreamingEventHandler,
-  ILoopbackRecordingSourceList,
   IMetadataObserver,
   IRtcEngine,
   IRtcEngineEventHandler,
   IVideoDeviceManager,
   ImageTrackOptions,
   LeaveChannelOptions,
-  LoopbackRecordingSourceInfo,
-  LoopbackRecordingSourceOptions,
   Metadata,
   MetadataType,
   PriorityType,
@@ -99,50 +96,6 @@ import {
 } from '../IAgoraRtcEngine';
 import { ILocalSpatialAudioEngine } from '../IAgoraSpatialAudio';
 import { IAudioDeviceManager } from '../IAudioDeviceManager';
-
-// @ts-ignore
-export class ILoopbackRecordingSourceListImpl
-  implements ILoopbackRecordingSourceList
-{
-  getCount(): number {
-    const apiType = this.getApiTypeFromGetCount();
-    const jsonParams = {};
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromGetCount(): string {
-    return 'LoopbackRecordingSourceList_getCount';
-  }
-
-  getSourceInfo(index: number): LoopbackRecordingSourceInfo {
-    const apiType = this.getApiTypeFromGetSourceInfo(index);
-    const jsonParams = {
-      index: index,
-      toJSON: () => {
-        return {
-          index: index,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromGetSourceInfo(index: number): string {
-    return 'LoopbackRecordingSourceList_getSourceInfo';
-  }
-
-  release(): void {
-    const apiType = this.getApiTypeFromRelease();
-    const jsonParams = {};
-    callIrisApi.call(this, apiType, jsonParams);
-  }
-
-  protected getApiTypeFromRelease(): string {
-    return 'LoopbackRecordingSourceList_release';
-  }
-}
 
 export function processIRtcEngineEventHandler(
   handler: IRtcEngineEventHandler,
@@ -5031,28 +4984,6 @@ export class IRtcEngineImpl implements IRtcEngine {
     includeScreen: boolean
   ): string {
     return 'RtcEngine_getScreenCaptureSources';
-  }
-
-  getLoopbackRecordingSources(
-    options: LoopbackRecordingSourceOptions
-  ): ILoopbackRecordingSourceList {
-    const apiType = this.getApiTypeFromGetLoopbackRecordingSources(options);
-    const jsonParams = {
-      options: options,
-      toJSON: () => {
-        return {
-          options: options,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromGetLoopbackRecordingSources(
-    options: LoopbackRecordingSourceOptions
-  ): string {
-    return 'RtcEngine_getLoopbackRecordingSources';
   }
 
   setAudioSessionOperationRestriction(
