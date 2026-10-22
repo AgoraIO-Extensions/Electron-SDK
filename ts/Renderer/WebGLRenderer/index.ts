@@ -1,6 +1,6 @@
 import {
   ColorSpace,
-  PrimaryID,
+  MatrixID,
   RangeID,
   VideoFrame,
 } from '../../Private/AgoraMediaBase';
@@ -571,10 +571,10 @@ export class WebGLRenderer extends IRenderer {
    */
   private getColorSpaceParams(colorSpace?: ColorSpace): ColorSpaceParams {
     // Default to BT.601 Limited if not specified
-    const primaries = colorSpace?.primaries ?? PrimaryID.PrimaryidBt709;
+    const matrix = colorSpace?.matrix ?? MatrixID.MatrixidBt470bg;
     const range = colorSpace?.range ?? RangeID.RangeidLimited;
 
-    // Y offset and scale based on ran
+    // Y offset and scale based on range
     let yOffset: number;
     let yScale: number;
 
@@ -590,8 +590,8 @@ export class WebGLRenderer extends IRenderer {
     // Color space conversion coefficients
     let rVCoeff: number, gUCoeff: number, gVCoeff: number, bUCoeff: number;
 
-    switch (primaries) {
-      case PrimaryID.PrimaryidBt709:
+    switch (matrix) {
+      case MatrixID.MatrixidBt709:
         if (range === RangeID.RangeidFull) {
           // BT.709 Full Range
           rVCoeff = 1.5748;
@@ -607,7 +607,8 @@ export class WebGLRenderer extends IRenderer {
         }
         break;
 
-      case PrimaryID.PrimaryidBt2020:
+      case MatrixID.MatrixidBt2020Ncl:
+      case MatrixID.MatrixidBt2020Cl:
         if (range === RangeID.RangeidFull) {
           // BT.2020 Full Range
           rVCoeff = 1.4746;
@@ -623,7 +624,8 @@ export class WebGLRenderer extends IRenderer {
         }
         break;
 
-      case PrimaryID.PrimaryidSmpte170m || PrimaryID.PrimaryidBt470bg:
+      case MatrixID.MatrixidSmpte170m:
+      case MatrixID.MatrixidBt470bg:
         if (range === RangeID.RangeidFull) {
           // BT.601 Full Range
           rVCoeff = 1.402;
