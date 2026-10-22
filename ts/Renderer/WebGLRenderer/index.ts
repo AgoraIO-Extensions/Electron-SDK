@@ -1,11 +1,11 @@
 import {
   ColorSpace,
-  PrimaryID,
+  MatrixID,
   RangeID,
   VideoFrame,
 } from '../../Private/AgoraMediaBase';
 import { RendererContext, RendererType } from '../../Types';
-import { logWarn } from '../../Utils';
+import { logDebug, logWarn } from '../../Utils';
 import { IRenderer } from '../IRenderer';
 
 export type WebGLFallback = (renderer: WebGLRenderer, error: Error) => void;
@@ -81,6 +81,11 @@ interface ColorSpaceParams {
   bUCoeff: number;
 }
 
+interface EffectiveColorSpace {
+  matrix: MatrixID;
+  range: RangeID;
+}
+
 export class WebGLRenderer extends IRenderer {
   gl: WebGLRenderingContext | WebGL2RenderingContext | null;
   program: WebGLProgram | null;
@@ -104,6 +109,8 @@ export class WebGLRenderer extends IRenderer {
     gVCoeff?: WebGLUniformLocation | null;
     bUCoeff?: WebGLUniformLocation | null;
   } = {};
+
+  private lastAppliedColorSpaceKey?: string;
 
   constructor(fallback?: WebGLFallback) {
     super();
@@ -520,6 +527,7 @@ export class WebGLRenderer extends IRenderer {
   private releaseTextures() {
     this.gl?.deleteProgram(this.program);
     this.program = null;
+    this.lastAppliedColorSpaceKey = undefined;
 
     this.positionLocation = undefined;
     this.texCoordLocation = undefined;
@@ -570,28 +578,28 @@ export class WebGLRenderer extends IRenderer {
    * Get color space conversion parameters based on color space and range
    */
   private getColorSpaceParams(colorSpace?: ColorSpace): ColorSpaceParams {
-    // Default to BT.601 Limited if not specified
-    const primaries = colorSpace?.primaries ?? PrimaryID.PrimaryidBt709;
-    const range = colorSpace?.range ?? RangeID.RangeidLimited;
+    const { matrix, range } = this.getEffectiveColorSpace(colorSpace);
 
-    // Y offset and scale based on ran
+    // Y offset and scale based on range
     let yOffset: number;
     let yScale: number;
+    const isBt2020 =
+      matrix === MatrixID.MatrixidBt2020Ncl ||
+      matrix === MatrixID.MatrixidBt2020Cl;
 
     if (range === RangeID.RangeidFull) {
       yOffset = 0.0;
       yScale = 1.0;
     } else {
-      // Limited range: Y [16, 235] -> [0, 1]
-      yOffset = 16.0 / 255.0; // 0.0625
-      yScale = 255.0 / (235.0 - 16.0); // 1.1643
+      yOffset = 16.0 / 255.0;
+      yScale = isBt2020 ? 1.0 : 255.0 / (235.0 - 16.0);
     }
 
     // Color space conversion coefficients
     let rVCoeff: number, gUCoeff: number, gVCoeff: number, bUCoeff: number;
 
-    switch (primaries) {
-      case PrimaryID.PrimaryidBt709:
+    switch (matrix) {
+      case MatrixID.MatrixidBt709:
         if (range === RangeID.RangeidFull) {
           // BT.709 Full Range
           rVCoeff = 1.5748;
@@ -607,23 +615,18 @@ export class WebGLRenderer extends IRenderer {
         }
         break;
 
-      case PrimaryID.PrimaryidBt2020:
-        if (range === RangeID.RangeidFull) {
-          // BT.2020 Full Range
-          rVCoeff = 1.4746;
-          gUCoeff = -0.164553;
-          gVCoeff = -0.571353;
-          bUCoeff = 1.8814;
-        } else {
-          // BT.2020 Limited Range
-          rVCoeff = 1.678674;
-          gUCoeff = -0.187326;
-          gVCoeff = -0.650424;
-          bUCoeff = 2.141772;
-        }
+      case MatrixID.MatrixidBt2020Ncl:
+      case MatrixID.MatrixidBt2020Cl:
+        // BT.2020 Full Range
+        rVCoeff = 1.4746;
+        gUCoeff = -0.164553;
+        gVCoeff = -0.571353;
+        bUCoeff = 1.8814;
         break;
 
-      case PrimaryID.PrimaryidSmpte170m || PrimaryID.PrimaryidBt470bg:
+      case MatrixID.MatrixidSmpte170m:
+      case MatrixID.MatrixidBt470bg:
+      case MatrixID.MatrixidUnspecified:
         if (range === RangeID.RangeidFull) {
           // BT.601 Full Range
           rVCoeff = 1.402;
@@ -640,17 +643,17 @@ export class WebGLRenderer extends IRenderer {
         break;
       default:
         if (range === RangeID.RangeidFull) {
-          // BT.601 Full Range
-          rVCoeff = 1.402;
-          gUCoeff = -0.344136;
-          gVCoeff = -0.714136;
-          bUCoeff = 1.772;
+          // BT.709 Full Range
+          rVCoeff = 1.5748;
+          gUCoeff = -0.187324;
+          gVCoeff = -0.468124;
+          bUCoeff = 1.8556;
         } else {
-          // BT.601 Limited Range (your original values)
-          rVCoeff = 1.596027;
-          gUCoeff = -0.391762;
-          gVCoeff = -0.812968;
-          bUCoeff = 2.017232;
+          // BT.709 Limited Range
+          rVCoeff = 1.792741;
+          gUCoeff = -0.213249;
+          gVCoeff = -0.532909;
+          bUCoeff = 2.112402;
         }
         break;
     }
@@ -665,11 +668,28 @@ export class WebGLRenderer extends IRenderer {
     };
   }
 
+  private getEffectiveColorSpace(colorSpace?: ColorSpace): EffectiveColorSpace {
+    return {
+      matrix: colorSpace?.matrix ?? MatrixID.MatrixidBt470bg,
+      range: colorSpace?.range ?? RangeID.RangeidLimited,
+    };
+  }
+
+  private getColorSpaceKey(colorSpace?: ColorSpace): string {
+    const { matrix, range } = this.getEffectiveColorSpace(colorSpace);
+    return `${matrix}:${range}`;
+  }
+
   /**
    * Set color space uniform values in the shader
    */
   private setColorSpaceUniforms(colorSpace?: ColorSpace): void {
     if (!this.gl || !this.program) return;
+
+    const colorSpaceKey = this.getColorSpaceKey(colorSpace);
+    if (this.lastAppliedColorSpaceKey === colorSpaceKey) {
+      return;
+    }
 
     const params = this.getColorSpaceParams(colorSpace);
 
@@ -691,5 +711,12 @@ export class WebGLRenderer extends IRenderer {
     if (this.colorSpaceUniforms.bUCoeff) {
       this.gl.uniform1f(this.colorSpaceUniforms.bUCoeff, params.bUCoeff);
     }
+
+    if (this.lastAppliedColorSpaceKey !== undefined) {
+      logDebug(
+        `WebGLRenderer color space changed: ${this.lastAppliedColorSpaceKey} -> ${colorSpaceKey}`
+      );
+    }
+    this.lastAppliedColorSpaceKey = colorSpaceKey;
   }
 }
