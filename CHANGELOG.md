@@ -1,5 +1,12 @@
 
 
+## [4.5.3-build.7-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.6-rc.6...v4.5.3-build.7-rc.1) (2026-10-23)
+
+
+### Bug Fixes
+
+* align colorspace handling with screenshare and Shengwang ([#1478](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1478)) ([91070b0](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/91070b03249965ff5c6e8d21c0774d0d1bd7c39e))
+
 ## [4.5.3-build.6-rc.6](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.6-rc.5...v4.5.3-build.6-rc.6) (2026-10-19)
 
 
