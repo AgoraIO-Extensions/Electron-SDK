@@ -14,7 +14,7 @@ const filename = path.join(root, relative);
 const source = process.env.RENDERER_CONTEXT_SOURCE || fs.readFileSync(filename, 'utf8');
 const exportsObject = {};
 const media = {
-  VideoSourceType: { VideoSourceCamera: 0, VideoSourceMediaPlayer: 7, VideoSourceRemote: 9 },
+  VideoSourceType: { VideoSourceCamera: 0, VideoSourceMediaPlayer: 5, VideoSourceRemote: 9 },
   VideoModulePosition: { PositionPreEncoder: 4, PositionPreRenderer: 8, PositionPostCapturer: 1 },
 };
 vm.runInNewContext(ts.transpileModule(source, {
@@ -37,7 +37,7 @@ const cases = [
   ['explicit channel', { uid: 1591, channelId: 'other' }, 'other', 9, 1591],
   ['Ex connection', { uid: 1591, channelId: 'other', localUid: 42 }, 'other', 9, 1591],
   ['local camera', { sourceType: 0, channelId: 'other', uid: 1591 }, '', 0, 0],
-  ['media player', { sourceType: 7, mediaPlayerId: 5 }, '', 7, 5],
+  ['media player', { sourceType: 5, mediaPlayerId: 5 }, '', 5, 5],
 ];
 for (const [name, input, channelId, sourceType, uid] of cases) {
   const result = normalize.call(manager, { ...input });
@@ -47,5 +47,5 @@ for (const [name, input, channelId, sourceType, uid] of cases) {
   if (input.localUid !== undefined) assert.equal(result.localUid, input.localUid, name);
 }
 assert.throws(() => normalize.call(manager, { sourceType: 9 }), /uid is required/);
-assert.throws(() => normalize.call(manager, { sourceType: 7 }), /mediaPlayerId is required/);
+assert.throws(() => normalize.call(manager, { sourceType: 5 }), /mediaPlayerId is required/);
 console.log(`${relative}: 8 regression cases passed`);
