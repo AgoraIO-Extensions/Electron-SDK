@@ -122,6 +122,7 @@ export class RendererManager {
       case undefined:
         if (context.uid) {
           context.sourceType = VideoSourceType.VideoSourceRemote;
+          context.channelId = context.channelId ?? this.defaultChannelId;
         }
         break;
       default:
