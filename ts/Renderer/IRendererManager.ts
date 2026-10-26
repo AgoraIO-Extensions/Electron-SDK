@@ -112,6 +112,7 @@ export abstract class IRendererManager {
       case undefined:
         if (uid) {
           sourceType = VideoSourceType.VideoSourceRemote;
+          channelId = channelId ?? this.defaultChannelId;
         }
         break;
       default:
