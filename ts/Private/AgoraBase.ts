@@ -4461,6 +4461,22 @@ export class LoopbackAudioTrackConfig {
    * @ignore
    */
   processId?: number;
+  /**
+   * @ignore
+   */
+  excludedAppNames?: string[];
+  /**
+   * @ignore
+   */
+  excludedAppCount?: number;
+  /**
+   * @ignore
+   */
+  excludedProcessIds?: number[];
+  /**
+   * @ignore
+   */
+  excludedProcessCount?: number;
 }
 
 /**
