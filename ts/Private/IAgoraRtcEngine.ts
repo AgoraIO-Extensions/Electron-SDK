@@ -1093,6 +1093,52 @@ export class ScreenCaptureSourceInfo {
 }
 
 /**
+ * @ignore
+ */
+export enum LoopbackRecordingSourceFlag {
+  /**
+   * @ignore
+   */
+  LoopbackRecordingSourceFlagAudioOutput = 1 << 0,
+  /**
+   * @ignore
+   */
+  LoopbackRecordingSourceFlagRunningApplication = 1 << 1,
+}
+
+/**
+ * @ignore
+ */
+export class LoopbackRecordingSourceOptions {
+  /**
+   * @ignore
+   */
+  flags?: number;
+}
+
+/**
+ * @ignore
+ */
+export class LoopbackRecordingSourceInfo {
+  /**
+   * @ignore
+   */
+  appName?: string;
+  /**
+   * @ignore
+   */
+  windowTitle?: string;
+  /**
+   * @ignore
+   */
+  processIds?: number[];
+  /**
+   * @ignore
+   */
+  processCount?: number;
+}
+
+/**
  * Advanced options for audio.
  */
 export class AdvancedAudioOptions {
@@ -6018,6 +6064,13 @@ export abstract class IRtcEngine {
     iconSize: Size,
     includeScreen: boolean
   ): ScreenCaptureSourceInfo[];
+
+  /**
+   * @ignore
+   */
+  abstract getLoopbackRecordingSources(
+    options: LoopbackRecordingSourceOptions
+  ): LoopbackRecordingSourceInfo[];
 
   /**
    * @ignore

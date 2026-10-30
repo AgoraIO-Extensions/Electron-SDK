@@ -170,6 +170,17 @@ export function processIMusicContentCenterEventHandler(
         );
       }
       break;
+
+    case 'onExtResponse':
+      if (handler.onExtResponse !== undefined) {
+        handler.onExtResponse(
+          jsonParams.requestId,
+          jsonParams.jsonOption,
+          jsonParams.httpCode,
+          jsonParams.response
+        );
+      }
+      break;
   }
 }
 
@@ -556,6 +567,25 @@ export class IMusicContentCenterImpl implements IMusicContentCenter {
     jsonOption: string
   ): string {
     return 'MusicContentCenter_getInternalSongCode_3a3d1e7';
+  }
+
+  sendExtRequest(jsonOption: string): string {
+    const apiType = this.getApiTypeFromSendExtRequest(jsonOption);
+    const jsonParams = {
+      jsonOption: jsonOption,
+      toJSON: () => {
+        return {
+          jsonOption: jsonOption,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    const requestId = jsonResults.requestId;
+    return requestId;
+  }
+
+  protected getApiTypeFromSendExtRequest(jsonOption: string): string {
+    return 'MusicContentCenter_sendExtRequest_5651f34';
   }
 }
 

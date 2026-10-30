@@ -97,6 +97,8 @@ import {
   IVideoEffectObject,
   ImageTrackOptions,
   LeaveChannelOptions,
+  LoopbackRecordingSourceInfo,
+  LoopbackRecordingSourceOptions,
   Metadata,
   MetadataType,
   PriorityType,
@@ -5549,6 +5551,28 @@ export class IRtcEngineImpl implements IRtcEngine {
     includeScreen: boolean
   ): string {
     return 'RtcEngine_getScreenCaptureSources_f3e02cb';
+  }
+
+  getLoopbackRecordingSources(
+    options: LoopbackRecordingSourceOptions
+  ): LoopbackRecordingSourceInfo[] {
+    const apiType = this.getApiTypeFromGetLoopbackRecordingSources(options);
+    const jsonParams = {
+      options: options,
+      toJSON: () => {
+        return {
+          options: options,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromGetLoopbackRecordingSources(
+    options: LoopbackRecordingSourceOptions
+  ): string {
+    return 'RtcEngine_getLoopbackRecordingSources_89105d0';
   }
 
   setAudioSessionOperationRestriction(

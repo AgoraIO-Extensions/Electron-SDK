@@ -4,6 +4,20 @@ import { IMediaPlayer } from './IAgoraMediaPlayer';
 /**
  * @ignore
  */
+export enum MusicContentCenterVendorId {
+  /**
+   * @ignore
+   */
+  KMusicContentCenterVendorIdYjx = 1,
+  /**
+   * @ignore
+   */
+  KMusicContentCenterVendorIdTme = 2,
+}
+
+/**
+ * @ignore
+ */
 export enum MusicPlayMode {
   /**
    * @ignore
@@ -309,6 +323,16 @@ export interface IMusicContentCenterEventHandler {
     state: PreloadState,
     reason: MusicContentCenterStateReason
   ): void;
+
+  /**
+   * @ignore
+   */
+  onExtResponse?(
+    requestId: string,
+    jsonOption: string,
+    httpCode: number,
+    response: string
+  ): void;
 }
 
 /**
@@ -452,4 +476,9 @@ export abstract class IMusicContentCenter {
    * @ignore
    */
   abstract getInternalSongCode(songCode: number, jsonOption: string): number;
+
+  /**
+   * @ignore
+   */
+  abstract sendExtRequest(jsonOption: string): string;
 }
