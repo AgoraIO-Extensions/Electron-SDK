@@ -1,5 +1,12 @@
 
 
+## [4.5.3-build.8-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.7-rc.1...v4.5.3-build.8-rc.1) (2026-10-30)
+
+
+### Bug Fixes
+
+* restore remote channel defaults (CSD-80202) ([ce94478](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/ce944782746f8bc9db6ecb2df796f50ba0e78aa4))
+
 ## [4.5.3-build.7-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.6-rc.6...v4.5.3-build.7-rc.1) (2026-10-23)
 
 
