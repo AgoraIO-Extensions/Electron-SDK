@@ -430,13 +430,18 @@ export class IMediaEngineImpl implements IMediaEngine {
     return 'MediaEngine_enableAudioTrackVolumeIndication_a2698bb';
   }
 
-  createLoopbackAudioTrack(config: LoopbackAudioTrackConfig): number {
-    const apiType = this.getApiTypeFromCreateLoopbackAudioTrack(config);
+  createLoopbackAudioTrack(
+    config: LoopbackAudioTrackConfig,
+    enable: boolean = true
+  ): number {
+    const apiType = this.getApiTypeFromCreateLoopbackAudioTrack(config, enable);
     const jsonParams = {
       config: config,
+      enable: enable,
       toJSON: () => {
         return {
           config: config,
+          enable: enable,
         };
       },
     };
@@ -445,9 +450,10 @@ export class IMediaEngineImpl implements IMediaEngine {
   }
 
   protected getApiTypeFromCreateLoopbackAudioTrack(
-    config: LoopbackAudioTrackConfig
+    config: LoopbackAudioTrackConfig,
+    enable: boolean = true
   ): string {
-    return 'MediaEngine_createLoopbackAudioTrack_599af35';
+    return 'MediaEngine_createLoopbackAudioTrack_7dc7df9';
   }
 
   adjustLoopbackAudioPublishVolume(trackId: number, volume: number): number {
@@ -555,32 +561,6 @@ export class IMediaEngineImpl implements IMediaEngine {
 
   protected getApiTypeFromRelease(): string {
     return 'MediaEngine_release';
-  }
-
-  createLoopbackAudioTrack(
-    config: LoopbackAudioTrackConfig,
-    enable: boolean
-  ): number {
-    const apiType = this.getApiTypeFromCreateLoopbackAudioTrack(config, enable);
-    const jsonParams = {
-      config: config,
-      enable: enable,
-      toJSON: () => {
-        return {
-          config: config,
-          enable: enable,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromCreateLoopbackAudioTrack(
-    config: LoopbackAudioTrackConfig,
-    enable: boolean
-  ): string {
-    return 'MediaEngine_createLoopbackAudioTrack_7dc7df9';
   }
 
   enableLoopbackAudioTrack(trackId: number, enable: boolean): number {
