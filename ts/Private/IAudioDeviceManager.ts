@@ -246,7 +246,7 @@ export abstract class IAudioDeviceManager {
    *  < 0: Failure. See [Error Codes](https://docs.agora.io/en/video-calling/troubleshooting/error-codes) for details and resolution suggestions.
    *  -2: Invalid parameter settings. Please reset the parameters.
    */
-  abstract startRecordingDeviceTest(config: number): number;
+  abstract startRecordingDeviceTest(indicationInterval: number): number;
 
   /**
    * Stops the audio recording device test.
