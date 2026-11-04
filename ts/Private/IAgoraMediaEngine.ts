@@ -281,7 +281,10 @@ export abstract class IMediaEngine {
   /**
    * @ignore
    */
-  abstract createLoopbackAudioTrack(config: LoopbackAudioTrackConfig): number;
+  abstract createLoopbackAudioTrack(
+    config: LoopbackAudioTrackConfig,
+    enable?: boolean
+  ): number;
 
   /**
    * @ignore
@@ -316,6 +319,11 @@ export abstract class IMediaEngine {
    * @ignore
    */
   abstract release(): void;
+
+  /**
+   * @ignore
+   */
+  abstract enableLoopbackAudioTrack(trackId: number, enable: boolean): number;
 
   /**
    * Unregisters the audio frame observer.

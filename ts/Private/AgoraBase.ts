@@ -2442,6 +2442,10 @@ export enum LocalAudioStreamReason {
    * 10: (Windows only) The ID of the local audio playback device is invalid. Prompt the user to check the audio playback device ID.
    */
   LocalAudioStreamReasonPlayoutInvalidId = 10,
+  /**
+   * @ignore
+   */
+  LocalAudioStreamReasonWaitingForTarget = 11,
 }
 
 /**
@@ -4435,6 +4439,15 @@ export interface IAudioTrackObserver {
     trackId: number,
     volumeInfo: AudioTrackVolumeInfo
   ): void;
+
+  /**
+   * @ignore
+   */
+  onAudioTrackStateChanged?(
+    trackId: number,
+    state: LocalAudioStreamState,
+    reason: LocalAudioStreamReason
+  ): void;
 }
 
 /**
@@ -4477,6 +4490,10 @@ export class LoopbackAudioTrackConfig {
    * @ignore
    */
   excludedProcessCount?: number;
+  /**
+   * @ignore
+   */
+  allowWaitingForApplication?: boolean;
 }
 
 /**
