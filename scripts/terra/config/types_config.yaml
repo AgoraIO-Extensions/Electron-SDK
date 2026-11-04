@@ -8,10 +8,6 @@ parsers:
       FixEnumConstantParser:
         skipCalEnumValue: true
 
-  - path: ../parsers/fav_loopback_compatibility.ts
-    args:
-      sdkVersion: 4.5.3.135
-
   - name: UpdateSimpleTypeParser
     package: '@agoraio-extensions/terra_shared_configs'
     args:
