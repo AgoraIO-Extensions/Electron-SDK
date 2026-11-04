@@ -557,6 +557,58 @@ export class IMediaEngineImpl implements IMediaEngine {
     return 'MediaEngine_release';
   }
 
+  createLoopbackAudioTrack(
+    config: LoopbackAudioTrackConfig,
+    enable: boolean
+  ): number {
+    const apiType = this.getApiTypeFromCreateLoopbackAudioTrack(config, enable);
+    const jsonParams = {
+      config: config,
+      enable: enable,
+      toJSON: () => {
+        return {
+          config: config,
+          enable: enable,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromCreateLoopbackAudioTrack(
+    config: LoopbackAudioTrackConfig,
+    enable: boolean
+  ): string {
+    return 'MediaEngine_createLoopbackAudioTrack_7dc7df9';
+  }
+
+  enableLoopbackAudioTrack(trackId: number, enable: boolean): number {
+    const apiType = this.getApiTypeFromEnableLoopbackAudioTrack(
+      trackId,
+      enable
+    );
+    const jsonParams = {
+      trackId: trackId,
+      enable: enable,
+      toJSON: () => {
+        return {
+          trackId: trackId,
+          enable: enable,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromEnableLoopbackAudioTrack(
+    trackId: number,
+    enable: boolean
+  ): string {
+    return 'MediaEngine_enableLoopbackAudioTrack_5f38e8a';
+  }
+
   unregisterAudioFrameObserver(observer: IAudioFrameObserver): number {
     const apiType = this.getApiTypeFromUnregisterAudioFrameObserver(observer);
     const jsonParams = {

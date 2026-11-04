@@ -14,6 +14,16 @@ export function processIAudioTrackObserver(
         );
       }
       break;
+
+    case 'onAudioTrackStateChanged':
+      if (handler.onAudioTrackStateChanged !== undefined) {
+        handler.onAudioTrackStateChanged(
+          jsonParams.trackId,
+          jsonParams.state,
+          jsonParams.reason
+        );
+      }
+      break;
   }
 }
 

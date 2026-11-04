@@ -6,6 +6,7 @@ import * as t from "ts-interface-checker";
 
 export const IAudioTrackObserver = t.iface([], {
   "onAudioTrackVolumeIndication": t.opt(t.func("void", t.param("trackId", "number"), t.param("volumeInfo", "AudioTrackVolumeInfo"))),
+  "onAudioTrackStateChanged": t.opt(t.func("void", t.param("trackId", "number"), t.param("state", "LocalAudioStreamState"), t.param("reason", "LocalAudioStreamReason"))),
 });
 
 export const IAudioEncodedFrameObserver = t.iface([], {
