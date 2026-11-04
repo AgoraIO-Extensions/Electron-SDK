@@ -289,13 +289,14 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     return 'AudioDeviceManager_stopPlaybackDeviceTest';
   }
 
-  startRecordingDeviceTest(config: number): number {
-    const apiType = this.getApiTypeFromStartRecordingDeviceTest(config);
+  startRecordingDeviceTest(indicationInterval: number): number {
+    const apiType =
+      this.getApiTypeFromStartRecordingDeviceTest(indicationInterval);
     const jsonParams = {
-      config: config,
+      indicationInterval: indicationInterval,
       toJSON: () => {
         return {
-          config: config,
+          indicationInterval: indicationInterval,
         };
       },
     };
@@ -303,8 +304,10 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     return jsonResults.result;
   }
 
-  protected getApiTypeFromStartRecordingDeviceTest(config: number): string {
-    return 'AudioDeviceManager_startRecordingDeviceTest_db21a14';
+  protected getApiTypeFromStartRecordingDeviceTest(
+    indicationInterval: number
+  ): string {
+    return 'AudioDeviceManager_startRecordingDeviceTest_46f8ab7';
   }
 
   stopRecordingDeviceTest(): number {
