@@ -281,7 +281,10 @@ export abstract class IMediaEngine {
   /**
    * @ignore
    */
-  abstract createLoopbackAudioTrack(config: LoopbackAudioTrackConfig): number;
+  abstract createLoopbackAudioTrack(
+    config: LoopbackAudioTrackConfig,
+    enable?: boolean
+  ): number;
 
   /**
    * @ignore
@@ -316,14 +319,6 @@ export abstract class IMediaEngine {
    * @ignore
    */
   abstract release(): void;
-
-  /**
-   * @ignore
-   */
-  abstract createLoopbackAudioTrack(
-    config: LoopbackAudioTrackConfig,
-    enable: boolean
-  ): number;
 
   /**
    * @ignore
