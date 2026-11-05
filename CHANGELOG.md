@@ -1,5 +1,12 @@
 
 
+## [4.5.3-build.135-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.8-rc.1...v4.5.3-build.135-rc.1) (2026-11-05)
+
+
+### Features
+
+* support FAV loopback waiting on Native 4.5.3.135 ([#1482](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1482)) ([3546bf7](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/3546bf742923f6cef0a0d43fbdcee64ec090c9d3))
+
 ## [4.5.3-build.8-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.7-rc.1...v4.5.3-build.8-rc.1) (2026-10-30)
 
 
