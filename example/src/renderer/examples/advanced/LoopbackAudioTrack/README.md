@@ -1,123 +1,168 @@
 # Loopback Audio Tracks in Electron
 
-The [`Advanced -> LoopbackAudioTrack`](./LoopbackAudioTrack.tsx)
-example creates independent loopback audio tracks in the Electron renderer,
-publishes them to an Agora channel, adjusts each track's publish volume, and
-shows per-channel publish volume indications. It uses the App ID from the
-example's Settings page; the channel can be changed on the example page.
+[Advanced -> LoopbackAudioTrack](./LoopbackAudioTrack.tsx) demonstrates independent
+loopback audio tracks on Windows and macOS: source selection, capture control,
+channel publication, publish volume, and concurrent per-track level indications.
+The page shows audio tracks on the left and channel/creation controls on the right.
 
-These APIs are currently supported on Windows and macOS. They operate on
-loopback tracks created with `IMediaEngine.createLoopbackAudioTrack`, not custom
-PCM audio tracks. The older `enableLoopbackRecording` and
-`enableLoopbackRecordingEx` calls remain for compatibility but are deprecated.
-`updateLoopbackAudioTrackConfig` and the single-ID
-`publishLoopbackAudioTrackId` field are removed.
+## Run the Example
 
-## Electron API
+With the example dependencies installed, run from the repository root:
 
-| API                                                               | Behavior                                                                                                                                    |
-| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `mediaEngine.createLoopbackAudioTrack(config)`                    | Create a track; returns its ID, or `0xffffffff` on failure.                                                                                 |
-| `mediaEngine.destroyLoopbackAudioTrack(trackId)`                  | Destroy that track after stopping indication and unregistering its observer.                                                                |
-| `mediaEngine.adjustLoopbackAudioPublishVolume(trackId, volume)`   | Set that track's publish volume from 0 to 400 (100 is original volume).                                                                     |
-| `mediaEngine.registerAudioTrackObserver(trackId, observer)`       | Register a per-track volume observer.                                                                                                       |
-| `mediaEngine.unregisterAudioTrackObserver(trackId, observer)`     | Unregister using the same observer object; no callbacks for that track after it returns successfully.                                       |
-| `mediaEngine.enableAudioTrackVolumeIndication(trackId, interval)` | Start or change the callback interval in milliseconds; a positive value rounds up to a multiple of 50, and `interval <= 0` stops callbacks. |
-| `ChannelMediaOptions.publishLoopbackAudioTrackIds`                | Explicit list of track IDs to publish or unpublish, represented in Electron as `{ trackIds: number[], trackCount: number }`.                |
-
-`LoopbackAudioTrackConfig` accepts `loopbackType`, an initial `volume` (0-400),
-and source-specific `deviceName`, `appName`, or `processId`. On Windows,
-`deviceName` is ignored. On macOS, it selects a virtual device for the system
-loopback modes; application and process modes ignore it. `appName` must match
-the target application exactly, including case.
-
-## Publishing Lifecycle
-
-Create tracks before joining, or create them in the channel and explicitly
-publish each newly created ID with `updateChannelMediaOptions`. The ID list
-never means "publish every created track". Both the boolean switch and the
-list must be set in the same options object. Even one track uses a one-element
-list. To unpublish, use the same list with the switch set to `false`.
-
-```ts
-import {
-  ClientRoleType,
-  IAudioTrackObserver,
-  LoopbackAudioTrackType,
-  createAgoraRtcEngine,
-} from 'agora-electron-sdk';
-
-const engine = createAgoraRtcEngine();
-engine.initialize({ appId });
-engine.enableAudio();
-const mediaEngine = engine.getMediaEngine();
-
-const trackId = mediaEngine.createLoopbackAudioTrack({
-  loopbackType: LoopbackAudioTrackType.LoopbackSystem,
-  volume: 100,
-});
-if (trackId < 0 || trackId === 0xffffffff) {
-  throw new Error(`createLoopbackAudioTrack failed: ${trackId}`);
-}
-
-const observer: IAudioTrackObserver = {
-  onAudioTrackVolumeIndication(id, volumeInfo) {
-    const count = Math.min(volumeInfo.channelCount ?? 0, 8);
-    console.log(id, volumeInfo.levels?.slice(0, count));
-  },
-};
-mediaEngine.registerAudioTrackObserver(trackId, observer);
-mediaEngine.enableAudioTrackVolumeIndication(trackId, 100);
-
-engine.joinChannel(token, channelId, uid, {
-  clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-  publishMicrophoneTrack: false,
-  publishLoopbackAudioTrack: true,
-  publishLoopbackAudioTrackIds: { trackIds: [trackId], trackCount: 1 },
-});
-
-mediaEngine.adjustLoopbackAudioPublishVolume(trackId, 150);
-
-// When finished, stop publication and callbacks before destroying the track.
-engine.updateChannelMediaOptions({
-  publishLoopbackAudioTrack: false,
-  publishLoopbackAudioTrackIds: { trackIds: [trackId], trackCount: 1 },
-});
-mediaEngine.enableAudioTrackVolumeIndication(trackId, 0);
-mediaEngine.unregisterAudioTrackObserver(trackId, observer);
-mediaEngine.destroyLoopbackAudioTrack(trackId);
-engine.leaveChannel();
-engine.release();
+```sh
+cd example
+npm run start
 ```
 
-Check every returned status in production code; `0` indicates success for
-volume, observer, indication, channel-update, and destroy operations. The
-example page checks each result and keeps the track visible if an operation
-fails.
+Use an installed or locally linked Electron SDK package that includes this branch's
+loopback APIs and matching Native/Iris libraries. See the [example setup guide](../../../../../README.md)
+for installation and local SDK linking.
 
-## Volume Callback
+1. Open Setting, enter the App ID, channel ID, token if required, and UID, then Save.
+2. Open Advanced -> LoopbackAudioTrack. The channel ID remains editable on this page;
+   App ID, token, and UID come from the shared [configuration](../../../config/agora.config.ts).
+3. Choose a Type, configure its target, and select the creation options below.
+4. Create tracks before or after joining a channel. Use the per-track controls or
+   Publish All / Unpublish All to change publication.
 
-`AudioTrackVolumeInfo.channelCount` is the number of valid entries in
-`levels`, at most `MAX_AUDIO_CHANNELS` (currently 8). Each valid entry is a
-publish-channel level in `[0, 255]`. For mono capture, only `levels[0]` is
-valid; the unused second channel may be `-1`. Read only the first
-`channelCount` values. Native's `volumeInfo` pointer exists only during its
-callback; Electron receives a serialized snapshot, not that pointer.
+## Capture Configuration
 
-The Native API allows an observer to be registered on multiple tracks, but
-the Iris wrapper in this development package currently has one active
-`IAudioTrackObserver` registration slot per media engine. The Electron example
-publishes multiple tracks and monitors one at a time; it unregisters before
-switching the monitored track. It retains the same observer object until
-unregistration returns.
+| Type                      | Target and options                                                                                                        |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| System audio              | Capture system audio. Optional Excluded applications and Excluded PIDs remain expanded and accept comma-separated values. |
+| System excluding this app | Exclude this application automatically. Additional exclusion inputs are disabled in this demo.                            |
+| Application name          | Select a source or enter Application name directly. Wait for application audio is checked by default.                     |
+| Process ID                | Select a source PID or enter a positive integer from 1 to 4294967294 directly.                                            |
 
-## Run The Example
+Application and process modes show a scrollable source list. Refresh calls
+`getLoopbackRecordingSources` with the selected Audio output and Running apps
+flags. Application names and PIDs are capture targets; a window title is display
+text. A source with multiple PIDs produces a selectable entry for each PID in
+Process ID mode. The text/numeric target field is always available in its mode.
+Use the exact application name, including case and any executable extension.
 
-Build and link this checkout's Electron SDK and start `example` using the
-repository's normal `yarn`/`yarn --cwd example start` workflow. Set the App ID
-in Settings, open `Advanced -> LoopbackAudioTrack`, create one or more tracks,
-then join a channel. The page can publish/unpublish each track, change its
-publish volume, switch the monitored track, and destroy tracks independently.
-System audio capture may require OS permissions and a supported loopback
-device. Verify the remote audio and channel-level indications on the target
-Windows/macOS build; a TypeScript build alone does not validate capture.
+Initial publish volume defaults to 100; the range is 0-400, where 0 mutes the
+track's published audio. Configuration edits apply to newly created tracks.
+To change an existing track's type, target, exclusions, or waiting policy,
+destroy it and create another track.
+
+### Creation Options
+
+Both options above Create track are checked by default:
+
+- **Auto-start capture:** Create the track disabled, register its observer, then
+  start capture. Uncheck to leave it in Created · Not started until Start capture.
+- **Publish on creation:** Publish the new track only when already in a channel
+  and not leaving. Otherwise skip publication; joining later does not publish
+  skipped tracks automatically.
+
+These options are independent: a track can capture outside a channel, or be
+published while capture is paused. Observer-registration failure prevents
+automatic capture. Failure to enable level indications reports an error but does
+not prevent capture once the observer is registered.
+
+## Track and Channel Controls
+
+- **Start / Pause / Resume capture** controls capture and target waiting while
+  retaining the track ID, observer, and publication setting. The capture label
+  follows `onAudioTrackStateChanged`; it can show capturing, waiting, stopped,
+  or failed. Capture controls are disabled for a failed track; destroy and recreate
+  it to make another attempt in this demo.
+- **Publish / Unpublish** changes one track's publication. Publish All includes
+  every current track; when all are published, the button becomes Unpublish All.
+  Status labels are Published / Not published, with a Published count above the
+  list. Remote audio reception must be checked on a receiving client.
+- **Publish volume** changes one track's gain without changing capture or
+  publication. Capture, publication, and volume remain independent.
+- **Level interval** defaults to 100 ms and applies to every registered track.
+  Set it to 0 to stop level indications while retaining capture-state observation.
+- **Destroy** unpublishes the track if needed, stops capture if enabled, disables
+  level indications, unregisters its observer, then destroys the track. A failed
+  unpublish, capture-stop, unregister, or destroy call leaves the track visible.
+
+Joining uses the shared UID and starts without publishing microphone, camera,
+or loopback tracks; remote audio subscription is also disabled in this demo.
+Joining does not publish existing tracks. Leaving clears their publication flags
+while retaining the local tracks and their capture settings. The page releases
+its tracks, observer registrations, and engine when unmounted.
+
+## SDK Calls
+
+The page initializes the RTC engine, obtains `mediaEngine` with
+`getMediaEngine()`, registers channel callbacks, and enables audio before use.
+
+| Operation                                  | API                                                                                             |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| Join channel                               | `engine.joinChannel(token, channelId, uid, options)`                                            |
+| Leave channel                              | `engine.leaveChannel()`                                                                         |
+| Enumerate sources                          | `engine.getLoopbackRecordingSources({ flags })`                                                 |
+| Create without capture                     | `mediaEngine.createLoopbackAudioTrack(config, false)`                                           |
+| Register capture-state and level callbacks | `mediaEngine.registerAudioTrackObserver(trackId, observer)`                                     |
+| Configure level interval                   | `mediaEngine.enableAudioTrackVolumeIndication(trackId, interval)`                               |
+| Start / pause capture                      | `mediaEngine.enableLoopbackAudioTrack(trackId, enabled)`                                        |
+| Publish / unpublish                        | `engine.updateChannelMediaOptions({ publishLoopbackAudioTrack, publishLoopbackAudioTrackIds })` |
+| Set publish volume                         | `mediaEngine.adjustLoopbackAudioPublishVolume(trackId, volume)`                                 |
+| Unregister callbacks                       | `mediaEngine.unregisterAudioTrackObserver(trackId, observer)`                                   |
+| Destroy                                    | `mediaEngine.destroyLoopbackAudioTrack(trackId)`                                                |
+
+Creation returns a track ID; 0 is valid and `0xffffffff` indicates failure. The
+demo also rejects negative or non-integer IDs. The other listed operations that
+return a numeric status use 0 for success; source enumeration returns an array.
+Omitting the second argument to `createLoopbackAudioTrack` requests capture
+immediately. This demo explicitly passes `false` so observation is registered
+before capture starts.
+
+### Publication IDs
+
+After `onJoinChannelSuccess`, publish explicit track IDs with both fields in the
+same options object:
+
+```ts
+const ids = [trackIdA, trackIdB];
+engine.updateChannelMediaOptions({
+  publishLoopbackAudioTrack: true,
+  publishLoopbackAudioTrackIds: {
+    trackIds: ids,
+    trackCount: ids.length,
+  },
+});
+```
+
+Use `false` with the same ID list to unpublish. A single track uses a one-element
+list. The demo does not send an empty list or rely on it to mean all tracks.
+Exclusion arrays likewise include their corresponding counts:
+`excludedAppNames` / `excludedAppCount` and
+`excludedProcessIds` / `excludedProcessCount`.
+
+### Observation and Levels
+
+The demo registers the same `IAudioTrackObserver` separately for every track and
+routes both callbacks by `trackId`. Multiple tracks are observed concurrently;
+unregistering one does not affect the others. Keep the same observer object
+until the corresponding unregistration returns successfully.
+
+`onAudioTrackVolumeIndication` receives an Electron snapshot of
+`AudioTrackVolumeInfo`. Read only the first `channelCount` entries in `levels`,
+up to 8. Levels are in the range 0-255; mono uses only the first entry and unused
+entries may be -1. The page displays valid channel levels and clears the meters
+when capture is paused, waiting, stopped, or failed.
+
+Positive indication intervals round up to a multiple of 50 ms; for example,
+75 becomes 100. The SDK disables indications at intervals of 0 or less; the
+page accepts non-negative integers. Interval updates are applied per track;
+if one fails, that track retains its previous effective interval.
+
+## Platform and Compatibility Notes
+
+- Capture requires a supported OS, SDK capture backend, and applicable platform
+  permissions. Application-name waiting is supported on Windows and macOS 14.2+
+  with CATap; it is ignored for other capture types/backends, including SCK.
+- Exclusion support differs by platform. On Windows, only the first PID takes
+  effect when a PID list is provided; otherwise only the first application name
+  takes effect. macOS supports multiple exclusions. The demo forwards the entered
+  lists and counts rather than normalizing these platform differences.
+- The page does not expose virtual-device selection. Its loopback APIs operate on
+  tracks created by `createLoopbackAudioTrack`, not custom PCM tracks.
+- `enableLoopbackRecording` and `enableLoopbackRecordingEx` are deprecated.
+  `updateLoopbackAudioTrackConfig` and the single-ID `publishLoopbackAudioTrackId`
+  field are removed; use the per-track volume API and the explicit ID-list field.
