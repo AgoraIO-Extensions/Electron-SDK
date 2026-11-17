@@ -1,5 +1,12 @@
 
 
+## [4.5.3-build.9-bjja.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.2-rc.5...v4.5.3-build.9-bjja.1) (2026-11-17)
+
+
+### Bug Fixes
+
+* **ci:** pin ASS-3147 publish runner to Ubuntu 22.04 ([#1486](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1486)) ([26607ca](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/26607ca9e0a03a49f683b4d162c3ec1eee1568b1))
+
 ## [4.5.3-build.2-rc.5](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.2-rc.4...v4.5.3-build.2-rc.5) (2026-09-10)
 
 
