@@ -10,6 +10,7 @@ export const IMusicContentCenterEventHandler = t.iface([], {
   "onLyricResult": t.opt(t.func("void", t.param("requestId", "string"), t.param("songCode", "number"), t.param("lyricUrl", "string"), t.param("reason", "MusicContentCenterStateReason"))),
   "onSongSimpleInfoResult": t.opt(t.func("void", t.param("requestId", "string"), t.param("songCode", "number"), t.param("simpleInfo", "string"), t.param("reason", "MusicContentCenterStateReason"))),
   "onPreLoadEvent": t.opt(t.func("void", t.param("requestId", "string"), t.param("songCode", "number"), t.param("percent", "number"), t.param("lyricUrl", "string"), t.param("state", "PreloadState"), t.param("reason", "MusicContentCenterStateReason"))),
+  "onExtResponse": t.opt(t.func("void", t.param("requestId", "string"), t.param("jsonOption", "string"), t.param("httpCode", "number"), t.param("response", "string"))),
 });
 
 const exportedTypeSuite: t.ITypeSuite = {

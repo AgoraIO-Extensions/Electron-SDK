@@ -4,6 +4,10 @@
 import * as t from "ts-interface-checker";
 // tslint:disable:object-literal-key-quotes
 
+export const IAudioTrackObserver = t.iface([], {
+  "onAudioTrackVolumeIndication": t.opt(t.func("void", t.param("trackId", "number"), t.param("volumeInfo", "AudioTrackVolumeInfo"))),
+});
+
 export const IAudioEncodedFrameObserver = t.iface([], {
   "onRecordAudioEncodedFrame": t.opt(t.func("void", t.param("frameBuffer", "Uint8Array"), t.param("length", "number"), t.param("audioEncodedFrameInfo", "EncodedAudioFrameInfo"))),
   "onPlaybackAudioEncodedFrame": t.opt(t.func("void", t.param("frameBuffer", "Uint8Array"), t.param("length", "number"), t.param("audioEncodedFrameInfo", "EncodedAudioFrameInfo"))),
@@ -11,6 +15,7 @@ export const IAudioEncodedFrameObserver = t.iface([], {
 });
 
 const exportedTypeSuite: t.ITypeSuite = {
+  IAudioTrackObserver,
   IAudioEncodedFrameObserver,
 };
 export default exportedTypeSuite;

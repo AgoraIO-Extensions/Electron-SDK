@@ -1,5 +1,5 @@
-const { PassThrough } = require('stream');
 const path = require('path');
+const { PassThrough } = require('stream');
 const zlib = require('zlib');
 
 const fs = require('fs-extra');

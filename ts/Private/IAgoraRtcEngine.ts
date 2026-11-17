@@ -1093,6 +1093,52 @@ export class ScreenCaptureSourceInfo {
 }
 
 /**
+ * @ignore
+ */
+export enum LoopbackRecordingSourceFlag {
+  /**
+   * @ignore
+   */
+  LoopbackRecordingSourceFlagAudioOutput = 1 << 0,
+  /**
+   * @ignore
+   */
+  LoopbackRecordingSourceFlagRunningApplication = 1 << 1,
+}
+
+/**
+ * @ignore
+ */
+export class LoopbackRecordingSourceOptions {
+  /**
+   * @ignore
+   */
+  flags?: number;
+}
+
+/**
+ * @ignore
+ */
+export class LoopbackRecordingSourceInfo {
+  /**
+   * @ignore
+   */
+  appName?: string;
+  /**
+   * @ignore
+   */
+  windowTitle?: string;
+  /**
+   * @ignore
+   */
+  processIds?: number[];
+  /**
+   * @ignore
+   */
+  processCount?: number;
+}
+
+/**
  * Advanced options for audio.
  */
 export class AdvancedAudioOptions {
@@ -1118,6 +1164,20 @@ export class ImageTrackOptions {
    * @ignore
    */
   mirrorMode?: VideoMirrorModeType;
+}
+
+/**
+ * @ignore
+ */
+export class AudioTrackIdList {
+  /**
+   * @ignore
+   */
+  trackIds?: number[];
+  /**
+   * @ignore
+   */
+  trackCount?: number;
 }
 
 /**
@@ -1178,6 +1238,14 @@ export class ChannelMediaOptions {
    * The ID of the custom audio track to be published. The default value is 0. You can get the custom audio track ID by calling the createCustomAudioTrack method.
    */
   publishCustomAudioTrackId?: number;
+  /**
+   * @ignore
+   */
+  publishLoopbackAudioTrack?: boolean;
+  /**
+   * @ignore
+   */
+  publishLoopbackAudioTrackIds?: AudioTrackIdList;
   /**
    * Sets whether to publish custom captured video: true : Publish the custom captured video. false : Do not publish the custom captured video.
    */
@@ -1298,6 +1366,10 @@ export class ChannelMediaOptions {
    * Preferred transmission path type. See MultipathType. When using this parameter, make sure enableMultipath is set to true.
    */
   preferMultipathType?: MultipathType;
+  /**
+   * @ignore
+   */
+  customUserInfo?: string;
 }
 
 /**
@@ -1617,6 +1689,11 @@ export interface IRtcEngineEventHandler {
     height: number,
     elapsed: number
   ): void;
+
+  /**
+   * @ignore
+   */
+  onVideoBlackFrameDetected?(source: VideoSourceType, reason: number): void;
 
   /**
    * Occurs when the first local video frame is published.
@@ -5991,6 +6068,13 @@ export abstract class IRtcEngine {
   /**
    * @ignore
    */
+  abstract getLoopbackRecordingSources(
+    options: LoopbackRecordingSourceOptions
+  ): LoopbackRecordingSourceInfo[];
+
+  /**
+   * @ignore
+   */
   abstract setAudioSessionOperationRestriction(
     restriction: AudioSessionOperationRestriction
   ): number;
@@ -6119,6 +6203,13 @@ export abstract class IRtcEngine {
    * @ignore
    */
   abstract startScreenCapture(captureParams: ScreenCaptureParameters2): number;
+
+  /**
+   * @ignore
+   */
+  abstract startScreenCaptureInApp(
+    captureParams: ScreenCaptureParameters2
+  ): number;
 
   /**
    * @ignore

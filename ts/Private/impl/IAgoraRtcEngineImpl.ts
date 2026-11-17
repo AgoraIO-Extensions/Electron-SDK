@@ -97,6 +97,8 @@ import {
   IVideoEffectObject,
   ImageTrackOptions,
   LeaveChannelOptions,
+  LoopbackRecordingSourceInfo,
+  LoopbackRecordingSourceOptions,
   Metadata,
   MetadataType,
   PriorityType,
@@ -273,6 +275,12 @@ export function processIRtcEngineEventHandler(
           jsonParams.height,
           jsonParams.elapsed
         );
+      }
+      break;
+
+    case 'onVideoBlackFrameDetected':
+      if (handler.onVideoBlackFrameDetected !== undefined) {
+        handler.onVideoBlackFrameDetected(jsonParams.source, jsonParams.reason);
       }
       break;
 
@@ -5545,6 +5553,28 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_getScreenCaptureSources_f3e02cb';
   }
 
+  getLoopbackRecordingSources(
+    options: LoopbackRecordingSourceOptions
+  ): LoopbackRecordingSourceInfo[] {
+    const apiType = this.getApiTypeFromGetLoopbackRecordingSources(options);
+    const jsonParams = {
+      options: options,
+      toJSON: () => {
+        return {
+          options: options,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromGetLoopbackRecordingSources(
+    options: LoopbackRecordingSourceOptions
+  ): string {
+    return 'RtcEngine_getLoopbackRecordingSources_89105d0';
+  }
+
   setAudioSessionOperationRestriction(
     restriction: AudioSessionOperationRestriction
   ): number {
@@ -5763,6 +5793,26 @@ export class IRtcEngineImpl implements IRtcEngine {
     captureParams: ScreenCaptureParameters2
   ): string {
     return 'RtcEngine_startScreenCapture_270da41';
+  }
+
+  startScreenCaptureInApp(captureParams: ScreenCaptureParameters2): number {
+    const apiType = this.getApiTypeFromStartScreenCaptureInApp(captureParams);
+    const jsonParams = {
+      captureParams: captureParams,
+      toJSON: () => {
+        return {
+          captureParams: captureParams,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromStartScreenCaptureInApp(
+    captureParams: ScreenCaptureParameters2
+  ): string {
+    return 'RtcEngine_startScreenCaptureInApp_270da41';
   }
 
   updateScreenCapture(captureParams: ScreenCaptureParameters2): number {
