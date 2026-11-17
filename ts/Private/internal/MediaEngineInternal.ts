@@ -1,5 +1,7 @@
 import { createCheckers } from 'ts-interface-checker';
 
+import { IAudioTrackObserver } from '../AgoraBase';
+
 import {
   IAudioFrameObserver,
   IFaceInfoObserver,
@@ -24,6 +26,37 @@ export class MediaEngineInternal extends IMediaEngineImpl {
   static _video_frame_observers: IVideoFrameObserver[] = [];
   static _video_encoded_frame_observers: IVideoEncodedFrameObserver[] = [];
   static _face_info_observers: IFaceInfoObserver[] = [];
+  static _audio_track_observers = new Map<number, IAudioTrackObserver>();
+
+  override registerAudioTrackObserver(
+    id: number,
+    observer: IAudioTrackObserver
+  ): number {
+    const result = super.registerAudioTrackObserver(id, observer);
+    if (result === 0) {
+      MediaEngineInternal._audio_track_observers.set(id, observer);
+    }
+    return result;
+  }
+
+  override unregisterAudioTrackObserver(
+    id: number,
+    observer: IAudioTrackObserver
+  ): number {
+    const result = super.unregisterAudioTrackObserver(id, observer);
+    if (result === 0) {
+      MediaEngineInternal._audio_track_observers.delete(id);
+    }
+    return result;
+  }
+
+  override destroyLoopbackAudioTrack(trackId: number): number {
+    const result = super.destroyLoopbackAudioTrack(trackId);
+    if (result === 0) {
+      MediaEngineInternal._audio_track_observers.delete(trackId);
+    }
+    return result;
+  }
 
   override registerAudioFrameObserver(observer: IAudioFrameObserver): number {
     if (
@@ -106,6 +139,7 @@ export class MediaEngineInternal extends IMediaEngineImpl {
   }
 
   override release() {
+    MediaEngineInternal._audio_track_observers.clear();
     MediaEngineInternal._audio_frame_observers = [];
     MediaEngineInternal._video_frame_observers = [];
     MediaEngineInternal._video_encoded_frame_observers = [];
