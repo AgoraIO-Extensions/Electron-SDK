@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   release-it:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
