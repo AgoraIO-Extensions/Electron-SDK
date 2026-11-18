@@ -1,5 +1,12 @@
 
 
+## [4.5.3-build.9-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.8-rc.1...v4.5.3-build.9-rc.1) (2026-11-18)
+
+
+### Bug Fixes
+
+* **ci:** pin publish runner to Ubuntu 22.04 for Python 3.11.5 ([#1491](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1491)) ([cfe4c98](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/cfe4c98f0770552534a56b943f38429e87e7ed69))
+
 ## [4.5.3-build.8-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.7-rc.1...v4.5.3-build.8-rc.1) (2026-10-30)
 
 
