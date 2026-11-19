@@ -1,5 +1,13 @@
 
 
+## [4.5.3-build.9-bjja.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.9-bjja.1...v4.5.3-build.9-bjja.2) (2026-11-19)
+
+
+### Bug Fixes
+
+* **ASS-3147:** update Mac Native SDK to build 1394352 ([#1488](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1488)) ([5895745](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/5895745c936f46f33a6d7dc457b4d14dda2795dc))
+* **example:** add LoopbackAudioTrack demo for ASS-3147 ([#1490](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1490)) ([69cd60c](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/69cd60cc1a4379d0f491497bb74053ca4aedd06c))
+
 ## [4.5.3-build.9-bjja.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.5.3-build.2-rc.5...v4.5.3-build.9-bjja.1) (2026-11-17)
 
 
