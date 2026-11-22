@@ -54,11 +54,16 @@ void NodeIrisEventHandler::removeEvent(const std::string &eventName) {
 }
 
 void NodeIrisEventHandler::OnEvent(EventParam *param) {
-  const char *event =
-      "VideoEncodedFrameObserver_onEncodedVideoFrameReceived_5f183eb";
+  // The suffix of an iris event name is a hash of the C++ signature and differs between iris
+  // versions (4.5.3: _6922697, 4.7: _5f183eb, the latter adds channelId). Match the name without
+  // the hash so the WebCodecs path receives encoded frames on every iris version.
+  static const char kEncodedFrameEvent[] =
+      "VideoEncodedFrameObserver_onEncodedVideoFrameReceived_";
 
-  if (strcmp(event, param->event) == 0) {
-    onEncodedVideoFrameReceived(param->data, param->buffer[0], param->length);
+  if (param->event && param->buffer_count > 0 &&
+      strncmp(param->event, kEncodedFrameEvent, sizeof(kEncodedFrameEvent) - 1) == 0) {
+    onEncodedVideoFrameReceived(param->event, param->data, param->buffer[0],
+                                param->length);
   } else {
     fireEvent(_callback_key, param->event, param->data, param->buffer,
               param->length, param->buffer_count);
@@ -136,9 +141,11 @@ void NodeIrisEventHandler::fireEvent(const char *callback_name,
   });
 }
 
-void NodeIrisEventHandler::onEncodedVideoFrameReceived(const char *data,
+void NodeIrisEventHandler::onEncodedVideoFrameReceived(const char *event,
+                                                       const char *data,
                                                        void *buffer,
                                                        unsigned int *length) {
+  std::string eventName = event ? event : "";
   std::string eventData = "";
   if (data) { eventData = data; }
   std::vector<unsigned char> buffer_data(length[0]);
@@ -146,7 +153,7 @@ void NodeIrisEventHandler::onEncodedVideoFrameReceived(const char *data,
   std::string uid = "";
   std::regex uidRegex(R"("uid"\s*:\s*(\d+))");
   std::smatch match;
-  std::string jsonString(data);
+  std::string jsonString(eventData);
   if (std::regex_search(jsonString, match, uidRegex)) {
     if (match.size() > 1) { uid = match[1].str(); }
   }
@@ -154,9 +161,34 @@ void NodeIrisEventHandler::onEncodedVideoFrameReceived(const char *data,
   unsigned int buffer_length = length[0];
 
   node_async_call::async_call(
-      [this, eventData, buffer_data, buffer_length, uid] {
+      [this, eventName, eventData, buffer_data, buffer_length, uid] {
         auto it = _callbacks.find("call_back_with_encoded_video_frame_" + uid);
-        if (it != _callbacks.end()) {
+        if (it == _callbacks.end()) {
+          // Nobody renders this uid with WebCodecs: deliver it as a normal event so an app's own
+          // IVideoEncodedFrameObserver still receives it (same arguments as fireEvent).
+          auto generic = _callbacks.find(_callback_key);
+          if (generic == _callbacks.end()) return;
+          napi_env env = generic->second->env;
+          napi_value args[5];
+          napi_value result;
+          napi_value item;
+          napi_create_string_utf8(env, eventName.c_str(), eventName.length(), &args[0]);
+          napi_create_string_utf8(env, eventData.c_str(), eventData.length(), &args[1]);
+          napi_create_array(env, &args[2]);
+          napi_create_buffer_copy(env, buffer_length, buffer_data.data(), nullptr, &item);
+          napi_set_element(env, args[2], 0, item);
+          napi_create_array(env, &args[3]);
+          napi_create_uint32(env, buffer_length, &item);
+          napi_set_element(env, args[3], 0, item);
+          napi_create_uint32(env, 1, &args[4]);
+          napi_value call_back_value;
+          napi_get_reference_value(env, generic->second->call_back_ref, &call_back_value);
+          napi_value recv_value;
+          napi_get_undefined(env, &recv_value);
+          napi_call_function(env, recv_value, call_back_value, 5, args, &result);
+          return;
+        }
+        {
           size_t argc = 2;
           napi_value args[2];
           napi_value result;

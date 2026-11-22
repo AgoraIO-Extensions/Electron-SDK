@@ -1,7 +1,13 @@
 ﻿import { createCheckers } from 'ts-interface-checker';
 
 import { AgoraElectronBridge } from '../../Private/internal/IrisApiEngine';
-import { AgoraEnv, logDebug, logError, parseIntPtr2Number } from '../../Utils';
+import {
+  AgoraEnv,
+  logDebug,
+  logError,
+  logInfo,
+  parseIntPtr2Number,
+} from '../../Utils';
 let RendererManager: any;
 let CapabilityManager: any;
 //@ts-ignore
@@ -651,6 +657,76 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       sources,
     });
     return screenCaptureSources;
+  }
+
+  /**
+   * Keys starting with `electron.` are handled by this wrapper and not sent to the SDK:
+   *  - electron.rtc.video.enable_video_element (bool): render remote video decoded by the SDK
+   *    into a <video> element. Applies to views set up afterwards.
+   *  - electron.rtc.video.enable_webcodec (bool): decode remote video with WebCodecs and render
+   *    it into a <video> element. The decode capability reported to the channel follows
+   *    WebCodecs; set it before joinChannel. A stream WebCodecs cannot decode falls back to SDK
+   *    decoding (rendered as enable_video_element says).
+   *  - electron.rtc.video.video_element_color_mode ("sdk" | "browser"): colors of the <video>
+   *    renderer. "sdk" (default) matches the WebGL renderer; "browser" matches Chromium / Web SDK.
+   *    Applies to frames rendered afterwards (WebCodecs: from the next key frame).
+   * Other keys are passed to the SDK unchanged.
+   */
+  override setParameters(parameters: string): number {
+    let doc: any;
+    try {
+      doc = JSON.parse(parameters);
+    } catch (e) {
+      return super.setParameters(parameters);
+    }
+    if (!doc || typeof doc !== 'object' || Array.isArray(doc)) {
+      return super.setParameters(parameters);
+    }
+    const electronKeys = Object.keys(doc).filter((k) =>
+      k.startsWith('electron.')
+    );
+    if (electronKeys.length === 0) return super.setParameters(parameters);
+
+    let ret: number = ErrorCodeType.ErrOk;
+    for (const key of electronKeys) {
+      const r = this.setElectronParameter(key, doc[key]);
+      if (r !== ErrorCodeType.ErrOk) ret = r;
+      delete doc[key];
+    }
+    if (Object.keys(doc).length > 0) {
+      const r = super.setParameters(JSON.stringify(doc));
+      if (r !== ErrorCodeType.ErrOk) ret = r;
+    }
+    return ret;
+  }
+
+  private setElectronParameter(key: string, value: any): number {
+    logInfo('setParameters', key, JSON.stringify(value));
+    switch (key) {
+      case 'electron.rtc.video.enable_video_element':
+        AgoraEnv.enableVideoElementRenderer = value === true;
+        return ErrorCodeType.ErrOk;
+      case 'electron.rtc.video.video_element_color_mode':
+        if (value !== 'sdk' && value !== 'browser') {
+          return -ErrorCodeType.ErrInvalidArgument;
+        }
+        AgoraEnv.videoElementColorMode = value;
+        return ErrorCodeType.ErrOk;
+      case 'electron.rtc.video.enable_webcodec': {
+        const enable = value === true;
+        AgoraEnv.enableWebCodecsVideoElement = enable;
+        AgoraEnv.enableWebCodecsDecoder = enable;
+        const cm = AgoraEnv.CapabilityManager;
+        if (cm) {
+          if (enable) cm.probeWebCodecs();
+          else cm.resetWebCodecsCapability();
+        }
+        return ErrorCodeType.ErrOk;
+      }
+      default:
+        logError('unknown parameter', key);
+        return -ErrorCodeType.ErrInvalidArgument;
+    }
   }
 
   override setupLocalVideo(canvas: VideoCanvas): number {

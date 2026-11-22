@@ -15,7 +15,7 @@ import {
   RendererContext,
   RendererType,
 } from '../Types';
-import { AgoraEnv, isSupportWebGL } from '../Utils';
+import { AgoraEnv, isSupportWebGL, logInfo } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 import {
@@ -26,6 +26,7 @@ import {
 import { RendererCache } from './RendererCache';
 import { WebCodecsRenderer } from './WebCodecsRenderer';
 import { WebCodecsRendererCache } from './WebCodecsRendererCache';
+import { VideoElementRenderer } from './VideoElementRenderer';
 import { WebGLFallback, WebGLRenderer } from './WebGLRenderer';
 import { YUVCanvasRenderer } from './YUVCanvasRenderer';
 
@@ -151,6 +152,7 @@ export class RendererManager {
   }
 
   public release(): void {
+    this._webCodecsFailedKeys.clear();
     this.clearRendererCache();
     this.renderLoopScheduler.clear();
   }
@@ -167,14 +169,11 @@ export class RendererManager {
     //this is for preset default value
     context.renderMode = context.renderMode || this.defaultRenderMode;
     context.mirrorMode = context.mirrorMode || this.defaultMirrorMode;
+    const requestedWebCodecs = context.useWebCodecsDecoder;
     context.useWebCodecsDecoder = context.useWebCodecsDecoder || false;
     context.enableFps = context.enableFps || false;
     context.position = context.position || this.defaultObservedFramePosition;
     context.enableAlphaMask = context.enableAlphaMask || false;
-
-    if (!AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
-      context.useWebCodecsDecoder = false;
-    }
 
     switch (context.sourceType) {
       case VideoSourceType.VideoSourceRemote:
@@ -199,6 +198,22 @@ export class RendererManager {
         context.channelId = '';
         context.uid = 0;
         break;
+    }
+
+    if (AgoraEnv.enableWebCodecsVideoElement) {
+      // electron.rtc.video.enable_webcodec: remote views use WebCodecs unless the app says no,
+      // the encoded frame observer is not registered (not joined with it on), the stream has
+      // already failed once, or alpha is needed (encoded frames carry no alpha).
+      const remote = context.sourceType === VideoSourceType.VideoSourceRemote;
+      context.useWebCodecsDecoder =
+        (requestedWebCodecs ?? remote) &&
+        remote &&
+        !context.enableAlphaMask &&
+        !!AgoraEnv.encodedVideoFrameObserverRegistered &&
+        !this._webCodecsFailedKeys.has(generateRendererCacheKey(context));
+    }
+    if (!AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
+      context.useWebCodecsDecoder = false;
     }
     return context;
   }
@@ -238,6 +253,15 @@ export class RendererManager {
         rendererCache = new WebCodecsRendererCache(checkedContext);
       } else {
         rendererCache = new RendererCache(checkedContext);
+        // While the encoded frame observer is registered, a remote stream is not decoded by the
+        // SDK unless its subscription says so explicitly (seen on 4.5.3.133).
+        if (
+          AgoraEnv.enableWebCodecsVideoElement &&
+          AgoraEnv.encodedVideoFrameObserverRegistered &&
+          checkedContext.sourceType === VideoSourceType.VideoSourceRemote
+        ) {
+          this.setEncodedFrameOnly(checkedContext, false);
+        }
       }
       this._rendererCaches.push(rendererCache);
     }
@@ -316,7 +340,18 @@ export class RendererManager {
     switch (rendererType) {
       case RendererType.WEBGL:
         if (context.useWebCodecsDecoder) {
-          renderer = new WebCodecsRenderer();
+          if (
+            AgoraEnv.enableWebCodecsVideoElement &&
+            VideoElementRenderer.isSupported()
+          ) {
+            renderer = new VideoElementRenderer();
+            renderer.bind(context);
+          } else {
+            renderer = new WebCodecsRenderer();
+          }
+        } else if (this.useVideoElementRenderer(context)) {
+          renderer = new VideoElementRenderer();
+          renderer.bind(context);
         } else {
           renderer = new WebGLRenderer(
             this.handleWebGLFallback(context).bind(this)
@@ -336,6 +371,16 @@ export class RendererManager {
     return renderer;
   }
 
+  /** electron.rtc.video.enable_video_element: SDK-decoded remote video into a <video>. */
+  private useVideoElementRenderer(context: RendererContext): boolean {
+    return (
+      !!AgoraEnv.enableVideoElementRenderer &&
+      context.sourceType === VideoSourceType.VideoSourceRemote &&
+      !context.enableAlphaMask &&
+      VideoElementRenderer.isSupported()
+    );
+  }
+
   private handleWebGLFallback(context: RendererContext): WebGLFallback {
     return (renderer: WebGLRenderer) => {
       const renderers = this.getRenderers(context);
@@ -346,8 +391,13 @@ export class RendererManager {
   }
 
   public handleWebCodecsFallback(context: RendererCacheContext): void {
+    if (AgoraEnv.enableWebCodecsVideoElement) {
+      this.fallbackStreamToSdkDecoder(context);
+      return;
+    }
     let engine = createAgoraRtcEngine();
     engine.getMediaEngine().unregisterVideoEncodedFrameObserver({});
+    AgoraEnv.encodedVideoFrameObserverRegistered = false;
     if (context.uid) {
       if (isUseConnection(context)) {
         engine.setRemoteVideoSubscriptionOptionsEx(
@@ -370,10 +420,48 @@ export class RendererManager {
     }
     AgoraEnv.enableWebCodecsDecoder = false;
     AgoraEnv.CapabilityManager?.setWebCodecsDecoderEnabled(false);
-    let renderers = this.getRenderers(context);
+    // copy: Replace removes the renderer from this very array
+    let renderers = [...this.getRenderers(context)];
     for (let renderer of renderers) {
       this.addOrRemoveRenderer({
         ...renderer.context,
+        setupMode: VideoViewSetupMode.VideoViewSetupReplace,
+      });
+    }
+  }
+
+  /**
+   * electron.rtc.video.enable_webcodec: only this stream goes back to SDK decoding; other streams
+   * keep WebCodecs. The encoded frame observer stays registered.
+   */
+  private _webCodecsFailedKeys = new Set<string>();
+  private setEncodedFrameOnly(
+    context: RendererCacheContext,
+    encodedFrameOnly: boolean
+  ): void {
+    if (!context.uid) return;
+    const engine = createAgoraRtcEngine();
+    const options = { type: VideoStreamType.VideoStreamHigh, encodedFrameOnly };
+    if (isUseConnection(context)) {
+      engine.setRemoteVideoSubscriptionOptionsEx(context.uid, options, {
+        channelId: context.channelId,
+        localUid: context.localUid,
+      });
+    } else {
+      engine.setRemoteVideoSubscriptionOptions(context.uid, options);
+    }
+  }
+  private fallbackStreamToSdkDecoder(context: RendererCacheContext): void {
+    const key = generateRendererCacheKey(context);
+    if (this._webCodecsFailedKeys.has(key)) return;
+    this._webCodecsFailedKeys.add(key);
+    logInfo('WebCodecs failed, fall back to SDK decoding for', key);
+    this.setEncodedFrameOnly(context, false);
+    const renderers = [...this.getRenderers(context)];
+    for (const renderer of renderers) {
+      this.addOrRemoveRenderer({
+        ...renderer.context,
+        useWebCodecsDecoder: undefined,
         setupMode: VideoViewSetupMode.VideoViewSetupReplace,
       });
     }

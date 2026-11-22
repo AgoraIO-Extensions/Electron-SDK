@@ -66,6 +66,32 @@ export interface AgoraEnvType extends AgoraEnvOptions {
    * @ignore
    */
   CapabilityManager?: CapabilityManager;
+  /**
+   * Private parameter electron.rtc.video.enable_video_element: render remote video decoded by the
+   * SDK into a <video> element (VideoElementRenderer) instead of a WebGL canvas.
+   * @ignore
+   */
+  enableVideoElementRenderer?: boolean;
+  /**
+   * Private parameter electron.rtc.video.enable_webcodec: decode remote video with Chromium
+   * WebCodecs and render it into a <video> element; the reported decode capability follows
+   * WebCodecs, and a stream that fails falls back to SDK decoding.
+   * @ignore
+   */
+  enableWebCodecsVideoElement?: boolean;
+  /**
+   * Private parameter electron.rtc.video.video_element_color_mode for the <video> renderer:
+   * 'sdk' (default, same colors as the WebGL renderer) or 'browser' (same colors as Chromium /
+   * the Web SDK: incomplete VUI -> BT.709 at >= 720 lines, BT.601 below).
+   * @ignore
+   */
+  videoElementColorMode?: string;
+  /**
+   * Whether the encoded video frame observer is registered (set when joining with the WebCodecs
+   * decoder enabled). Encoded frames only arrive while it is registered.
+   * @ignore
+   */
+  encodedVideoFrameObserverRegistered?: boolean;
 }
 
 /**
@@ -84,6 +110,10 @@ export enum RendererType {
    * @ignore
    */
   WEBCODECSRENDERER = 3,
+  /**
+   * @ignore
+   */
+  VIDEOELEMENT = 4,
 }
 
 export type RENDER_MODE = RendererType;
@@ -194,7 +224,7 @@ export enum IPCMessageType {
 /**
  * @ignore
  */
-interface CodecMappingItem {
+export interface CodecMappingItem {
   /**
    * @ignore
    */
@@ -228,6 +258,35 @@ export const codecMapping: CodecMappingItem[] = [
     codec: 'vp09.00.50.08',
     type: VideoCodecType.VideoCodecVp9,
     profile: 'vp9',
+  },
+];
+
+/**
+ * Codecs probed with WebCodecs for electron.rtc.video.enable_webcodec. `profile` is the name used
+ * by the SDK capability negotiation (rtc.video.dec_caps_allowlist).
+ * @ignore
+ */
+export const webCodecsProbeList: CodecMappingItem[] = [
+  {
+    codec: 'avc1.64e01f',
+    type: VideoCodecType.VideoCodecH264,
+    profile: 'H264',
+  },
+  {
+    codec: 'hvc1.1.6.L5.90',
+    type: VideoCodecType.VideoCodecH265,
+    profile: 'H265',
+  },
+  { codec: 'vp8', type: VideoCodecType.VideoCodecVp8, profile: 'VP8' },
+  {
+    codec: 'vp09.00.50.08',
+    type: VideoCodecType.VideoCodecVp9,
+    profile: 'VP9',
+  },
+  {
+    codec: 'av01.0.08M.08',
+    type: VideoCodecType.VideoCodecAv1,
+    profile: 'AV1',
   },
 ];
 

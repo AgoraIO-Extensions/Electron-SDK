@@ -1,6 +1,16 @@
-import { EncodedVideoFrameInfo, VideoFrameType } from '../Private/AgoraBase';
+import {
+  EncodedVideoFrameInfo,
+  VideoCodecType,
+  VideoFrameType,
+} from '../Private/AgoraBase';
+import {
+  isFullySpecified,
+  parseH264SpsColor,
+  rewriteH264SpsColor,
+  videoElementColorSpace,
+} from '../Renderer/VideoElementRenderer/colorSpace';
 
-import { WebCodecsRenderer } from '../Renderer/WebCodecsRenderer/index';
+import { IRenderer } from '../Renderer/IRenderer';
 import { CodecConfigInfo, RendererCacheContext, RendererType } from '../Types';
 import { AgoraEnv, logDebug, logInfo } from '../Utils';
 
@@ -12,7 +22,7 @@ const frameTypeMapping = {
 
 export class WebCodecsDecoder {
   private _decoder: VideoDecoder;
-  private renderers: WebCodecsRenderer[] = [];
+  private renderers: IRenderer[] = [];
   private _cacheContext: RendererCacheContext;
   // eslint-disable-next-line auto-import/auto-import
   private pendingFrame: VideoFrame | null = null;
@@ -22,9 +32,12 @@ export class WebCodecsDecoder {
   private _base_ts_ntp = 1;
   private _last_ts_ntp = 1;
   private _decode_retry_count = 0;
+  // WebCodecs requires a key frame after configure(); delta frames before it are skipped.
+  private _waitKeyFrame = true;
+  private _colorSpaceKey = '';
 
   constructor(
-    renders: WebCodecsRenderer[],
+    renders: IRenderer[],
     onError: (e: any) => void,
     context: RendererCacheContext
   ) {
@@ -41,6 +54,26 @@ export class WebCodecsDecoder {
 
   // eslint-disable-next-line auto-import/auto-import
   _output(frame: VideoFrame) {
+    // <video> renderers take every decoded frame right away (the video pipeline paces them);
+    // each needs its own VideoFrame because the renderer closes it.
+    const videoElements = this.renderers.filter(
+      (r) => r.rendererType === RendererType.VIDEOELEMENT
+    );
+    const hasCanvas = this.renderers.some(
+      (r) => r.rendererType === RendererType.WEBCODECSRENDERER
+    );
+    if (videoElements.length > 0) {
+      videoElements.forEach((renderer, i) => {
+        const f =
+          hasCanvas || i < videoElements.length - 1 ? frame.clone() : frame;
+        renderer.drawFrame(
+          this._cacheContext.uid!,
+          f as any,
+          this._currentCodecConfig!
+        );
+      });
+      if (!hasCanvas) return;
+    }
     // Schedule the frame to be rendered.
     this._renderFrame(frame);
   }
@@ -66,7 +99,7 @@ export class WebCodecsDecoder {
       }
       renderer.drawFrame(
         this._cacheContext.uid!,
-        this.pendingFrame,
+        this.pendingFrame as any,
         this._currentCodecConfig!
       );
       this.pendingFrame = null;
@@ -98,9 +131,37 @@ export class WebCodecsDecoder {
       codedWidth: frameInfo.width,
       codedHeight: frameInfo.height,
     });
+    this._colorSpaceKey = '';
+    this._waitKeyFrame = true;
     logInfo(
       `configure decoder: codedWidth: ${frameInfo.width}, codedHeight: ${frameInfo.height},codec: ${codec}`
     );
+  }
+
+  /**
+   * electron.rtc.video.enable_webcodec + video_element_color_mode "browser": make Chromium show the
+   * stream the way its WebRTC decoder does. Chromium WebCodecs decodes an H.264 stream with an
+   * incomplete VUI (e.g. 2/2/5 from SDK screen sharing) by its matrix, while WebRTC falls back to
+   * BT.709 at >= 720 lines. The decoders take the color space from the bitstream and ignore
+   * VideoDecoderConfig.colorSpace (Chrome 108, D3D11), so the SPS of each key frame is rewritten.
+   * Mode "sdk" leaves the stream as is (WebCodecs then matches the SDK WebGL renderer, measured).
+   */
+  private applyColorSpace(
+    buf: Uint8Array,
+    frameInfo: EncodedVideoFrameInfo
+  ): Uint8Array {
+    if (AgoraEnv.videoElementColorMode !== 'browser') return buf;
+    if (frameInfo.codecType !== VideoCodecType.VideoCodecH264) return buf;
+    const coded = parseH264SpsColor(buf);
+    if (!coded) return buf;
+    if (isFullySpecified(coded)) return buf;
+    const cs = videoElementColorSpace(coded, frameInfo.height ?? 0, 'browser');
+    const key = JSON.stringify(cs);
+    if (key !== this._colorSpaceKey) {
+      this._colorSpaceKey = key;
+      logInfo('WebCodecs: rewrite SPS color', JSON.stringify(coded), '->', key);
+    }
+    return rewriteH264SpsColor(buf, cs);
   }
 
   updateTimestamps(ts: number) {
@@ -160,6 +221,18 @@ export class WebCodecsDecoder {
       return;
     }
 
+    if (this._waitKeyFrame) {
+      if (frameType !== 'key') {
+        logDebug('waiting for a key frame, skip delta frame');
+        return;
+      }
+      this._waitKeyFrame = false;
+    }
+
+    if (frameType === 'key' && AgoraEnv.enableWebCodecsVideoElement) {
+      imageBuffer = this.applyColorSpace(imageBuffer, frameInfo);
+    }
+
     this.updateTimestamps(ts);
 
     try {
@@ -192,6 +265,7 @@ export class WebCodecsDecoder {
   }
 
   reset() {
+    this._waitKeyFrame = true;
     this._base_ts = 0;
     this._base_ts_ntp = 1;
     this._last_ts_ntp = 1;

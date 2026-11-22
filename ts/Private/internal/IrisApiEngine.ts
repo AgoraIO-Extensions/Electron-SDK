@@ -665,12 +665,26 @@ export function callIrisApi(funcName: string, params: any): any {
       }
     }
     if (funcName.indexOf('joinChannel') != -1) {
-      if (AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
+      if (AgoraEnv.enableWebCodecsVideoElement && AgoraEnv.CapabilityManager) {
+        // electron.rtc.video.enable_webcodec: the decode capability is negotiated at join, so
+        // the WebCodecs probe should have finished by now.
+        if (!AgoraEnv.CapabilityManager.webCodecsDecoderEnabled) {
+          logWarn(
+            'joinChannel before the WebCodecs probe finished (or WebCodecs cannot decode H264): this channel uses SDK decoding'
+          );
+        }
+      }
+      if (
+        AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled &&
+        !AgoraEnv.encodedVideoFrameObserverRegistered
+      ) {
         rtcEngine.getMediaEngine().registerVideoEncodedFrameObserver({});
+        AgoraEnv.encodedVideoFrameObserverRegistered = true;
       }
     } else if (funcName.indexOf('leaveChannel') != -1) {
-      if (AgoraEnv.CapabilityManager?.webCodecsDecoderEnabled) {
+      if (AgoraEnv.encodedVideoFrameObserverRegistered) {
         rtcEngine.getMediaEngine().unregisterVideoEncodedFrameObserver({});
+        AgoraEnv.encodedVideoFrameObserverRegistered = false;
       }
     }
 

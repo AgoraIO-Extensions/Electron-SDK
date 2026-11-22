@@ -114,10 +114,10 @@ export class WebCodecsRendererCache extends IRendererCache {
         shouldFallback = true;
         logInfo('codecType is not supported, fallback to native decoder');
       } else if (
-        mapping.minWidth >= frameInfo.width! &&
-        mapping.minHeight >= frameInfo.height! &&
-        mapping.maxWidth <= frameInfo.width! &&
-        mapping.maxHeight <= frameInfo.height!
+        frameInfo.width! < mapping.minWidth ||
+        frameInfo.height! < mapping.minHeight ||
+        frameInfo.width! > mapping.maxWidth ||
+        frameInfo.height! > mapping.maxHeight
       ) {
         shouldFallback = true;
         logInfo('frame size is not supported, fallback to native decoder');
