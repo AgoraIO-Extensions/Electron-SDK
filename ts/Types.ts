@@ -72,13 +72,6 @@ export interface AgoraEnvType extends AgoraEnvOptions {
    * @ignore
    */
   enableVideoElementRenderer?: boolean;
-  /**
-   * Private parameter electron.rtc.video.video_element_color_mode for the <video> renderer:
-   * 'sdk' (default, same colors as the WebGL renderer) or 'browser' (same colors as Chromium /
-   * the Web SDK: incomplete VUI -> BT.709 at >= 720 lines, BT.601 below).
-   * @ignore
-   */
-  videoElementColorMode?: string;
 }
 
 /**

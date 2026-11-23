@@ -3,7 +3,7 @@ import { RendererContext, RendererType } from '../../Types';
 import { logDebug, logInfo } from '../../Utils';
 import { IRenderer } from '../IRenderer';
 
-import { fromSdkColorSpace, videoElementColorSpace } from './colorSpace';
+import { toVideoColorSpaceInit } from './colorSpace';
 
 /**
  * Frames that have been handed to the writer but not yet accepted. More than this and the new
@@ -19,7 +19,8 @@ const MAX_IN_FLIGHT = 2;
  * DirectComposition video overlay (GPU scaler). This is the same display path as the Web SDK.
  *
  * Input: SDK-decoded I420 frames (VideoFrame from the frame cache), copied once into a WebCodecs
- * VideoFrame carrying the frame's color space.
+ * VideoFrame. Its colorSpace is the frame's ColorSpace as reported by the native SDK; how it is
+ * shown is up to Chromium.
  * @ignore
  */
 export class VideoElementRenderer extends IRenderer {
@@ -190,10 +191,7 @@ export class VideoElementRenderer extends IRenderer {
         { offset: ySize, stride: uStride },
         { offset: ySize + uSize, stride: vStride },
       ],
-      colorSpace: videoElementColorSpace(
-        fromSdkColorSpace(f.colorSpace),
-        height
-      ),
+      colorSpace: toVideoColorSpaceInit(f.colorSpace),
     });
   }
 

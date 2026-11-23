@@ -663,9 +663,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
    * Keys starting with `electron.` are handled by this wrapper and not sent to the SDK:
    *  - electron.rtc.video.enable_video_element (bool): render remote video decoded by the SDK
    *    into a <video> element. Applies to views set up afterwards.
-   *  - electron.rtc.video.video_element_color_mode ("sdk" | "browser"): colors of the <video>
-   *    renderer. "sdk" (default) matches the WebGL renderer; "browser" matches Chromium / Web SDK.
-   *    Applies to frames rendered afterwards.
    * Other keys are passed to the SDK unchanged.
    */
   override setParameters(parameters: string): number {
@@ -701,12 +698,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     switch (key) {
       case 'electron.rtc.video.enable_video_element':
         AgoraEnv.enableVideoElementRenderer = value === true;
-        return ErrorCodeType.ErrOk;
-      case 'electron.rtc.video.video_element_color_mode':
-        if (value !== 'sdk' && value !== 'browser') {
-          return -ErrorCodeType.ErrInvalidArgument;
-        }
-        AgoraEnv.videoElementColorMode = value;
         return ErrorCodeType.ErrOk;
       default:
         logError('unknown parameter', key);
