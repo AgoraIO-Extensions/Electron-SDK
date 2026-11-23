@@ -26,6 +26,7 @@ import {
 import { RendererCache } from './RendererCache';
 import { WebCodecsRenderer } from './WebCodecsRenderer';
 import { WebCodecsRendererCache } from './WebCodecsRendererCache';
+import { VideoElementRenderer } from './VideoElementRenderer';
 import { WebGLFallback, WebGLRenderer } from './WebGLRenderer';
 import { YUVCanvasRenderer } from './YUVCanvasRenderer';
 
@@ -317,6 +318,9 @@ export class RendererManager {
       case RendererType.WEBGL:
         if (context.useWebCodecsDecoder) {
           renderer = new WebCodecsRenderer();
+        } else if (this.useVideoElementRenderer(context)) {
+          renderer = new VideoElementRenderer();
+          renderer.bind(context);
         } else {
           renderer = new WebGLRenderer(
             this.handleWebGLFallback(context).bind(this)
@@ -334,6 +338,16 @@ export class RendererManager {
 
     renderer.setContext(context);
     return renderer;
+  }
+
+  /** electron.rtc.video.enable_video_element: SDK-decoded remote video into a <video>. */
+  private useVideoElementRenderer(context: RendererContext): boolean {
+    return (
+      !!AgoraEnv.enableVideoElementRenderer &&
+      context.sourceType === VideoSourceType.VideoSourceRemote &&
+      !context.enableAlphaMask &&
+      VideoElementRenderer.isSupported()
+    );
   }
 
   private handleWebGLFallback(context: RendererContext): WebGLFallback {

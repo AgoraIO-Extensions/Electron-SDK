@@ -66,6 +66,19 @@ export interface AgoraEnvType extends AgoraEnvOptions {
    * @ignore
    */
   CapabilityManager?: CapabilityManager;
+  /**
+   * Private parameter electron.rtc.video.enable_video_element: render remote video decoded by the
+   * SDK into a <video> element (VideoElementRenderer) instead of a WebGL canvas.
+   * @ignore
+   */
+  enableVideoElementRenderer?: boolean;
+  /**
+   * Private parameter electron.rtc.video.video_element_color_mode for the <video> renderer:
+   * 'sdk' (default, same colors as the WebGL renderer) or 'browser' (same colors as Chromium /
+   * the Web SDK: incomplete VUI -> BT.709 at >= 720 lines, BT.601 below).
+   * @ignore
+   */
+  videoElementColorMode?: string;
 }
 
 /**
@@ -84,6 +97,10 @@ export enum RendererType {
    * @ignore
    */
   WEBCODECSRENDERER = 3,
+  /**
+   * @ignore
+   */
+  VIDEOELEMENT = 4,
 }
 
 export type RENDER_MODE = RendererType;
