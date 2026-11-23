@@ -3246,6 +3246,10 @@ export enum ConnectionChangedReasonType {
    * @ignore
    */
   ConnectionChangedCertificationVeryfyFailure = 22,
+  /**
+   * 25: The number of concurrent users has reached the licensed limit of the private deployment.
+   */
+  ConnectionChangedPcuExceeded = 25,
 }
 
 /**
