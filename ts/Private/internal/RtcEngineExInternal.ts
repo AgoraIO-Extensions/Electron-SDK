@@ -661,7 +661,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
 
   /**
    * Keys starting with `electron.` are handled by this wrapper and not sent to the SDK:
-   *  - electron.rtc.video.enable_video_element (bool): render remote video decoded by the SDK
+   *  - electron.video.render.enable_video_element (bool): render remote video decoded by the SDK
    *    into a <video> element. Applies to views set up afterwards.
    * Other keys are passed to the SDK unchanged.
    */
@@ -696,7 +696,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   private setElectronParameter(key: string, value: any): number {
     logInfo('setParameters', key, JSON.stringify(value));
     switch (key) {
-      case 'electron.rtc.video.enable_video_element':
+      case 'electron.video.render.enable_video_element':
         AgoraEnv.enableVideoElementRenderer = value === true;
         return ErrorCodeType.ErrOk;
       default:

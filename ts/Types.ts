@@ -67,7 +67,7 @@ export interface AgoraEnvType extends AgoraEnvOptions {
    */
   CapabilityManager?: CapabilityManager;
   /**
-   * Private parameter electron.rtc.video.enable_video_element: render remote video decoded by the
+   * Private parameter electron.video.render.enable_video_element: render remote video decoded by the
    * SDK into a <video> element (VideoElementRenderer) instead of a WebGL canvas.
    * @ignore
    */

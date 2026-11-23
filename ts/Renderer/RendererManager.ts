@@ -340,7 +340,7 @@ export class RendererManager {
     return renderer;
   }
 
-  /** electron.rtc.video.enable_video_element: SDK-decoded remote video into a <video>. */
+  /** electron.video.render.enable_video_element: SDK-decoded remote video into a <video>. */
   private useVideoElementRenderer(context: RendererContext): boolean {
     return (
       !!AgoraEnv.enableVideoElementRenderer &&
