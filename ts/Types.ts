@@ -69,6 +69,34 @@ export interface AgoraEnvType extends AgoraEnvOptions {
 }
 
 /**
+ * Value type of a native SDK parameter read by `getParameters` (NMS-32110). It selects the
+ * native getter: IAgoraParameter::getBool / getInt / getUInt / getNumber / getString /
+ * getObject / getArray.
+ * @ignore
+ */
+export type NativeParameterType =
+  | 'bool'
+  | 'int'
+  | 'uint'
+  | 'number'
+  | 'string'
+  | 'object'
+  | 'array';
+
+/**
+ * Result of `getParameters`.
+ * - `result`: 0 when the value was read. Negative: the native error code (for example -7 when
+ *   the key has never been set, -2 when it holds another type), or the iris error code
+ *   (-1009 when the iris in use has no RtcEngine_getParameters).
+ * - `value`: present only when `result` is 0. `object` / `array` are parsed JSON.
+ * @ignore
+ */
+export interface NativeParameterResult {
+  result: number;
+  value?: any;
+}
+
+/**
  * @ignore
  */
 export enum RendererType {

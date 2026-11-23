@@ -1,6 +1,7 @@
 ﻿import { createCheckers } from 'ts-interface-checker';
 
 import { AgoraElectronBridge } from '../../Private/internal/IrisApiEngine';
+import { NativeParameterResult, NativeParameterType } from '../../Types';
 import { AgoraEnv, logDebug, logError, parseIntPtr2Number } from '../../Utils';
 let RendererManager: any;
 let CapabilityManager: any;
@@ -546,6 +547,35 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
 
   override getH265Transcoder(): IH265Transcoder {
     return this._h265_transcoder;
+  }
+
+  /**
+   * Reads a parameter of the native SDK: the value in effect after `setParameters`, the
+   * config service and other sources are merged by priority (iris `RtcEngine_getParameters`,
+   * native `IAgoraParameter::getXxx`). Call it after `initialize`.
+   *
+   * @param key Parameter key, for example `electron.video.render.enable_video_element`.
+   * @param type Value type; it selects the native getter.
+   * @param args Extra argument for `array` (passed to `IAgoraParameter::getArray`).
+   * @ignore
+   */
+  getParameters(
+    key: string,
+    type: NativeParameterType,
+    args?: string
+  ): NativeParameterResult {
+    const params: { key: string; type: NativeParameterType; args?: string } = {
+      key,
+      type,
+    };
+    if (args !== undefined) params.args = args;
+    const ret = callIrisApi.call(this, 'RtcEngine_getParameters', params) ?? {};
+    const result: number =
+      typeof ret.result === 'number' ? ret.result : -ErrorCodeType.ErrFailed;
+    if (result === 0 && Object.prototype.hasOwnProperty.call(ret, 'value')) {
+      return { result, value: ret.value };
+    }
+    return { result: result === 0 ? -ErrorCodeType.ErrFailed : result };
   }
 
   override getNativeHandle(): number {
