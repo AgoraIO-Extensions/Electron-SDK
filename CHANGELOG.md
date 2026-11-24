@@ -1,5 +1,13 @@
 
 
+## [4.2.7-build.146-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.7-build.144-rc.1...v4.2.7-build.146-rc.1) (2026-11-24)
+
+
+### Bug Fixes
+
+* ASS-3135 expose private deployment PCU limit reason ([#1495](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1495)) ([dfe9878](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/dfe9878b7a8333862b21040f60e807931b2e7ac3))
+* **ci:** ASS-3135 pin npm publish runner to Ubuntu 24.04 ([#1496](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/1496)) ([a0a61a6](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/a0a61a63157a30347ec9906ec9177e719b309cb6))
+
 ## [4.2.7-build.144-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.7-build.141-rc.1...v4.2.7-build.144-rc.1) (2026-09-22)
 
 ## [4.2.7-build.141-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.2.7-build.139-rc.1...v4.2.7-build.141-rc.1) (2026-08-06)
