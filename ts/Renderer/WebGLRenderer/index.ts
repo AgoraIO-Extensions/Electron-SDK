@@ -5,7 +5,8 @@ import {
   VideoFrame,
 } from '../../Private/AgoraMediaBase';
 import { RendererContext, RendererType } from '../../Types';
-import { logDebug, logWarn } from '../../Utils';
+import { logDebug, logInfo, logWarn } from '../../Utils';
+import { ENABLE_R8, isR8Enabled } from '../RenderParameters';
 import { IRenderer } from '../IRenderer';
 
 export type WebGLFallback = (renderer: WebGLRenderer, error: Error) => void;
@@ -26,6 +27,9 @@ const vertexShaderSource = `
     v_texCoord = a_texCoord;
   }`;
 
+// Every plane texture is sampled with `.r` only. Keep it that way: with R8 textures (WebGL2,
+// electron.video.render.enable_r8) `.g` / `.b` are 0, while LUMINANCE returns the value in r, g
+// and b. Reading another channel would make the two formats render differently.
 const yuvShaderSource = `
   precision mediump float;
   uniform sampler2D Ytex;
@@ -110,6 +114,14 @@ export class WebGLRenderer extends IRenderer {
   };
   private textureStorageInitialized = false;
   private alphaTextureStorageInitialized = false;
+  /**
+   * Texture format of the Y / U / V / alpha planes. WebGL2 with electron.video.render.enable_r8
+   * (default true): R8 / RED. Otherwise LUMINANCE. The shader reads only `.r`, which is the same
+   * byte in both, so the output is identical; R8 avoids the CPU expansion of LUMINANCE into RGBA
+   * that ANGLE does on D3D11 (and Metal) at every upload.
+   */
+  private textureFormat: { internalFormat: number; format: number } | null =
+    null;
 
   // Color space uniform locations
   private colorSpaceUniforms: {
@@ -173,6 +185,9 @@ export class WebGLRenderer extends IRenderer {
       return null;
     };
     this.gl ??= getContext();
+    this.textureFormat = this.gl
+      ? WebGLRenderer.selectTextureFormat(this.gl)
+      : null;
 
     if (!this.gl) {
       this.fallback?.call(
@@ -224,8 +239,32 @@ export class WebGLRenderer extends IRenderer {
 
     this.releaseTextures();
     this.gl = null;
+    this.textureFormat = null;
 
     super.unbind();
+  }
+
+  /** R8 / RED on WebGL2 unless electron.video.render.enable_r8 is false; LUMINANCE otherwise. */
+  static selectTextureFormat(gl: WebGLRenderingContext): {
+    internalFormat: number;
+    format: number;
+  } {
+    const isWebGL2 =
+      typeof WebGL2RenderingContext !== 'undefined' &&
+      gl instanceof WebGL2RenderingContext;
+    const enabled = isR8Enabled();
+    const useR8 = isWebGL2 && enabled;
+    logInfo(
+      'WebGLRenderer texture format',
+      useR8 ? 'R8' : 'LUMINANCE',
+      isWebGL2 ? 'webgl2' : 'webgl1',
+      `${ENABLE_R8}=${enabled}`
+    );
+    if (useR8) {
+      const gl2 = gl as WebGL2RenderingContext;
+      return { internalFormat: gl2.R8, format: gl2.RED };
+    }
+    return { internalFormat: gl.LUMINANCE, format: gl.LUMINANCE };
   }
 
   public override drawFrame(
@@ -277,6 +316,8 @@ export class WebGLRenderer extends IRenderer {
     }
 
     this.gl.pixelStorei(this.gl.UNPACK_ALIGNMENT, 1);
+    this.textureFormat ??= WebGLRenderer.selectTextureFormat(this.gl);
+    const { internalFormat, format } = this.textureFormat;
 
     type TextureInfo = {
       texture: WebGLTexture | null;
@@ -296,11 +337,11 @@ export class WebGLRenderer extends IRenderer {
         this.gl.texImage2D(
           this.gl.TEXTURE_2D,
           0,
-          this.gl.LUMINANCE,
+          internalFormat,
           stride,
           height,
           0,
-          this.gl.LUMINANCE,
+          format,
           this.gl.UNSIGNED_BYTE,
           pixels
         );
@@ -312,7 +353,7 @@ export class WebGLRenderer extends IRenderer {
           0,
           stride,
           height,
-          this.gl.LUMINANCE,
+          format,
           this.gl.UNSIGNED_BYTE,
           pixels
         );
