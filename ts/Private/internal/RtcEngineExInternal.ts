@@ -3,12 +3,10 @@
 import { AgoraElectronBridge } from '../../Private/internal/IrisApiEngine';
 import { NativeParameterResult, NativeParameterType } from '../../Types';
 import {
-  AgoraEnv,
-  logDebug,
-  logError,
-  logInfo,
-  parseIntPtr2Number,
-} from '../../Utils';
+  resetRenderParameters,
+  setRenderParameterReader,
+} from '../../Renderer/RenderParameters';
+import { AgoraEnv, logDebug, logError, parseIntPtr2Number } from '../../Utils';
 let RendererManager: any;
 let CapabilityManager: any;
 //@ts-ignore
@@ -134,6 +132,8 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       window.AgoraEnv = AgoraEnv;
       if (AgoraEnv.AgoraRendererManager === undefined && RendererManager) {
         AgoraEnv.AgoraRendererManager = new RendererManager();
+        // Render parameters are read from the native SDK on first use, not here.
+        setRenderParameterReader((key) => this.getParameters(key, 'bool'));
       }
       if (AgoraEnv.CapabilityManager === undefined && CapabilityManager) {
         AgoraEnv.CapabilityManager = new CapabilityManager();
@@ -237,6 +237,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     AgoraElectronBridge.ReleaseRenderer();
     AgoraEnv.AgoraRendererManager?.release();
     AgoraEnv.AgoraRendererManager = undefined;
+    resetRenderParameters();
     this._media_engine.release();
     this._local_spatial_audio_engine.release();
     RtcEngineExInternal._event_handlers = [];
@@ -687,52 +688,6 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       sources,
     });
     return screenCaptureSources;
-  }
-
-  /**
-   * Keys starting with `electron.` are handled by this wrapper and not sent to the SDK:
-   *  - electron.video.render.enable_video_element (bool): render remote video decoded by the SDK
-   *    into a <video> element. Applies to views set up afterwards.
-   * Other keys are passed to the SDK unchanged.
-   */
-  override setParameters(parameters: string): number {
-    let doc: any;
-    try {
-      doc = JSON.parse(parameters);
-    } catch (e) {
-      return super.setParameters(parameters);
-    }
-    if (!doc || typeof doc !== 'object' || Array.isArray(doc)) {
-      return super.setParameters(parameters);
-    }
-    const electronKeys = Object.keys(doc).filter((k) =>
-      k.startsWith('electron.')
-    );
-    if (electronKeys.length === 0) return super.setParameters(parameters);
-
-    let ret: number = ErrorCodeType.ErrOk;
-    for (const key of electronKeys) {
-      const r = this.setElectronParameter(key, doc[key]);
-      if (r !== ErrorCodeType.ErrOk) ret = r;
-      delete doc[key];
-    }
-    if (Object.keys(doc).length > 0) {
-      const r = super.setParameters(JSON.stringify(doc));
-      if (r !== ErrorCodeType.ErrOk) ret = r;
-    }
-    return ret;
-  }
-
-  private setElectronParameter(key: string, value: any): number {
-    logInfo('setParameters', key, JSON.stringify(value));
-    switch (key) {
-      case 'electron.video.render.enable_video_element':
-        AgoraEnv.enableVideoElementRenderer = value === true;
-        return ErrorCodeType.ErrOk;
-      default:
-        logError('unknown parameter', key);
-        return -ErrorCodeType.ErrInvalidArgument;
-    }
   }
 
   override setupLocalVideo(canvas: VideoCanvas): number {
