@@ -112,6 +112,10 @@ export enum RendererType {
    * @ignore
    */
   WEBCODECSRENDERER = 3,
+  /**
+   * @ignore
+   */
+  VIDEOELEMENT = 4,
 }
 
 export type RENDER_MODE = RendererType;
