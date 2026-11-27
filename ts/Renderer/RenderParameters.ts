@@ -2,7 +2,8 @@ import { NativeParameterResult } from '../Types';
 import { logInfo } from '../Utils';
 
 /**
- * Private parameters of the rendering module (CSD-80880).
+ * Private parameters of the rendering module: enable_video_element (CSD-80880), enable_r8
+ * (NMS-32101).
  *
  * The app sets them with `setParameters`, which sends them to the native SDK unchanged like any
  * other key; the native SDK merges the sources by priority (config service 1, console 10,
@@ -15,8 +16,9 @@ import { logInfo } from '../Utils';
  */
 export const ENABLE_VIDEO_ELEMENT =
   'electron.video.render.enable_video_element';
+export const ENABLE_R8 = 'electron.video.render.enable_r8';
 
-export type RenderParameterKey = typeof ENABLE_VIDEO_ELEMENT;
+export type RenderParameterKey = typeof ENABLE_VIDEO_ELEMENT | typeof ENABLE_R8;
 export type RenderParameterSource = 'native' | 'default';
 export type RenderParameterReader = (
   key: RenderParameterKey
@@ -24,6 +26,7 @@ export type RenderParameterReader = (
 
 const DEFAULTS: Record<RenderParameterKey, boolean> = {
   [ENABLE_VIDEO_ELEMENT]: false,
+  [ENABLE_R8]: true,
 };
 
 let reader: RenderParameterReader | undefined;
@@ -69,4 +72,9 @@ export function getRenderParameter(key: RenderParameterKey): {
 /** electron.video.render.enable_video_element: only native `true` turns it on. */
 export function isVideoElementRendererEnabled(): boolean {
   return getRenderParameter(ENABLE_VIDEO_ELEMENT).value;
+}
+
+/** electron.video.render.enable_r8: only native `false` turns it off. */
+export function isR8Enabled(): boolean {
+  return getRenderParameter(ENABLE_R8).value;
 }
