@@ -3721,6 +3721,10 @@ export enum ConnectionChangedReasonType {
    * @ignore
    */
   ConnectionChangedInconsistentAppid = 24,
+  /**
+   * @ignore
+   */
+  ConnectionChangedPcuExceeded = 25,
 }
 
 /**

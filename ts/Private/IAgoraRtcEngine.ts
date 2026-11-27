@@ -946,6 +946,10 @@ export class CameraCapturerConfiguration {
    * (Optional) Video frame format. See VideoFormat.
    */
   format?: VideoFormat;
+  /**
+   * @ignore
+   */
+  allowAutoMacroSwitching?: boolean;
 }
 
 /**
