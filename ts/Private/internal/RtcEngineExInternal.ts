@@ -2,6 +2,10 @@
 
 import { AgoraElectronBridge } from '../../Private/internal/IrisApiEngine';
 import { NativeParameterResult, NativeParameterType } from '../../Types';
+import {
+  resetRenderParameters,
+  setRenderParameterReader,
+} from '../../Renderer/RenderParameters';
 import { AgoraEnv, logDebug, logError, parseIntPtr2Number } from '../../Utils';
 let RendererManager: any;
 let CapabilityManager: any;
@@ -128,6 +132,8 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       window.AgoraEnv = AgoraEnv;
       if (AgoraEnv.AgoraRendererManager === undefined && RendererManager) {
         AgoraEnv.AgoraRendererManager = new RendererManager();
+        // Render parameters are read from the native SDK each time a renderer is created.
+        setRenderParameterReader((key) => this.getParameters(key, 'bool'));
       }
       if (AgoraEnv.CapabilityManager === undefined && CapabilityManager) {
         AgoraEnv.CapabilityManager = new CapabilityManager();
@@ -231,6 +237,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     AgoraElectronBridge.ReleaseRenderer();
     AgoraEnv.AgoraRendererManager?.release();
     AgoraEnv.AgoraRendererManager = undefined;
+    resetRenderParameters();
     this._media_engine.release();
     this._local_spatial_audio_engine.release();
     RtcEngineExInternal._event_handlers = [];

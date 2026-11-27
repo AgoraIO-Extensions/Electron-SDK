@@ -15,7 +15,7 @@ import {
   RendererContext,
   RendererType,
 } from '../Types';
-import { AgoraEnv, isSupportWebGL } from '../Utils';
+import { AgoraEnv, isSupportWebGL, logInfo, logWarn } from '../Utils';
 
 import { IRenderer } from './IRenderer';
 import {
@@ -26,6 +26,11 @@ import {
 import { RendererCache } from './RendererCache';
 import { WebCodecsRenderer } from './WebCodecsRenderer';
 import { WebCodecsRendererCache } from './WebCodecsRendererCache';
+import { VideoElementRenderer } from './VideoElementRenderer';
+import {
+  ENABLE_VIDEO_ELEMENT,
+  isVideoElementRendererEnabled,
+} from './RenderParameters';
 import { WebGLFallback, WebGLRenderer } from './WebGLRenderer';
 import { YUVCanvasRenderer } from './YUVCanvasRenderer';
 
@@ -318,22 +323,88 @@ export class RendererManager {
         if (context.useWebCodecsDecoder) {
           renderer = new WebCodecsRenderer();
         } else {
-          renderer = new WebGLRenderer(
-            this.handleWebGLFallback(context).bind(this)
-          );
+          const videoRenderer = this.useVideoElementRenderer(
+            context,
+            RendererType.WEBGL
+          )
+            ? this.createVideoElementRenderer(context)
+            : undefined;
+          if (videoRenderer) {
+            renderer = videoRenderer;
+          } else {
+            renderer = new WebGLRenderer(
+              this.handleWebGLFallback(context).bind(this)
+            );
+            renderer.bind(context);
+          }
+        }
+        break;
+      case RendererType.SOFTWARE: {
+        // No WebGL, e.g. hardware acceleration off on a Chromium that no longer falls back to
+        // SwiftShader WebGL (deprecated since Chromium 137). <video> does not need WebGL.
+        const videoRenderer = this.useVideoElementRenderer(
+          context,
+          RendererType.SOFTWARE
+        )
+          ? this.createVideoElementRenderer(context)
+          : undefined;
+        if (videoRenderer) {
+          renderer = videoRenderer;
+        } else {
+          renderer = new YUVCanvasRenderer();
           renderer.bind(context);
         }
         break;
-      case RendererType.SOFTWARE:
-        renderer = new YUVCanvasRenderer();
-        renderer.bind(context);
-        break;
+      }
       default:
         throw new Error('Unknown renderer type');
     }
 
     renderer.setContext(context);
     return renderer;
+  }
+
+  /**
+   * MediaStreamTrackGenerator is a Chromium-only API: if constructing the <video> renderer fails
+   * (API renamed, removed or worker-only in a later Chromium), fall back to WebGL.
+   */
+  private createVideoElementRenderer(
+    context: RendererContext
+  ): IRenderer | undefined {
+    const renderer = new VideoElementRenderer();
+    try {
+      renderer.bind(context);
+      return renderer;
+    } catch (e) {
+      logWarn('VideoElementRenderer bind failed, fall back to WebGL', e);
+      try {
+        renderer.unbind();
+      } catch (e2) {
+        // nothing to clean up
+      }
+      return undefined;
+    }
+  }
+
+  /**
+   * electron.video.render.enable_video_element: views (local, remote, media player alike) are
+   * rendered into a <video>, whether the default renderer is WebGL or SOFTWARE. Views with an
+   * alpha mask and environments without MediaStreamTrackGenerator / VideoFrame keep `otherwise`.
+   */
+  private useVideoElementRenderer(
+    context: RendererContext,
+    otherwise: RendererType
+  ): boolean {
+    const enabled = isVideoElementRendererEnabled();
+    const use =
+      enabled && !context.enableAlphaMask && VideoElementRenderer.isSupported();
+    logInfo(
+      'createRenderer',
+      `sourceType=${context.sourceType} uid=${context.uid}`,
+      `${ENABLE_VIDEO_ELEMENT}=${enabled}`,
+      `rendererType=${use ? RendererType.VIDEOELEMENT : otherwise}`
+    );
+    return use;
   }
 
   private handleWebGLFallback(context: RendererContext): WebGLFallback {
